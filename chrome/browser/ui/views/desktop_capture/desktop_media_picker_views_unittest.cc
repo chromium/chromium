@@ -1103,8 +1103,16 @@ TEST_F(DelegatedSourceListTest, SwitchToWebContents) {
   media_lists_[DesktopMediaList::Type::kScreen]
       ->OnDelegatedSourceListDismissed();
 
+#if BUILDFLAG(IS_MAC)
+  // On MacOS, dismissing the delegated source list should close the picker
+  // without a selection.
+  EXPECT_EQ(content::DesktopMediaID(), WaitForPickerDone());
+#else
+  // We should be back on the tab pane with no item selected.
   EXPECT_EQ(DesktopMediaList::Type::kWebContents,
             test_api_.GetSelectedSourceListType());
+  ASSERT_FALSE(test_api_.GetSelectedSourceId().has_value());
+#endif
 }
 
 // Creates a picker with the default fallback pane and verifies that when it
@@ -1136,10 +1144,16 @@ TEST_F(DelegatedSourceListTest, EnsureNoWebContentsSelected) {
   media_lists_[DesktopMediaList::Type::kScreen]
       ->OnDelegatedSourceListDismissed();
 
+#if BUILDFLAG(IS_MAC)
+  // On MacOS, dismissing the delegated source list should close the picker
+  // without a selection.
+  EXPECT_EQ(content::DesktopMediaID(), WaitForPickerDone());
+#else
   // We should be back on the tab pane with no item selected.
   EXPECT_EQ(DesktopMediaList::Type::kWebContents,
             test_api_.GetSelectedSourceListType());
   ASSERT_FALSE(test_api_.GetSelectedSourceId().has_value());
+#endif
 }
 
 #if BUILDFLAG(IS_MAC)
