@@ -98,8 +98,7 @@ void WebTestWebFrameWidgetImpl::WillBeginMainFrame() {
 }
 
 void WebTestWebFrameWidgetImpl::ScheduleAnimation() {
-  if (GetTestRunner()->TestIsRunning())
-    ScheduleAnimationInternal(GetTestRunner()->animation_requires_raster());
+  ScheduleAnimationInternal(GetTestRunner()->animation_requires_raster());
 }
 
 void WebTestWebFrameWidgetImpl::ScheduleAnimationForWebTests() {
@@ -109,8 +108,7 @@ void WebTestWebFrameWidgetImpl::ScheduleAnimationForWebTests() {
   // than just doing the main frame animate step. That way we know it will
   // submit a frame and later trigger the presentation callback in order to make
   // progress in the test.
-  if (GetTestRunner()->TestIsRunning())
-    ScheduleAnimationInternal(/*do_raster=*/true);
+  ScheduleAnimationInternal(/*do_raster=*/true);
 }
 
 void WebTestWebFrameWidgetImpl::WasShown(bool was_evicted) {
@@ -131,6 +129,10 @@ void WebTestWebFrameWidgetImpl::UpdateAllLifecyclePhasesAndComposite(
 }
 
 void WebTestWebFrameWidgetImpl::ScheduleAnimationInternal(bool do_raster) {
+  if (!GetTestRunner()->TestIsRunning()) {
+    return;
+  }
+
   // When using threaded compositing, have the WeFrameWidgetImpl normally
   // schedule a request for a frame, as we use the compositor's scheduler.
   if (Thread::CompositorThread()) {
