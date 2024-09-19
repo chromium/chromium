@@ -4,11 +4,13 @@
 
 #include "chrome/browser/autofill_prediction_improvements/chrome_autofill_prediction_improvements_client.h"
 
+#include "base/check_deref.h"
 #include "chrome/browser/autofill/strike_database_factory.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/user_annotations/user_annotations_service_factory.h"
+#include "components/autofill/core/common/autofill_prefs.h"
 #include "components/autofill_prediction_improvements/core/browser/autofill_prediction_improvements_client.h"
 #include "components/autofill_prediction_improvements/core/browser/autofill_prediction_improvements_features.h"
 #include "components/autofill_prediction_improvements/core/browser/autofill_prediction_improvements_filling_engine_impl.h"
@@ -24,6 +26,9 @@ ChromeAutofillPredictionImprovementsClient::
         content::WebContents* web_contents)
     : content::WebContentsUserData<ChromeAutofillPredictionImprovementsClient>(
           *web_contents),
+      prefs_(CHECK_DEREF(
+          Profile::FromBrowserContext(GetWebContents().GetBrowserContext())
+              ->GetPrefs())),
       prediction_improvements_manager_{
           this,
           OptimizationGuideKeyedServiceFactory::GetForProfile(
@@ -96,6 +101,12 @@ ChromeAutofillPredictionImprovementsClient::GetUserAnnotationsService() {
       Profile::FromBrowserContext(GetWebContents().GetBrowserContext());
   return profile ? UserAnnotationsServiceFactory::GetForProfile(profile)
                  : nullptr;
+}
+
+bool ChromeAutofillPredictionImprovementsClient::
+    IsAutofillPredictionImprovementsEnabledPref() const {
+  return prefs_->GetBoolean(
+      autofill::prefs::kAutofillPredictionImprovementsEnabled);
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(ChromeAutofillPredictionImprovementsClient);

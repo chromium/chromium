@@ -48,6 +48,10 @@ class AutofillPredictionImprovementsClient {
   // `nullptr`.
   virtual user_annotations::UserAnnotationsService*
   GetUserAnnotationsService() = 0;
+
+  // Returns whether `autofill::prefs::kAutofillPredictionImprovementsEnabled`
+  // is enabled.
+  virtual bool IsAutofillPredictionImprovementsEnabledPref() const = 0;
 };
 
 }  // namespace autofill_prediction_improvements

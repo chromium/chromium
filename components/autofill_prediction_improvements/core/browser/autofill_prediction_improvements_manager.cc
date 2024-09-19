@@ -330,6 +330,9 @@ void AutofillPredictionImprovementsManager::UserClickedLearnMore() {}
 
 bool AutofillPredictionImprovementsManager::ShouldProvidePredictionImprovements(
     const GURL& url) {
+  if (!client_->IsAutofillPredictionImprovementsEnabledPref()) {
+    return false;
+  }
   if (!decider_ || !IsAutofillPredictionImprovementsEnabled()) {
     return false;
   }
@@ -396,6 +399,9 @@ void AutofillPredictionImprovementsManager::MaybeImportForm(
 
   if (user_annotations::IsUserAnnotationsObserveFormSubmissionsEnabled()) {
     // The import is skipped because importing is done by a different path.
+    skip_import = true;
+  } else if (!client_->IsAutofillPredictionImprovementsEnabledPref()) {
+    // `autofill::prefs::kAutofillPredictionImprovementsEnabled` is disabled.
     skip_import = true;
   } else if (!annotation_service) {
     // The import is skipped because the annotation service is not available.

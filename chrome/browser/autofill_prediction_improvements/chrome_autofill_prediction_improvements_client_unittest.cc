@@ -11,6 +11,7 @@
 #include "chrome/browser/user_annotations/user_annotations_service_factory.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_profile.h"
+#include "components/autofill/core/common/autofill_prefs.h"
 #include "components/optimization_guide/proto/features/common_quality_data.pb.h"
 #include "components/user_annotations/test_user_annotations_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -63,6 +64,20 @@ TEST_F(ChromeAutofillPredictionImprovementsClientTest, GetAXTree) {
 TEST_F(ChromeAutofillPredictionImprovementsClientTest,
        GetUserAnnotationsService) {
   EXPECT_TRUE(client()->GetUserAnnotationsService());
+}
+
+TEST_F(ChromeAutofillPredictionImprovementsClientTest,
+       IsAutofillPredictionImprovementsEnabledPrefReturnsTrueIfPrefEnabled) {
+  profile()->GetPrefs()->SetBoolean(
+      autofill::prefs::kAutofillPredictionImprovementsEnabled, true);
+  EXPECT_TRUE(client()->IsAutofillPredictionImprovementsEnabledPref());
+}
+
+TEST_F(ChromeAutofillPredictionImprovementsClientTest,
+       IsAutofillPredictionImprovementsEnabledPrefReturnsFalseIfPrefDisabled) {
+  profile()->GetPrefs()->SetBoolean(
+      autofill::prefs::kAutofillPredictionImprovementsEnabled, false);
+  EXPECT_FALSE(client()->IsAutofillPredictionImprovementsEnabledPref());
 }
 
 }  // namespace

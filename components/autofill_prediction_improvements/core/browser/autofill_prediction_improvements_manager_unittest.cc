@@ -64,6 +64,10 @@ class MockAutofillPredictionImprovementsClient
               GetUserAnnotationsService,
               (),
               (override));
+  MOCK_METHOD(bool,
+              IsAutofillPredictionImprovementsEnabledPref,
+              (),
+              (const override));
 };
 
 class MockOptimizationGuideDecider
@@ -109,6 +113,12 @@ class MockAutofillPredictionImprovementsFillingEngine
 };
 
 class BaseAutofillPredictionImprovementsManagerTest : public testing::Test {
+ public:
+  BaseAutofillPredictionImprovementsManagerTest() {
+    ON_CALL(client_, IsAutofillPredictionImprovementsEnabledPref)
+        .WillByDefault(Return(true));
+  }
+
  protected:
   GURL url_{"https://example.com"};
   NiceMock<MockOptimizationGuideDecider> decider_;
@@ -384,6 +394,49 @@ INSTANTIATE_TEST_SUITE_P(,
                          AutofillPredictionImprovementsManagerImportFormTest,
                          testing::Bool());
 
+// Tests that if the pref is disabled, `import_form_callback` is run with an
+// empty list of entries and nothing is forwarded to the
+// `user_annotations_service_`.
+TEST_F(AutofillPredictionImprovementsManagerTest,
+       FormNotImportedWhenPrefDisabled) {
+  user_annotations_service_.AddHostToFormAnnotationsAllowlist(url_.host());
+  autofill::test::FormDescription form_description = {
+      .fields = {{.role = autofill::NAME_FIRST,
+                  .heuristic_type = autofill::NAME_FIRST,
+                  .label = u"First Name",
+                  .value = u"Jane"}}};
+  autofill::FormData form_data = autofill::test::GetFormData(form_description);
+  std::unique_ptr<autofill::FormStructure> eligible_form_structure =
+      std::make_unique<autofill::FormStructure>(form_data);
+
+  test_api(*eligible_form_structure)
+      .PushField()
+#if BUILDFLAG(USE_INTERNAL_AUTOFILL_PATTERNS)
+      .set_heuristic_type(
+          autofill::HeuristicSource::kPredictionImprovementRegexes,
+          autofill::IMPROVED_PREDICTION);
+#else
+      .set_heuristic_type(autofill::GetActiveHeuristicSource(),
+                          autofill::IMPROVED_PREDICTION);
+#endif
+  base::MockCallback<
+      autofill::AutofillPredictionImprovementsDelegate::ImportFormCallback>
+      import_form_callback;
+  user_annotations_service_.SetShouldImportFormData(
+      /*should_import_form_data=*/true);
+
+  std::vector<optimization_guide::proto::UserAnnotationsEntry>
+      user_annotations_entries;
+  EXPECT_CALL(import_form_callback, Run)
+      .WillOnce(SaveArg<1>(&user_annotations_entries));
+  EXPECT_CALL(client_, GetAXTree).Times(0);
+  EXPECT_CALL(client_, IsAutofillPredictionImprovementsEnabledPref)
+      .WillOnce(Return(false));
+  manager_->MaybeImportForm(std::move(eligible_form_structure),
+                            import_form_callback.Get());
+  EXPECT_TRUE(user_annotations_entries.empty());
+}
+
 // Tests that `import_form_callback` is run with an empty list of entries when
 // `user_annotations::ShouldAddFormSubmissionForURL()` returns `false`.
 TEST_F(AutofillPredictionImprovementsManagerTest,
@@ -535,6 +588,40 @@ TEST_F(ShouldProvideAutofillPredictionImprovementsTest,
   EXPECT_THAT(loading_suggestion,
               ElementsAre(HasType(
                   SuggestionType::kPredictionImprovementsLoadingState)));
+}
+
+TEST_F(ShouldProvideAutofillPredictionImprovementsTest,
+       DoesNotExtractImprovedPredictionsIfPrefIsDisabled) {
+  feature_.InitAndEnableFeatureWithParameters(kAutofillPredictionImprovements,
+                                              {{"skip_allowlist", "true"}});
+  AutofillPredictionImprovementsManager manager{&client_, &decider_,
+                                                &strike_database_};
+  base::MockCallback<autofill::AutofillPredictionImprovementsDelegate::
+                         UpdateSuggestionsCallback>
+      update_suggestions_callback;
+  std::vector<Suggestion> loading_suggestion;
+  std::vector<Suggestion> error_suggestion;
+  EXPECT_CALL(client_, GetAXTree).Times(0);
+  {
+    InSequence s;
+    EXPECT_CALL(update_suggestions_callback, Run)
+        .WillOnce(SaveArg<0>(&loading_suggestion));
+    EXPECT_CALL(client_, IsAutofillPredictionImprovementsEnabledPref)
+        .WillOnce(Return(false));
+    EXPECT_CALL(update_suggestions_callback, Run)
+        .WillOnce(SaveArg<0>(&error_suggestion));
+  }
+
+  manager.OnClickedTriggerSuggestion(form_, form_.fields().front(),
+                                     update_suggestions_callback.Get());
+
+  EXPECT_THAT(loading_suggestion,
+              ElementsAre(HasType(
+                  SuggestionType::kPredictionImprovementsLoadingState)));
+  EXPECT_THAT(
+      error_suggestion,
+      ElementsAre(HasType(SuggestionType::kPredictionImprovementsError),
+                  HasType(SuggestionType::kPredictionImprovementsFeedback)));
 }
 
 TEST_F(ShouldProvideAutofillPredictionImprovementsTest,
