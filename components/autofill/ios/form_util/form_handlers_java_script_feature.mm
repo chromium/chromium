@@ -11,7 +11,6 @@
 #import "components/autofill/ios/form_util/child_frame_registrar.h"
 #import "components/autofill/ios/form_util/form_activity_tab_helper.h"
 #import "components/autofill/ios/form_util/form_util_java_script_feature.h"
-#import "components/password_manager/ios/password_manager_java_script_feature.h"
 #import "ios/web/public/js_messaging/java_script_feature_util.h"
 #import "ios/web/public/js_messaging/script_message.h"
 
@@ -39,9 +38,7 @@ FormHandlersJavaScriptFeature::FormHandlersJavaScriptFeature()
               FeatureScript::ReinjectionBehavior::
                   kReinjectOnDocumentRecreation)},
           {web::java_script_features::GetCommonJavaScriptFeature(),
-           autofill::FormUtilJavaScriptFeature::GetInstance(),
-           password_manager::PasswordManagerJavaScriptFeature::GetInstance()}) {
-}
+           autofill::FormUtilJavaScriptFeature::GetInstance()}) {}
 
 FormHandlersJavaScriptFeature::~FormHandlersJavaScriptFeature() = default;
 

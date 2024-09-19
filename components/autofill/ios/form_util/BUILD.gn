@@ -59,7 +59,6 @@ source_set("form_handler_feature") {
     "//base",
     "//components/autofill/core/common:features",
     "//components/autofill/ios/common",
-    "//components/password_manager/ios:password_manager_feature_header",
     "//ios/web/public/js_messaging",
   ]
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
