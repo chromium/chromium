@@ -658,6 +658,10 @@ Permissions you've already given to websites and apps may apply to this account.
         <message name="IDS_INSTALL_EXISTING_VERSION_LAUNCHED" desc="A message shown to users who try to install Chrome in their user profile directory when their computer already has Chrome installed for all users. In this case, the installer silently launches the existing version of Chrome for all users rather than installing a second version of Chrome.">
           Chromium is already installed for all users on your computer.
         </message>
+        <message name="IDS_ELEVATION_SERVICE_DESCRIPTION"
+                 desc="The description of the Windows elevation service. Displayed in the Windows Services management console.">
+          Provides elevation services for <ph name="BROWSER_NAME">$1<ex>Chromium</ex></ph>.
+        </message>
       </if>
       <!-- Options Dialog -->
       <if expr="is_win">

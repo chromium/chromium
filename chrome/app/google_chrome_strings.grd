@@ -635,6 +635,10 @@ Permissions you've already given to websites and apps may apply to this account.
         <message name="IDS_INSTALL_EXISTING_VERSION_LAUNCHED" desc="A message shown to users who try to install Chrome in their user profile directory when their computer already has Chrome installed for all users. In this case, the installer silently launches the existing version of Chrome for all users rather than installing a second version of Chrome.">
           Google Chrome is already installed for all users on your computer.
         </message>
+        <message name="IDS_ELEVATION_SERVICE_DESCRIPTION"
+                 desc="The description of the Windows elevation service. Displayed in the Windows Services management console.">
+          Provides encryption services and a secure way for recovering <ph name="BROWSER_NAME">$1<ex>Google Chrome</ex></ph> if it gets out of date. If this service is disabled, <ph name="BROWSER_NAME">$1<ex>Google Chrome</ex></ph> may lose access to encrypted data, and <ph name="BROWSER_NAME">$1<ex>Google Chrome</ex></ph> may not be able recover itself.
+        </message>
       </if>
       <!-- Options Dialog -->
       <if expr="is_win">
