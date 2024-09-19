@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/platform/image-decoders/skia/skia_image_decoder_base.h"
 
 #include <limits>
+#include <stack>
 
 #include "third_party/blink/renderer/platform/image-decoders/segment_stream.h"
 #include "third_party/skia/include/codec/SkCodec.h"
