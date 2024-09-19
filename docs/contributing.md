@@ -86,8 +86,7 @@ contribution can be accepted:
 
 ## Initial git setup
 
-1. Visit <https://chromium.googlesource.com/new-password> and follow the
-   on-screen instructions to get credentials for uploading changes.
+1. Set up [Gerrit access](https://www.chromium.org/developers/gerrit-guide/).
 2. Tell git about your name, email and some other settings.
    ```
    git config --global user.name "My Name"
