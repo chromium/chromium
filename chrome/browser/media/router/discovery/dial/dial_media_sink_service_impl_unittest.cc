@@ -9,10 +9,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/mock_callback.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/timer/mock_timer.h"
 #include "chrome/browser/media/router/discovery/dial/dial_device_data.h"
-#include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/media/router/test/provider_test_helpers.h"
 #include "content/public/test/browser_task_environment.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
@@ -387,18 +385,12 @@ class DialMediaSinkServiceImplStartDiscoveryTest
 TEST_F(DialMediaSinkServiceImplStartDiscoveryTest, DiscoveryOnUserGesture) {
   media_sink_service_->Initialize();
   base::RunLoop().RunUntilIdle();
-// TODO(crbug.com/345056325): Remove it once kDelayMediaSinkDiscovery is enabled
-// on ChromeOS.
-#if BUILDFLAG(IS_CHROMEOS)
-  EXPECT_TRUE(dial_discovery_started());
-#else
   EXPECT_FALSE(dial_discovery_started());
 
   // Calling `DiscoverSinksNow()` won't start a new cycle of discovery.
   media_sink_service_->DiscoverSinksNow();
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(dial_discovery_started());
-#endif
 
   media_sink_service_->StartDiscovery();
   base::RunLoop().RunUntilIdle();
