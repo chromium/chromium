@@ -572,7 +572,9 @@ bool PinnedToolbarActionsContainer::IsOverflowed(const actions::ActionId& id) {
   // button but is in the process of revealing it.
   const auto* const layout =
       GetAnimatingLayoutManager()->target_layout().GetLayoutFor(pinned_button);
-  return layout && (!GetVisible() || !layout->visible);
+  return GetAnimatingLayoutManager()->target_layout_manager()->CanBeVisible(
+             pinned_button) &&
+         layout && (!GetVisible() || !layout->visible);
 }
 
 views::View* PinnedToolbarActionsContainer::GetContainerView() {
@@ -592,7 +594,9 @@ bool PinnedToolbarActionsContainer::ShouldAnyButtonsOverflow(
   for (PinnedActionToolbarButton* pinned_button : pinned_buttons_) {
     if (views::ChildLayout* child_layout =
             proposed_layout.GetLayoutFor(pinned_button)) {
-      if (!child_layout->visible) {
+      if (GetAnimatingLayoutManager()->target_layout_manager()->CanBeVisible(
+              pinned_button) &&
+          !child_layout->visible) {
         return true;
       }
     }
