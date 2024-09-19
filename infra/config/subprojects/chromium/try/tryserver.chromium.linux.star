@@ -356,9 +356,13 @@ try_.orchestrator_builder(
     name = "linux-full-remote-rel",
     description_html = "Experimental " + linkify_builder("try", "linux-rel", "chromium") + " builder with more kinds of remote actions. e.g. remote linking",
     mirrors = builder_config.copy_from("linux-rel"),
-    builder_config_settings = builder_config.try_settings(
-        is_compile_only = True,
-    ),
+    # TODO: crbug.com/364131303 - Enabling testing until Sep 2nd JST to
+    # experiment remote linking + test isolate without bytes.
+    # Comment out builder_config_settings to disable testing and increase
+    # experiment_percentage to 10%.
+    #  builder_config_settings = builder_config.try_settings(
+    #     is_compile_only = True,
+    # ),
     gn_args = gn_args.config(
         configs = [
             "try/linux-rel",
@@ -370,7 +374,7 @@ try_.orchestrator_builder(
     siso_configs = ["builder", "remote-library-link", "remote-exec-link"],
     siso_output_local_strategy = "minimum",
     tryjob = try_.job(
-        experiment_percentage = 10,
+        experiment_percentage = 1,
     ),
     use_clang_coverage = True,
 )
