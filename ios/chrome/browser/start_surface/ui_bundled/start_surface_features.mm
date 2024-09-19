@@ -10,7 +10,7 @@ namespace {
 
 // Default value for kReturnToStartSurfaceInactiveDurationInSeconds.
 constexpr base::TimeDelta kDefaultReturnToStartSurfaceInactiveDuration =
-    base::Hours(6);
+    base::Hours(4);
 
 }  // anonymous namespace
 
