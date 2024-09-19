@@ -6,6 +6,7 @@
 #define UI_DISPLAY_MAC_CV_DISPLAY_LINK_MAC_H_
 
 #import <CoreGraphics/CGDirectDisplay.h>
+#import <QuartzCore/CVDisplayLink.h>
 
 #include <memory>
 #include <set>
@@ -15,6 +16,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/ref_counted.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "ui/display/display_export.h"
 #include "ui/display/mac/display_link_mac.h"
@@ -27,7 +29,8 @@ class DisplayLinkMacSharedState;
 // DisplayLinkMacSharedState), and may be used to create VSync callbacks.
 class CVDisplayLinkMac : public DisplayLinkMac {
  public:
-  // Create a CVDisplayLinkMac for the specified display.
+  // Create a CVDisplayLinkMac for the specified display. The returned
+  // object will be shared across all callers on a given calling thread.
   static scoped_refptr<CVDisplayLinkMac> GetForDisplay(
       CGDirectDisplayID display_id);
 
@@ -50,16 +53,59 @@ class CVDisplayLinkMac : public DisplayLinkMac {
   base::TimeTicks GetCurrentTime() const override;
 
  private:
-  explicit CVDisplayLinkMac(DisplayLinkMacSharedState* shared_state);
+  CVDisplayLinkMac(CGDirectDisplayID display_id,
+                   base::PlatformThreadId thread_id,
+                   base::apple::ScopedTypeRef<CVDisplayLinkRef> display_link);
   ~CVDisplayLinkMac() override;
+
+  // The EnsureDisplayLinkRunning call will return false if DisplayLinkStart
+  // fails.
+  bool EnsureDisplayLinkRunning();
+  void StopDisplayLinkIfNeeded();
+
+  // The static callback function called by the CVDisplayLink, on the
+  // CVDisplayLink thread.
+  static CVReturn CVDisplayLinkCallback(CVDisplayLinkRef display_link,
+                                        const CVTimeStamp* now,
+                                        const CVTimeStamp* output_time,
+                                        CVOptionFlags flags_in,
+                                        CVOptionFlags* flags_out,
+                                        void* context);
+
+  // The static callback function called on `thread_id`.
+  static void CVDisplayLinkCallbackOnCallbackThread(
+      CGDirectDisplayID display_id,
+      base::PlatformThreadId thread_id,
+      const VSyncParamsMac& params);
+
+  // The non-static function called called on vsync tick.
+  void RunCallbacks(const VSyncParamsMac& params);
 
   // This is called by VSyncCallbackMac's destructor.
   void UnregisterCallback(VSyncCallbackMac* callback);
 
-  // A single DisplayLinkMacSharedState is shared between all CVDisplayLinkMac
-  // instances that have same display ID. This is manually retained and
-  // released.
-  raw_ptr<DisplayLinkMacSharedState> shared_state_;
+  // The display that this display link is attached to.
+  const CGDirectDisplayID display_id_;
+
+  // The ID of the thread that `this` may be accessed on.
+  const base::PlatformThreadId thread_id_;
+
+  // CVDisplayLink for querying VSync timing info.
+  base::apple::ScopedTypeRef<CVDisplayLinkRef> display_link_;
+  bool display_link_is_running_ = false;
+
+  // Each VSyncCallbackMac holds a reference to `this`.
+  std::set<VSyncCallbackMac*> callbacks_;
+
+  // The number of consecutive DisplayLink VSyncs received after zero
+  // |callbacks_|. DisplayLink will be stopped after |kMaxExtraVSyncs| is
+  // reached. It's guarded by |globals.lock|.
+  int consecutive_vsyncs_with_no_callbacks_ = 0;
+
+  // The task runner for the thread on which this is called and on which all
+  // callbacks will be made.
+  scoped_refptr<base::SequencedTaskRunner> task_runner_;
+  SEQUENCE_CHECKER(sequence_checker_);
 };
 
 }  // namespace ui
