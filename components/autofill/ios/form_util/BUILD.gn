@@ -56,6 +56,7 @@ source_set("form_handler_feature") {
     ":form_handlers_js",
     ":form_util",
     ":form_util_feature",
+    ":register_remote_frame_token_js",
     "//base",
     "//components/autofill/core/common:features",
     "//components/autofill/ios/common",
@@ -156,6 +157,15 @@ optimize_ts("form_handlers_js") {
   ]
 }
 
+optimize_ts("register_remote_frame_token_js") {
+  sources = [ "resources/register_remote_frame_token.ts" ]
+
+  deps = [
+    ":child_frame_registration_ts_lib",
+    "//ios/web/public/js_messaging:frame_id",
+  ]
+}
+
 source_set("cross_content_world_util_feature") {
   sources = [
     "cross_content_world_util_java_script_feature.h",
@@ -213,6 +223,7 @@ source_set("child_frame_registrar") {
     "//base",
     "//components/autofill/core/common",
     "//components/autofill/ios/browser:util",
+    "//components/autofill/ios/common",
     "//ios/web/public",
     "//ios/web/public/js_messaging",
   ]
@@ -226,6 +237,7 @@ source_set("unit_tests") {
     "form_activity_observer_bridge_unittest.mm",
     "form_activity_tab_helper_unittest.mm",
     "form_unittest.mm",
+    "remote_frame_token_registration_unittest.mm",
   ]
   deps = [
     ":child_frame_registrar",
@@ -238,7 +250,9 @@ source_set("unit_tests") {
     ":test_support",
     "//base",
     "//base/test:test_support",
+    "//components/autofill/core/common",
     "//components/autofill/ios/browser",
+    "//components/autofill/ios/browser:test_support",
     "//components/autofill/ios/browser:util",
     "//components/autofill/ios/common",
     "//ios/web/public/js_messaging",

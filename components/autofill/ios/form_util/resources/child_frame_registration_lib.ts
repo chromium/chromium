@@ -200,4 +200,8 @@ function registerChildFrame(frame: HTMLIFrameElement): string {
 // form_handlers.js. When that file is converted to TS, this can be removed.
 gCrWeb.child_frame_registration = {processChildFrameMessage};
 
-export {registerChildFrame, processChildFrameMessage};
+export {
+  registerChildFrame,
+  registerSelfWithRemoteToken,
+  processChildFrameMessage,
+};

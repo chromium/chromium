@@ -38,6 +38,8 @@ class FormUtilJavaScriptFeature : public web::JavaScriptFeature {
   // TODO(crbug.com/359538514): Remove friend once isolated world for Autofill
   // is launched.
   friend class FillJsTest;
+  friend class TestAutofillJavaScriptFeatureContainer;
+
   FormUtilJavaScriptFeature();
   ~FormUtilJavaScriptFeature() override;
 
