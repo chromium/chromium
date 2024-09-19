@@ -2545,17 +2545,13 @@ URLRequestContextOwner NetworkContext::MakeURLRequestContext(
             nspal, std::move(ipp_core), params_->enable_ip_protection);
     proxy_delegate->SetReceiver(
         std::move(params_->ip_protection_proxy_delegate));
-    proxy_delegate_ = proxy_delegate.get();
     builder.set_proxy_delegate(std::move(proxy_delegate));
   } else if (params_->initial_custom_proxy_config ||
              params_->custom_proxy_config_client_receiver) {
-    std::unique_ptr<NetworkServiceProxyDelegate> proxy_delegate =
-        std::make_unique<NetworkServiceProxyDelegate>(
-            std::move(params_->initial_custom_proxy_config),
-            std::move(params_->custom_proxy_config_client_receiver),
-            std::move(params_->custom_proxy_connection_observer_remote));
-    proxy_delegate_ = proxy_delegate.get();
-    builder.set_proxy_delegate(std::move(proxy_delegate));
+    builder.set_proxy_delegate(std::make_unique<NetworkServiceProxyDelegate>(
+        std::move(params_->initial_custom_proxy_config),
+        std::move(params_->custom_proxy_config_client_receiver),
+        std::move(params_->custom_proxy_connection_observer_remote)));
   }
 
   net::NetLog* net_log = nullptr;
