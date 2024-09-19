@@ -7,8 +7,8 @@
     Pay with <ph name="FINANCIAL_ACCOUNT_TYPES">%1$s<ex>Pix and e-Wallets</ex></ph>
   </message>
   <message name="IDS_SETTINGS_MANAGE_OTHER_FINANCIAL_ACCOUNTS_DESCRIPTION" desc="Description for the preference that allows the user to manage financial accounts other than credit cards like Pix related bank accounts, e-wallets etc." formatter_data="android_java">
-    {FINANCIAL_ACCOUNT, plural, =1 {When you make purchases on Chrome, see <ph name="FINANCIAL_ACCOUNT_TYPES">%1$s<ex>Pix</ex></ph> as an option}
-    other {When you make purchases on Chrome, see <ph name="FINANCIAL_ACCOUNT_TYPES">%1$s<ex>Pix and e-Wallets</ex></ph> as options}}
+    {FINANCIAL_ACCOUNT, plural, =1 {When you make purchases in Chrome, see <ph name="FINANCIAL_ACCOUNT_TYPES">%1$s<ex>Pix</ex></ph> as an option}
+    other {When you make purchases in Chrome, see <ph name="FINANCIAL_ACCOUNT_TYPES">%1$s<ex>Pix and e-Wallets</ex></ph> as options}}
   </message>
   <!-- Pix related strings -->
   <message name="IDS_SETTINGS_MANAGE_OTHER_FINANCIAL_ACCOUNTS_PIX" desc="Pix is an instant payment platform used in Brazil. This is the string added to the summary for the 'Manage other financial accounts' preference when user has accounts available to be used with the Pix platform." formatter_data="android_java" translateable="false">
