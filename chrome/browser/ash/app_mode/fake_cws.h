@@ -9,6 +9,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/auto_reset.h"
@@ -39,18 +40,18 @@ class FakeCWS {
   // point. Override app gallery command line and provide it to Extensions
   // client.
   void InitAsPrivateStore(net::EmbeddedTestServer* embedded_test_server,
-                          const std::string& update_check_end_point);
+                          std::string_view update_check_end_point);
 
   // Sets up the update check response with has_update template.
-  void SetUpdateCrx(const std::string& app_id,
-                    const std::string& crx_file,
-                    const std::string& version);
+  void SetUpdateCrx(std::string_view app_id,
+                    std::string_view crx_file,
+                    std::string_view version);
 
   // Sets up the update check response with no_update template.
-  void SetNoUpdate(const std::string& app_id);
+  void SetNoUpdate(std::string_view app_id);
 
   // Set the details to be returned via Chrome Web Store details query.
-  void SetAppDetails(const std::string& app_id,
+  void SetAppDetails(std::string_view app_id,
                      std::string localized_name,
                      std::string icon_url,
                      std::string manifest_json);

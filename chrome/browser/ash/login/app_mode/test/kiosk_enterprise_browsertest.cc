@@ -276,8 +276,7 @@ class SelfHostedKioskEnterpriseTest : public KioskEnterpriseTest {
 
  protected:
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    private_store_.InitAsPrivateStore(&test_server_,
-                                      std::string(kPrivateStoreUpdate));
+    private_store_.InitAsPrivateStore(&test_server_, kPrivateStoreUpdate);
     KioskEnterpriseTest::SetUpCommandLine(command_line);
   }
 
@@ -293,12 +292,12 @@ class SelfHostedKioskEnterpriseTest : public KioskEnterpriseTest {
                               test_server_.GetURL(kPrivateStoreUpdate).spec());
   }
 
-  static constexpr std::string_view kPrivateStoreUpdate =
-      "/private_store_update";
-
   FakeCWS private_store_;
 
  private:
+  static constexpr std::string_view kPrivateStoreUpdate =
+      "/private_store_update";
+
   net::EmbeddedTestServer test_server_;
   EmbeddedTestServerSetupMixin test_server_setup_mixin_{&mixin_host_,
                                                         &test_server_};
