@@ -17878,6 +17878,21 @@
             ]
         }
     ],
+    "PriceInsightsAndroid": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "PriceInsights"
+                    ]
+                }
+            ]
+        }
+    ],
     "PriceTrackingDesktopExpansionStudy": [
         {
             "platforms": [
