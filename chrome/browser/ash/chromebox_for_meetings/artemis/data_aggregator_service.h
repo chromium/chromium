@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_ASH_CHROMEBOX_FOR_MEETINGS_ARTEMIS_DATA_AGGREGATOR_SERVICE_H_
 #define CHROME_BROWSER_ASH_CHROMEBOX_FOR_MEETINGS_ARTEMIS_DATA_AGGREGATOR_SERVICE_H_
 
+#include <queue>
+
 #include "base/time/time.h"
 #include "chrome/browser/ash/chromebox_for_meetings/artemis/command_source.h"
 #include "chrome/browser/ash/chromebox_for_meetings/artemis/log_source.h"
@@ -94,7 +96,8 @@ class DataAggregatorService : public CfmObserver,
       const std::string& source_name,
       const std::vector<std::string>& serialized_entries);
   bool IsPayloadReadyForUpload() const;
-  void EnqueueTransportPayload();
+  void AddActivePayloadToPendingQueue();
+  void EnqueueNextPendingTransportPayload();
   void HandleEnqueueResponse(chromeos::cfm::mojom::LoggerStatusPtr status);
 
   chromeos::cfm::ServiceAdaptor service_adaptor_;
@@ -117,6 +120,11 @@ class DataAggregatorService : public CfmObserver,
   // CfmLogger. This will collect data until certain conditions are met
   // (see IsPayloadReadyForUpload() method for details).
   proto::TransportPayload active_transport_payload_;
+
+  // A queue of currently pending transport payloads that are waiting
+  // to be enqueued. Payloads are only popped off the queue if they
+  // are uploaded successfully, or if the queue grows too large.
+  std::queue<proto::TransportPayload> pending_transport_payloads_;
 
   // Used to track the time since we last pushed a payload to the wire.
   // Will be used as a timeout of sorts for the next push.
