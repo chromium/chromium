@@ -6,6 +6,7 @@
 #define EXTENSIONS_BROWSER_EXTENSION_NAVIGATION_UI_DATA_H_
 
 #include <memory>
+#include <optional>
 
 #include "content/public/browser/global_routing_id.h"
 #include "extensions/browser/extension_api_frame_id_map.h"
@@ -43,9 +44,18 @@ class ExtensionNavigationUIData {
     return frame_data_;
   }
 
-  bool is_web_view() const { return is_web_view_; }
-  int web_view_instance_id() const { return web_view_instance_id_; }
-  int web_view_rules_registry_id() const { return web_view_rules_registry_id_; }
+  struct WebViewData {
+    int web_view_instance_id = 0;
+    int web_view_rules_registry_id = 0;
+  };
+
+  bool is_web_view() const { return web_view_data_.has_value(); }
+  int web_view_instance_id() const {
+    return web_view_data_->web_view_instance_id;
+  }
+  int web_view_rules_registry_id() const {
+    return web_view_data_->web_view_rules_registry_id;
+  }
 
   const content::GlobalRenderFrameHostId& parent_routing_id() const {
     return parent_routing_id_;
@@ -62,13 +72,11 @@ class ExtensionNavigationUIData {
       const ExtensionApiFrameIdMap::DocumentId& document_id,
       const ExtensionApiFrameIdMap::DocumentId& parent_document_id,
       api::extension_types::FrameType frame_type,
-      api::extension_types::DocumentLifecycle document_lifecycle);
+      api::extension_types::DocumentLifecycle document_lifecycle,
+      std::optional<WebViewData> web_view_data);
 
   ExtensionApiFrameIdMap::FrameData frame_data_;
-  bool is_web_view_ = false;
-  // These are only valid iff is_web_view_.
-  int web_view_instance_id_ = 0;
-  int web_view_rules_registry_id_ = 0;
+  std::optional<WebViewData> web_view_data_;
 
   // ID for the parent RenderFrameHost of this navigation. Will only have a
   // valid value for sub-frame navigations.
