@@ -5,11 +5,23 @@
 #ifndef COMPONENTS_ENTERPRISE_OBFUSCATION_CORE_DOWNLOAD_OBFUSCATOR_H_
 #define COMPONENTS_ENTERPRISE_OBFUSCATION_CORE_DOWNLOAD_OBFUSCATOR_H_
 
+#include "base/files/file.h"
+#include "base/supports_user_data.h"
 #include "base/types/expected.h"
 #include "components/enterprise/obfuscation/core/utils.h"
 #include "crypto/secure_hash.h"
 
 namespace enterprise_obfuscation {
+
+// User data to persist download file obfuscation data for the deobfuscation
+// process.
+struct DownloadObfuscationData : public base::SupportsUserData::Data {
+  explicit DownloadObfuscationData(bool is_obfuscated);
+  ~DownloadObfuscationData() override;
+  static const char kUserDataKey[];
+
+  bool is_obfuscated = false;
+};
 
 // DownloadObfuscator handles obfuscation or deobfuscation of download data.
 // It is designed to allow using separate instances for obfuscation and
@@ -50,8 +62,14 @@ class DownloadObfuscator {
       size_t& obfuscated_file_offset);
 
   // Calculates file overhead that should have been added during obfuscation.
+  // This version works with in-memory data.
   base::expected<int64_t, Error> CalculateDeobfuscationOverhead(
       base::span<const uint8_t> data);
+
+  // Calculates file overhead that should have been added during obfuscation.
+  // This version works with file-based data.
+  base::expected<int64_t, Error> CalculateDeobfuscationOverhead(
+      base::File& file);
 
   // Returns the total overhead added by obfuscation.
   int64_t GetTotalOverhead() const { return total_overhead_; }

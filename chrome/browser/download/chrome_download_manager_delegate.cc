@@ -151,7 +151,7 @@
 #include "chrome/browser/safe_browsing/download_protection/deep_scanning_request.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_service.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_util.h"
-#include "components/enterprise/obfuscation/core/utils.h"
+#include "components/enterprise/obfuscation/core/download_obfuscator.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -910,8 +910,14 @@ bool ChromeDownloadManagerDelegate::ShouldObfuscateDownload(
     return false;
   }
 
-  // Skip obfuscation for chrome-initiated downloads.
-  if (item && !item->RequireSafetyChecks()) {
+  // Skip obfuscation for chrome-initiated and save package downloads.
+  if (item && !item->RequireSafetyChecks() && item->IsSavePackageDownload()) {
+    return false;
+  }
+
+  // Skip obfuscation for large files if size is known.
+  if (static_cast<size_t>(item->GetTotalBytes()) >
+      safe_browsing::BinaryUploadService::kMaxUploadSizeBytes) {
     return false;
   }
 
@@ -922,9 +928,15 @@ bool ChromeDownloadManagerDelegate::ShouldObfuscateDownload(
   if (profile) {
     auto settings =
         safe_browsing::DeepScanningRequest::ShouldUploadBinary(item);
-    return settings.has_value() &&
-           settings.value().block_until_verdict ==
-               enterprise_connectors::BlockUntilVerdict::kBlock;
+    if (settings.has_value() &&
+        settings.value().block_until_verdict ==
+            enterprise_connectors::BlockUntilVerdict::kBlock) {
+      item->SetUserData(
+          enterprise_obfuscation::DownloadObfuscationData::kUserDataKey,
+          std::make_unique<enterprise_obfuscation::DownloadObfuscationData>(
+              true));
+      return true;
+    }
   }
 #endif
   return false;

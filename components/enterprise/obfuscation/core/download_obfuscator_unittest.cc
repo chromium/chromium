@@ -4,6 +4,8 @@
 
 #include "components/enterprise/obfuscation/core/download_obfuscator.h"
 
+#include "base/files/file_util.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -101,12 +103,36 @@ TEST_P(DownloadObfuscatorTest, ObfuscateAndDeobfuscateVerify) {
     }
     EXPECT_EQ(offset, obfuscated_content.size());
 
-    // Test overhead calculation.
-    auto calculated_overhead =
+    // Test overhead calculation using span.
+    auto calculated_overhead_span =
         deobfuscator.CalculateDeobfuscationOverhead(obfuscated_content);
-    ASSERT_TRUE(calculated_overhead.has_value());
-    EXPECT_EQ(calculated_overhead.value(),
+    ASSERT_TRUE(calculated_overhead_span.has_value());
+    EXPECT_EQ(calculated_overhead_span.value(),
               static_cast<int64_t>(expected_overhead));
+
+    // Test overhead calculation using file.
+    base::ScopedTempDir temp_dir;
+    ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+    base::FilePath temp_file_path = temp_dir.GetPath().AppendASCII("temp_file");
+
+    // Write obfuscated content to a temporary file.
+    std::string_view obfuscated_data(
+        reinterpret_cast<const char*>(obfuscated_content.data()),
+        obfuscated_content.size());
+    ASSERT_TRUE(base::WriteFile(temp_file_path, obfuscated_data));
+
+    base::File temp_file(temp_file_path,
+                         base::File::FLAG_OPEN | base::File::FLAG_READ);
+    ASSERT_TRUE(temp_file.IsValid());
+
+    auto calculated_overhead_file =
+        deobfuscator.CalculateDeobfuscationOverhead(temp_file);
+    ASSERT_TRUE(calculated_overhead_file.has_value());
+    EXPECT_EQ(calculated_overhead_file.value(),
+              static_cast<int64_t>(expected_overhead));
+
+    EXPECT_EQ(calculated_overhead_span.value(),
+              calculated_overhead_file.value());
   }
 }
 
