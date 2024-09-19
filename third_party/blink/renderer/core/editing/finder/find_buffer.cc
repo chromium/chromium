@@ -413,7 +413,7 @@ void FindBuffer::CollectTextUntilBlockBoundary(
       }
       // Replace the node with char constants so we wouldn't encounter this node
       // or its descendants later.
-      ReplaceNodeWithCharConstants(*node);
+      ReplaceNodeWithCharConstants(*node, buffer_);
       node = FlatTreeTraversal::NextSkippingChildren(*node);
       continue;
     }
@@ -444,10 +444,7 @@ void FindBuffer::CollectTextUntilBlockBoundary(
       const auto* text_node = DynamicTo<Text>(node);
       if (text_node) {
         last_added_text_node = node;
-        LayoutBlockFlow& block_flow =
-            *OffsetMapping::GetInlineFormattingContextOf(
-                *text_node->GetLayoutObject());
-        AddTextToBuffer(*text_node, block_flow, range);
+        AddTextToBuffer(*text_node, range, buffer_, &buffer_node_mappings_);
       }
     }
     if (node == end_node) {
@@ -460,7 +457,8 @@ void FindBuffer::CollectTextUntilBlockBoundary(
   FoldQuoteMarksAndSoftHyphens(base::span(buffer_));
 }
 
-void FindBuffer::ReplaceNodeWithCharConstants(const Node& node) {
+void FindBuffer::ReplaceNodeWithCharConstants(const Node& node,
+                                              Vector<UChar>& buffer) {
   if (!IsA<HTMLElement>(node))
     return;
 
@@ -468,11 +466,11 @@ void FindBuffer::ReplaceNodeWithCharConstants(const Node& node) {
     return;
 
   if (IsA<HTMLBRElement>(To<HTMLElement>(node))) {
-    buffer_.push_back(kNewlineCharacter);
+    buffer.push_back(kNewlineCharacter);
     return;
   }
 
-  buffer_.push_back(kNonCharacter);
+  buffer.push_back(kNonCharacter);
 }
 
 EphemeralRangeInFlatTree FindBuffer::RangeFromBufferIndex(
@@ -524,8 +522,11 @@ PositionInFlatTree FindBuffer::PositionAtEndOfCharacterAtIndex(
 }
 
 void FindBuffer::AddTextToBuffer(const Text& text_node,
-                                 LayoutBlockFlow& block_flow,
-                                 const EphemeralRangeInFlatTree& range) {
+                                 const EphemeralRangeInFlatTree& range,
+                                 Vector<UChar>& buffer,
+                                 Vector<BufferNodeMapping>* mappings) {
+  LayoutBlockFlow& block_flow = *OffsetMapping::GetInlineFormattingContextOf(
+      *text_node.GetLayoutObject());
   if (!offset_mapping_) {
     offset_mapping_ = InlineNode::GetOffsetMapping(&block_flow);
 
@@ -552,17 +553,19 @@ void FindBuffer::AddTextToBuffer(const Text& text_node,
        offset_mapping_->GetMappingUnitsForDOMRange(
            EphemeralRange(node_start, node_end))) {
     if (first_unit || last_unit_end != unit.TextContentStart()) {
-      // This is the first unit, or the units are not consecutive, so we need to
-      // insert a new BufferNodeMapping.
-      buffer_node_mappings_.push_back(
-          BufferNodeMapping({buffer_.size(), unit.TextContentStart()}));
+      if (mappings) {
+        // This is the first unit, or the units are not consecutive, so we need
+        // to insert a new BufferNodeMapping.
+        mappings->push_back(
+            BufferNodeMapping({buffer.size(), unit.TextContentStart()}));
+      }
       first_unit = false;
     }
     String text_for_unit =
         mapped_text.Substring(unit.TextContentStart(),
                               unit.TextContentEnd() - unit.TextContentStart());
     text_for_unit.Ensure16Bit();
-    buffer_.AppendSpan(text_for_unit.Span16());
+    buffer.AppendSpan(text_for_unit.Span16());
     last_unit_end = unit.TextContentEnd();
   }
 }

@@ -81,7 +81,8 @@ class CORE_EXPORT FindBuffer {
                                      RubySupport ruby_support);
 
   // Replaces nodes that should be ignored with appropriate char constants.
-  void ReplaceNodeWithCharConstants(const Node& node);
+  static void ReplaceNodeWithCharConstants(const Node& node,
+                                           Vector<UChar>& buffer);
 
   // Mapping for position in buffer -> actual node where the text came from,
   // along with the offset in the OffsetMapping of this find_buffer.
@@ -119,10 +120,11 @@ class CORE_EXPORT FindBuffer {
 
   PositionInFlatTree PositionAtEndOfCharacterAtIndex(unsigned index) const;
 
-  // Adds text in |text_node| that are located within |range| to |buffer_|.
+  // Adds text in |text_node| that are located within |range| to |buffer|.
   void AddTextToBuffer(const Text& text_node,
-                       LayoutBlockFlow& block_flow,
-                       const EphemeralRangeInFlatTree& range);
+                       const EphemeralRangeInFlatTree& range,
+                       Vector<UChar>& buffer,
+                       Vector<BufferNodeMapping>* mappings);
 
   Node* node_after_block_ = nullptr;
   Vector<UChar> buffer_;
