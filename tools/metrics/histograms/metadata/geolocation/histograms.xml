@@ -92,6 +92,13 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Geolocation.LocationProviderWinrt.Accuracy" enum="Hresult"
+    expires_after="2026-09-15">
+  <owner>chengweih@chromium.org</owner>
+  <owner>deviceapi-team@google.com</owner>
+  <summary>Records the accuracy value of a valid Geoposition.</summary>
+</histogram>
+
 <histogram name="Geolocation.LocationProviderWinrt.CreateGeoposition"
     enum="Hresult" expires_after="2026-08-05">
   <owner>chengweih@chromium.org</owner>
@@ -129,6 +136,16 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the HRESULT error code encountered when processing a status changed
     event.
+  </summary>
+</histogram>
+
+<histogram name="Geolocation.LocationProviderWinrt.PositionSource"
+    enum="WindowsDevicesGeolocationPositionSource" expires_after="2026-09-15">
+  <owner>chengweih@chromium.org</owner>
+  <owner>deviceapi-team@google.com</owner>
+  <summary>
+    Records an enumeration value representing the position source for generating
+    a valid Geoposition.
   </summary>
 </histogram>
 

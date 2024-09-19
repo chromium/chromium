@@ -110,6 +110,16 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="kSimpleGeolocationProvider"/>
 </enum>
 
+<enum name="WindowsDevicesGeolocationPositionSource">
+  <int value="0" label="PositionSource_Cellular"/>
+  <int value="1" label="PositionSource_Satellite"/>
+  <int value="2" label="PositionSource_WiFi"/>
+  <int value="3" label="PositionSource_IPAddress"/>
+  <int value="4" label="PositionSource_Unknown"/>
+  <int value="5" label="PositionSource_Default"/>
+  <int value="6" label="PositionSource_Obfuscated"/>
+</enum>
+
 <enum name="WindowsDevicesGeolocationPositionStatus">
   <int value="0" label="PositionStatus_Ready"/>
   <int value="1" label="PositionStatus_Initializing"/>
