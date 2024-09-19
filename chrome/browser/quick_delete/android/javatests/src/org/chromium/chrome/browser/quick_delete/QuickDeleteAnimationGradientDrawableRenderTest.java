@@ -53,7 +53,6 @@ public class QuickDeleteAnimationGradientDrawableRenderTest {
 
     @BeforeClass
     public static void setupSuite() {
-        ThreadUtils.setThreadAssertsDisabledForTesting(true);
         sActivityTestRule.launchActivity(null);
     }
 
@@ -81,12 +80,17 @@ public class QuickDeleteAnimationGradientDrawableRenderTest {
     public void testWipeAnimation() throws Exception {
         View testView = setUpTestView();
         QuickDeleteAnimationGradientDrawable drawable =
-                QuickDeleteAnimationGradientDrawable.createQuickDeleteWipeAnimationDrawable(
-                        mActivity, VIEW_HEIGHT, /* isIncognito= */ false);
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    testView.setForeground(drawable);
-                });
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> {
+                            QuickDeleteAnimationGradientDrawable newDrawable =
+                                    QuickDeleteAnimationGradientDrawable
+                                            .createQuickDeleteWipeAnimationDrawable(
+                                                    mActivity,
+                                                    VIEW_HEIGHT,
+                                                    /* isIncognito= */ false);
+                            testView.setForeground(newDrawable);
+                            return newDrawable;
+                        });
         ObjectAnimator animator = drawable.createWipeAnimator(VIEW_HEIGHT);
 
         runAnimationForRenderTest("quick_delete_wipe_animation", 0.15F, animator, testView);
@@ -98,12 +102,17 @@ public class QuickDeleteAnimationGradientDrawableRenderTest {
     public void testFadeAnimation() throws Exception {
         View testView = setUpTestView();
         QuickDeleteAnimationGradientDrawable drawable =
-                QuickDeleteAnimationGradientDrawable.createQuickDeleteFadeAnimationDrawable(
-                        mActivity, VIEW_HEIGHT, /* isIncognito= */ false);
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    testView.setForeground(drawable);
-                });
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> {
+                            QuickDeleteAnimationGradientDrawable newDrawable =
+                                    QuickDeleteAnimationGradientDrawable
+                                            .createQuickDeleteFadeAnimationDrawable(
+                                                    mActivity,
+                                                    VIEW_HEIGHT,
+                                                    /* isIncognito= */ false);
+                            testView.setForeground(newDrawable);
+                            return newDrawable;
+                        });
         ObjectAnimator animator = drawable.createFadeAnimator(VIEW_HEIGHT);
 
         runAnimationForRenderTest("quick_delete_fade_animation", 0.25F, animator, testView);
