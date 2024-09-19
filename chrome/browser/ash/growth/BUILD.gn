@@ -126,6 +126,7 @@ if (!is_chromeos_device) {
       "//chrome/test/base/ash/interactive:test_support",
       "//chromeos/ash/components/growth",
       "//chromeos/ash/components/growth:utils",
+      "//chromeos/constants",
       "//components/feature_engagement/public",
       "//components/feature_engagement/test:test_support",
       "//testing/gmock",

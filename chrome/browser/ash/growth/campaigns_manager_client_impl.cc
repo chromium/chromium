@@ -39,6 +39,7 @@
 #include "chromeos/ash/components/growth/campaigns_manager.h"
 #include "chromeos/ash/components/growth/campaigns_utils.h"
 #include "chromeos/ash/components/growth/growth_metrics.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/component_updater/ash/component_manager_ash.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/public/tracker.h"
@@ -208,8 +209,17 @@ void CampaignsManagerClientImpl::RecordEvent(const std::string& event_name,
                        << growth::ToString(trigger_campaigns);
   tracker->NotifyEvent(AddEventPrefix(event_name));
 
-  if (auto* session = CampaignsManagerSession::Get();
-      session && trigger_campaigns) {
+  if (!trigger_campaigns) {
+    return;
+  }
+
+  // If the App Mall app is not enabled, do not trigger by the event.
+  if (event_name == growth::kGrowthCampaignsEventHotseatHover &&
+      !chromeos::features::IsCrosMallSwaEnabled()) {
+    return;
+  }
+
+  if (auto* session = CampaignsManagerSession::Get()) {
     session->MaybeTriggerCampaignsOnEvent(event_name);
   }
 }
