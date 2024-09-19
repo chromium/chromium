@@ -6,13 +6,13 @@
 
 #include "build/build_config.h"
 #include "components/prefs/pref_service.h"
+#include "components/saved_tab_groups/features.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/tab_group_sync/utils_jni_headers/TabGroupSyncFeatures_jni.h"
-#include "components/saved_tab_groups/features.h"
 #include "components/saved_tab_groups/pref_names.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
@@ -37,7 +37,7 @@ bool IsTabGroupSyncEnabled(PrefService* pref_service) {
 
   return base::FeatureList::IsEnabled(tab_groups::kTabGroupSyncAndroid);
 #else
-  return false;
+  return IsTabGroupSyncServiceDesktopMigrationEnabled();
 #endif  // BUILDFLAG(IS_ANDROID)
 }
 

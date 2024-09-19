@@ -8,27 +8,25 @@ if (is_android) {
   import("//third_party/jni_zero/jni_zero.gni")
 }
 
-if (is_android) {
-  source_set("utils") {
-    sources = [
-      "feature_utils.cc",
-      "feature_utils.h",
-    ]
+source_set("utils") {
+  sources = [
+    "feature_utils.cc",
+    "feature_utils.h",
+  ]
 
-    deps = [
-      "//base:base",
-      "//chrome/browser/profiles",
-      "//chrome/common:constants",
-      "//components/pref_registry",
-      "//components/prefs",
-      "//components/saved_tab_groups:model",
-    ]
+  deps = [
+    "//base:base",
+    "//chrome/browser/profiles",
+    "//components/prefs",
+    "//components/saved_tab_groups:model",
+  ]
 
-    if (is_android) {
-      deps += [ ":utils_jni_headers" ]
-    }
+  if (is_android) {
+    deps += [ ":utils_jni_headers" ]
   }
+}
 
+if (is_android) {
   android_library("factory_java") {
     srcjar_deps = [ ":jni_headers" ]
     sources = [ "android/java/src/org/chromium/chrome/browser/tab_group_sync/TabGroupSyncServiceFactory.java" ]

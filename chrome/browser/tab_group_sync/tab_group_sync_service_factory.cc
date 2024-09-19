@@ -14,6 +14,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/data_type_store_service_factory.h"
 #include "chrome/browser/sync/device_info_sync_service_factory.h"
+#include "chrome/browser/tab_group_sync/feature_utils.h"
 #include "chrome/common/channel_info.h"
 #include "components/data_sharing/public/features.h"
 #include "components/optimization_guide/proto/hints.pb.h"
@@ -98,6 +99,11 @@ TabGroupSyncServiceFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   DCHECK(context);
   Profile* profile = static_cast<Profile*>(context);
+  auto* pref_service = profile->GetPrefs();
+
+  if (!IsTabGroupSyncEnabled(pref_service)) {
+    return nullptr;
+  }
 
   syncer::DeviceInfoTracker* device_info_tracker =
       DeviceInfoSyncServiceFactory::GetForProfile(profile)
@@ -110,7 +116,7 @@ TabGroupSyncServiceFactory::BuildServiceInstanceForBrowserContext(
 
   auto service = std::make_unique<TabGroupSyncServiceImpl>(
       std::move(model), std::move(saved_config), std::move(shared_config),
-      profile->GetPrefs(), std::move(metrics_logger),
+      pref_service, std::move(metrics_logger),
       OptimizationGuideKeyedServiceFactory::GetForProfile(profile));
 
   std::unique_ptr<TabGroupSyncDelegate> delegate;

@@ -1947,6 +1947,7 @@ static_library("ui") {
       "//chrome/browser/safe_browsing:advanced_protection",
       "//chrome/browser/screen_ai:screen_ai_install_state",
       "//chrome/browser/screen_ai:screen_ai_service_router_factory",
+      "//chrome/browser/tab_group_sync:utils",
       "//chrome/browser/task_manager:impl",
       "//chrome/browser/themes",
       "//chrome/browser/ui/apps",
