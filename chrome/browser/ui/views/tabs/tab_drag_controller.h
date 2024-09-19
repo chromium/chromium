@@ -227,7 +227,10 @@ class TabDragController : public views::WidgetObserver,
   // Complete the current drag session.
   void EndDrag(EndDragReason reason);
 
-  // Set a callback to be called when the nested drag loop finishes.
+  // Set a callback to be called when the nested drag loop / system DnD session
+  // finishes. Note that the latter only ends when the mouse is released, i.e.
+  // the callback won't be invoked when attaching to another browser if the tab
+  // dragging session continues running.
   void SetDragLoopDoneCallbackForTesting(base::OnceClosure callback);
 
   TabStripScrollSession* GetTabStripScrollSessionForTesting() {
@@ -783,7 +786,8 @@ class TabDragController : public views::WidgetObserver,
   // See description above getter.
   bool is_mutating_;
 
-  // Called when the loop in RunMoveLoop finishes. Only for tests.
+  // Called when the loop in RunMoveLoop finishes / system DnD session ends.
+  // Only for tests.
   base::OnceClosure drag_loop_done_callback_;
 
   // Used in a system-DnD-based drag session if we need to hide a window with
