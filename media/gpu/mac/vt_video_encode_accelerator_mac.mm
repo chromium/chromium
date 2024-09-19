@@ -858,13 +858,14 @@ bool VTVideoEncodeAccelerator::ConfigureCompressionSession(VideoCodec codec) {
 
   if (session_property_setter.IsSupported(
           kVTCompressionPropertyKey_MaxFrameDelayCount)) {
+    // macOS 15.0 will reject encode if we set max frame delay count to 3,
+    // don't fail the whole encode session if this property can not be set
+    // properly.
     if (!session_property_setter.Set(
             kVTCompressionPropertyKey_MaxFrameDelayCount,
             static_cast<int>(kNumInputBuffers))) {
-      NotifyErrorStatus({EncoderStatus::Codes::kEncoderUnsupportedConfig,
-                         "Failed to set max frame delay count to " +
-                             base::NumberToString(kNumInputBuffers)});
-      return false;
+      DLOG(ERROR) << "Failed to set max frame delay count to "
+                  << base::NumberToString(kNumInputBuffers);
     }
   } else {
     DLOG(WARNING) << "MaxFrameDelayCount is not supported";
