@@ -33,24 +33,9 @@ namespace {
 
 const char kSelectDecoderTrace[] = "DecoderSelector::SelectDecoder";
 
-bool SkipDecoderForRTC(const AudioDecoderConfig& /*config*/,
-                       const AudioDecoder& /*decoder*/) {
-  return false;
-}
-
-bool SkipDecoderForRTC(const VideoDecoderConfig& config,
-                       const VideoDecoder& decoder) {
-  // Skip non-platform decoders for rtc based on the feature flag.
-  return config.is_rtc() && !decoder.IsPlatformDecoder() &&
-         !base::FeatureList::IsEnabled(kExposeSwDecodersToWebRTC);
-}
-
 template <typename ConfigT, typename DecoderT>
 DecoderPriority NormalDecoderPriority(const ConfigT& config,
                                       const DecoderT& decoder) {
-  if (SkipDecoderForRTC(config, decoder))
-    return DecoderPriority::kSkipped;
-
   return DecoderPriority::kNormal;
 }
 
@@ -63,9 +48,6 @@ DecoderPriority ResolutionBasedDecoderPriority(const VideoDecoderConfig& config,
 #else
   constexpr auto kSoftwareDecoderHeightCutoff = 720;
 #endif
-
-  if (SkipDecoderForRTC(config, decoder))
-    return DecoderPriority::kSkipped;
 
   // We only do a height check to err on the side of prioritizing platform
   // decoders.
@@ -81,17 +63,13 @@ DecoderPriority ResolutionBasedDecoderPriority(const VideoDecoderConfig& config,
 
 DecoderPriority PreferNonPlatformDecoders(const VideoDecoderConfig& config,
                                           const VideoDecoder& decoder) {
-  // Prefer software decoders over hardware decoders.  This is useful to force
-  // software fallback for WebRTC, but still use hardware if there's no software
-  // implementation to choose.
   return decoder.IsPlatformDecoder() ? DecoderPriority::kDeprioritized
                                      : DecoderPriority::kNormal;
 }
 
 DecoderPriority UnifiedDecoderPriority(const VideoDecoderConfig& config,
                                        const VideoDecoder& decoder) {
-  if (config.is_rtc() ||
-      base::FeatureList::IsEnabled(kResolutionBasedDecoderPriority)) {
+  if (base::FeatureList::IsEnabled(kResolutionBasedDecoderPriority)) {
     return ResolutionBasedDecoderPriority(config, decoder);
   } else {
     return NormalDecoderPriority(config, decoder);
@@ -101,9 +79,6 @@ DecoderPriority UnifiedDecoderPriority(const VideoDecoderConfig& config,
 template <typename ConfigT, typename DecoderT>
 DecoderPriority SkipNonPlatformDecoders(const ConfigT& config,
                                         const DecoderT& decoder) {
-  if (SkipDecoderForRTC(config, decoder))
-    return DecoderPriority::kSkipped;
-
   return decoder.IsPlatformDecoder() ? DecoderPriority::kNormal
                                      : DecoderPriority::kSkipped;
 }

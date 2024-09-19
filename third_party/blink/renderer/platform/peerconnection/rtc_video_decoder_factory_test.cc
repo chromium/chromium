@@ -120,8 +120,7 @@ class MockGpuVideoDecodeAcceleratorFactories
 
 class RTCVideoDecoderFactoryTest : public ::testing::Test {
  public:
-  RTCVideoDecoderFactoryTest()
-      : decoder_factory_(&mock_gpu_factories_, nullptr, nullptr, {}) {}
+  RTCVideoDecoderFactoryTest() : decoder_factory_(&mock_gpu_factories_, {}) {}
 
  protected:
   base::test::TaskEnvironment task_environment_;

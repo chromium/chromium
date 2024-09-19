@@ -164,10 +164,6 @@ class MEDIA_EXPORT VideoDecoderConfig {
   // useful for decryptors that decrypts an encrypted stream to a clear stream.
   void SetIsEncrypted(bool is_encrypted);
 
-  // Sets whether this config is for WebRTC or not.
-  void set_is_rtc(bool is_rtc) { is_rtc_ = is_rtc; }
-  bool is_rtc() const { return is_rtc_; }
-
  private:
   VideoCodec codec_ = VideoCodec::kUnknown;
   VideoCodecProfile profile_ = VIDEO_CODEC_PROFILE_UNKNOWN;
@@ -193,7 +189,6 @@ class MEDIA_EXPORT VideoDecoderConfig {
 
   VideoColorSpace color_space_info_;
   std::optional<gfx::HDRMetadata> hdr_metadata_;
-  bool is_rtc_ = false;
 
   // Not using DISALLOW_COPY_AND_ASSIGN here intentionally to allow the compiler
   // generated copy constructor and assignment operator. Since the extra data is

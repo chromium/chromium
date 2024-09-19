@@ -208,8 +208,9 @@ void Dav1dVideoDecoder::Initialize(const VideoDecoderConfig& config,
 
   // We only want 1 frame thread in low delay mode, since otherwise we'll
   // require at least two buffers before the first frame can be output.
-  if (low_delay || config.is_rtc())
+  if (low_delay) {
     s.max_frame_delay = 1;
+  }
 
   // Only output the highest spatial layer.
   s.all_layers = 0;

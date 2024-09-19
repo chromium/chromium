@@ -37,7 +37,6 @@ class PortAllocator;
 }
 
 namespace media {
-class DecoderFactory;
 class GpuVideoAcceleratorFactories;
 class MojoVideoEncoderMetricsProviderFactory;
 }
@@ -185,9 +184,7 @@ class MODULES_EXPORT PeerConnectionDependencyFactory
 
   void InitializeSignalingThread(
       const gfx::ColorSpace& render_color_space,
-      scoped_refptr<base::SequencedTaskRunner> media_task_runner,
       media::GpuVideoAcceleratorFactories* gpu_factories,
-      base::WeakPtr<media::DecoderFactory> media_decoder_factory,
       scoped_refptr<media::MojoVideoEncoderMetricsProviderFactory>
           video_encoder_metrics_provider_factory,
       base::WaitableEvent* event);

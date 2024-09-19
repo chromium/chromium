@@ -12,13 +12,8 @@
 #include "third_party/webrtc/api/video_codecs/video_encoder_factory.h"
 
 namespace media {
-class DecoderFactory;
 class GpuVideoAcceleratorFactories;
 class MojoVideoEncoderMetricsProviderFactory;
-}
-
-namespace base {
-class SequencedTaskRunner;
 }
 
 namespace gfx {
@@ -36,8 +31,6 @@ CreateWebrtcVideoEncoderFactory(
 PLATFORM_EXPORT std::unique_ptr<webrtc::VideoDecoderFactory>
 CreateWebrtcVideoDecoderFactory(
     media::GpuVideoAcceleratorFactories* gpu_factories,
-    base::WeakPtr<media::DecoderFactory> media_decoder_factory,
-    scoped_refptr<base::SequencedTaskRunner> media_task_runner,
     const gfx::ColorSpace& render_color_space,
     StatsCollector::StoreProcessingStatsCB stats_callback);
 

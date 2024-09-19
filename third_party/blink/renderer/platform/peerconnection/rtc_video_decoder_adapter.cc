@@ -524,7 +524,6 @@ std::unique_ptr<RTCVideoDecoderAdapter> RTCVideoDecoderAdapter::Create(
       media::kNoTransformation, kDefaultSize, gfx::Rect(kDefaultSize),
       kDefaultSize, media::EmptyExtraData(),
       media::EncryptionScheme::kUnencrypted);
-  config.set_is_rtc(true);
 
   // HEVC does not have SW fallback, so resolution monitor is not needed.
   if (!resolution_monitor && HasSoftwareFallback(config.codec())) {

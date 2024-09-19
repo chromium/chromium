@@ -429,22 +429,6 @@ BASE_FEATURE(kPlatformAudioEncoder,
 #endif
 );
 
-// If enabled, RTCVideoDecoderAdapter will wrap a DecoderStream as a video
-// decoder, rather than using MojoVideoDecoder.  This causes the RTC external
-// decoder to have all the decoder selection / fallback/forward logic of the
-// non-RTC pipeline.
-// TODO(liberato): This also causes the external decoder to use software
-// decoding sometimes, which changes the interpretation of "ExternalDecoder".
-BASE_FEATURE(kUseDecoderStreamForWebRTC,
-             "UseDecoderStreamForWebRTC",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// If enabled, when RTCVideoDecoderAdapter is used then SW decoders will be
-// exposed directly to WebRTC.
-BASE_FEATURE(kExposeSwDecodersToWebRTC,
-             "ExposeSwDecodersToWebRTC",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // CDM host verification is enabled by default. Can be disabled for testing.
 // Has no effect if ENABLE_CDM_HOST_VERIFICATION buildflag is false.
 BASE_FEATURE(kCdmHostVerification,
