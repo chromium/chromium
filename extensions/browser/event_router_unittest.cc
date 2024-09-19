@@ -471,8 +471,11 @@ TEST_F(EventRouterTest, WebUIEventsDoNotCrossIncognitoBoundaries) {
   feature->set_name("test feature");
   feature->set_matches({"chrome://settings/*"});
   provider.AddFeature(event_name, std::move(feature));
-  ExtensionAPI::GetSharedInstance()->RegisterDependencyProvider("api",
-                                                                &provider);
+
+  ExtensionAPI api;
+  api.RegisterDependencyProvider("api", &provider);
+  ExtensionAPI::OverrideSharedInstanceForTest scope(&api);
+
   EventRouter router(browser_context(), nullptr);
   content::MockRenderProcessHost regular_rph(browser_context());
   content::MockRenderProcessHost otr_rph(incognito_context());
@@ -716,8 +719,11 @@ TEST_F(EventRouterDispatchTest, TestDispatch) {
   feature->set_name("test feature");
   feature->set_matches({webui1.spec().c_str(), webui2.spec().c_str()});
   provider.AddFeature(event_name, std::move(feature));
-  ExtensionAPI::GetSharedInstance()->RegisterDependencyProvider("api",
-                                                                &provider);
+
+  ExtensionAPI api;
+  api.RegisterDependencyProvider("api", &provider);
+  ExtensionAPI::OverrideSharedInstanceForTest scope(&api);
+
   TestEventRouterObserver observer(event_router());
   auto add_extension = [&](const std::string& id) {
     scoped_refptr<const Extension> extension =
@@ -774,8 +780,11 @@ TEST_F(EventRouterDispatchTest, DISABLED_TestDispatchCallback) {
   auto feature = std::make_unique<SimpleFeature>();
   feature->set_name("test feature");
   provider.AddFeature(event_name, std::move(feature));
-  ExtensionAPI::GetSharedInstance()->RegisterDependencyProvider("api",
-                                                                &provider);
+
+  ExtensionAPI api;
+  api.RegisterDependencyProvider("api", &provider);
+  ExtensionAPI::OverrideSharedInstanceForTest scope(&api);
+
   auto add_extension = [&](const std::string& id) {
     scoped_refptr<const Extension> extension =
         ExtensionBuilder("test extension")

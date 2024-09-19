@@ -34,6 +34,11 @@
 namespace extensions {
 namespace {
 
+void ResetScreenInstanceAndDeviceScaleFactorForTesting() {
+  display::Screen::SetScreenInstance(nullptr);
+  display::Display::ResetForceDeviceScaleFactorForTesting();
+}
+
 class ScopedSetDeviceScaleFactor {
  public:
   explicit ScopedSetDeviceScaleFactor(float scale) {
@@ -52,8 +57,9 @@ class ScopedSetDeviceScaleFactor {
       delete;
 
   ~ScopedSetDeviceScaleFactor() {
-    display::Screen::SetScreenInstance(nullptr);
-    display::Display::ResetForceDeviceScaleFactorForTesting();
+    // Reset screen instance and device scale factor to their default values
+    // to avoid affecting subsequent tests.
+    ResetScreenInstanceAndDeviceScaleFactorForTesting();
   }
 
  private:
@@ -72,6 +78,15 @@ class ExtensionIconManagerTest : public ExtensionsTest,
   ExtensionIconManagerTest& operator=(const ExtensionIconManagerTest&) = delete;
 
   ~ExtensionIconManagerTest() override = default;
+
+  void SetUp() override {
+    ExtensionsTest::SetUp();
+
+    // Reset screen instance and device scale factor to default values.
+    // On Android, the emulator or device initializes the screen instance
+    // before tests start. This ensures a clean state for each test.
+    ResetScreenInstanceAndDeviceScaleFactorForTesting();
+  }
 
   void OnImageLoaded(const ExtensionId& extension_id) override {
     unwaited_image_loads_++;

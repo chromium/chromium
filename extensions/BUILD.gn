@@ -293,6 +293,7 @@ test("extensions_unittests") {
     "//build:android_buildflags",
     "//content/public/common",
     "//content/test:test_support",
+    "//extensions/browser:unit_tests",
     "//extensions/common",
     "//extensions/common:unit_tests",
     "//extensions/renderer:unit_tests",
@@ -314,6 +315,7 @@ test("extensions_unittests") {
 
   if (is_android) {
     deps += [
+      "//content/public/android:content_full_java",
       "//gin:v8_snapshot_assets",
       "//services/data_decoder/public/cpp/android:safe_json_java",
       "//ui/android:ui_full_java",
@@ -323,10 +325,7 @@ test("extensions_unittests") {
   # TODO(https://crbug.com/356905053): Gradually include more of these sources
   # in the desktop-android build.
   if (enable_extensions) {
-    deps += [
-      "//extensions/browser:unit_tests",
-      "//extensions/shell:unit_tests",
-    ]
+    deps += [ "//extensions/shell:unit_tests" ]
   }
 }
 

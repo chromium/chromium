@@ -813,6 +813,239 @@ source_set("test_support") {
   }
 }
 
+# The set of sources that are needed for both browser and unit tests.
+# The set of all unittests for anything defined under the //extensions/browser
+# module. Note that, unlike the production build targets above, this is a
+# monolithic target that includes all tests for both the core system and
+# relevant APIs.
+source_set("unit_tests") {
+  testonly = true
+  sources = [
+    "browser_frame_context_data_unittest.cc",
+    "computed_hashes_unittest.cc",
+    "content_hash_fetcher_unittest.cc",
+    "content_hash_tree_unittest.cc",
+    "content_verifier/content_hash_unittest.cc",
+    "content_verifier/content_verifier_unittest.cc",
+    "content_verifier/content_verify_job_unittest.cc",
+    "error_map_unittest.cc",
+    "event_listener_map_unittest.cc",
+    "event_router_unittest.cc",
+    "extension_action_manager_unittest.cc",
+    "extension_action_unittest.cc",
+    "extension_creator_filter_unittest.cc",
+    "extension_creator_unittest.cc",
+    "extension_event_histogram_value_unittest.cc",
+    "extension_function_crash_keys_unittest.cc",
+    "extension_function_histogram_value_unittest.cc",
+    "extension_icon_image_unittest.cc",
+    "extension_icon_manager_unittest.cc",
+    "extension_pref_value_map_unittest.cc",
+    "extension_registrar_unittest.cc",
+    "extension_registry_unittest.cc",
+    "extension_util_unittest.cc",
+    "file_highlighter_unittest.cc",
+    "file_reader_unittest.cc",
+    "image_loader_unittest.cc",
+    "image_sanitizer_unittest.cc",
+    "json_file_sanitizer_unittest.cc",
+    "lazy_background_task_queue_unittest.cc",
+    "management_policy_unittest.cc",
+    "mojo/keep_alive_impl_unittest.cc",
+    "path_util_unittest.cc",
+    "permissions_manager_unittest.cc",
+    "policy_check_unittest.cc",
+    "preload_check_group_unittest.cc",
+    "process_manager_unittest.cc",
+    "process_map_unittest.cc",
+    "quota_service_unittest.cc",
+    "renderer_startup_helper_unittest.cc",
+    "requirements_checker_unittest.cc",
+    "sandboxed_unpacker_unittest.cc",
+    "service_worker/worker_id_set_unittest.cc",
+    "updater/extension_downloader_unittest.cc",
+    "updater/extension_installer_unittest.cc",
+    "updater/safe_manifest_parser_unittest.cc",
+    "updater/update_data_provider_unittest.cc",
+    "updater/update_service_unittest.cc",
+    "verified_contents_unittest.cc",
+    "warning_service_unittest.cc",
+  ]
+
+  deps = [
+    ":browser",
+    ":test_support",
+    "//base",
+    "//base/test:test_support",
+    "//build:android_buildflags",
+    "//build:chromeos_buildflags",
+    "//components/content_settings/core/test:test_support",
+    "//components/crx_file",
+    "//components/feedback",
+    "//components/file_access:test_support",
+    "//components/keyed_service/content",
+    "//components/onc",
+    "//components/permissions:permissions_common",
+    "//components/pref_registry:pref_registry",
+    "//components/prefs:test_support",
+    "//components/safe_browsing/core/common",
+    "//components/safe_browsing/core/common/hashprefix_realtime:hash_realtime_utils",
+    "//components/services/unzip:in_process",
+    "//components/services/unzip/content",
+    "//components/sync_preferences:test_support",
+    "//components/update_client",
+    "//components/url_matcher",
+    "//components/user_prefs",
+    "//components/value_store:test_support",
+    "//components/version_info",
+    "//content/test:test_support",
+    "//device/bluetooth:mocks",
+    "//extensions:extensions_browser_resources",
+    "//extensions:test_support",
+    "//extensions/browser/updater:updater",
+    "//extensions/buildflags",
+    "//extensions/common",
+    "//extensions/common:mojom",
+    "//extensions/common:test_support",
+    "//extensions/common/api",
+    "//extensions/strings",
+    "//ipc:test_support",
+    "//net:test_support",
+    "//services/data_decoder/public/cpp:test_support",
+    "//services/device/public/mojom",
+    "//services/network:test_support",
+    "//services/network/public/cpp",
+    "//services/service_manager/public/cpp/test:test_support",
+    "//storage/browser:test_support",
+    "//third_party/leveldatabase",
+    "//third_party/zlib/google:zip",
+    "//ui/display:test_support",
+  ]
+
+  # TODO(https://crbug.com/356905053): Gradually include more of these sources
+  # in the desktop-android build when the related APIs are enabled.
+  if (enable_extensions) {
+    sources += [
+      "api/alarms/alarms_api_unittest.cc",
+      "api/api_resource_manager_unittest.cc",
+      "api/bluetooth/bluetooth_event_router_unittest.cc",
+      "api/bluetooth_socket/bluetooth_socket_api_unittest.cc",
+      "api/content_settings/content_settings_store_unittest.cc",
+      "api/content_settings/content_settings_unittest.cc",
+      "api/declarative/declarative_rule_unittest.cc",
+      "api/declarative/deduping_factory_unittest.cc",
+      "api/declarative/rules_registry_unittest.cc",
+      "api/declarative_net_request/composite_matcher_unittest.cc",
+      "api/declarative_net_request/file_sequence_helper_unittest.cc",
+      "api/declarative_net_request/flat_ruleset_indexer_unittest.cc",
+      "api/declarative_net_request/indexed_rule_unittest.cc",
+      "api/declarative_net_request/indexed_ruleset_format_version_unittest.cc",
+      "api/declarative_net_request/prefs_helper_unittest.cc",
+      "api/declarative_net_request/ruleset_matcher_unittest.cc",
+      "api/declarative_webrequest/webrequest_condition_attribute_unittest.cc",
+      "api/declarative_webrequest/webrequest_condition_unittest.cc",
+      "api/feedback_private/feedback_service_unittest.cc",
+      "api/file_handlers/app_file_handler_util_unittest.cc",
+      "api/file_handlers/directory_util_unittest.cc",
+      "api/file_handlers/mime_util_unittest.cc",
+      "api/idle/idle_api_unittest.cc",
+      "api/mime_handler_private/mime_handler_private_unittest.cc",
+      "api/power/power_api_unittest.cc",
+      "api/runtime/restart_after_delay_api_unittest.cc",
+      "api/socket/mojo_data_pump_unittest.cc",
+      "api/sockets_tcp/sockets_tcp_api_unittest.cc",
+      "api/sockets_udp/sockets_udp_api_unittest.cc",
+      "api/storage/session_storage_manager_unittest.cc",
+      "api/storage/settings_quota_unittest.cc",
+      "api/storage/storage_api_unittest.cc",
+      "api/storage/storage_frontend_unittest.cc",
+      "api/system_info/system_info_api_unittest.cc",
+      "api/system_network/system_network_api_unittest.cc",
+      "api/web_request/form_data_parser_unittest.cc",
+      "api/web_request/upload_data_presenter_unittest.cc",
+      "api/web_request/web_request_info_unittest.cc",
+      "api/web_request/web_request_permissions_unittest.cc",
+      "api/web_request/web_request_time_tracker_unittest.cc",
+    ]
+
+    deps += [
+      "//components/storage_monitor:test_support",
+      "//extensions/browser/api/content_settings:content_settings",
+      "//extensions/browser/api/declarative_net_request/filter_list_converter:unit_tests",
+      "//extensions/browser/api/storage:settings_namespace",
+      "//extensions/shell:app_shell_lib",
+    ]
+  }
+
+  if (enable_platform_apps) {
+    sources += [ "app_window/app_window_geometry_cache_unittest.cc" ]
+  }
+
+  if (is_chromeos) {
+    deps += [
+      "//chromeos/constants",
+      "//chromeos/crosapi/mojom",
+    ]
+  }
+
+  if (is_chromeos_ash) {
+    sources += [
+      "api/audio/audio_device_id_calculator_unittest.cc",
+      "api/audio/audio_service_utils_unittest.cc",
+      "api/feedback_private/access_rate_limiter_chromeos_unittest.cc",
+      "api/feedback_private/feedback_private_api_chromeos_unittest.cc",
+      "api/feedback_private/feedback_private_api_unittest_base_chromeos.cc",
+      "api/feedback_private/feedback_private_api_unittest_base_chromeos.h",
+      "api/feedback_private/log_source_access_manager_chromeos_unittest.cc",
+      "api/lock_screen_data/data_item_unittest.cc",
+      "api/lock_screen_data/lock_screen_item_storage_unittest.cc",
+      "api/lock_screen_data/lock_screen_value_store_migrator_impl_unittest.cc",
+      "api/media_perception_private/conversion_utils_unittest.cc",
+      "api/media_perception_private/media_perception_api_manager_unittest.cc",
+      "api/networking_private/networking_private_chromeos_unittest.cc",
+      "api/virtual_keyboard_private/virtual_keyboard_private_api_unittest.cc",
+      "api/webcam_private/visca_webcam_unittest.cc",
+    ]
+
+    deps += [
+      "//ash/constants",
+      "//chrome/browser/ash/crosapi:browser_util",
+      "//chrome/common:constants",
+      "//chromeos:test_support",
+      "//chromeos/ash/components/dbus:test_support",
+      "//chromeos/ash/components/dbus/audio",
+      "//chromeos/ash/components/dbus/debug_daemon",
+      "//chromeos/ash/components/dbus/media_analytics",
+      "//chromeos/ash/components/dbus/media_analytics:media_perception_proto",
+      "//chromeos/ash/components/dbus/shill",
+      "//chromeos/ash/components/dbus/upstart",
+      "//chromeos/ash/components/login/login_state",
+      "//chromeos/ash/components/network:test_support",
+      "//chromeos/ash/components/standalone_browser",
+      "//chromeos/ash/components/standalone_browser:test_support",
+      "//chromeos/dbus/permission_broker",
+      "//chromeos/dbus/power",
+      "//components/account_id",
+      "//components/feedback",
+      "//components/prefs:prefs",
+      "//components/user_manager",
+      "//components/user_manager:test_support",
+      "//extensions/shell:app_shell_lib",
+    ]
+  }
+
+  if (is_chromeos_lacros) {
+    deps += [ "//chromeos/startup" ]
+  }
+
+  data = [
+    "//extensions/browser/extension_event_histogram_value.h",
+    "//extensions/browser/extension_function_histogram_value.h",
+    "//tools/metrics/histograms/metadata/extensions/enums.xml",
+    "//extensions/browser/api/declarative_net_request/flat/extension_ruleset.fbs",
+  ]
+}
+
 # TODO(https://crbug.com/356905053): Gradually include more of these sources
 # in the desktop-android build.
 if (enable_extensions) {
@@ -909,225 +1142,6 @@ if (enable_extensions) {
         "//chromeos/lacros",
       ]
     }
-  }
-
-  # The set of sources that are needed for both browser and unit tests.
-  # The set of all unittests for anything defined under the //extensions/browser
-  # module. Note that, unlike the production build targets above, this is a
-  # monolithic target that includes all tests for both the core system and
-  # relevant APIs.
-  source_set("unit_tests") {
-    testonly = true
-    sources = [
-      "api/alarms/alarms_api_unittest.cc",
-      "api/api_resource_manager_unittest.cc",
-      "api/bluetooth/bluetooth_event_router_unittest.cc",
-      "api/bluetooth_socket/bluetooth_socket_api_unittest.cc",
-      "api/content_settings/content_settings_store_unittest.cc",
-      "api/content_settings/content_settings_unittest.cc",
-      "api/declarative/declarative_rule_unittest.cc",
-      "api/declarative/deduping_factory_unittest.cc",
-      "api/declarative/rules_registry_unittest.cc",
-      "api/declarative_net_request/composite_matcher_unittest.cc",
-      "api/declarative_net_request/file_sequence_helper_unittest.cc",
-      "api/declarative_net_request/flat_ruleset_indexer_unittest.cc",
-      "api/declarative_net_request/indexed_rule_unittest.cc",
-      "api/declarative_net_request/indexed_ruleset_format_version_unittest.cc",
-      "api/declarative_net_request/prefs_helper_unittest.cc",
-      "api/declarative_net_request/ruleset_matcher_unittest.cc",
-      "api/declarative_webrequest/webrequest_condition_attribute_unittest.cc",
-      "api/declarative_webrequest/webrequest_condition_unittest.cc",
-      "api/feedback_private/feedback_service_unittest.cc",
-      "api/file_handlers/app_file_handler_util_unittest.cc",
-      "api/file_handlers/directory_util_unittest.cc",
-      "api/file_handlers/mime_util_unittest.cc",
-      "api/idle/idle_api_unittest.cc",
-      "api/mime_handler_private/mime_handler_private_unittest.cc",
-      "api/power/power_api_unittest.cc",
-      "api/runtime/restart_after_delay_api_unittest.cc",
-      "api/socket/mojo_data_pump_unittest.cc",
-      "api/sockets_tcp/sockets_tcp_api_unittest.cc",
-      "api/sockets_udp/sockets_udp_api_unittest.cc",
-      "api/storage/session_storage_manager_unittest.cc",
-      "api/storage/settings_quota_unittest.cc",
-      "api/storage/storage_api_unittest.cc",
-      "api/storage/storage_frontend_unittest.cc",
-      "api/system_info/system_info_api_unittest.cc",
-      "api/system_network/system_network_api_unittest.cc",
-      "api/web_request/form_data_parser_unittest.cc",
-      "api/web_request/upload_data_presenter_unittest.cc",
-      "api/web_request/web_request_info_unittest.cc",
-      "api/web_request/web_request_permissions_unittest.cc",
-      "api/web_request/web_request_time_tracker_unittest.cc",
-      "app_window/app_window_geometry_cache_unittest.cc",
-      "browser_frame_context_data_unittest.cc",
-      "computed_hashes_unittest.cc",
-      "content_hash_fetcher_unittest.cc",
-      "content_hash_tree_unittest.cc",
-      "content_verifier/content_hash_unittest.cc",
-      "content_verifier/content_verifier_unittest.cc",
-      "content_verifier/content_verify_job_unittest.cc",
-      "error_map_unittest.cc",
-      "event_listener_map_unittest.cc",
-      "event_router_unittest.cc",
-      "extension_action_manager_unittest.cc",
-      "extension_action_unittest.cc",
-      "extension_creator_filter_unittest.cc",
-      "extension_creator_unittest.cc",
-      "extension_event_histogram_value_unittest.cc",
-      "extension_function_crash_keys_unittest.cc",
-      "extension_function_histogram_value_unittest.cc",
-      "extension_icon_image_unittest.cc",
-      "extension_icon_manager_unittest.cc",
-      "extension_pref_value_map_unittest.cc",
-      "extension_registrar_unittest.cc",
-      "extension_registry_unittest.cc",
-      "extension_util_unittest.cc",
-      "file_highlighter_unittest.cc",
-      "file_reader_unittest.cc",
-      "image_loader_unittest.cc",
-      "image_sanitizer_unittest.cc",
-      "json_file_sanitizer_unittest.cc",
-      "lazy_background_task_queue_unittest.cc",
-      "management_policy_unittest.cc",
-      "mojo/keep_alive_impl_unittest.cc",
-      "path_util_unittest.cc",
-      "permissions_manager_unittest.cc",
-      "policy_check_unittest.cc",
-      "preload_check_group_unittest.cc",
-      "process_manager_unittest.cc",
-      "process_map_unittest.cc",
-      "quota_service_unittest.cc",
-      "renderer_startup_helper_unittest.cc",
-      "requirements_checker_unittest.cc",
-      "sandboxed_unpacker_unittest.cc",
-      "service_worker/worker_id_set_unittest.cc",
-      "updater/extension_downloader_unittest.cc",
-      "updater/extension_installer_unittest.cc",
-      "updater/safe_manifest_parser_unittest.cc",
-      "updater/update_data_provider_unittest.cc",
-      "updater/update_service_unittest.cc",
-      "verified_contents_unittest.cc",
-      "warning_service_unittest.cc",
-    ]
-
-    deps = [
-      ":browser",
-      ":test_support",
-      "//base",
-      "//base/test:test_support",
-      "//build:chromeos_buildflags",
-      "//components/content_settings/core/test:test_support",
-      "//components/crx_file",
-      "//components/feedback",
-      "//components/file_access:test_support",
-      "//components/keyed_service/content",
-      "//components/onc",
-      "//components/permissions:permissions_common",
-      "//components/pref_registry:pref_registry",
-      "//components/prefs:test_support",
-      "//components/safe_browsing/core/common",
-      "//components/safe_browsing/core/common/hashprefix_realtime:hash_realtime_utils",
-      "//components/services/unzip:in_process",
-      "//components/services/unzip/content",
-      "//components/storage_monitor:test_support",
-      "//components/sync_preferences:test_support",
-      "//components/update_client",
-      "//components/url_matcher",
-      "//components/user_prefs",
-      "//components/value_store:test_support",
-      "//components/version_info",
-      "//content/test:test_support",
-      "//device/bluetooth:mocks",
-      "//extensions:extensions_browser_resources",
-      "//extensions:test_support",
-      "//extensions/browser/api/content_settings:content_settings",
-      "//extensions/browser/api/declarative_net_request/filter_list_converter:unit_tests",
-      "//extensions/browser/api/storage:settings_namespace",
-      "//extensions/browser/updater:updater",
-      "//extensions/buildflags",
-      "//extensions/common",
-      "//extensions/common:mojom",
-      "//extensions/common:test_support",
-      "//extensions/common/api",
-      "//extensions/shell:app_shell_lib",
-      "//extensions/strings",
-      "//ipc:test_support",
-      "//net:test_support",
-      "//services/data_decoder/public/cpp:test_support",
-      "//services/device/public/mojom",
-      "//services/network:test_support",
-      "//services/network/public/cpp",
-      "//services/service_manager/public/cpp/test:test_support",
-      "//storage/browser:test_support",
-      "//third_party/leveldatabase",
-      "//third_party/zlib/google:zip",
-      "//ui/display:test_support",
-    ]
-
-    if (is_chromeos) {
-      deps += [
-        "//chromeos/constants",
-        "//chromeos/crosapi/mojom",
-      ]
-    }
-
-    if (is_chromeos_ash) {
-      sources += [
-        "api/audio/audio_device_id_calculator_unittest.cc",
-        "api/audio/audio_service_utils_unittest.cc",
-        "api/feedback_private/access_rate_limiter_chromeos_unittest.cc",
-        "api/feedback_private/feedback_private_api_chromeos_unittest.cc",
-        "api/feedback_private/feedback_private_api_unittest_base_chromeos.cc",
-        "api/feedback_private/feedback_private_api_unittest_base_chromeos.h",
-        "api/feedback_private/log_source_access_manager_chromeos_unittest.cc",
-        "api/lock_screen_data/data_item_unittest.cc",
-        "api/lock_screen_data/lock_screen_item_storage_unittest.cc",
-        "api/lock_screen_data/lock_screen_value_store_migrator_impl_unittest.cc",
-        "api/media_perception_private/conversion_utils_unittest.cc",
-        "api/media_perception_private/media_perception_api_manager_unittest.cc",
-        "api/networking_private/networking_private_chromeos_unittest.cc",
-        "api/virtual_keyboard_private/virtual_keyboard_private_api_unittest.cc",
-        "api/webcam_private/visca_webcam_unittest.cc",
-      ]
-
-      deps += [
-        "//ash/constants",
-        "//chrome/browser/ash/crosapi:browser_util",
-        "//chrome/common:constants",
-        "//chromeos:test_support",
-        "//chromeos/ash/components/dbus:test_support",
-        "//chromeos/ash/components/dbus/audio",
-        "//chromeos/ash/components/dbus/debug_daemon",
-        "//chromeos/ash/components/dbus/media_analytics",
-        "//chromeos/ash/components/dbus/media_analytics:media_perception_proto",
-        "//chromeos/ash/components/dbus/shill",
-        "//chromeos/ash/components/dbus/upstart",
-        "//chromeos/ash/components/login/login_state",
-        "//chromeos/ash/components/network:test_support",
-        "//chromeos/ash/components/standalone_browser",
-        "//chromeos/ash/components/standalone_browser:test_support",
-        "//chromeos/dbus/permission_broker",
-        "//chromeos/dbus/power",
-        "//components/account_id",
-        "//components/feedback",
-        "//components/prefs:prefs",
-        "//components/user_manager",
-        "//components/user_manager:test_support",
-        "//extensions/shell:app_shell_lib",
-      ]
-    }
-
-    if (is_chromeos_lacros) {
-      deps += [ "//chromeos/startup" ]
-    }
-
-    data = [
-      "//extensions/browser/extension_event_histogram_value.h",
-      "//extensions/browser/extension_function_histogram_value.h",
-      "//tools/metrics/histograms/metadata/extensions/enums.xml",
-      "//extensions/browser/api/declarative_net_request/flat/extension_ruleset.fbs",
-    ]
   }
 
   fuzzer_test("extension_file_highlighter_fuzzer") {
