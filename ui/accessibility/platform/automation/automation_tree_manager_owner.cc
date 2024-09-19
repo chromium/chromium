@@ -41,9 +41,9 @@ bool AutomationTreeManagerOwner::SendTreeChangeEvent(
     AXNode* node) {
   // Notify custom bindings when there's an unloaded tree; js will enable the
   // renderer and wait for it to load.
-  std::string child_tree_id_str;
-  if (node->GetStringAttribute(ax::mojom::StringAttribute::kChildTreeId,
-                               &child_tree_id_str)) {
+  if (node->HasStringAttribute(ax::mojom::StringAttribute::kChildTreeId)) {
+    const std::string& child_tree_id_str =
+        node->GetStringAttribute(ax::mojom::StringAttribute::kChildTreeId);
     AXTreeID child_tree_id = AXTreeID::FromString(child_tree_id_str);
     auto* tree_wrapper = GetAutomationAXTreeWrapperFromTreeID(child_tree_id);
     if (!tree_wrapper || !tree_wrapper->ax_tree()->data().loaded)
@@ -498,19 +498,20 @@ gfx::Rect AutomationTreeManagerOwner::ComputeGlobalNodeBounds(
 
 std::vector<AXNode*> AutomationTreeManagerOwner::GetRootsOfChildTree(
     AXNode* node) const {
-  // Account for two types of links to child trees.
-  // An explicit tree id to a child tree.
-  std::string child_tree_id_str;
-
-  // A node attribute pointing to a node in a descendant tree.
-  std::string child_tree_node_app_id_str;
-
-  if (!node->GetStringAttribute(ax::mojom::StringAttribute::kChildTreeId,
-                                &child_tree_id_str) &&
-      !node->GetStringAttribute(ax::mojom::StringAttribute::kChildTreeNodeAppId,
-                                &child_tree_node_app_id_str)) {
+  if (!node->HasStringAttribute(ax::mojom::StringAttribute::kChildTreeId) &&
+      !node->HasStringAttribute(
+          ax::mojom::StringAttribute::kChildTreeNodeAppId)) {
     return std::vector<AXNode*>();
   }
+
+  // Account for two types of links to child trees.
+  // An explicit tree id to a child tree.
+  const std::string& child_tree_id_str =
+      node->GetStringAttribute(ax::mojom::StringAttribute::kChildTreeId);
+
+  // A node attribute pointing to a node in a descendant tree.
+  const std::string& child_tree_node_app_id_str =
+      node->GetStringAttribute(ax::mojom::StringAttribute::kChildTreeNodeAppId);
 
   if (!child_tree_node_app_id_str.empty()) {
     std::vector<AXNode*> child_app_nodes =
@@ -795,10 +796,12 @@ bool AutomationTreeManagerOwner::GetNextTextMatch(
     if (!node)
       return false;
 
-    std::u16string name;
-    if (!node->GetString16Attribute(ax::mojom::StringAttribute::kName, &name))
+    if (!node->HasStringAttribute(ax::mojom::StringAttribute::kName)) {
       continue;
+    }
 
+    std::u16string name =
+        node->GetString16Attribute(ax::mojom::StringAttribute::kName);
     if (base::i18n::StringSearchIgnoringCaseAndAccents(search_str_16, name,
                                                        nullptr, nullptr)) {
       *result_tree_id = (*target_tree_wrapper)->GetTreeID();

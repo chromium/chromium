@@ -946,27 +946,9 @@ const std::string& AXNode::GetStringAttribute(
   return GetComputedNodeData().GetOrComputeAttributeUTF8(attribute);
 }
 
-bool AXNode::GetStringAttribute(ax::mojom::StringAttribute attribute,
-                                std::string* value) const {
-  if (GetComputedNodeData().HasOrCanComputeAttribute(attribute)) {
-    *value = GetComputedNodeData().GetOrComputeAttributeUTF8(attribute);
-    return true;
-  }
-  return false;
-}
-
 std::u16string AXNode::GetString16Attribute(
     ax::mojom::StringAttribute attribute) const {
   return GetComputedNodeData().GetOrComputeAttributeUTF16(attribute);
-}
-
-bool AXNode::GetString16Attribute(ax::mojom::StringAttribute attribute,
-                                  std::u16string* value) const {
-  if (GetComputedNodeData().HasOrCanComputeAttribute(attribute)) {
-    *value = GetComputedNodeData().GetOrComputeAttributeUTF16(attribute);
-    return true;
-  }
-  return false;
 }
 
 bool AXNode::HasInheritedStringAttribute(

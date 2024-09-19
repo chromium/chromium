@@ -76,11 +76,12 @@ TEST(AXNodeDataTest, TextAttributes) {
                             "different font");
   EXPECT_TRUE(node_1.GetTextAttributes() != node_2.GetTextAttributes());
 
-  std::string tooltip;
   node_2.AddStringAttribute(ax::mojom::StringAttribute::kTooltip,
                             "test tooltip");
-  EXPECT_TRUE(node_2.GetStringAttribute(ax::mojom::StringAttribute::kTooltip,
-                                        &tooltip));
+  EXPECT_TRUE(node_2.HasStringAttribute(ax::mojom::StringAttribute::kTooltip));
+  const std::string& tooltip =
+      node_2.GetStringAttribute(ax::mojom::StringAttribute::kTooltip);
+
   EXPECT_EQ(tooltip, "test tooltip");
 
   AXTextAttributes node1_attributes = node_1.GetTextAttributes();

@@ -50,9 +50,8 @@ std::optional<std::string> GetStringAttribute(const ui::AXNode& node,
 
   // Always return the attribute if the node has it, even if the value is an
   // empty string.
-  std::string value;
-  if (node.GetStringAttribute(attr, &value)) {
-    return value;
+  if (node.HasStringAttribute(attr)) {
+    return node.GetStringAttribute(attr);
   }
   return std::nullopt;
 }

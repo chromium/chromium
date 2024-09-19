@@ -718,9 +718,11 @@ const std::string& AXPlatformNodeDelegate::GetStringAttribute(
 bool AXPlatformNodeDelegate::GetStringAttribute(
     ax::mojom::StringAttribute attribute,
     std::string* value) const {
-  if (node_)
-    return node_->GetStringAttribute(attribute, value);
-  return GetData().GetStringAttribute(attribute, value);
+  bool found = HasStringAttribute(attribute);
+  if (found) {
+    *value = GetStringAttribute(attribute);
+  }
+  return found;
 }
 
 std::u16string AXPlatformNodeDelegate::GetString16Attribute(
@@ -733,9 +735,11 @@ std::u16string AXPlatformNodeDelegate::GetString16Attribute(
 bool AXPlatformNodeDelegate::GetString16Attribute(
     ax::mojom::StringAttribute attribute,
     std::u16string* value) const {
-  if (node_)
-    return node_->GetString16Attribute(attribute, value);
-  return GetData().GetString16Attribute(attribute, value);
+  bool found = HasStringAttribute(attribute);
+  if (found) {
+    *value = GetString16Attribute(attribute);
+  }
+  return found;
 }
 
 const std::string& AXPlatformNodeDelegate::GetInheritedStringAttribute(

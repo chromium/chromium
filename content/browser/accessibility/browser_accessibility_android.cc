@@ -1583,34 +1583,35 @@ int BrowserAccessibilityAndroid::AndroidInputType() const {
     return ANDROID_TEXT_INPUTTYPE_TYPE_NULL;
   }
 
-  std::string type;
-  if (!node()->GetStringAttribute(ax::mojom::StringAttribute::kInputType,
-                                  &type))
+  if (!node()->HasStringAttribute(ax::mojom::StringAttribute::kInputType)) {
     return ANDROID_TEXT_INPUTTYPE_TYPE_TEXT;
+  }
 
-  if (type.empty() || type == "text" || type == "search")
+  const std::string& type =
+      node()->GetStringAttribute(ax::mojom::StringAttribute::kInputType);
+  if (type.empty() || type == "text" || type == "search") {
     return ANDROID_TEXT_INPUTTYPE_TYPE_TEXT;
-  else if (type == "date")
+  } else if (type == "date") {
     return ANDROID_TEXT_INPUTTYPE_TYPE_DATETIME_DATE;
-  else if (type == "datetime" || type == "datetime-local")
+  } else if (type == "datetime" || type == "datetime-local") {
     return ANDROID_TEXT_INPUTTYPE_TYPE_DATETIME;
-  else if (type == "email")
+  } else if (type == "email") {
     return ANDROID_TEXT_INPUTTYPE_TYPE_TEXT_WEB_EMAIL;
-  else if (type == "month")
+  } else if (type == "month") {
     return ANDROID_TEXT_INPUTTYPE_TYPE_DATETIME_DATE;
-  else if (type == "number")
+  } else if (type == "number") {
     return ANDROID_TEXT_INPUTTYPE_TYPE_NUMBER;
-  else if (type == "password")
+  } else if (type == "password") {
     return ANDROID_TEXT_INPUTTYPE_TYPE_TEXT_WEB_PASSWORD;
-  else if (type == "tel")
+  } else if (type == "tel") {
     return ANDROID_TEXT_INPUTTYPE_TYPE_PHONE;
-  else if (type == "time")
+  } else if (type == "time") {
     return ANDROID_TEXT_INPUTTYPE_TYPE_DATETIME_TIME;
-  else if (type == "url")
+  } else if (type == "url") {
     return ANDROID_TEXT_INPUTTYPE_TYPE_TEXT_URI;
-  else if (type == "week")
+  } else if (type == "week") {
     return ANDROID_TEXT_INPUTTYPE_TYPE_DATETIME;
-
+  }
   return ANDROID_TEXT_INPUTTYPE_TYPE_NULL;
 }
 

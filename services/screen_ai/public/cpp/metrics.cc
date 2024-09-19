@@ -29,9 +29,9 @@ void RecordMostDetectedLanguageInOcrData(
   std::map<std::string, size_t> detected_language_count_map;
   for (const auto& node : tree_update_with_ocr_data.nodes) {
     // Count languages detected in OCR results. It will be used in UMA.
-    std::string detected_language;
-    if (node.GetStringAttribute(ax::mojom::StringAttribute::kLanguage,
-                                &detected_language)) {
+    if (node.HasStringAttribute(ax::mojom::StringAttribute::kLanguage)) {
+      const std::string& detected_language =
+          node.GetStringAttribute(ax::mojom::StringAttribute::kLanguage);
       detected_language_count_map[detected_language]++;
     }
   }

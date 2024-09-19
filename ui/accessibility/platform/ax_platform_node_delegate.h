@@ -142,10 +142,15 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXPlatformNodeDelegate {
   bool HasStringAttribute(ax::mojom::StringAttribute attribute) const;
   const std::string& GetStringAttribute(
       ax::mojom::StringAttribute attribute) const;
+  // TODO(accessibility): Deprecate. This version is likely less efficient than
+  // calling has followed by get since it creates a copy of the string rather
+  // than returning a const ref.
   bool GetStringAttribute(ax::mojom::StringAttribute attribute,
                           std::string* value) const;
   std::u16string GetString16Attribute(
       ax::mojom::StringAttribute attribute) const;
+  // TODO(accessibility): Deprecate in favor of using a has check if distinction
+  // between empty string and missing value is important.
   bool GetString16Attribute(ax::mojom::StringAttribute attribute,
                             std::u16string* value) const;
   const std::string& GetInheritedStringAttribute(
