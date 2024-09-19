@@ -80,6 +80,9 @@ BASE_DECLARE_FEATURE(kHappinessTrackingSurveysForComposeClose);
 // Enables or disables the Happiness Tracking System for nudge dismissal.
 BASE_DECLARE_FEATURE(kHappinessTrackingSurveysForComposeNudgeClose);
 
+// Enables on-device execution, if available.
+BASE_DECLARE_FEATURE(kComposeAllowOnDeviceExecution);
+
 }  // namespace compose::features
 
 #endif  // COMPONENTS_COMPOSE_CORE_BROWSER_COMPOSE_FEATURES_H_
