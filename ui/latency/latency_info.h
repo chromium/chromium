@@ -5,6 +5,7 @@
 #ifndef UI_LATENCY_LATENCY_INFO_H_
 #define UI_LATENCY_LATENCY_INFO_H_
 
+#include <optional>
 #include <vector>
 
 #include "base/containers/flat_map.h"
@@ -110,7 +111,10 @@ class LatencyInfo {
       perfetto::EventContext& ctx,
       int64_t latency_trace_id,
       perfetto::protos::pbzero::ChromeLatencyInfo2::Step step,
-      perfetto::protos::pbzero::ChromeLatencyInfo2::InputType input_type);
+      perfetto::protos::pbzero::ChromeLatencyInfo2::InputType input_type,
+      std::optional<
+          perfetto::protos::pbzero::ChromeLatencyInfo2::InputResultState>
+          input_result_state = std::nullopt);
 
   // Populates fields for an intermediate (i.e. *not* the first)
   // `LatencyInfo.Flow` event in a flow, for `latency_trace_id` with `ctx`.
@@ -118,7 +122,10 @@ class LatencyInfo {
       perfetto::EventContext& ctx,
       int64_t latency_trace_id,
       perfetto::protos::pbzero::ChromeLatencyInfo2::Step step,
-      perfetto::protos::pbzero::ChromeLatencyInfo2::InputType input_type);
+      perfetto::protos::pbzero::ChromeLatencyInfo2::InputType input_type,
+      std::optional<
+          perfetto::protos::pbzero::ChromeLatencyInfo2::InputResultState>
+          input_result_state = std::nullopt);
 
   // Add timestamps for components that are in |other| but not in |this|.
   void AddNewLatencyFrom(const LatencyInfo& other);
@@ -170,6 +177,9 @@ class LatencyInfo {
       int64_t latency_trace_id,
       perfetto::protos::pbzero::ChromeLatencyInfo2::Step step,
       perfetto::protos::pbzero::ChromeLatencyInfo2::InputType input_type,
+      std::optional<
+          perfetto::protos::pbzero::ChromeLatencyInfo2::InputResultState>
+          input_result_state,
       perfetto::protos::pbzero::TrackEvent::LegacyEvent::FlowDirection
           direction);
 

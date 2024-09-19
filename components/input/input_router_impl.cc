@@ -691,9 +691,15 @@ void InputRouterImpl::TouchEventHandled(
     blink::mojom::InputEventResultState state,
     blink::mojom::DidOverscrollParamsPtr overscroll,
     blink::mojom::TouchActionOptionalPtr touch_action) {
-  TRACE_EVENT2("input", "InputRouterImpl::TouchEventHandled", "type",
-               WebInputEvent::GetName(touch_event.event.GetType()), "ack",
-               InputEventResultStateToString(state));
+  TRACE_EVENT("input,benchmark,latencyInfo", "LatencyInfo.Flow",
+              [&](perfetto::EventContext ctx) {
+                ui::LatencyInfo::EmitIntermediateLatencyInfoStep(
+                    ctx, latency.trace_id(),
+                    ChromeLatencyInfo2::Step::STEP_TOUCH_EVENT_HANDLED,
+                    InputEventTypeToProto(touch_event.event.GetType()),
+                    InputEventResultStateToProto(state));
+              });
+
   if (source != blink::mojom::InputEventResultSource::kBrowser)
     client_->DecrementInFlightEventCount(source);
   touch_event.latency.AddNewLatencyFrom(latency);
@@ -722,9 +728,15 @@ void InputRouterImpl::GestureEventHandled(
     blink::mojom::InputEventResultState state,
     blink::mojom::DidOverscrollParamsPtr overscroll,
     blink::mojom::TouchActionOptionalPtr touch_action) {
-  TRACE_EVENT2("input", "InputRouterImpl::GestureEventHandled", "type",
-               WebInputEvent::GetName(gesture_event.event.GetType()), "ack",
-               InputEventResultStateToString(state));
+  TRACE_EVENT("input,benchmark,latencyInfo", "LatencyInfo.Flow",
+              [&](perfetto::EventContext ctx) {
+                ui::LatencyInfo::EmitIntermediateLatencyInfoStep(
+                    ctx, latency.trace_id(),
+                    ChromeLatencyInfo2::Step::STEP_GESTURE_EVENT_HANDLED,
+                    InputEventTypeToProto(gesture_event.event.GetType()),
+                    InputEventResultStateToProto(state));
+              });
+
   if (source != blink::mojom::InputEventResultSource::kBrowser)
     client_->DecrementInFlightEventCount(source);
 

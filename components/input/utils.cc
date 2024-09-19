@@ -5,6 +5,7 @@
 #include "components/input/utils.h"
 
 #include "build/build_config.h"
+#include "third_party/blink/public/mojom/input/input_event_result.mojom-shared.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/build_info.h"
@@ -14,6 +15,7 @@
 namespace input {
 
 using blink::WebInputEvent;
+using blink::mojom::InputEventResultState;
 using perfetto::protos::pbzero::ChromeLatencyInfo2;
 
 bool TransferInputToViz() {
@@ -116,6 +118,27 @@ ChromeLatencyInfo2::InputType InputEventTypeToProto(
       return ChromeLatencyInfo2::InputType::POINTER_CANCEL_EVENT;
     case WebInputEvent::Type::kPointerCausedUaAction:
       return ChromeLatencyInfo2::InputType::POINTER_CAUSED_UA_ACTION_EVENT;
+  }
+}
+
+ChromeLatencyInfo2::InputResultState InputEventResultStateToProto(
+    InputEventResultState result_state) {
+  switch (result_state) {
+    case InputEventResultState::kUnknown:
+      return ChromeLatencyInfo2::InputResultState::UNKNOWN;
+    case InputEventResultState::kConsumed:
+      return ChromeLatencyInfo2::InputResultState::CONSUMED;
+    case InputEventResultState::kNotConsumed:
+      return ChromeLatencyInfo2::InputResultState::NOT_CONSUMED;
+    case InputEventResultState::kNoConsumerExists:
+      return ChromeLatencyInfo2::InputResultState::NO_CONSUMER_EXISTS;
+    case InputEventResultState::kIgnored:
+      return ChromeLatencyInfo2::InputResultState::IGNORED;
+    case InputEventResultState::kSetNonBlocking:
+      return ChromeLatencyInfo2::InputResultState::SET_NON_BLOCKING;
+    case InputEventResultState::kSetNonBlockingDueToFling:
+      return ChromeLatencyInfo2::InputResultState::
+          SET_NON_BLOCKING_DUE_TO_FLING;
   }
 }
 

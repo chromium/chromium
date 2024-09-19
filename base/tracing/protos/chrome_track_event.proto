@@ -1988,7 +1988,7 @@ message MainFramePipeline {
 message ChromeLatencyInfo2 {
   optional int64 trace_id = 1;
 
-  // NEXT ID: 12
+  // NEXT ID: 14
   // All step are optional but the enum is ordered (not by number) below in the
   // order we expect them to appear if they are emitted in trace in a blocking
   // fashion.
@@ -2008,6 +2008,10 @@ message ChromeLatencyInfo2 {
     // Optionally sometimes HANDLED_INPUT_EVENT_MAIN_OR_IMPL will proxy to the
     // renderer's compositor and this will be emitted.
     STEP_HANDLED_INPUT_EVENT_IMPL = 10;
+    // Occurs on Browser Main.
+    STEP_TOUCH_EVENT_HANDLED = 12;
+    // Occurs on Browser Main.
+    STEP_GESTURE_EVENT_HANDLED = 13;
     // Renderer's compositor.
     STEP_SWAP_BUFFERS = 6;
     // Happens on the VizCompositor in the GPU process.
@@ -2111,6 +2115,21 @@ message ChromeLatencyInfo2 {
 
   // The type of input corresponding to this `ChromeLatencyInfo`.
   optional InputType input_type = 8;
+
+  // Intended to mirror `blink::mojom::InputEventResultState`.
+  enum InputResultState {
+    UNKNOWN = 0;
+    CONSUMED = 1;
+    NOT_CONSUMED = 2;
+    NO_CONSUMER_EXISTS = 3;
+    IGNORED = 4;
+    SET_NON_BLOCKING = 5;
+    SET_NON_BLOCKING_DUE_TO_FLING = 6;
+  }
+
+  // If applicable, the result of handling the input corresponding to this
+  // `ChromeLatencyInfo`.
+  optional InputResultState input_result_state = 9;
 }
 
 message EventTiming {
