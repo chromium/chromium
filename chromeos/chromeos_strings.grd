@@ -6776,6 +6776,13 @@
         Suspicious files will be scanned automatically by Google Safe Browsing as part of the enhanced protection you chose
       </message>
 
+      <message name="IDS_DEVICE_RESTRICTION_SCHEDULE_UPCOMING_LOGOUT_NOTIFICATION_TITLE" desc="Title of the notification telling the user they will be signed out soon.">
+        You will be signed out at <ph name="TIME">$1<ex>7:30 PM</ex></ph>
+      </message>
+      <message name="IDS_DEVICE_RESTRICTION_SCHEDULE_UPCOMING_LOGOUT_NOTIFICATION_BODY" desc="Body of the notification telling the user they will be signed out soon.">
+        Make sure to save any work
+      </message>
+
     </messages>
   </release>
 </grit>

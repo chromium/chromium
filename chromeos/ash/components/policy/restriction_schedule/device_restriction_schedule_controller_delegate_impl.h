@@ -14,6 +14,10 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_POLICY)
     DeviceRestrictionScheduleControllerDelegateImpl
     : public DeviceRestrictionScheduleController::Delegate {
  public:
+  // Id of the upcoming logout notification.
+  static constexpr char kUpcomingLogoutNotificationId[] =
+      "policy.device_restriction_schedule.upcoming_logout";
+
   DeviceRestrictionScheduleControllerDelegateImpl();
 
   // DeviceRestrictionScheduleController::Delegate:

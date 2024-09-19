@@ -1,0 +1,7 @@
+include_rules = [
+  "+ash/public/cpp",
+  "+components/user_manager",
+  "+components/vector_icons",
+  "+ui/base/l10n",
+  "+ui/message_center",
+]

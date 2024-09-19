@@ -27432,6 +27432,9 @@ Called by update_net_error_codes.py.-->
   <int value="181" label="Audio Selection"/>
   <int value="182" label="Extended Updates Available"/>
   <int value="183" label="On-Device App Controls Available"/>
+  <int value="184" label="Face Gaze Assets Downloaded"/>
+  <int value="185" label="Face Gaze Assets Failed"/>
+  <int value="186" label="Device Restriction Schedule Upcoming Logout"/>
 </enum>
 
 <enum name="NQEObservationSource">
