@@ -12,16 +12,16 @@ cargo_crate("lib") {
   crate_name = "unicode_ident"
   epoch = "1"
   crate_type = "rlib"
-  crate_root = "//third_party/rust/chromium_crates_io/vendor/unicode-ident-1.0.12/src/lib.rs"
+  crate_root = "//third_party/rust/chromium_crates_io/vendor/unicode-ident-1.0.13/src/lib.rs"
   sources = [
-    "//third_party/rust/chromium_crates_io/vendor/unicode-ident-1.0.12/src/lib.rs",
-    "//third_party/rust/chromium_crates_io/vendor/unicode-ident-1.0.12/src/tables.rs",
+    "//third_party/rust/chromium_crates_io/vendor/unicode-ident-1.0.13/src/lib.rs",
+    "//third_party/rust/chromium_crates_io/vendor/unicode-ident-1.0.13/src/tables.rs",
   ]
   inputs = []
 
   build_native_rust_unit_tests = false
   edition = "2018"
-  cargo_pkg_version = "1.0.12"
+  cargo_pkg_version = "1.0.13"
   cargo_pkg_authors = "David Tolnay <dtolnay@gmail.com>"
   cargo_pkg_name = "unicode-ident"
   cargo_pkg_description = "Determine whether characters have the XID_Start or XID_Continue properties according to Unicode Standard Annex #31"

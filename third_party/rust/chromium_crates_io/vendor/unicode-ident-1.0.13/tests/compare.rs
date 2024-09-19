@@ -1,3 +1,7 @@
+#![allow(
+    clippy::incompatible_msrv, // https://github.com/rust-lang/rust-clippy/issues/12257
+)]
+
 mod fst;
 mod roaring;
 mod trie;
@@ -14,7 +18,7 @@ fn compare_all_implementations() {
         let thought_to_be_continue = unicode_ident::is_xid_continue(ch);
 
         // unicode-xid
-        // FIXME: unicode-xid does not support Unicode 15.1.0 yet.
+        // FIXME: unicode-xid does not support Unicode 16.0.0 yet.
         /*
         assert_eq!(
             thought_to_be_start,

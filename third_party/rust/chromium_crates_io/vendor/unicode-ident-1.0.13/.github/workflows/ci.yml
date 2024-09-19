@@ -44,7 +44,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        rust: [nightly, beta, stable, 1.70.0]
+        rust: [nightly, beta, stable, 1.74.0]
     timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
@@ -56,6 +56,11 @@ jobs:
         if: matrix.rust == 'nightly'
       - run: cargo test
       - run: cargo check --benches
+      - uses: actions/upload-artifact@v4
+        if: matrix.rust == 'nightly' && always()
+        with:
+          name: Cargo.lock
+          path: Cargo.lock
 
   msrv:
     name: Rust 1.31.0
@@ -67,6 +72,20 @@ jobs:
       - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@1.31.0
       - run: cargo check --manifest-path tests/crate/Cargo.toml
+
+  doc:
+    name: Documentation
+    needs: pre_ci
+    if: needs.pre_ci.outputs.continue
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      RUSTDOCFLAGS: -Dwarnings
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@nightly
+      - uses: dtolnay/install@cargo-docs-rs
+      - run: cargo docs-rs
 
   clippy:
     name: Clippy
@@ -85,5 +104,6 @@ jobs:
     timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
       - uses: dtolnay/install@cargo-outdated
       - run: cargo outdated --workspace --exit-code 1

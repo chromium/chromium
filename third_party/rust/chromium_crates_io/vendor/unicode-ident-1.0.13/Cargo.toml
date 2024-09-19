@@ -13,8 +13,13 @@
 edition = "2018"
 rust-version = "1.31"
 name = "unicode-ident"
-version = "1.0.12"
+version = "1.0.13"
 authors = ["David Tolnay <dtolnay@gmail.com>"]
+build = false
+autobins = false
+autoexamples = false
+autotests = false
+autobenches = false
 description = "Determine whether characters have the XID_Start or XID_Continue properties according to Unicode Standard Annex #31"
 documentation = "https://docs.rs/unicode-ident"
 readme = "README.md"
@@ -35,10 +40,21 @@ rustdoc-args = ["--generate-link-to-definition"]
 targets = ["x86_64-unknown-linux-gnu"]
 
 [lib]
+name = "unicode_ident"
+path = "src/lib.rs"
 doc-scrape-examples = false
+
+[[test]]
+name = "compare"
+path = "tests/compare.rs"
+
+[[test]]
+name = "static_size"
+path = "tests/static_size.rs"
 
 [[bench]]
 name = "xid"
+path = "benches/xid.rs"
 harness = false
 
 [dev-dependencies.criterion]
