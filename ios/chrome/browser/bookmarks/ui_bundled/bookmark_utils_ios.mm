@@ -224,9 +224,13 @@ NSString* messageForAddingBookmarksInFolder(
   id<SystemIdentity> identity =
       authenticationService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
 
-  if (!identity || !syncService->GetUserSettings()->GetSelectedTypes().Has(
-                       syncer::UserSelectableType::kBookmarks)) {
-    // The user is signed-out or bookmark sync is disabled.
+  if (!identity ||
+      !syncService->GetUserSettings()->GetSelectedTypes().Has(
+          syncer::UserSelectableType::kBookmarks) ||
+      !IsAccountBookmarkStorageAvailable(model)) {
+    // The user is signed-out, bookmark sync is disabled, or the account
+    // bookmark is not available (e.g. the account is passphrase protected and
+    // the passphrase was not entered).
     if (chosenByUser) {
       std::u16string title = base::SysNSStringToUTF16(folderTitle);
       std::u16string pattern = l10n_util::GetStringUTF16(
