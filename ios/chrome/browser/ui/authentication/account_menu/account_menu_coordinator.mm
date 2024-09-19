@@ -185,12 +185,6 @@
 
 #pragma mark - AccountMenuMediatorDelegate
 
-- (void)viewControllerWantsToBeClosed:
-    (AccountMenuViewController*)viewController {
-  CHECK_EQ(_viewController, viewController);
-  [self.delegate acountMenuCoordinatorShouldStop:self];
-}
-
 - (void)didTapManageYourGoogleAccount {
   __weak __typeof(self) weakSelf = self;
   _accountDetailsControllerDismissCallback =
