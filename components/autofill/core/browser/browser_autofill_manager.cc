@@ -897,6 +897,44 @@ void BrowserAutofillManager::OnFormSubmittedImpl(const FormData& form,
   if (AutofillPredictionImprovementsDelegate* delegate =
           client().GetAutofillPredictionImprovementsDelegate();
       delegate && submitted_form) {
+    // Only upload server statistics and UMA metrics if at least some local data
+    // is available to use as a baseline.
+    std::vector<const AutofillProfile*> profiles =
+        client().GetPersonalDataManager()->address_data_manager().GetProfiles(
+            AddressDataManager::ProfileOrder::kHighestFrecencyDesc);
+    std::vector<CreditCard*> credit_cards = client()
+                                                .GetPersonalDataManager()
+                                                ->payments_data_manager()
+                                                .GetCreditCards();
+    // Shrink the maximum size of the vectors for performance reasons.
+    profiles.resize(
+        std::min(profiles.size(), kMaxDataConsideredForPossibleTypes));
+    credit_cards.resize(
+        std::min(credit_cards.size(), kMaxDataConsideredForPossibleTypes));
+
+    // Copy the profile and credit card data, so that it can be accessed on a
+    // separate thread.
+    std::vector<AutofillProfile> copied_profiles;
+    copied_profiles.reserve(profiles.size());
+    for (const AutofillProfile* profile : profiles) {
+      copied_profiles.push_back(*profile);
+    }
+
+    std::vector<CreditCard> copied_credit_cards;
+    copied_credit_cards.reserve(credit_cards.size());
+    for (const CreditCard* card : credit_cards) {
+      copied_credit_cards.push_back(*card);
+    }
+
+    // Determine |ADDRESS_HOME_STATE| as a possible types for the fields in the
+    // |form_structure| with the help of |AlternativeStateNameMap|.
+    // |AlternativeStateNameMap| can only be accessed on the main UI thread.
+    PreProcessStateMatchingTypes(copied_profiles, submitted_form.get());
+
+    DeterminePossibleFieldTypesForUpload(
+        std::move(copied_profiles), std::move(copied_credit_cards),
+        last_unlocked_credit_card_cvc_, app_locale_, submitted_form.get());
+
     delegate->MaybeImportForm(
         std::move(submitted_form),
         base::BindOnce(
@@ -904,6 +942,16 @@ void BrowserAutofillManager::OnFormSubmittedImpl(const FormData& form,
             weak_ptr_factory_.GetWeakPtr(), form, source,
             form_submitted_timestamp));
   } else {
+    // TODO(crbug.com/40100455): Refactor this:
+    // - It's impossible to know that OnUserAnnotationsMaybeImportableFormFound
+    //   calls MaybeImportFromSubmittedForm and OnFormSubmittedAfterImport.
+    //   These calls should not be repeated in different part of the code base.
+    // - If possible, OnFormSubmittedAfterImport should only be referenced in
+    //   OnFormSubmittedImpl and to build an opening and closing bracket around
+    //   some executed code.
+    // - OnUserAnnotationsMaybeImportableFormFound is a bad name because it
+    //   creates the assumption that it's called if and only if a
+    //   "MaybeImportableForm" was found.
     MaybeImportFromSubmittedForm(
         form, submitted_form.get(),
         /*attempt_to_import_into_form_data_importer=*/true);
@@ -1033,6 +1081,9 @@ bool BrowserAutofillManager::MaybeStartVoteUploadProcess(
         {base::MayBlock(), base::TaskPriority::USER_VISIBLE});
   }
 
+  // TODO(crbug.com/368306576): Bound the size of `copied_profiles` and
+  // `copied_credit_cards` by `kMaxDataConsideredForPossibleTypes` and make
+  // the call to DeterminePossibleFieldTypesForUpload synchronous.
   vote_upload_task_runner_->PostTaskAndReply(
       FROM_HERE,
       base::BindOnce(&DeterminePossibleFieldTypesForUpload,

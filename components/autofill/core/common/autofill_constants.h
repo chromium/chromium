@@ -16,6 +16,11 @@ namespace autofill {
 // The origin of an AutofillDataModel created or modified in the settings page.
 extern const char kSettingsOrigin[];
 
+// The maximum number of Addresses and CreditCards considered while trying to
+// determine the possible field types of AutofillField's by looking at the
+// submitted value.
+inline constexpr size_t kMaxDataConsideredForPossibleTypes = 10;
+
 // The maximum number of Autofill fill operations that Autofill is allowed to
 // store in history so that they can be undone later.
 inline constexpr size_t kMaxStorableFieldFillHistory = 400;
