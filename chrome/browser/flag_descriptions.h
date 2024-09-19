@@ -4898,9 +4898,6 @@ extern const char kComposeDescription[];
 extern const char kComposeTextSelectionName[];
 extern const char kComposeTextSelectionDescription[];
 
-extern const char kComposeUiRefinementName[];
-extern const char kComposeUiRefinementDescription[];
-
 extern const char kComposeProactiveNudgeName[];
 extern const char kComposeProactiveNudgeDescription[];
 

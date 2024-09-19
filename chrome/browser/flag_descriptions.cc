@@ -8398,10 +8398,6 @@ const char kComposeTextSelectionName[] = "Compose Selection";
 const char kComposeTextSelectionDescription[] =
     "Enables feature for different heuristics for selecting text for Compose";
 
-const char kComposeUiRefinementName[] = "Compose UI Refinements";
-const char kComposeUiRefinementDescription[] =
-    "Bundle of refinements to the Compose dialog";
-
 const char kComposeProactiveNudgeName[] = "Compose Proactive Nudge";
 const char kComposeProactiveNudgeDescription[] =
     "Enables proactive nudging for Compose";

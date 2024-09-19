@@ -4,7 +4,6 @@
 
 import 'chrome-untrusted://compose/app.js';
 
-import {loadTimeData} from '//resources/js/load_time_data.js';
 import type {ComposeAppElement} from 'chrome-untrusted://compose/app.js';
 import {StyleModifier} from 'chrome-untrusted://compose/compose.mojom-webui.js';
 import {ComposeApiProxyImpl} from 'chrome-untrusted://compose/compose_api_proxy.js';
@@ -66,24 +65,6 @@ suite('ComposeApp', function() {
     assertEquals(app.$.editTextarea, app.shadowRoot!.activeElement);
   });
 
-  test('FocusesRefreshButtonAfterRefreshRewrite', async () => {
-    // This test is only useful for non-refinement UI.
-    loadTimeData.overrideValues({
-      enableRefinedUi: false,
-    });
-
-    const app = await createApp();
-    app.$.textarea.value = 'test value one';
-    app.$.submitButton.click();
-    await mockResponse();
-
-    app.$.refreshButton.click();
-    await testProxy.whenCalled('rewrite');
-    await mockResponse(true);
-
-    assertEquals(app.$.refreshButton, app.shadowRoot!.activeElement);
-  });
-
   test('FocusesEditInputAfterSubmitInput', async () => {
     const app = await createApp();
     app.$.textarea.value = 'test value one';
@@ -95,79 +76,22 @@ suite('ComposeApp', function() {
     assertEquals(app.$.textarea, app.shadowRoot!.activeElement);
   });
 
-  test('FocusesLengthMenuAfterLengthRewrite', async () => {
-    // This test is only useful for non-refinement UI.
-    loadTimeData.overrideValues({
-      enableRefinedUi: false,
-    });
-
+  test('FocusesModifierMenuAfterRewrite', async () => {
     const app = await createApp();
     app.$.textarea.value = 'test value';
     app.$.submitButton.click();
     await mockResponse();
 
-    app.$.lengthMenu.value = `${StyleModifier.kLonger}`;
-    app.$.lengthMenu.dispatchEvent(new CustomEvent('change'));
+    app.$.modifierMenu.value = `${StyleModifier.kCasual}`;
+    app.$.modifierMenu.dispatchEvent(new CustomEvent('change'));
 
     await testProxy.whenCalled('rewrite');
     await mockResponse(true);
 
-    assertEquals(app.$.lengthMenu, app.shadowRoot!.activeElement);
-  });
-
-  test('FocusesToneMenuAfterToneRewrite', async () => {
-    const app = await createApp();
-    app.$.textarea.value = 'test value';
-    app.$.submitButton.click();
-    await mockResponse();
-
-    app.$.toneMenu.value = `${StyleModifier.kCasual}`;
-    app.$.toneMenu.dispatchEvent(new CustomEvent('change'));
-
-    await testProxy.whenCalled('rewrite');
-    await mockResponse(true);
-
-    assertEquals(app.$.toneMenu, app.shadowRoot!.activeElement);
-  });
-
-  test('FocusesUndoButtonAfterUndoClick', async () => {
-    // This test is only useful for non-refinement UI.
-    loadTimeData.overrideValues({
-      enableRefinedUi: false,
-    });
-    // Set up initial state to show undo button and mock up a previous state.
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    testProxy.setOpenMetadata({}, {
-      hasPendingRequest: false,
-      response: {
-        status: ComposeStatus.kOk,
-        undoAvailable: true,
-        redoAvailable: false,
-        providedByUser: false,
-        result: 'here is a result',
-        onDeviceEvaluationUsed: false,
-        triggeredFromModifier: false,
-      },
-    });
-    const appWithUndo = document.createElement('compose-app');
-    document.body.appendChild(appWithUndo);
-    await testProxy.whenCalled('requestInitialState');
-
-    // The undo button keeps focus after it is clicked.
-    testProxy.setUndoResponseWithUndoAndRedo(true, false);
-    appWithUndo.$.undoButton.click();
-    await testProxy.whenCalled('undo');
-    await flushTasks();
-
-    assertEquals(
-        appWithUndo.$.undoButton, appWithUndo.shadowRoot!.activeElement);
+    assertEquals(app.$.modifierMenu, app.shadowRoot!.activeElement);
   });
 
   test('FocusesUndoOrRedoButtonAfterUndoClick', async () => {
-    // This test is only useful for Refinements UI.
-    loadTimeData.overrideValues({
-      enableRefinedUi: true,
-    });
     // Set up initial state to show undo/redo buttons and mock up a previous
     // state.
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
@@ -189,16 +113,16 @@ suite('ComposeApp', function() {
 
     // If undo is enabled after the undo action, the undo button keeps focus.
     testProxy.setUndoResponseWithUndoAndRedo(true, false);
-    appWithUndo.$.undoButtonRefined.click();
+    appWithUndo.$.undoButton.click();
     await testProxy.whenCalled('undo');
     await flushTasks();
     assertEquals(
-        appWithUndo.$.undoButtonRefined, appWithUndo.shadowRoot!.activeElement);
+        appWithUndo.$.undoButton, appWithUndo.shadowRoot!.activeElement);
 
     // If undo is disabled after the undo action, the redo button gains
     // focus.
     testProxy.setUndoResponseWithUndoAndRedo(false, true);
-    appWithUndo.$.undoButtonRefined.click();
+    appWithUndo.$.undoButton.click();
     await testProxy.whenCalled('undo');
     await flushTasks();
     assertEquals(
@@ -206,10 +130,6 @@ suite('ComposeApp', function() {
   });
 
   test('FocusesUndoOrRedoButtonAfterRedoClick', async () => {
-    // This test is only useful for Refinements UI.
-    loadTimeData.overrideValues({
-      enableRefinedUi: true,
-    });
     // Set up initial state to show undo/redo buttons and mock up a previous
     // state.
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
@@ -243,7 +163,6 @@ suite('ComposeApp', function() {
     await testProxy.whenCalled('redo');
     await flushTasks();
     assertEquals(
-        appWithRedo.$.undoButtonRefined, appWithRedo.shadowRoot!.activeElement);
+        appWithRedo.$.undoButton, appWithRedo.shadowRoot!.activeElement);
   });
-
 });
