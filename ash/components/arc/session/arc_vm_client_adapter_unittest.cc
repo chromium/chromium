@@ -1808,18 +1808,6 @@ TEST_F(ArcVmClientAdapterTest, MetadataDisk_EnabledForArcU) {
   EXPECT_TRUE(HasDiskImage(req, metadta_disk_path));
 }
 
-TEST_F(ArcVmClientAdapterTest, SyspropDiskAlwaysEnabled) {
-  StartParams start_params(GetPopulatedStartParams());
-  StartMiniArcWithParams(true, std::move(start_params));
-  const auto& request = GetTestConciergeClient()->start_arc_vm_request();
-
-  const std::string sysprop_disk_path =
-      base::StringPrintf("/run/daemon-store/crosvm/%s/YXJjdm0=.runtime.prop",
-                         std::string(kUserIdHash).c_str());
-  EXPECT_TRUE(HasDiskImage(request, sysprop_disk_path));
-  EXPECT_EQ(request.disks(5).path(), sysprop_disk_path);
-}
-
 TEST_F(ArcVmClientAdapterTest, ArcErofsImagesDisabled) {
   StartParams start_params(GetPopulatedStartParams());
   StartMiniArcWithParams(true, std::move(start_params));
