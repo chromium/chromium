@@ -154,16 +154,21 @@ class AndroidAutofillProvider : public AutofillProvider,
 
   void FireSuccessfulSubmission(mojom::SubmissionSource source);
 
+  // Updates fields that changed on native class only. The Android bridge is not
+  // yet invoked to give preference to a possible CredMan flow.
+  // Using the given form and field that are newly focused, the method returns
+  // the necessary field information to continue the focus event later on. If
+  // continuing the focus event is not possible or necessary, it returns a
+  // `std::nullopt`.
+  std::optional<AndroidAutofillProviderBridge::FieldInfo> StartFocusChange(
+      const FormData& form,
+      const FormFieldData& field);
+
   // Calls `OnFormFieldDidChange` in the bridge if there is an ongoing Autofill
   // session for this `form`.
   void MaybeFireFormFieldDidChange(AndroidAutofillManager* manager,
                                    const FormData& form,
                                    const FormFieldData& field);
-
-  // Propagates visibility changes for fields in `form` and notifies the bridge
-  // in case any of the fields had a visibility change.
-  void MaybeFireFormFieldVisibilitiesDidChange(AndroidAutofillManager* manager,
-                                             const FormData& form);
 
   bool IsLinkedManager(AndroidAutofillManager* manager) const;
 
@@ -173,9 +178,9 @@ class AndroidAutofillProvider : public AutofillProvider,
 
   // Same as `IsLinkedForm`, but also checks that `form` and `form_` are
   // similar, using form similarity checks.
-  bool IsLinkedForm(const FormData& form);
+  bool IsLinkedForm(const FormData& form) const;
 
-  gfx::RectF ToClientAreaBound(const gfx::RectF& bounding_box);
+  gfx::RectF ToClientAreaBound(const gfx::RectF& bounding_box) const;
 
   void StartNewSession(AndroidAutofillManager* manager,
                        const FormData& form,
@@ -253,7 +258,12 @@ class AndroidAutofillProvider : public AutofillProvider,
 
   // Stops the keyboard suppression. Called when the CredMan UI was closed. If
   // the UI was dismissed without selecting a passkey, `success` will be false.
-  void OnCredManUiClosed(bool success);
+  // If a `field_to_focus` is given and CredMan wasn't able to sign the
+  // user in, attempt to continue an earlier attempt to focus a field.
+  void OnCredManUiClosed(
+      FormGlobalId form_id,
+      std::optional<AndroidAutofillProviderBridge::FieldInfo> field_to_focus,
+      bool success);
 
   // Returns true if CredMan *may* be shown for the given field. It only returns
   // false if the sheet was already shown or prefetching concluded and indicated
@@ -266,8 +276,14 @@ class AndroidAutofillProvider : public AutofillProvider,
   bool ShouldShowCredManForField(const FormFieldData& field,
                                  content::RenderFrameHost* rfh);
 
-  // Triggers a prefetched passkey request which opens a bottom sheet.
-  void ShowCredManSheet(content::RenderFrameHost* rfh);
+  // Triggers a prefetched passkey request which opens a bottom sheet. The given
+  // `field_to_focus` is used to continue any interrupted focus event once
+  // CredMan closes. Returns true if the sheet was opened and false if that
+  // wasn't possible.
+  bool ShowCredManSheet(
+      content::RenderFrameHost* rfh,
+      FormGlobalId form_id,
+      std::optional<AndroidAutofillProviderBridge::FieldInfo> field_to_focus);
 
   enum class CredManBottomSheetLifecycle {
     kNotShown,   // The sheet hasn't been shown. Does not indicate it will be.

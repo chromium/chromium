@@ -974,6 +974,8 @@ TEST_F(AndroidAutofillProviderWithCredManTest,
 
 TEST_F(AndroidAutofillProviderWithCredManTest,
        SuppressesKeyboardForCredManCall) {
+  // Since CredMan handles this focus, stop the propagation of the focus event.
+  EXPECT_CALL(provider_bridge(), OnFocusChanged).Times(0);
   EXPECT_CALL(cred_man_delegate(),
               TriggerCredManUi(Eq(
                   webauthn::WebAuthnCredManDelegate::RequestPasswords(false))));
@@ -992,6 +994,7 @@ TEST_F(AndroidAutofillProviderWithCredManTest,
 }
 
 TEST_F(AndroidAutofillProviderWithCredManTest, NoCredManWithoutAnnotation) {
+  EXPECT_CALL(provider_bridge(), OnFocusChanged);
   EXPECT_CALL(cred_man_delegate(), TriggerCredManUi).Times(0);
   FocusFormField(non_webauthn_password_field());
 
@@ -1005,6 +1008,18 @@ TEST_F(AndroidAutofillProviderWithCredManTest, SkipsCredManCallBeforeReady) {
 
   EXPECT_CALL(cred_man_delegate(), TriggerCredManUi).Times(0);
   FocusFormField(webauthn_email_field());
+}
+
+TEST_F(AndroidAutofillProviderWithCredManTest, NotifyFocusOnCredManError) {
+  EXPECT_CALL(cred_man_delegate(), TriggerCredManUi);
+  base::RepeatingCallback<void(bool)> completed_callback;
+  EXPECT_CALL(cred_man_delegate(), SetRequestCompletionCallback)
+      .WillOnce(SaveArg<0>(&completed_callback));
+  FocusFormField(webauthn_email_field());
+
+  // Since CredMan didn't handles this focus, inform the autofill bridge.
+  EXPECT_CALL(provider_bridge(), OnFocusChanged);
+  completed_callback.Run(/*success=*/false);
 }
 
 using AndroidAutofillProviderPrefillRequestTest = AndroidAutofillProviderTest;
