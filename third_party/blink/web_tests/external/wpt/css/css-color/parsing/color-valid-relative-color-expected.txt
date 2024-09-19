@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 17 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 15 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] e.style['color'] = "rgb(from rebeccapurple r calc(g * 2) 10)" should set the property value
   Colors do not match.\nActual:   rgb(from rebeccapurple r calc(g * 2) 10)\nExpected: rgb(from rebeccapurple r calc(2 * g) 10).\nError: assert_equals: Color format is correct. expected "rgb(from rebeccapurple r calc( * g) )" but got "rgb(from rebeccapurple r calc(g * ) )"
 [FAIL] e.style['color'] = "rgb(from rebeccapurple b calc(r * .5) 10)" should set the property value
@@ -30,9 +30,5 @@ Found 17 FAIL, 0 TIMEOUT, 0 NOTRUN.
   Colors do not match.\nActual:   oklch(from oklch(0.7 0.2 300) l c calc(h * 2.5))\nExpected: oklch(from oklch(0.7 0.2 300) l c calc(2.5 * h)).\nError: assert_equals: Color format is correct. expected "oklch(from oklch(  ) l c calc( * h))" but got "oklch(from oklch(  ) l c calc(h * ))"
 [FAIL] e.style['color'] = "lch(from peru calc(l * 0.8) c h)" should set the property value
   Colors do not match.\nActual:   lch(from peru calc(l * 0.8) c h)\nExpected: lch(from peru calc(0.8 * l) c h).\nError: assert_equals: Color format is correct. expected "lch(from peru calc( * l) c h)" but got "lch(from peru calc(l * ) c h)"
-[FAIL] e.style['color'] = "color(from rebeccapurple srgb r g b)" should set the property value
-  Colors do not match.\nActual:   color(from rebeccapurple srgb r g b)\nExpected: color(srgb 0.4 0.2 0.6).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 0
-[FAIL] e.style['color'] = "rgb(from color(srgb 0.4 0.2 0.6) r g b)" should set the property value
-  Colors do not match.\nActual:   rgb(from color(srgb 0.4 0.2 0.6) r g b)\nExpected: color(srgb 0.4 0.2 0.6).\nError: assert_equals: Color format is correct. expected "color(srgb   )" but got "rgb(from color(srgb   ) r g b)"
 Harness: the test ran to completion.
 
