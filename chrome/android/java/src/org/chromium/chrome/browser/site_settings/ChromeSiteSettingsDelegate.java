@@ -396,6 +396,9 @@ public class ChromeSiteSettingsDelegate implements SiteSettingsDelegate {
         BrowsingDataBridge.buildBrowsingDataModelFromDisk(
                 mProfile,
                 model -> {
+                    if (mBrowsingDataModel != null) {
+                        mBrowsingDataModel.destroy();
+                    }
                     mBrowsingDataModel = model;
                     callback.onResult(mBrowsingDataModel);
                 });
