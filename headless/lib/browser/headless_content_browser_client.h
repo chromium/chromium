@@ -136,6 +136,8 @@ class HeadlessContentBrowserClient : public content::ContentBrowserClient {
   CreateWindowForVideoPictureInPicture(
       content::VideoPictureInPictureWindowController* controller) override;
 
+  bool ShouldSandboxNetworkService() override;
+
  private:
   class StubBadgeService;
 
