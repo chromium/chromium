@@ -11,7 +11,6 @@ import android.app.ActivityManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ResolveInfo;
-import android.net.Uri;
 import android.text.TextUtils;
 
 import androidx.annotation.Nullable;
@@ -28,6 +27,7 @@ import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.WebappExtras;
 import org.chromium.chrome.browser.browserservices.permissiondelegation.InstalledWebappPermissionManager;
+import org.chromium.chrome.browser.browserservices.ui.controller.AuthTabVerifier;
 import org.chromium.chrome.browser.browserservices.ui.controller.Verifier;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.contextmenu.ChromeContextMenuPopulator;
@@ -93,6 +93,7 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
         private final @ActivityType int mActivityType;
         private final BrowserServicesIntentDataProvider mIntentDataProvider;
         private final Activity mActivity;
+        private final Lazy<AuthTabVerifier> mAuthTabVerifier;
 
         /** Constructs a new instance of {@link CustomTabNavigationDelegate}. */
         CustomTabNavigationDelegate(
@@ -101,6 +102,7 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
                 Verifier verifier,
                 @ActivityType int activityType,
                 BrowserServicesIntentDataProvider intentDataProvider,
+                Lazy<AuthTabVerifier> authTabVerifier,
                 Activity activity) {
             super(tab);
             mClientPackageName = TabAssociatedApp.from(tab).getAppId();
@@ -108,6 +110,7 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
             mVerifier = verifier;
             mActivityType = activityType;
             mIntentDataProvider = intentDataProvider;
+            mAuthTabVerifier = authTabVerifier;
             mActivity = activity;
         }
 
@@ -150,17 +153,21 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
 
         @Override
         public boolean shouldReturnAsActivityResult(GURL url) {
-            if (!shouldDisableAllExternalIntents()) return false;
-            String redirectScheme = mIntentDataProvider.getAuthRedirectScheme();
-            return !TextUtils.isEmpty(redirectScheme) && url.getScheme().equals(redirectScheme);
+            if (mActivityType != ActivityType.AUTH_TAB) return false;
+
+            var authTabVerifier = mAuthTabVerifier.get();
+            return authTabVerifier.isCustomScheme(url)
+                    || authTabVerifier.shouldRedirectHttpsAuthUrl(url);
         }
 
         @Override
         public void returnAsActivityResult(GURL url) {
-            Intent intent = new Intent();
-            intent.setData(Uri.parse(url.getSpec()));
-            mActivity.setResult(Activity.RESULT_OK, intent);
-            mActivity.finish();
+            assert mIntentDataProvider.isAuthTab();
+            mAuthTabVerifier.get().returnAsActivityResult(url);
+        }
+
+        public void resumeDelayedVerificationForTesting() {
+            mAuthTabVerifier.get().onFinishNativeInitialization();
         }
     }
 
@@ -299,6 +306,7 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
     private final Supplier<ShareDelegate> mShareDelegateSupplier;
     // Should only be used after inflation.
     private final Lazy<BottomSheetController> mBottomSheetController;
+    private final Lazy<AuthTabVerifier> mAuthTabVerifier;
     private final boolean mContextMenuEnabled;
 
     private TabWebContentsDelegateAndroid mWebContentsDelegateAndroid;
@@ -356,6 +364,7 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
             Supplier<ShareDelegate> shareDelegateSupplier,
             @Named(ACTIVITY_TYPE) @ActivityType int activityType,
             Lazy<BottomSheetController> bottomSheetController,
+            Lazy<AuthTabVerifier> authTabVerifier,
             boolean contextMenuEnabled,
             BrowserControlsManager browserControlsManager) {
         mActivity = activity;
@@ -380,6 +389,7 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
         mShareDelegateSupplier = shareDelegateSupplier;
         mActivityType = activityType;
         mBottomSheetController = bottomSheetController;
+        mAuthTabVerifier = authTabVerifier;
         mBrowserControlsManager = browserControlsManager;
         mContextMenuEnabled = contextMenuEnabled;
     }
@@ -403,6 +413,7 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
             Supplier<ShareDelegate> shareDelegateSupplier,
             @Named(ACTIVITY_TYPE) @ActivityType int activityType,
             Lazy<BottomSheetController> bottomSheetController,
+            Lazy<AuthTabVerifier> authTabVerifier,
             BrowserControlsManager browserControlsManager) {
         this(
                 activity,
@@ -427,6 +438,7 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
                 shareDelegateSupplier,
                 activityType,
                 bottomSheetController,
+                authTabVerifier,
                 !intentDataProvider.isAuthTab(),
                 browserControlsManager);
     }
@@ -458,6 +470,7 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
                 null,
                 null,
                 ActivityType.CUSTOM_TAB,
+                null,
                 null,
                 false,
                 null);
@@ -522,6 +535,7 @@ public class CustomTabDelegateFactory implements TabDelegateFactory {
                             mVerifier,
                             mActivityType,
                             mIntentDataProvider,
+                            mAuthTabVerifier,
                             mActivity);
         }
         return new ExternalNavigationHandler(mNavigationDelegate);

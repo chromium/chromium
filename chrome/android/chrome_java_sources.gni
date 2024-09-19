@@ -276,6 +276,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/browserservices/trustedwebactivityui/sharing/TwaSharingController.java",
   "java/src/org/chromium/chrome/browser/browserservices/ui/SharedActivityCoordinator.java",
   "java/src/org/chromium/chrome/browser/browserservices/ui/TrustedWebActivityModel.java",
+  "java/src/org/chromium/chrome/browser/browserservices/ui/controller/AuthTabVerifier.java",
   "java/src/org/chromium/chrome/browser/browserservices/ui/controller/CurrentPageVerifier.java",
   "java/src/org/chromium/chrome/browser/browserservices/ui/controller/DisclosureController.java",
   "java/src/org/chromium/chrome/browser/browserservices/ui/controller/EmptyVerifier.java",

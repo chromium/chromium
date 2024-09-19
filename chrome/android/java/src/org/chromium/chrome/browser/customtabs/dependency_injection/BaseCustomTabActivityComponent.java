@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.customtabs.dependency_injection;
 import dagger.Subcomponent;
 
 import org.chromium.chrome.browser.browserservices.trustedwebactivityui.TwaFinishHandler;
+import org.chromium.chrome.browser.browserservices.ui.controller.AuthTabVerifier;
 import org.chromium.chrome.browser.browserservices.ui.controller.CurrentPageVerifier;
 import org.chromium.chrome.browser.browserservices.ui.controller.Verifier;
 import org.chromium.chrome.browser.browserservices.ui.splashscreen.SplashController;
@@ -39,9 +40,9 @@ import org.chromium.chrome.browser.webapps.WebApkActivityCoordinator;
 import org.chromium.chrome.browser.webapps.WebappActivityCoordinator;
 
 /**
- * Activity-scoped component associated with
- * {@link org.chromium.chrome.browser.customtabs.CustomTabActivity} and
- * {@link org.chromium.chrome.browser.webapps.WebappActivity}.
+ * Activity-scoped component associated with {@link
+ * org.chromium.chrome.browser.customtabs.CustomTabActivity} and {@link
+ * org.chromium.chrome.browser.webapps.WebappActivity}.
  */
 @Subcomponent(modules = {ChromeActivityCommonsModule.class, BaseCustomTabActivityModule.class})
 @ActivityScope
@@ -98,6 +99,9 @@ public interface BaseCustomTabActivityComponent extends ChromeActivityComponent 
 
     // TWA only
     TrustedWebActivityCoordinator resolveTrustedWebActivityCoordinator();
+
+    // AuthTab only
+    AuthTabVerifier resolveAuthTabVerifier();
 
     // For testing
     CustomTabTabPersistencePolicy resolveTabPersistencePolicy();

@@ -659,8 +659,18 @@ public abstract class BrowserServicesIntentDataProvider {
         return false;
     }
 
-    /** Return the redirect scheme for AuthTab. */
+    /** Return the custom redirect scheme for AuthTab. */
     public String getAuthRedirectScheme() {
+        return null;
+    }
+
+    /** Return the https redirect URL host (origin) for AuthTab. */
+    public String getAuthRedirectHost() {
+        return null;
+    }
+
+    /** Return the https redirect URL path for AuthTab. */
+    public String getAuthRedirectPath() {
         return null;
     }
 }

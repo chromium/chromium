@@ -1898,6 +1898,7 @@ if (current_toolchain == default_toolchain) {
       "//components/browsing_data/core:java",
       "//components/commerce/core:proto_java",
       "//components/commerce/core/android:core_java",
+      "//components/content_relationship_verification:java",
       "//components/content_settings/android:content_settings_enums_java",
       "//components/content_settings/android:java",
       "//components/crash/android:java",

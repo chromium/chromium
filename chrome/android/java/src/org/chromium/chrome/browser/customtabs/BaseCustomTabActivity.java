@@ -39,6 +39,7 @@ import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.CustomTabProfileType;
 import org.chromium.chrome.browser.browserservices.intents.WebappExtras;
+import org.chromium.chrome.browser.browserservices.ui.controller.AuthTabVerifier;
 import org.chromium.chrome.browser.browserservices.ui.controller.Verifier;
 import org.chromium.chrome.browser.browserservices.ui.trustedwebactivity.TrustedWebActivityCoordinator;
 import org.chromium.chrome.browser.cookies.CookiesFetcher;
@@ -109,6 +110,7 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
     protected CustomTabNightModeStateController mNightModeStateController;
     protected @Nullable WebappActivityCoordinator mWebappActivityCoordinator;
     protected @Nullable TrustedWebActivityCoordinator mTwaCoordinator;
+    protected @Nullable AuthTabVerifier mAuthTabVerifier;
     protected Verifier mVerifier;
     protected FullscreenManager mFullscreenManager;
     protected CustomTabMinimizationManagerHolder mMinimizationManagerHolder;
@@ -369,6 +371,10 @@ public abstract class BaseCustomTabActivity extends ChromeActivity<BaseCustomTab
 
         if (mIntentDataProvider.isTrustedWebActivity()) {
             mTwaCoordinator = component.resolveTrustedWebActivityCoordinator();
+        }
+
+        if (mIntentDataProvider.isAuthTab()) {
+            mAuthTabVerifier = component.resolveAuthTabVerifier();
         }
 
         mMinimizationManagerHolder = component.resolveCustomTabMinimizationManagerHolder();

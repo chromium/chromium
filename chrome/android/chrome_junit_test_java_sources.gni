@@ -112,6 +112,7 @@ chrome_junit_test_java_sources = [
   "junit/src/org/chromium/chrome/browser/browserservices/permissiondelegation/NotificationPermissionUpdaterTest.java",
   "junit/src/org/chromium/chrome/browser/browserservices/permissiondelegation/PermissionUpdaterTest.java",
   "junit/src/org/chromium/chrome/browser/browserservices/trustedwebactivityui/controller/TrustedWebActivityBrowserControlsVisibilityManagerTest.java",
+  "junit/src/org/chromium/chrome/browser/browserservices/ui/controller/AuthTabVerifierTest.java",
   "junit/src/org/chromium/chrome/browser/browserservices/ui/controller/CurrentPageVerifierTest.java",
   "junit/src/org/chromium/chrome/browser/browserservices/ui/controller/TestVerifier.java",
   "junit/src/org/chromium/chrome/browser/browserservices/ui/controller/trustedwebactivity/TrustedWebActivityDisclosureControllerTest.java",

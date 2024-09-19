@@ -15,6 +15,7 @@ import android.os.Bundle;
 import androidx.browser.auth.AuthTabIntent;
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.SmallTest;
+import androidx.test.runner.lifecycle.Stage;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -23,10 +24,12 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Features;
 import org.chromium.chrome.browser.browserservices.TrustedWebActivityTestUtil;
+import org.chromium.chrome.browser.browserservices.ui.controller.AuthTabVerifier;
 import org.chromium.chrome.browser.browserservices.ui.controller.CurrentPageVerifier.VerificationStatus;
 import org.chromium.chrome.browser.customtabs.CustomTabDelegateFactory.CustomTabNavigationDelegate;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -34,7 +37,10 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabDelegateFactory;
 import org.chromium.chrome.browser.tab.TabTestUtils;
+import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
+import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.external_intents.ExternalNavigationHandler;
 import org.chromium.components.external_intents.ExternalNavigationHandler.OverrideUrlLoadingResult;
 import org.chromium.components.external_intents.ExternalNavigationHandler.OverrideUrlLoadingResultType;
@@ -52,6 +58,10 @@ import java.util.concurrent.TimeoutException;
 public class CustomTabExternalNavigationTest {
     @Rule
     public CustomTabActivityTestRule mCustomTabActivityTestRule = new CustomTabActivityTestRule();
+
+    @Rule
+    public ChromeTabbedActivityTestRule mTestAppActivityTestRule =
+            new ChromeTabbedActivityTestRule();
 
     /** A dummy activity that claims to handle "customtab://customtabtest". */
     public static class DummyActivityForSpecialScheme extends Activity {
@@ -74,10 +84,18 @@ public class CustomTabExternalNavigationTest {
     private static final String TWA_PACKAGE_NAME = "com.foo.bar";
     private static final String TEST_PATH = "/chrome/test/data/android/google.html";
     private static final String CUSTOM_SCHEME = "myscheme";
-    private static final String REDIRECT_URL = "myscheme://auth?token=secret";
+    private static final String AUTH_TAB_CUSTOM_SCHEME_REDIRECT_URL = "myscheme://auth?token=clank";
+    private static final String AUTH_TAB_HTTPS_REDIRECT_HOST = "www.clank.com";
+    private static final String AUTH_TAB_HTTPS_REDIRECT_PATH = "/auth?token=clank";
+    private static final String AUTH_TAB_HTTPS_REDIRECT_URL =
+            UrlConstants.HTTPS_URL_PREFIX
+                    + AUTH_TAB_HTTPS_REDIRECT_HOST
+                    + AUTH_TAB_HTTPS_REDIRECT_PATH;
+    private static final String AUTH_TAB_OTHER_URL = "https://www.clank.com/auth/login-fail.html";
     private CustomTabNavigationDelegate mNavigationDelegate;
     private EmbeddedTestServer mTestServer;
     private ExternalNavigationHandler mUrlHandler;
+    private CustomTabActivity mAuthTab;
 
     @Before
     public void setUp() throws Exception {
@@ -87,16 +105,16 @@ public class CustomTabExternalNavigationTest {
 
     private void setUpTwa() throws TimeoutException {
         launchTwa(TWA_PACKAGE_NAME, mTestServer.getURL(TEST_PATH));
-        finishSetUp();
+        finishSetUp(mCustomTabActivityTestRule.getActivity());
     }
 
     private void setUpAuthTab() throws TimeoutException {
         launchAuthTab(mTestServer.getURL(TEST_PATH));
-        finishSetUp();
+        finishSetUp(mAuthTab);
     }
 
-    private void finishSetUp() {
-        Tab tab = mCustomTabActivityTestRule.getActivity().getActivityTab();
+    private void finishSetUp(CustomTabActivity activity) {
+        Tab tab = activity.getActivityTab();
         TabDelegateFactory delegateFactory = TabTestUtils.getDelegateFactory(tab);
         assertTrue(delegateFactory instanceof CustomTabDelegateFactory);
         CustomTabDelegateFactory customTabDelegateFactory =
@@ -120,12 +138,32 @@ public class CustomTabExternalNavigationTest {
     }
 
     private void launchAuthTab(String url) throws TimeoutException {
+        mTestAppActivityTestRule.startMainActivityOnBlankPage();
         Context context = ApplicationProvider.getApplicationContext();
         Intent intent =
-                CustomTabsIntentTestUtils.createMinimalCustomTabIntent(context, url)
+                CustomTabsIntentTestUtils.createCustomTabIntent(context, url, false, builder -> {})
                         .putExtra(AuthTabIntent.EXTRA_LAUNCH_AUTH_TAB, true)
-                        .putExtra(AuthTabIntent.EXTRA_REDIRECT_SCHEME, CUSTOM_SCHEME);
-        mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
+                        .putExtra(AuthTabIntent.EXTRA_REDIRECT_SCHEME, CUSTOM_SCHEME)
+                        .putExtra(
+                                AuthTabIntentDataProvider.EXTRA_HTTPS_REDIRECT_HOST,
+                                AUTH_TAB_HTTPS_REDIRECT_HOST)
+                        .putExtra(
+                                AuthTabIntentDataProvider.EXTRA_HTTPS_REDIRECT_PATH,
+                                AUTH_TAB_HTTPS_REDIRECT_PATH);
+        String packageName = context.getPackageName();
+        TrustedWebActivityTestUtil.spoofVerification(packageName, AUTH_TAB_HTTPS_REDIRECT_URL);
+        // TODO(b/358167556): Support #startActivityForResult in TestRule
+        mAuthTab =
+                ApplicationTestUtils.waitForActivityWithClass(
+                        CustomTabActivity.class,
+                        Stage.CREATED,
+                        () -> {
+                            mTestAppActivityTestRule
+                                    .getActivity()
+                                    .startActivityForResult(intent, 0);
+                        });
+        ChromeActivityTestRule.waitForActivityNativeInitializationComplete(mAuthTab);
+        ChromeActivityTestRule.waitForDeferredStartup(mAuthTab);
     }
 
     private OverrideUrlLoadingResult getOverrideUrlLoadingResult(String url) {
@@ -160,15 +198,54 @@ public class CustomTabExternalNavigationTest {
     @Test
     @SmallTest
     @Features.EnableFeatures(ChromeFeatureList.CCT_AUTH_TAB)
-    public void testAuthTabShouldReturnAsActivityResult() throws TimeoutException {
+    public void testAuthTabShouldReturnAsActivityResult_customScheme() throws TimeoutException {
         setUpAuthTab();
-        OverrideUrlLoadingResult result = getOverrideUrlLoadingResult(REDIRECT_URL);
+
+        var result = getOverrideUrlLoadingResult(AUTH_TAB_CUSTOM_SCHEME_REDIRECT_URL);
 
         // AuthTab does not launch an external intent for a custom scheme URL, but passes
         // the result back to the calling app and closes itself.
         Assert.assertEquals(
                 OverrideUrlLoadingResultType.OVERRIDE_CLOSING_AFTER_AUTH, result.getResultType());
-        Assert.assertTrue(mCustomTabActivityTestRule.getActivity().isFinishing());
+        Assert.assertTrue(mAuthTab.isFinishing());
+    }
+
+    @Test
+    @SmallTest
+    @Features.EnableFeatures(ChromeFeatureList.CCT_AUTH_TAB)
+    public void testAuthTabReturnAsActivityResult_httpsRedirectUrl() throws TimeoutException {
+        setUpAuthTab();
+        var result = getOverrideUrlLoadingResult(AUTH_TAB_OTHER_URL);
+        Assert.assertEquals(OverrideUrlLoadingResultType.NO_OVERRIDE, result.getResultType());
+        Assert.assertFalse("AuthTab should keep running", mAuthTab.isFinishing());
+
+        result = getOverrideUrlLoadingResult(AUTH_TAB_HTTPS_REDIRECT_URL);
+        Assert.assertEquals(
+                OverrideUrlLoadingResultType.OVERRIDE_CLOSING_AFTER_AUTH, result.getResultType());
+        Assert.assertTrue("AuthTab should be closed", mAuthTab.isFinishing());
+    }
+
+    @Test
+    @SmallTest
+    @Features.EnableFeatures(ChromeFeatureList.CCT_AUTH_TAB)
+    public void testAuthTabReturnAsActivityResult_httpsRedirectUrlDelayed()
+            throws TimeoutException {
+        // Set the testing flag to simulate the case where the result has not yet arrived.
+        // This should lead to returning activity result _after_ the verification flow resumes
+        // to finish it in a delayed manner.
+        AuthTabVerifier.setDelayVerificationForTesting(true);
+        setUpAuthTab();
+        var result =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> {
+                            var override = getOverrideUrlLoadingResult(AUTH_TAB_HTTPS_REDIRECT_URL);
+                            AuthTabVerifier.setDelayVerificationForTesting(false);
+                            mNavigationDelegate.resumeDelayedVerificationForTesting();
+                            return override;
+                        });
+        Assert.assertEquals(
+                OverrideUrlLoadingResultType.OVERRIDE_CLOSING_AFTER_AUTH, result.getResultType());
+        Assert.assertTrue(mAuthTab.isFinishing());
     }
 
     /**
