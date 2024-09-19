@@ -18,6 +18,7 @@ export class WebCamFaceLandmarker {
   private imageCapture_: ImageCapture|undefined;
   private onFaceLandmarkerResult_:
       (resultWithLatency: FaceLandmarkerResultWithLatency) => void;
+  private onTrackEndedHandler_: () => void;
   declare private readyForTesting_: Promise<void>;
   private setReadyForTesting_?: () => void;
 
@@ -25,6 +26,7 @@ export class WebCamFaceLandmarker {
       onFaceLandmarkerResult:
           (resultWithLatency: FaceLandmarkerResultWithLatency) => void) {
     this.onFaceLandmarkerResult_ = onFaceLandmarkerResult;
+    this.onTrackEndedHandler_ = () => this.onTrackEnded_();
     this.intervalID_ = null;
 
     this.readyForTesting_ = new Promise(resolve => {
@@ -104,6 +106,17 @@ export class WebCamFaceLandmarker {
     const stream = await navigator.mediaDevices.getUserMedia(constraints);
     const tracks = stream.getVideoTracks();
     this.imageCapture_ = new ImageCapture(tracks[0]);
+    this.imageCapture_.track.addEventListener(
+        'ended', this.onTrackEndedHandler_);
+  }
+
+  private onTrackEnded_(): void {
+    if (this.imageCapture_) {
+      // Tell MediaStreamTrack that we are no longer using this ended track.
+      this.imageCapture_.track.stop();
+    }
+    this.imageCapture_ = undefined;
+    this.connectToWebCam_();
   }
 
   private startDetectingFaceLandmarks_(): void {
@@ -136,6 +149,8 @@ export class WebCamFaceLandmarker {
 
   stop(): void {
     if (this.imageCapture_) {
+      this.imageCapture_.track.removeEventListener(
+          'ended', this.onTrackEndedHandler_);
       this.imageCapture_.track.stop();
       this.imageCapture_ = undefined;
     }
