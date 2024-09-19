@@ -521,6 +521,59 @@ TEST(ProxyConfigTest, ParseProxyRules) {
   }
 }
 
+#if BUILDFLAG(ENABLE_QUIC_PROXY_SUPPORT)
+// When the bool to allow quic proxy support is false, there should be no valid
+// proxies in the config.
+TEST(ProxyConfigTest, ParseProxyRulesQuicIsNotAllowed) {
+  ProxyConfig config;
+
+  config.proxy_rules().ParseFromString("quic://foopy:443",
+                                       /*allow_bracketed_proxy_chains=*/false,
+                                       /*is_quic_allowed=*/false);
+
+  EXPECT_EQ(ProxyConfig::ProxyRules::Type::PROXY_LIST,
+            config.proxy_rules().type);
+  ExpectProxyServerEquals(nullptr, config.proxy_rules().single_proxies);
+  ExpectProxyServerEquals(nullptr, config.proxy_rules().proxies_for_http);
+  ExpectProxyServerEquals(nullptr, config.proxy_rules().proxies_for_https);
+  ExpectProxyServerEquals(nullptr, config.proxy_rules().proxies_for_ftp);
+  ExpectProxyServerEquals(nullptr, config.proxy_rules().fallback_proxies);
+}
+
+// When the bool to allow quic proxy support is true, a valid quic proxy should
+// be found in the config.
+TEST(ProxyConfigTest, ParseProxyRulesQuicIsAllowed) {
+  ProxyConfig config;
+
+  config.proxy_rules().ParseFromString("quic://foopy:443",
+                                       /*allow_bracketed_proxy_chains=*/false,
+                                       /*is_quic_allowed=*/true);
+
+  EXPECT_EQ(ProxyConfig::ProxyRules::Type::PROXY_LIST,
+            config.proxy_rules().type);
+  ExpectProxyServerEquals("QUIC foopy:443",
+                          config.proxy_rules().single_proxies);
+  ExpectProxyServerEquals(nullptr, config.proxy_rules().proxies_for_http);
+  ExpectProxyServerEquals(nullptr, config.proxy_rules().proxies_for_https);
+  ExpectProxyServerEquals(nullptr, config.proxy_rules().proxies_for_ftp);
+  ExpectProxyServerEquals(nullptr, config.proxy_rules().fallback_proxies);
+}
+#endif  // BUILDFLAG(ENABLE_QUIC_PROXY_SUPPORT)
+
+#if !BUILDFLAG(ENABLE_QUIC_PROXY_SUPPORT)
+// When the build flag is disabled for QUIC support, `ParseFromString` should
+// not allow QUIC proxy support by setting bool to true. A true value should
+// crash.
+TEST(ProxyConfigTest,
+     ParseProxyRulesDisallowQuicProxySupportIfBuildFlagDisabled) {
+  ProxyConfig config;
+
+  EXPECT_CHECK_DEATH(config.proxy_rules().ParseFromString(
+      "quic://foopy:443",
+      /*allow_bracketed_proxy_chains=*/false, /*is_quic_allowed=*/true));
+}
+#endif  // !BUILDFLAG(ENABLE_QUIC_PROXY_SUPPORT)
+
 #if !BUILDFLAG(ENABLE_BRACKETED_PROXY_URIS)
 // In release builds, `ParseFromString` should not allow parsing of multi-proxy
 // chains by setting bool to true. A true value should crash.

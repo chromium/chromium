@@ -36,13 +36,16 @@ void AddProxyListToValue(const char* name,
 void AddProxyURIListToProxyList(std::string uri_list,
                                 ProxyList* proxy_list,
                                 ProxyServer::Scheme default_scheme,
-                                bool allow_bracketed_proxy_chains) {
+                                bool allow_bracketed_proxy_chains,
+                                bool is_quic_allowed) {
   base::StringTokenizer proxy_uri_list(uri_list, ",");
   while (proxy_uri_list.GetNext()) {
     proxy_list->AddProxyChain(
         allow_bracketed_proxy_chains
-            ? MultiProxyUrisToProxyChain(proxy_uri_list.token(), default_scheme)
-            : ProxyUriToProxyChain(proxy_uri_list.token(), default_scheme));
+            ? MultiProxyUrisToProxyChain(proxy_uri_list.token(), default_scheme,
+                                         is_quic_allowed)
+            : ProxyUriToProxyChain(proxy_uri_list.token(), default_scheme,
+                                   is_quic_allowed));
   }
 }
 
@@ -89,9 +92,9 @@ void ProxyConfig::ProxyRules::Apply(const GURL& url, ProxyInfo* result) const {
   }
 }
 
-void ProxyConfig::ProxyRules::ParseFromString(
-    const std::string& proxy_rules,
-    bool allow_bracketed_proxy_chains) {
+void ProxyConfig::ProxyRules::ParseFromString(const std::string& proxy_rules,
+                                              bool allow_bracketed_proxy_chains,
+                                              bool is_quic_allowed) {
   // Reset.
   type = Type::EMPTY;
   single_proxies = ProxyList();
@@ -104,6 +107,10 @@ void ProxyConfig::ProxyRules::ParseFromString(
   // `allow_multi_proxy_chains` can only be true in non-release builds;
   CHECK(!allow_bracketed_proxy_chains);
 #endif  // !BUILDFLAG(ENABLE_BRACKETED_PROXY_URIS)
+
+#if !BUILDFLAG(ENABLE_QUIC_PROXY_SUPPORT)
+  CHECK(!is_quic_allowed);
+#endif  // BUILDFLAG(ENABLE_QUIC_PROXY_SUPPORT)
 
   base::StringTokenizer proxy_server_list(proxy_rules, ";");
   while (proxy_server_list.GetNext()) {
@@ -120,9 +127,9 @@ void ProxyConfig::ProxyRules::ParseFromString(
         if (type == Type::PROXY_LIST_PER_SCHEME) {
           continue;  // Unexpected.
         }
-        AddProxyURIListToProxyList(url_scheme, &single_proxies,
-                                   ProxyServer::SCHEME_HTTP,
-                                   allow_bracketed_proxy_chains);
+        AddProxyURIListToProxyList(
+            url_scheme, &single_proxies, ProxyServer::SCHEME_HTTP,
+            allow_bracketed_proxy_chains, is_quic_allowed);
         type = Type::PROXY_LIST;
         return;
       }
@@ -148,8 +155,8 @@ void ProxyConfig::ProxyRules::ParseFromString(
 
       if (entry) {
         AddProxyURIListToProxyList(proxy_server_for_scheme.token(), entry,
-                                   default_scheme,
-                                   allow_bracketed_proxy_chains);
+                                   default_scheme, allow_bracketed_proxy_chains,
+                                   is_quic_allowed);
       }
     }
   }

@@ -59,6 +59,11 @@ declare_args() {
   # TODO(crbug.com/365771838): Ensure tests are updated if needed if this
   # feature is changed at all.
   enable_bracketed_proxy_uris = is_debug
+
+  # General QUIC proxy support is only available for debug builds.
+  # TODO(crbug.com/367400641): If flag is changed or removed, ensure all
+  # TODOs for this bug are correctly modified.
+  enable_quic_proxy_support = is_debug
 }
 
 assert(!chrome_root_store_optional || !chrome_root_store_only,

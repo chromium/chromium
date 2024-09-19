@@ -107,6 +107,7 @@ buildflag_header("buildflags") {
     "CHROME_ROOT_STORE_SUPPORTED=$chrome_root_store_supported",
     "ENABLE_DEVICE_BOUND_SESSIONS=$enable_device_bound_sessions",
     "ENABLE_BRACKETED_PROXY_URIS=$enable_bracketed_proxy_uris",
+    "ENABLE_QUIC_PROXY_SUPPORT=$enable_quic_proxy_support",
   ]
 }
 

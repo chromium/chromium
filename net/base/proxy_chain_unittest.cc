@@ -396,15 +396,12 @@ TEST(ProxyChainTest, IsValid) {
   // Single proxy chain is valid.
   EXPECT_TRUE(ProxyChain({https1}).IsValid());
 
-  // Invalid Chains. If multi-proxy chain support is disabled, any chain greater
-  // than length 1 is considered invalid. If support is enabled, these chains
-  // remain invalid due to the presence of quic or an invalid sequence of
-  // schemes.
+  // Invalid Chains.
   //
-  // Contains QUIC --> Invalid.
-  EXPECT_FALSE(ProxyChain({quic1}).IsValid());
-  EXPECT_FALSE(ProxyChain({quic1, https1}).IsValid());
-  EXPECT_FALSE(ProxyChain({quic1, quic2, https1, https2}).IsValid());
+  // If multi-proxy chain support is disabled, any chain greater
+  // than length 1 is considered invalid. If multi-proxy support is enabled AND
+  // QUIC proxy support is enabled, these chains remain invalid due to the
+  // sequence of schemes.
   EXPECT_FALSE(ProxyChain({https1, quic2}).IsValid());
   EXPECT_FALSE(ProxyChain({https1, https2, quic1, quic2}).IsValid());
   // ProxyChain cannot contains socks server. Only QUIC and HTTPS.
@@ -442,6 +439,27 @@ TEST(ProxyChainTest, IsValid) {
   // Multi-proxy chains are only supported in debug mode.
   EXPECT_EQ(ProxyChain({https1, https2}).IsValid(),
             multi_proxy_chain_supported);
+
+#if !BUILDFLAG(ENABLE_QUIC_PROXY_SUPPORT)
+  bool is_quic_supported = false;
+#else  // BUILDFLAG(ENABLE_QUIC_PROXY_SUPPORT)
+  bool is_quic_supported = true;
+#endif
+  // Multi-proxy chains are only supported in debug mode.
+  EXPECT_EQ(ProxyChain({quic1}).IsValid(), is_quic_supported);
+
+// If quic proxy support is enabled AND multi-proxy chain support is
+// enabled, the following chains are valid. Otherwise, they are invalid.
+#if !BUILDFLAG(ENABLE_BRACKETED_PROXY_URIS) || \
+    !BUILDFLAG(ENABLE_QUIC_PROXY_SUPPORT)
+  bool is_multi_proxy_quic_supported = false;
+#else
+  bool is_multi_proxy_quic_supported = true;
+#endif
+  EXPECT_EQ(ProxyChain({quic1, https1}).IsValid(),
+            is_multi_proxy_quic_supported);
+  EXPECT_EQ(ProxyChain({quic1, quic2, https1, https2}).IsValid(),
+            is_multi_proxy_quic_supported);
 }
 
 TEST(ProxyChainTest, Unequal) {

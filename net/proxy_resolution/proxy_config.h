@@ -50,9 +50,7 @@ class NET_EXPORT ProxyConfig {
     ProxyRules(const ProxyRules& other);
     ~ProxyRules();
 
-    bool empty() const {
-      return type == Type::EMPTY;
-    }
+    bool empty() const { return type == Type::EMPTY; }
 
     // Sets |result| with the proxies to use for |url| based on the current
     // rules.
@@ -107,7 +105,8 @@ class NET_EXPORT ProxyConfig {
     //                                  and use socks4://foopy2 for all other
     //                                  URLs.
     void ParseFromString(const std::string& proxy_rules,
-                         bool allow_bracketed_proxy_chains = false);
+                         bool allow_bracketed_proxy_chains = false,
+                         bool is_quic_allowed = false);
 
     // Returns one of {&proxies_for_http, &proxies_for_https, &proxies_for_ftp,
     // &fallback_proxies}, or NULL if there is no proxy to use.
@@ -148,8 +147,8 @@ class NET_EXPORT ProxyConfig {
    private:
     // Returns one of {&proxies_for_http, &proxies_for_https, &proxies_for_ftp}
     // or NULL if it is a scheme that we don't have a mapping for. Should only
-    // call this if the type is Type::PROXY_LIST_PER_SCHEME. Intentionally returns
-    // NULL for "ws" and "wss" as those are handled specially by
+    // call this if the type is Type::PROXY_LIST_PER_SCHEME. Intentionally
+    // returns NULL for "ws" and "wss" as those are handled specially by
     // GetProxyListForWebSocketScheme().
     ProxyList* MapUrlSchemeToProxyListNoFallback(const std::string& scheme);
 
@@ -177,41 +176,27 @@ class NET_EXPORT ProxyConfig {
   // Creates a Value dump of this configuration.
   base::Value ToValue() const;
 
-  ProxyRules& proxy_rules() {
-    return proxy_rules_;
-  }
+  ProxyRules& proxy_rules() { return proxy_rules_; }
 
-  const ProxyRules& proxy_rules() const {
-    return proxy_rules_;
-  }
+  const ProxyRules& proxy_rules() const { return proxy_rules_; }
 
-  void set_pac_url(const GURL& url) {
-    pac_url_ = url;
-  }
+  void set_pac_url(const GURL& url) { pac_url_ = url; }
 
-  const GURL& pac_url() const {
-    return pac_url_;
-  }
+  const GURL& pac_url() const { return pac_url_; }
 
   void set_pac_mandatory(bool enable_pac_mandatory) {
     pac_mandatory_ = enable_pac_mandatory;
   }
 
-  bool pac_mandatory() const {
-    return pac_mandatory_;
-  }
+  bool pac_mandatory() const { return pac_mandatory_; }
 
-  bool has_pac_url() const {
-    return pac_url_.is_valid();
-  }
+  bool has_pac_url() const { return pac_url_.is_valid(); }
 
   void set_auto_detect(bool enable_auto_detect) {
     auto_detect_ = enable_auto_detect;
   }
 
-  bool auto_detect() const {
-    return auto_detect_;
-  }
+  bool auto_detect() const { return auto_detect_; }
 
   void set_from_system(bool from_system) { from_system_ = from_system; }
 
@@ -219,9 +204,7 @@ class NET_EXPORT ProxyConfig {
 
   // Helpers to construct some common proxy configurations.
 
-  static ProxyConfig CreateDirect() {
-    return ProxyConfig();
-  }
+  static ProxyConfig CreateDirect() { return ProxyConfig(); }
 
   static ProxyConfig CreateAutoDetect() {
     ProxyConfig config;
@@ -262,7 +245,5 @@ class NET_EXPORT ProxyConfig {
 };
 
 }  // namespace net
-
-
 
 #endif  // NET_PROXY_RESOLUTION_PROXY_CONFIG_H_

@@ -19,6 +19,18 @@
 
 namespace net {
 
+namespace {
+bool ShouldAllowQuicForAllChains() {
+  bool should_allow = false;
+
+#if BUILDFLAG(ENABLE_QUIC_PROXY_SUPPORT)
+  should_allow = true;
+#endif  // BUILDFLAG(ENABLE_QUIC_PROXY_SUPPORT)
+
+  return should_allow;
+}
+}  // namespace
+
 ProxyChain::ProxyChain() {
   proxy_server_list_ = std::nullopt;
 }
@@ -150,10 +162,12 @@ bool ProxyChain::IsValidInternal() const {
   if (is_direct()) {
     return true;
   }
+  bool should_allow_quic =
+      is_for_ip_protection() || ShouldAllowQuicForAllChains();
   if (is_single_proxy()) {
     bool is_valid = proxy_server_list_.value().at(0).is_valid();
     if (proxy_server_list_.value().at(0).is_quic()) {
-      is_valid = is_valid && is_for_ip_protection();
+      is_valid = is_valid && should_allow_quic;
     }
     return is_valid;
   }
@@ -185,8 +199,9 @@ bool ProxyChain::IsValidInternal() const {
     }
   }
 
-  // QUIC is only allowed for IP protection.
-  return !seen_quic || is_for_ip_protection();
+  // QUIC is only allowed for IP protection unless in debug builds where it is
+  // generally available.
+  return !seen_quic || should_allow_quic;
 }
 
 std::ostream& operator<<(std::ostream& os, const ProxyChain& proxy_chain) {
