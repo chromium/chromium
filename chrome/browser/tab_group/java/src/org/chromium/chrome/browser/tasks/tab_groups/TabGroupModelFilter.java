@@ -797,11 +797,11 @@ public class TabGroupModelFilter extends TabModelFilter {
     }
 
     private boolean shouldUseParentIds(Tab tab) {
+        @TabLaunchType int tabLaunchType = tab.getLaunchType();
         return isTabModelRestored()
                 && !mIsResetting
-                && ((tab.getLaunchType() == TabLaunchType.FROM_TAB_GROUP_UI
-                        || tab.getLaunchType()
-                                == TabLaunchType.FROM_LONGPRESS_BACKGROUND_IN_GROUP));
+                && ((tabLaunchType == TabLaunchType.FROM_TAB_GROUP_UI
+                        || tabLaunchType == TabLaunchType.FROM_LONGPRESS_BACKGROUND_IN_GROUP));
     }
 
     private Tab getParentTab(Tab tab) {

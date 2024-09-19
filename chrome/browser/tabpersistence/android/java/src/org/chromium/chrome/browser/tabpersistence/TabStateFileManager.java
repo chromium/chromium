@@ -342,13 +342,10 @@ public class TabStateFileManager {
             } catch (EOFException eof) {
             }
             try {
-                boolean shouldPreserveNotUsed = stream.readBoolean();
+                // Skip obsolete shouldPreserve.
+                stream.readBoolean();
             } catch (EOFException eof) {
                 // Could happen if reading a version of TabState without this flag set.
-                Log.w(
-                        TAG,
-                        "Failed to read shouldPreserve flag from tab state. "
-                                + "Assuming shouldPreserve is false");
             }
             tabState.isIncognito = encrypted;
             try {
@@ -365,14 +362,14 @@ public class TabStateFileManager {
                 tabState.tabLaunchTypeAtCreation = stream.readInt();
                 if (tabState.tabLaunchTypeAtCreation < 0
                         || tabState.tabLaunchTypeAtCreation >= TabLaunchType.SIZE) {
-                    tabState.tabLaunchTypeAtCreation = null;
+                    tabState.tabLaunchTypeAtCreation = TabLaunchType.UNSET;
                 }
             } catch (EOFException eof) {
-                tabState.tabLaunchTypeAtCreation = null;
+                tabState.tabLaunchTypeAtCreation = TabLaunchType.UNSET;
                 Log.w(
                         TAG,
                         "Failed to read tab launch type at creation from tab state. "
-                                + "Assuming tab launch type is null");
+                                + "Assuming tab launch type is UNSET");
             }
             try {
                 tabState.rootId = stream.readInt();
@@ -597,8 +594,7 @@ public class TabStateFileManager {
             dataOutputStream.writeLong(-1); // Obsolete sync ID.
             dataOutputStream.writeBoolean(false); // Obsolete attribute |SHOULD_PRESERVE|.
             dataOutputStream.writeInt(state.themeColor);
-            dataOutputStream.writeInt(
-                    state.tabLaunchTypeAtCreation != null ? state.tabLaunchTypeAtCreation : -1);
+            dataOutputStream.writeInt(state.tabLaunchTypeAtCreation);
             dataOutputStream.writeInt(state.rootId);
             dataOutputStream.writeInt(state.userAgent);
             dataOutputStream.writeLong(state.lastNavigationCommittedTimestampMillis);

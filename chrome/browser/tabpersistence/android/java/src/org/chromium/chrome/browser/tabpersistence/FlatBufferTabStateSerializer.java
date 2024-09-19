@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.tabpersistence;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import com.google.flatbuffers.FlatBufferBuilder;
@@ -160,8 +159,7 @@ public class FlatBufferTabStateSerializer implements TabStateSerializer {
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    public static @Nullable @TabLaunchType Integer getLaunchTypeFromFlatBuffer(
-            int flatBufferLaunchType) {
+    public static @TabLaunchType int getLaunchTypeFromFlatBuffer(int flatBufferLaunchType) {
         switch (flatBufferLaunchType) {
             case TabLaunchTypeAtCreation.FROM_LINK:
                 return TabLaunchType.FROM_LINK;
@@ -216,21 +214,18 @@ public class FlatBufferTabStateSerializer implements TabStateSerializer {
             case TabLaunchTypeAtCreation.SIZE:
                 return TabLaunchType.SIZE;
             case TabLaunchTypeAtCreation.UNKNOWN:
-                return null;
+                return TabLaunchType.UNSET;
             default:
                 assert false
                         : "Unexpected deserialization of LaunchAtCreationType: "
                                 + flatBufferLaunchType;
                 // shouldn't happen
-                return null;
+                return TabLaunchType.UNSET;
         }
     }
 
     @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    public static int getLaunchTypeToFlatBuffer(@Nullable @TabLaunchType Integer tabLaunchType) {
-        if (tabLaunchType == null) {
-            return TabLaunchTypeAtCreation.UNKNOWN;
-        }
+    public static int getLaunchTypeToFlatBuffer(@TabLaunchType int tabLaunchType) {
         switch (tabLaunchType) {
             case TabLaunchType.FROM_LINK:
                 return TabLaunchTypeAtCreation.FROM_LINK;
@@ -287,7 +282,7 @@ public class FlatBufferTabStateSerializer implements TabStateSerializer {
             default:
                 assert false : "Unexpected serialization of LaunchAtCreationType: " + tabLaunchType;
                 // shouldn't happen
-                return TabLaunchTypeAtCreation.UNKNOWN;
+                return TabLaunchTypeAtCreation.UNSET;
         }
     }
 

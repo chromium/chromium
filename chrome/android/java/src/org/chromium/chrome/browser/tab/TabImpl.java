@@ -179,7 +179,7 @@ class TabImpl implements Tab {
      * hardware key. A standard tab however should be kept open and the entire activity should be
      * moved to the background.
      */
-    private @Nullable @TabLaunchType Integer mLaunchType;
+    private @TabLaunchType int mLaunchType;
 
     private @Nullable @TabCreationState Integer mCreationState;
 
@@ -260,11 +260,11 @@ class TabImpl implements Tab {
     private long mLastNavigationCommittedTimestampMillis = INVALID_TIMESTAMP;
 
     /**
-     * Saves how this tab was initially launched so that we can record metrics on how the
-     * tab was created. This is different than {@link Tab#getLaunchType()}, since {@link
+     * Saves how this tab was initially launched so that we can record metrics on how the tab was
+     * created. This is different than {@link Tab#getLaunchType()}, since {@link
      * Tab#getLaunchType()} will be overridden to "FROM_RESTORE" during tab restoration.
      */
-    private @Nullable @TabLaunchType Integer mTabLaunchTypeAtCreation;
+    private @TabLaunchType int mTabLaunchTypeAtCreation;
 
     /**
      * Variables used to track native page creation prior to mNativePage assignment. Avoids the case
@@ -302,7 +302,7 @@ class TabImpl implements Tab {
      * @param launchType Type indicating how this tab was launched.
      */
     @SuppressLint("HandlerLeak")
-    TabImpl(int id, @NonNull Profile profile, @Nullable @TabLaunchType Integer launchType) {
+    TabImpl(int id, @NonNull Profile profile, @TabLaunchType int launchType) {
         mId = TabIdManager.getInstance().generateValidId(id);
         mProfile = profile;
         assert mProfile != null;
@@ -2184,7 +2184,7 @@ class TabImpl implements Tab {
     }
 
     @Override
-    public @Nullable @TabLaunchType Integer getTabLaunchTypeAtCreation() {
+    public @TabLaunchType int getTabLaunchTypeAtCreation() {
         return mTabLaunchTypeAtCreation;
     }
 

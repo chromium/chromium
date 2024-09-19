@@ -50,7 +50,7 @@ public class TabStateFileManagerUnitTest {
     private static final int VERSION = 2;
     private static final int THEME_COLOR = 4;
     private static final String OPENER_APP_ID = "test";
-    private static final @Nullable @TabLaunchType Integer LAUNCH_TYPE_AT_CREATION = null;
+    private static final @TabLaunchType int LAUNCH_TYPE_AT_CREATION = TabLaunchType.UNSET;
     private static final int ROOT_ID = 1;
     private static final @TabUserAgent int USER_AGENT = TabUserAgent.MOBILE;
     private static final long TAB_GROUP_ID_TOKEN_HIGH = 0x1234567890L;
@@ -134,6 +134,7 @@ public class TabStateFileManagerUnitTest {
         // FlatBuffer enum values should not be changed as they are persisted across restarts.
         // Changing them would cause backward compatibility issues
         Assert.assertEquals(-2, TabLaunchTypeAtCreation.SIZE);
+        // UNKNOWN is effectively deprecated.
         Assert.assertEquals(-1, TabLaunchTypeAtCreation.UNKNOWN);
         Assert.assertEquals(0, TabLaunchTypeAtCreation.FROM_LINK);
         Assert.assertEquals(1, TabLaunchTypeAtCreation.FROM_EXTERNAL_APP);
@@ -195,115 +196,115 @@ public class TabStateFileManagerUnitTest {
     @Test
     public void testLaunchTypeFromFlatBufferConversion() {
         Assert.assertEquals(
-                (Integer) TabLaunchType.FROM_LINK,
+                TabLaunchType.FROM_LINK,
                 FlatBufferTabStateSerializer.getLaunchTypeFromFlatBuffer(
                         TabLaunchTypeAtCreation.FROM_LINK));
         Assert.assertEquals(
-                (Integer) TabLaunchType.FROM_EXTERNAL_APP,
+                TabLaunchType.FROM_EXTERNAL_APP,
                 FlatBufferTabStateSerializer.getLaunchTypeFromFlatBuffer(
                         TabLaunchTypeAtCreation.FROM_EXTERNAL_APP));
         Assert.assertEquals(
-                (Integer) TabLaunchType.FROM_CHROME_UI,
+                TabLaunchType.FROM_CHROME_UI,
                 FlatBufferTabStateSerializer.getLaunchTypeFromFlatBuffer(
                         TabLaunchTypeAtCreation.FROM_CHROME_UI));
         Assert.assertEquals(
-                (Integer) TabLaunchType.FROM_RESTORE,
+                TabLaunchType.FROM_RESTORE,
                 FlatBufferTabStateSerializer.getLaunchTypeFromFlatBuffer(
                         TabLaunchTypeAtCreation.FROM_RESTORE));
         Assert.assertEquals(
-                (Integer) TabLaunchType.FROM_LONGPRESS_FOREGROUND,
+                TabLaunchType.FROM_LONGPRESS_FOREGROUND,
                 FlatBufferTabStateSerializer.getLaunchTypeFromFlatBuffer(
                         TabLaunchTypeAtCreation.FROM_LONGPRESS_FOREGROUND));
         Assert.assertEquals(
-                (Integer) TabLaunchType.FROM_LONGPRESS_INCOGNITO,
+                TabLaunchType.FROM_LONGPRESS_INCOGNITO,
                 FlatBufferTabStateSerializer.getLaunchTypeFromFlatBuffer(
                         TabLaunchTypeAtCreation.FROM_LONGPRESS_INCOGNITO));
         Assert.assertEquals(
-                (Integer) TabLaunchType.FROM_LONGPRESS_BACKGROUND,
+                TabLaunchType.FROM_LONGPRESS_BACKGROUND,
                 FlatBufferTabStateSerializer.getLaunchTypeFromFlatBuffer(
                         TabLaunchTypeAtCreation.FROM_LONGPRESS_BACKGROUND));
         Assert.assertEquals(
-                (Integer) TabLaunchType.FROM_REPARENTING,
+                TabLaunchType.FROM_REPARENTING,
                 FlatBufferTabStateSerializer.getLaunchTypeFromFlatBuffer(
                         TabLaunchTypeAtCreation.FROM_REPARENTING));
         Assert.assertEquals(
-                (Integer) TabLaunchType.FROM_LAUNCHER_SHORTCUT,
+                TabLaunchType.FROM_LAUNCHER_SHORTCUT,
                 FlatBufferTabStateSerializer.getLaunchTypeFromFlatBuffer(
                         TabLaunchTypeAtCreation.FROM_LAUNCHER_SHORTCUT));
         Assert.assertEquals(
-                (Integer) TabLaunchType.FROM_SPECULATIVE_BACKGROUND_CREATION,
+                TabLaunchType.FROM_SPECULATIVE_BACKGROUND_CREATION,
                 FlatBufferTabStateSerializer.getLaunchTypeFromFlatBuffer(
                         TabLaunchTypeAtCreation.FROM_SPECULATIVE_BACKGROUND_CREATION));
         Assert.assertEquals(
-                (Integer) TabLaunchType.FROM_BROWSER_ACTIONS,
+                TabLaunchType.FROM_BROWSER_ACTIONS,
                 FlatBufferTabStateSerializer.getLaunchTypeFromFlatBuffer(
                         TabLaunchTypeAtCreation.FROM_BROWSER_ACTIONS));
         Assert.assertEquals(
-                (Integer) TabLaunchType.FROM_LAUNCH_NEW_INCOGNITO_TAB,
+                TabLaunchType.FROM_LAUNCH_NEW_INCOGNITO_TAB,
                 FlatBufferTabStateSerializer.getLaunchTypeFromFlatBuffer(
                         TabLaunchTypeAtCreation.FROM_LAUNCH_NEW_INCOGNITO_TAB));
         Assert.assertEquals(
-                (Integer) TabLaunchType.FROM_LAUNCH_NEW_INCOGNITO_TAB,
+                TabLaunchType.FROM_LAUNCH_NEW_INCOGNITO_TAB,
                 FlatBufferTabStateSerializer.getLaunchTypeFromFlatBuffer(
                         TabLaunchTypeAtCreation.FROM_LAUNCH_NEW_INCOGNITO_TAB));
         Assert.assertEquals(
-                (Integer) TabLaunchType.FROM_STARTUP,
+                TabLaunchType.FROM_STARTUP,
                 FlatBufferTabStateSerializer.getLaunchTypeFromFlatBuffer(
                         TabLaunchTypeAtCreation.FROM_STARTUP));
         Assert.assertEquals(
-                (Integer) TabLaunchType.FROM_START_SURFACE,
+                TabLaunchType.FROM_START_SURFACE,
                 FlatBufferTabStateSerializer.getLaunchTypeFromFlatBuffer(
                         TabLaunchTypeAtCreation.FROM_START_SURFACE));
         Assert.assertEquals(
-                (Integer) TabLaunchType.FROM_TAB_GROUP_UI,
+                TabLaunchType.FROM_TAB_GROUP_UI,
                 FlatBufferTabStateSerializer.getLaunchTypeFromFlatBuffer(
                         TabLaunchTypeAtCreation.FROM_TAB_GROUP_UI));
         Assert.assertEquals(
-                (Integer) TabLaunchType.FROM_TAB_SWITCHER_UI,
+                TabLaunchType.FROM_TAB_SWITCHER_UI,
                 FlatBufferTabStateSerializer.getLaunchTypeFromFlatBuffer(
                         TabLaunchTypeAtCreation.FROM_TAB_SWITCHER_UI));
         Assert.assertEquals(
-                (Integer) TabLaunchType.FROM_RESTORE_TABS_UI,
+                TabLaunchType.FROM_RESTORE_TABS_UI,
                 FlatBufferTabStateSerializer.getLaunchTypeFromFlatBuffer(
                         TabLaunchTypeAtCreation.FROM_RESTORE_TABS_UI));
         Assert.assertEquals(
-                (Integer) TabLaunchType.FROM_LONGPRESS_BACKGROUND_IN_GROUP,
+                TabLaunchType.FROM_LONGPRESS_BACKGROUND_IN_GROUP,
                 FlatBufferTabStateSerializer.getLaunchTypeFromFlatBuffer(
                         TabLaunchTypeAtCreation.FROM_LONGPRESS_BACKGROUND_IN_GROUP));
         Assert.assertEquals(
-                (Integer) TabLaunchType.FROM_APP_WIDGET,
+                TabLaunchType.FROM_APP_WIDGET,
                 FlatBufferTabStateSerializer.getLaunchTypeFromFlatBuffer(
                         TabLaunchTypeAtCreation.FROM_APP_WIDGET));
         Assert.assertEquals(
-                (Integer) TabLaunchType.FROM_RECENT_TABS,
+                TabLaunchType.FROM_RECENT_TABS,
                 FlatBufferTabStateSerializer.getLaunchTypeFromFlatBuffer(
                         TabLaunchTypeAtCreation.FROM_RECENT_TABS));
         Assert.assertEquals(
-                (Integer) TabLaunchType.FROM_READING_LIST,
+                TabLaunchType.FROM_READING_LIST,
                 FlatBufferTabStateSerializer.getLaunchTypeFromFlatBuffer(
                         TabLaunchTypeAtCreation.FROM_READING_LIST));
         Assert.assertEquals(
-                (Integer) TabLaunchType.FROM_OMNIBOX,
+                TabLaunchType.FROM_OMNIBOX,
                 FlatBufferTabStateSerializer.getLaunchTypeFromFlatBuffer(
                         TabLaunchTypeAtCreation.FROM_OMNIBOX));
         Assert.assertEquals(
-                (Integer) TabLaunchType.UNSET,
+                TabLaunchType.UNSET,
                 FlatBufferTabStateSerializer.getLaunchTypeFromFlatBuffer(
                         TabLaunchTypeAtCreation.UNSET));
         Assert.assertEquals(
-                (Integer) TabLaunchType.FROM_SYNC_BACKGROUND,
+                TabLaunchType.FROM_SYNC_BACKGROUND,
                 FlatBufferTabStateSerializer.getLaunchTypeFromFlatBuffer(
                         TabLaunchTypeAtCreation.FROM_SYNC_BACKGROUND));
         Assert.assertEquals(
-                (Integer) TabLaunchType.FROM_RECENT_TABS_FOREGROUND,
+                TabLaunchType.FROM_RECENT_TABS_FOREGROUND,
                 FlatBufferTabStateSerializer.getLaunchTypeFromFlatBuffer(
                         TabLaunchTypeAtCreation.FROM_RECENT_TABS_FOREGROUND));
         Assert.assertEquals(
-                (Integer) TabLaunchType.SIZE,
+                TabLaunchType.SIZE,
                 FlatBufferTabStateSerializer.getLaunchTypeFromFlatBuffer(
                         TabLaunchTypeAtCreation.SIZE));
         Assert.assertEquals(
-                null,
+                TabLaunchType.UNSET,
                 FlatBufferTabStateSerializer.getLaunchTypeFromFlatBuffer(
                         TabLaunchTypeAtCreation.UNKNOWN));
     }
@@ -412,9 +413,6 @@ public class TabStateFileManagerUnitTest {
         Assert.assertEquals(
                 TabLaunchTypeAtCreation.SIZE,
                 FlatBufferTabStateSerializer.getLaunchTypeToFlatBuffer(TabLaunchType.SIZE));
-        Assert.assertEquals(
-                TabLaunchTypeAtCreation.UNKNOWN,
-                FlatBufferTabStateSerializer.getLaunchTypeToFlatBuffer(null));
     }
 
     @Test

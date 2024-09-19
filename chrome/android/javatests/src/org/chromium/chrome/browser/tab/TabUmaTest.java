@@ -230,7 +230,7 @@ public class TabUmaTest {
             state.parentId = 1;
             state.themeColor = 4;
             state.openerAppId = "test";
-            state.tabLaunchTypeAtCreation = null;
+            state.tabLaunchTypeAtCreation = TabLaunchType.UNSET;
             state.rootId = 1;
         }
         return state;

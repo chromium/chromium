@@ -1358,7 +1358,8 @@ public class IntentHandler {
 
     /**
      * @param intent An Intent to be checked.
-     * @return The launch type of the tab to be created.
+     * @return The launch type of the tab to be created. If null a reasonable default should be
+     *     chosen downstream.
      */
     public static @Nullable @TabLaunchType Integer getTabLaunchType(Intent intent) {
         return IntentUtils.safeGetSerializableExtra(intent, EXTRA_TAB_LAUNCH_TYPE);

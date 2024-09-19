@@ -100,7 +100,7 @@ public class TabUnitTest {
         when(mUserPrefsNatives.get(mProfile)).thenReturn(mPrefs);
 
         mTab =
-                new TabImpl(TAB1_ID, mProfile, null) {
+                new TabImpl(TAB1_ID, mProfile, TabLaunchType.FROM_CHROME_UI) {
                     @Override
                     public boolean isInitialized() {
                         return true;
@@ -218,7 +218,7 @@ public class TabUnitTest {
         doReturn(mChromeActivity).when(mWeakReferenceContext).get();
 
         mTab =
-                new TabImpl(TAB1_ID, mProfile, null) {
+                new TabImpl(TAB1_ID, mProfile, TabLaunchType.FROM_CHROME_UI) {
                     @Override
                     public WindowAndroid getWindowAndroid() {
                         return mWindowAndroid;
