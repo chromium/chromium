@@ -7,7 +7,7 @@
 
 #import <AuthenticationServices/AuthenticationServices.h>
 
-#import "ios/chrome/credential_provider_extension/passkey_keychain_provider.h"
+@protocol Credential;
 
 typedef void (^FetchKeyCompletionBlock)(NSData* security_domain_secret);
 
@@ -21,16 +21,14 @@ typedef void (^FetchKeyCompletionBlock)(NSData* security_domain_secret);
 - (void)userSelectedPasskey:(ASPasskeyAssertionCredential*)credential
     API_AVAILABLE(ios(17.0));
 
+- (void)userSelectedPasskey:(id<Credential>)passkey
+             clientDataHash:(NSData*)clientDataHash
+         allowedCredentials:(NSArray<NSData*>*)allowedCredentials
+                 allowRetry:(BOOL)allowRetry;
+
 - (void)userCancelledRequestWithErrorCode:(ASExtensionErrorCode)errorCode;
 
 - (void)completeExtensionConfigurationRequest;
-
-// Fetches the Security Domain Secret and calls the completion block
-// with the Security Domain Secret as the input argument.
-- (void)fetchSecurityDomainSecretForGaia:(NSString*)gaia
-                                 purpose:(PasskeyKeychainProvider::
-                                              ReauthenticatePurpose)purpose
-                              completion:(FetchKeyCompletionBlock)completion;
 
 @end
 

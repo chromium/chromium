@@ -142,27 +142,11 @@
         // TODO(crbug.com/330355124): Handle
         // self.requestParameters.userVerificationPreference.
 
-        __weak __typeof(self) weakSelf = self;
-        auto completion =
-            ^(NSData* security_domain_secret) {
-              CredentialListCoordinator* strongSelf = weakSelf;
-              if (!strongSelf) {
-                return;
-              }
-
-              ASPasskeyAssertionCredential* passkeyCredential =
-                  PerformPasskeyAssertion(
-                      credential, strongSelf.requestParameters.clientDataHash,
-                      strongSelf.allowedCredentials, security_domain_secret);
-              [strongSelf.credentialResponseHandler
-                  userSelectedPasskey:passkeyCredential];
-            };
-
         [self.credentialResponseHandler
-            fetchSecurityDomainSecretForGaia:credential.gaia
-                                     purpose:PasskeyKeychainProvider::
-                                                 ReauthenticatePurpose::kDecrypt
-                                  completion:completion];
+            userSelectedPasskey:credential
+                 clientDataHash:self.requestParameters.clientDataHash
+             allowedCredentials:self.allowedCredentials
+                     allowRetry:YES];
       }
     }
   }];

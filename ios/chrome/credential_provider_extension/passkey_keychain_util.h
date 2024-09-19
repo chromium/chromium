@@ -5,6 +5,7 @@
 #ifndef IOS_CHROME_CREDENTIAL_PROVIDER_EXTENSION_PASSKEY_KEYCHAIN_UTIL_H_
 #define IOS_CHROME_CREDENTIAL_PROVIDER_EXTENSION_PASSKEY_KEYCHAIN_UTIL_H_
 
+#import "base/ios/block_types.h"
 #import "ios/chrome/credential_provider_extension/passkey_keychain_provider.h"
 #import "ios/chrome/credential_provider_extension/ui/credential_response_handler.h"
 
@@ -14,6 +15,10 @@ void FetchSecurityDomainSecret(
     NSString* gaia,
     UINavigationController* navigation_controller,
     PasskeyKeychainProvider::ReauthenticatePurpose purpose,
-    FetchKeyCompletionBlock callback);
+    FetchKeyCompletionBlock completion);
+
+// Marks the security domain secret vault keys as stale and calls the completion
+// block.
+void MarkKeysAsStale(NSString* gaia, ProceduralBlock completion);
 
 #endif  // IOS_CHROME_CREDENTIAL_PROVIDER_EXTENSION_PASSKEY_KEYCHAIN_UTIL_H_

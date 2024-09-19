@@ -233,30 +233,10 @@ UIColor* BackgroundColor() {
       base::apple::ObjCCastStrict<ASPasskeyCredentialIdentity>(
           passkeyCredentialRequest.credentialIdentity);
 
-  __weak __typeof(self) weakSelf = self;
-  auto completion = ^(NSData* security_domain_secret) {
-    CredentialProviderViewController* strongSelf = weakSelf;
-    if (!strongSelf) {
-      return;
-    }
-
-    ASPasskeyRegistrationCredential* passkeyRegistrationCredential =
-        PerformPasskeyCreation(passkeyCredentialRequest.clientDataHash,
-                               identity.relyingPartyIdentifier,
-                               identity.userName, identity.userHandle,
-                               security_domain_secret);
-    if (passkeyRegistrationCredential) {
-      [strongSelf completeRegistrationRequestWithSelectedPasskeyCredential:
-                      passkeyRegistrationCredential];
-    } else {
-      [strongSelf exitWithErrorCode:ASExtensionErrorCodeFailed];
-    }
-  };
-
-  [self fetchSecurityDomainSecretForGaia:[self gaia]
-                                 purpose:PasskeyKeychainProvider::
-                                             ReauthenticatePurpose::kEncrypt
-                              completion:completion];
+  [self createPasskeyForClient:passkeyCredentialRequest.clientDataHash
+        relyingPartyIdentifier:identity.relyingPartyIdentifier
+                      username:identity.userName
+                    userHandle:identity.userHandle];
 }
 
 #pragma mark - Properties
@@ -380,24 +360,10 @@ UIColor* BackgroundColor() {
       // TODO(crbug.com/355047459): Handle
       // passkeyCredentialRequest.userVerificationPreference.
 
-      __weak __typeof(self) weakSelf = self;
-      auto completion = ^(NSData* security_domain_secret) {
-        CredentialProviderViewController* strongSelf = weakSelf;
-        if (!strongSelf) {
-          return;
-        }
-
-        ASPasskeyAssertionCredential* passkeyCredential =
-            PerformPasskeyAssertion(credential,
-                                    passkeyCredentialRequest.clientDataHash,
-                                    nil, security_domain_secret);
-        [strongSelf userSelectedPasskey:passkeyCredential];
-      };
-
-      [self fetchSecurityDomainSecretForGaia:credential.gaia
-                                     purpose:PasskeyKeychainProvider::
-                                                 ReauthenticatePurpose::kDecrypt
-                                  completion:completion];
+      [self userSelectedPasskey:credential
+                 clientDataHash:passkeyCredentialRequest.clientDataHash
+             allowedCredentials:nil
+                     allowRetry:YES];
       return;
     }
   }
@@ -544,6 +510,70 @@ UIColor* BackgroundColor() {
                    completion:nil];
 }
 
+// Attempts to create a passkey.
+- (void)createPasskeyForClient:(NSData*)clientDataHash
+        relyingPartyIdentifier:(NSString*)relyingPartyIdentifier
+                      username:(NSString*)username
+                    userHandle:(NSData*)userHandle
+          securityDomainSecret:(NSData*)securityDomainSecret
+    API_AVAILABLE(ios(17.0)) {
+  ASPasskeyRegistrationCredential* passkeyRegistrationCredential =
+      PerformPasskeyCreation(clientDataHash, relyingPartyIdentifier, username,
+                             userHandle, securityDomainSecret);
+  if (passkeyRegistrationCredential) {
+    [self completeRegistrationRequestWithSelectedPasskeyCredential:
+              passkeyRegistrationCredential];
+  } else {
+    [self exitWithErrorCode:ASExtensionErrorCodeFailed];
+  }
+}
+
+// Fetches the security domain secret in order to use it in the passkey creation
+// process.
+- (void)createPasskeyForClient:(NSData*)clientDataHash
+        relyingPartyIdentifier:(NSString*)relyingPartyIdentifier
+                      username:(NSString*)username
+                    userHandle:(NSData*)userHandle API_AVAILABLE(ios(17.0)) {
+  __weak __typeof(self) weakSelf = self;
+  auto completion = ^(NSData* securityDomainSecret) {
+    [weakSelf createPasskeyForClient:clientDataHash
+              relyingPartyIdentifier:relyingPartyIdentifier
+                            username:username
+                          userHandle:userHandle
+                securityDomainSecret:securityDomainSecret];
+  };
+
+  [self fetchSecurityDomainSecretForGaia:[self gaia]
+                                 purpose:PasskeyKeychainProvider::
+                                             ReauthenticatePurpose::kEncrypt
+                              completion:completion];
+}
+
+// Attempts to perform passkey assertion and retry on failure if allowed.
+- (void)passkeyAssertionWithCredential:(id<Credential>)credential
+                        clientDataHash:(NSData*)clientDataHash
+                    allowedCredentials:(NSArray<NSData*>*)allowedCredentials
+                  securityDomainSecret:(NSData*)securityDomainSecret
+                            allowRetry:(BOOL)allowRetry
+    API_AVAILABLE(ios(17.0)) {
+  ASPasskeyAssertionCredential* passkeyCredential = PerformPasskeyAssertion(
+      credential, clientDataHash, allowedCredentials, securityDomainSecret);
+  if (passkeyCredential || !allowRetry) {
+    [self userSelectedPasskey:passkeyCredential];
+  } else {
+    // If we failed to perform the passkey assertion on the first attempt, try
+    // to mark the security domain secret vault keys as stale and retry.
+    __weak __typeof(self) weakSelf = self;
+    MarkKeysAsStale(credential.gaia, ^() {
+      [weakSelf userSelectedPasskey:credential
+                     clientDataHash:clientDataHash
+                 allowedCredentials:allowedCredentials
+                         allowRetry:NO];
+    });
+  }
+}
+
+// Returns the gaia for the account used for passkey creation.
 - (NSString*)gaia {
   // TODO(crbug.com/355041765): Get gaia from ios keychain instead of the
   // credential store, since that would fail if there are no synced credentials
@@ -556,6 +586,17 @@ UIColor* BackgroundColor() {
       }];
   return credentialIndex != NSNotFound ? credentials[credentialIndex].gaia
                                        : nil;
+}
+
+// Fetches the security domain secret and calls the completion block with the
+// security domain secret as input.
+- (void)fetchSecurityDomainSecretForGaia:(NSString*)gaia
+                                 purpose:(PasskeyKeychainProvider::
+                                              ReauthenticatePurpose)purpose
+                              completion:(FetchKeyCompletionBlock)completion {
+  // TODO(crbug.com/355047459): Add navigation controller.
+  FetchSecurityDomainSecret(gaia, /*navigation_controller =*/nil, purpose,
+                            completion);
 }
 
 #pragma mark - SuccessfulReauthTimeAccessor
@@ -592,6 +633,25 @@ UIColor* BackgroundColor() {
   }
 }
 
+- (void)userSelectedPasskey:(id<Credential>)credential
+             clientDataHash:(NSData*)clientDataHash
+         allowedCredentials:(NSArray<NSData*>*)allowedCredentials
+                 allowRetry:(BOOL)allowRetry API_AVAILABLE(ios(17.0)) {
+  __weak __typeof(self) weakSelf = self;
+  auto completion = ^(NSData* securityDomainSecret) {
+    [weakSelf passkeyAssertionWithCredential:credential
+                              clientDataHash:clientDataHash
+                          allowedCredentials:allowedCredentials
+                        securityDomainSecret:securityDomainSecret
+                                  allowRetry:allowRetry];
+  };
+
+  [self fetchSecurityDomainSecretForGaia:credential.gaia
+                                 purpose:PasskeyKeychainProvider::
+                                             ReauthenticatePurpose::kDecrypt
+                              completion:completion];
+}
+
 - (void)userCancelledRequestWithErrorCode:(ASExtensionErrorCode)errorCode {
   [self exitWithErrorCode:errorCode];
 }
@@ -600,15 +660,6 @@ UIColor* BackgroundColor() {
   [self.consentCoordinator stop];
   self.consentCoordinator = nil;
   [self.extensionContext completeExtensionConfigurationRequest];
-}
-
-- (void)fetchSecurityDomainSecretForGaia:(NSString*)gaia
-                                 purpose:(PasskeyKeychainProvider::
-                                              ReauthenticatePurpose)purpose
-                              completion:(FetchKeyCompletionBlock)completion {
-  // TODO(crbug.com/355047459): Add navigation controller.
-  FetchSecurityDomainSecret(gaia, /*navigation_controller =*/nil, purpose,
-                            completion);
 }
 
 @end

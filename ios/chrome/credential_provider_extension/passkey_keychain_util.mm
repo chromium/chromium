@@ -24,11 +24,18 @@ void FetchSecurityDomainSecret(
     NSString* gaia,
     UINavigationController* navigation_controller,
     PasskeyKeychainProvider::ReauthenticatePurpose purpose,
-    FetchKeyCompletionBlock callback) {
+    FetchKeyCompletionBlock completion) {
   PasskeyKeychainProvider passkeyKeychainProvider;
   passkeyKeychainProvider.FetchKeys(
       gaia, navigation_controller, purpose,
       base::BindOnce(^(const PasskeyKeychainProvider::SharedKeyList& keyList) {
-        callback(GetSecurityDomainSecret(keyList));
+        completion(GetSecurityDomainSecret(keyList));
       }));
+}
+
+void MarkKeysAsStale(NSString* gaia, ProceduralBlock completion) {
+  PasskeyKeychainProvider passkeyKeychainProvider;
+  passkeyKeychainProvider.MarkKeysAsStale(gaia, base::BindOnce(^() {
+                                            completion();
+                                          }));
 }

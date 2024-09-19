@@ -72,7 +72,6 @@ source_set("ui") {
     "//ios/chrome/common/ui/table_view:cells_constants",
     "//ios/chrome/common/ui/util",
     "//ios/chrome/credential_provider_extension:metrics_util",
-    "//ios/chrome/credential_provider_extension:passkey_keychain_provider_header",
     "//ios/chrome/credential_provider_extension:passkey_util",
     "//ios/chrome/credential_provider_extension:password_spec_fetcher_buildflags",
     "//ios/chrome/credential_provider_extension:password_util",
@@ -100,7 +99,6 @@ source_set("credential_list_ui_handler") {
 
 source_set("credential_response_handler") {
   sources = [ "credential_response_handler.h" ]
-  deps = [ "//ios/chrome/credential_provider_extension:passkey_keychain_provider_header" ]
 }
 
 source_set("feature_flags") {
@@ -157,6 +155,7 @@ source_set("mock_credential_response_handler") {
   deps = [
     ":credential_response_handler",
     "//base",
+    "//ios/chrome/credential_provider_extension:passkey_util",
   ]
 }
 

@@ -4,6 +4,20 @@
 
 #import "ios/chrome/credential_provider_extension/ui/mock_credential_response_handler.h"
 
+#import "base/strings/string_number_conversions.h"
+#import "ios/chrome/credential_provider_extension/passkey_util.h"
+
+namespace {
+
+NSData* SecurityDomainSecret() {
+  std::vector<uint8_t> sds;
+  base::HexStringToBytes(
+      "1234567890ABCDEF1234567890ABCDEF1234567890ABCDEF1234567890ABCDEF", &sds);
+  return [NSData dataWithBytes:sds.data() length:sds.size()];
+}
+
+}  // namespace
+
 @implementation MockCredentialResponseHandler
 
 - (void)userSelectedPassword:(ASPasswordCredential*)credential {
@@ -21,6 +35,17 @@
   }
 }
 
+- (void)userSelectedPasskey:(id<Credential>)passkey
+             clientDataHash:(NSData*)clientDataHash
+         allowedCredentials:(NSArray<NSData*>*)allowedCredentials
+                 allowRetry:(BOOL)allowRetry {
+  if (@available(iOS 17.0, *)) {
+    [self userSelectedPasskey:PerformPasskeyAssertion(passkey, clientDataHash,
+                                                      nil,
+                                                      SecurityDomainSecret())];
+  }
+}
+
 - (void)userCancelledRequestWithErrorCode:(ASExtensionErrorCode)errorCode {
   self.errorCode = errorCode;
   if (self.receivedErrorCodeBlock) {
@@ -30,14 +55,6 @@
 
 - (void)completeExtensionConfigurationRequest {
   // No-op.
-}
-
-- (void)fetchSecurityDomainSecretForGaia:(NSString*)gaia
-                                 purpose:(PasskeyKeychainProvider::
-                                              ReauthenticatePurpose)purpose
-                              completion:(FetchKeyCompletionBlock)completion {
-  // Call the completion block with an empty response.
-  completion(nil);
 }
 
 @end
