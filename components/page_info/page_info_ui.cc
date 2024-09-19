@@ -411,6 +411,11 @@ std::u16string GetPermissionAskStateString(ContentSettingsType type) {
     case ContentSettingsType::WEB_APP_INSTALLATION:
       message_id = IDS_PAGE_INFO_STATE_TEXT_WEB_APP_INSTALLATION_ASK;
       break;
+#if BUILDFLAG(IS_CHROMEOS)
+    case ContentSettingsType::WEB_PRINTING:
+      message_id = IDS_PAGE_INFO_STATE_TEXT_WEB_PRINTING_ASK;
+      break;
+#endif
     default:
       NOTREACHED_IN_MIGRATION();
   }

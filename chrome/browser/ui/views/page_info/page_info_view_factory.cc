@@ -26,6 +26,7 @@
 #include "chrome/browser/ui/views/page_info/page_info_navigation_handler.h"
 #include "chrome/browser/ui/views/page_info/page_info_permission_content_view.h"
 #include "chrome/browser/ui/views/page_info/page_info_security_content_view.h"
+#include "components/content_settings/core/common/content_settings_types.h"
 #include "components/page_info/core/features.h"
 #include "components/page_info/core/proto/about_this_site_metadata.pb.h"
 #include "components/page_info/page_info.h"
@@ -553,6 +554,9 @@ const ui::ImageModel PageInfoViewFactory::GetPermissionIcon(
       break;
     case ContentSettingsType::POINTER_LOCK:
       icon = &vector_icons::kPointerLockIcon;
+      break;
+    case ContentSettingsType::WEB_PRINTING:
+      icon = &vector_icons::kPrinterIcon;
       break;
     default:
       // All other |ContentSettingsType|s do not have icons on desktop or are
