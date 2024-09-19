@@ -56,6 +56,9 @@ class AutofillPredictionImprovementsClient {
 
   // Opens the feedback page if the feature is allowed for feedback.
   virtual void TryToOpenFeedbackPage(const std::string& feedback_id) = 0;
+
+  // Opens the settings page for prediction improvements.
+  virtual void OpenPredictionImprovementsSettings() = 0;
 };
 
 }  // namespace autofill_prediction_improvements

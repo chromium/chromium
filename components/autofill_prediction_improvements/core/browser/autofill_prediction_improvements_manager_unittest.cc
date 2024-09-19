@@ -72,6 +72,7 @@ class MockAutofillPredictionImprovementsClient
               TryToOpenFeedbackPage,
               (const std::string& feedback_id),
               (override));
+  MOCK_METHOD(void, OpenPredictionImprovementsSettings, (), (override));
 };
 
 class MockOptimizationGuideDecider
@@ -527,6 +528,14 @@ TEST_F(AutofillPredictionImprovementsManagerTest,
       has_data_callback,
       Run(autofill::AutofillPredictionImprovementsDelegate::HasData(false)));
   manager_->HasDataStored(has_data_callback.Get());
+}
+
+// Tests that the prediction improvements settings page is opened when the
+// manage prediction improvements link is clicked.
+TEST_F(AutofillPredictionImprovementsManagerTest,
+       OpenSettingsWhenManagePILinkIsClicked) {
+  EXPECT_CALL(client_, OpenPredictionImprovementsSettings);
+  manager_->UserClickedLearnMore();
 }
 
 class ShouldProvideAutofillPredictionImprovementsTest

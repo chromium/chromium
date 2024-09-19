@@ -26,6 +26,13 @@
 #include "ui/accessibility/ax_tree_update.h"
 #include "ui/base/l10n/l10n_util.h"
 
+namespace {
+
+const char kPredictionImprovementsSettingsURL[] =
+    "chrome://settings/autofill_prediction_improvements";
+
+}  // namespace
+
 ChromeAutofillPredictionImprovementsClient::
     ChromeAutofillPredictionImprovementsClient(
         content::WebContents* web_contents)
@@ -147,6 +154,16 @@ void ChromeAutofillPredictionImprovementsClient::TryToOpenFeedbackPage(
       /*category_tag=*/"autofill_prediction_improvements",
       /*extra_diagnostics=*/std::string(),
       /*autofill_metadata=*/base::Value::Dict(), std::move(feedback_metadata));
+}
+
+void ChromeAutofillPredictionImprovementsClient::
+    OpenPredictionImprovementsSettings() {
+  GetWebContents().OpenURL(
+      content::OpenURLParams(
+          GURL(kPredictionImprovementsSettingsURL), content::Referrer(),
+          WindowOpenDisposition::NEW_FOREGROUND_TAB, ui::PAGE_TRANSITION_LINK,
+          /*is_renderer_initiated=*/false),
+      /*navigation_handle_callback=*/{});
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(ChromeAutofillPredictionImprovementsClient);

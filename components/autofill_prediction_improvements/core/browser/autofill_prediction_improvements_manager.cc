@@ -334,7 +334,11 @@ void AutofillPredictionImprovementsManager::UserFeedbackReceived(
   }
 }
 
-void AutofillPredictionImprovementsManager::UserClickedLearnMore() {}
+// TODO(crbug.com/362468426): Rename this method to
+// `UserClickedManagePredictionsImprovements()`.
+void AutofillPredictionImprovementsManager::UserClickedLearnMore() {
+  client_->OpenPredictionImprovementsSettings();
+}
 
 bool AutofillPredictionImprovementsManager::ShouldProvidePredictionImprovements(
     const GURL& url) {
