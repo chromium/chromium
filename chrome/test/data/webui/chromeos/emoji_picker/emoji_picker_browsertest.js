@@ -19,11 +19,6 @@ class EmojiPickerBrowserTest extends PolymerTest {
   get browsePreload() {
     return 'chrome://emoji-picker';
   }
-
-  /** @override */
-  get featureList() {
-    return {enabled: ['ash::features::kImeSystemEmojiPickerClipboard']};
-  }
 }
 
 // Tests behaviour of <emoji-picker> component.

@@ -7161,12 +7161,6 @@ const char kIppFirstSetupForUsbPrintersDescription[] =
     "When enabled, ChromeOS attempts to setup USB printers via IPP Everywhere "
     "first, then falls back to PPD-based setup.";
 
-const char kImeSystemEmojiPickerClipboardName[] =
-    "System emoji picker clipboard";
-const char kImeSystemEmojiPickerClipboardDescription[] =
-    "Emoji picker will insert emoji into clipboard if they can't be inserted "
-    "into a text field";
-
 const char kImeSystemEmojiPickerGIFSupportName[] =
     "System emoji picker gif support";
 const char kImeSystemEmojiPickerGIFSupportDescription[] =

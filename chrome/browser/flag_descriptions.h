@@ -4149,9 +4149,6 @@ extern const char kImeSystemEmojiPickerJellySupportDescription[];
 extern const char kImeSystemEmojiPickerMojoSearchName[];
 extern const char kImeSystemEmojiPickerMojoSearchDescription[];
 
-extern const char kImeSystemEmojiPickerClipboardName[];
-extern const char kImeSystemEmojiPickerClipboardDescription[];
-
 extern const char kImeSystemEmojiPickerVariantGroupingName[];
 extern const char kImeSystemEmojiPickerVariantGroupingDescription[];
 

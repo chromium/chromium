@@ -79,14 +79,6 @@ void LogInsertionLatency(base::TimeDelta delay) {
                           delay);
 }
 
-void CopyEmojiToClipboard(const std::string& emoji_to_copy) {
-  if (base::FeatureList::IsEnabled(features::kImeSystemEmojiPickerClipboard)) {
-    auto clipboard = std::make_unique<ui::ScopedClipboardWriter>(
-        ui::ClipboardBuffer::kCopyPaste, nullptr);
-    clipboard->WriteText(base::UTF8ToUTF16(emoji_to_copy));
-  }
-}
-
 std::string BuildGifHTML(const GURL& gif) {
   // Referrer-Policy is used to prevent Tenor from getting information about
   // where the GIFs are being used.
@@ -230,7 +222,7 @@ class EmojiObserver : public InsertObserver {
     MarkInserted();
   }
 
-  void PerformCopy() override { CopyEmojiToClipboard(emoji_to_insert_); }
+  void PerformCopy() override {}
 
  private:
   std::string emoji_to_insert_;
@@ -370,11 +362,9 @@ void EmojiPageHandler::InsertEmoji(const std::string& emoji_to_insert,
       IMEBridge::Get()->GetInputContextHandler()->GetInputMethod();
   if (!input_method) {
     DLOG(WARNING) << "no input_method found";
-    CopyEmojiToClipboard(emoji_to_insert);
     return;
   }
   if (no_text_field_) {
-    CopyEmojiToClipboard(emoji_to_insert);
     return;
   }
 
