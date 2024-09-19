@@ -1561,6 +1561,19 @@ Keep consistent with active providers. Doesn't need to include every provider in
     <variant name=".SetByEnterprisePolicy.SiteSearchSettings"
         summary="Reported for users with search engine set by the
                  SiteSearchSettings Enterprise policy."/>
+    <variant name=".SetByExtension"
+        summary="Reported for users with search engine set by an extension."/>
+    <variant name=".SetByExtension.OmniboxAPI"
+        summary="Reported for users with search engine set by an extension
+                 using the chrome.omnibox API."/>
+    <variant name=".SetByExtension.SettingsOverrideDefaultSearchProvider"
+        summary="Reported for users with search engine set by an extension
+                 using the Settings Override API and setting is_default to
+                 true."/>
+    <variant name=".SetByExtension.SettingsOverrideNonDefaultSearchProvider"
+        summary="Reported for users with search engine set by an extension
+                 using the Settings Override API and setting is_default to
+                 false."/>
   </token>
 </histogram>
 
