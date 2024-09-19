@@ -362877,7 +362877,7 @@
        []
       ],
       "gb18030-encoder-expected.txt": [
-       "db7676cf6ba6994d6da9737be0289ab2e2f70449",
+       "3c980b816be5ca9f6650a9a337771e1ef3f48391",
        []
       ],
       "resources": {
@@ -513361,7 +513361,7 @@
        ]
       ],
       "gb18030-encoder.html": [
-       "ca131e14fdfca91eea46ccfa25ac6f67c86b257b",
+       "dc0dc43468f248a7b3bd091c36ba230e826a501f",
        [
         null,
         {}
