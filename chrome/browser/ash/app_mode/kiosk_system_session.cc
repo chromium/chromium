@@ -35,7 +35,7 @@
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/lifetime/application_lifetime.h"
 #include "chrome/common/pref_names.h"
-#include "chromeos/ash/components/kiosk/vision/kiosk_vision.h"
+#include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user.h"
 #include "content/public/browser/web_contents.h"
@@ -141,7 +141,6 @@ KioskSystemSession::KioskSystemSession(
       device_weekly_scheduled_suspend_controller_(
           std::make_unique<DeviceWeeklyScheduledSuspendController>(
               g_browser_process->local_state())),
-      kiosk_vision_(g_browser_process->local_state()),
       network_state_observer_(profile->GetPrefs()) {
   switch (kiosk_app_id_.type) {
     case KioskAppType::kChromeApp:

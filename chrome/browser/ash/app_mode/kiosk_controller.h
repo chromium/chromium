@@ -25,8 +25,11 @@ class KioskSystemSession;
 class LoginDisplayHost;
 
 namespace kiosk_vision {
+
 class TelemetryProcessor;
-}
+class InternalsPageProcessor;
+
+}  // namespace kiosk_vision
 
 // Public interface for Kiosk.
 class KioskController {

@@ -12,7 +12,6 @@
 #include "chrome/browser/chromeos/reporting/metric_default_utils.h"
 #include "chrome/browser/policy/dm_token_utils.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "chromeos/ash/components/kiosk/vision/pref_names.h"
 #include "chromeos/dbus/missive/missive_client_test_observer.h"
 #include "components/prefs/pref_service.h"
 #include "components/reporting/proto/synced/metric_data.pb.h"
@@ -59,11 +58,6 @@ bool IsKioskVisionTelemetryEvent(const Record& record) {
       base::BindRepeating(&IsKioskVisionTelemetryEvent));
 }
 
-void EnableKioskVisionTelemetryPref() {
-  PrefService* local_state = g_browser_process->local_state();
-  local_state->SetBoolean(::ash::prefs::kKioskVisionTelemetryEnabled, true);
-}
-
 }  // namespace
 
 // Browser test that validates Kiosk Vision telemetry reported by the
@@ -89,11 +83,12 @@ class KioskVisionEventsBrowserTest : public ::ash::WebKioskBaseTest {
   ::base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(KioskVisionEventsBrowserTest, ReportKioskVisions) {
+// TODO(crbug.com/367691581) Remove kiosk vision.
+IN_PROC_BROWSER_TEST_F(KioskVisionEventsBrowserTest,
+                       DISABLED_ReportKioskVisions) {
   InitializeRegularOnlineKiosk();
 
   auto missive_observer = CreateKioskVisionEventsObserver();
-  EnableKioskVisionTelemetryPref();
 
   // Fast-forward so that a vision report should be enqueued.
   test::MockClock::Get().Advance(
