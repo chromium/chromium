@@ -169,7 +169,7 @@ class FacilitatedPaymentsPaymentMethodsMediator {
                 new PropertyModel.Builder(AdditionalInfoProperties.ALL_KEYS)
                         .with(
                                 AdditionalInfoProperties.DESCRIPTION_ID,
-                                R.string.pix_payment_consent_note)
+                                R.string.pix_payment_additional_info)
                         .with(
                                 SHOW_PAYMENT_METHOD_SETTINGS_CALLBACK,
                                 () -> mDelegate.showFinancialAccountsManagementSettings(mContext))
