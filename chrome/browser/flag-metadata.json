@@ -831,7 +831,7 @@
   {
     "name": "autofill-enable-vcn-gray-out-for-merchant-opt-out",
     "owners": ["hvs@google.com", "payments-autofill-team@google.com"],
-    "expiry_milestone": 130
+    "expiry_milestone": 135
   },
   {
     "name": "autofill-enable-verve-card-support",
