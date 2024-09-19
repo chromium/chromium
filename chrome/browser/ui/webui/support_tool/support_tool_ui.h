@@ -6,7 +6,10 @@
 #define CHROME_BROWSER_UI_WEBUI_SUPPORT_TOOL_SUPPORT_TOOL_UI_H_
 
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/common/webui_url_constants.h"
 #include "content/public/browser/web_ui_controller.h"
+#include "content/public/browser/webui_config.h"
+#include "content/public/common/url_constants.h"
 
 // This enum is emitted to UMA
 // `Browser.SupportTool.SupportToolWebUIAction` and can't be
@@ -31,6 +34,18 @@ enum class SupportToolWebUIActionType {
 // The histogram name for the UMA metrics we use for recording the WebUI
 // actions.
 extern const char kSupportToolWebUIActionHistogram[];
+
+class SupportToolUI;
+
+class SupportToolUIConfig : public content::DefaultWebUIConfig<SupportToolUI> {
+ public:
+  SupportToolUIConfig()
+      : DefaultWebUIConfig(content::kChromeUIScheme,
+                           chrome::kChromeUISupportToolHost) {}
+
+  // content::WebUIConfig:
+  bool IsWebUIEnabled(content::BrowserContext* browser_context) override;
+};
 
 // The C++ back-end for the chrome://support-tool webui page.
 class SupportToolUI : public content::WebUIController {

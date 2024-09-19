@@ -112,7 +112,6 @@
 #include "chrome/browser/media/router/discovery/access_code/access_code_cast_feature.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/ui/ui_features.h"
-#include "chrome/browser/ui/webui/access_code_cast/access_code_cast_ui.h"
 #include "chrome/browser/ui/webui/app_service_internals/app_service_internals_ui.h"
 #include "chrome/browser/ui/webui/bookmarks/bookmarks_ui.h"
 #include "chrome/browser/ui/webui/devtools/devtools_ui.h"
@@ -133,7 +132,6 @@
 #include "chrome/browser/ui/webui/settings/settings_ui.h"
 #include "chrome/browser/ui/webui/settings/settings_utils.h"
 #include "chrome/browser/ui/webui/signin/sync_confirmation_ui.h"
-#include "chrome/browser/ui/webui/support_tool/support_tool_ui.h"
 #include "chrome/browser/ui/webui/sync_file_system_internals/sync_file_system_internals_ui.h"
 #include "chrome/browser/ui/webui/system/system_info_ui.h"
 #include "chrome/browser/ui/webui/web_app_internals/web_app_internals_ui.h"
@@ -460,20 +458,6 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
     return &NewWebUI<SyncFileSystemInternalsUI>;
   if (url.host_piece() == chrome::kChromeUISystemInfoHost)
     return &NewWebUI<SystemInfoUI>;
-  if (url.host_piece() == chrome::kChromeUIAccessCodeCastHost) {
-    if (!base::FeatureList::IsEnabled(features::kAccessCodeCastUI)) {
-      return nullptr;
-    }
-    if (!media_router::GetAccessCodeCastEnabledPref(profile)) {
-      return nullptr;
-    }
-    return &NewWebUI<media_router::AccessCodeCastUI>;
-  }
-  if (base::FeatureList::IsEnabled(features::kSupportTool) &&
-      url.host_piece() == chrome::kChromeUISupportToolHost &&
-      SupportToolUI::IsEnabled(profile)) {
-    return &NewWebUI<SupportToolUI>;
-  }
   if (url.host_piece() == chrome::kChromeUIWebAppInternalsHost) {
     return &NewWebUI<WebAppInternalsUI>;
   }

@@ -44,6 +44,7 @@
 #include "chrome/browser/ui/webui/media_router/cast_feedback_ui.h"
 #endif
 #include "chrome/browser/ui/lens/search_bubble_ui.h"
+#include "chrome/browser/ui/webui/access_code_cast/access_code_cast_ui.h"
 #include "chrome/browser/ui/webui/bookmarks/bookmarks_ui.h"
 #include "chrome/browser/ui/webui/commerce/product_specifications_ui.h"
 #include "chrome/browser/ui/webui/commerce/shopping_insights_side_panel_ui.h"
@@ -58,6 +59,7 @@
 #include "chrome/browser/ui/webui/side_panel/customize_chrome/customize_chrome_ui.h"
 #include "chrome/browser/ui/webui/side_panel/history_clusters/history_clusters_side_panel_ui.h"
 #include "chrome/browser/ui/webui/side_panel/reading_list/reading_list_ui.h"
+#include "chrome/browser/ui/webui/support_tool/support_tool_ui.h"
 #include "chrome/browser/ui/webui/tab_search/tab_search_ui.h"
 #include "chrome/browser/ui/webui/webui_gallery/webui_gallery_ui.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
@@ -139,6 +141,7 @@ void RegisterChromeWebUIConfigs() {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   map.AddWebUIConfig(std::make_unique<media_router::CastFeedbackUIConfig>());
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  map.AddWebUIConfig(std::make_unique<media_router::AccessCodeCastUIConfig>());
   map.AddWebUIConfig(std::make_unique<BookmarksSidePanelUIConfig>());
   map.AddWebUIConfig(std::make_unique<BookmarksUIConfig>());
   map.AddWebUIConfig(std::make_unique<CustomizeChromeUIConfig>());
@@ -155,6 +158,7 @@ void RegisterChromeWebUIConfigs() {
   map.AddWebUIConfig(std::make_unique<ProfileInternalsUIConfig>());
   map.AddWebUIConfig(std::make_unique<ReadingListUIConfig>());
   map.AddWebUIConfig(std::make_unique<ShoppingInsightsSidePanelUIConfig>());
+  map.AddWebUIConfig(std::make_unique<SupportToolUIConfig>());
   map.AddWebUIConfig(std::make_unique<TabSearchUIConfig>());
   map.AddWebUIConfig(std::make_unique<TermsUIConfig>());
   map.AddWebUIConfig(std::make_unique<WebuiGalleryUIConfig>());

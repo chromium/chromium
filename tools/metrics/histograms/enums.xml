@@ -34228,6 +34228,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="-1500737448" label="chrome://manage-mirrorsync/"/>
   <int value="-1493822642" label="chrome://invalidations/"/>
   <int value="-1493762713" label="chrome://settings/cookies/"/>
+  <int value="-1491518259" label="chrome://support-tool/"/>
   <int value="-1475777739" label="chrome://physical-web-diagnostics/"/>
   <int value="-1471376798" label="chrome-untrusted://print/"/>
   <int value="-1440785181" label="chrome://profile-signin-confirmation/"/>

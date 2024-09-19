@@ -37,6 +37,7 @@
 #include "chrome/browser/support_tool/support_tool_handler.h"
 #include "chrome/browser/support_tool/support_tool_util.h"
 #include "chrome/browser/ui/chrome_select_file_policy.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/support_tool/support_tool_ui_utils.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/chrome_features.h"
@@ -59,6 +60,13 @@
 #include "ui/shell_dialogs/select_file_dialog.h"
 #include "ui/shell_dialogs/selected_file_info.h"
 #include "url/gurl.h"
+
+bool SupportToolUIConfig::IsWebUIEnabled(
+    content::BrowserContext* browser_context) {
+  Profile* profile = Profile::FromBrowserContext(browser_context);
+  return base::FeatureList::IsEnabled(features::kSupportTool) &&
+         SupportToolUI::IsEnabled(profile);
+}
 
 namespace {
 
