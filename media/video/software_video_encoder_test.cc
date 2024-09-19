@@ -2,13 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
-#include "media/video/video_encode_accelerator_adapter.h"
-
+#include <array>
 #include <memory>
 #include <string>
 
@@ -33,6 +27,7 @@
 #include "media/base/video_encoder.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_util.h"
+#include "media/video/video_encode_accelerator_adapter.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/libyuv/include/libyuv.h"
 
@@ -266,17 +261,23 @@ class SoftwareVideoEncoderTest
     size_t num_planes = VideoFrame::NumPlanes(format);
     gfx::Size visible_size = frame1.visible_rect().size();
     for (size_t plane = 0; plane < num_planes; ++plane) {
-      const uint8_t* data1 = frame1.visible_data(plane);
       int stride1 = frame1.stride(plane);
-      const uint8_t* data2 = frame2.visible_data(plane);
       int stride2 = frame2.stride(plane);
       size_t rows = VideoFrame::Rows(plane, format, visible_size.height());
       int row_bytes = VideoFrame::RowBytes(plane, format, visible_size.width());
+      // SAFETY: `VideoFrame` `visible_data` has enough bytes to fit so many
+      // rows each row has `stride` bytes.
+      auto data1 = UNSAFE_BUFFERS(
+          base::span(frame1.visible_data(plane), stride1 * rows));
+      auto data2 = UNSAFE_BUFFERS(
+          base::span(frame2.visible_data(plane), stride2 * rows));
 
       for (size_t r = 0; r < rows; ++r) {
+        auto row1 = data1.subspan(stride1 * r);
+        auto row2 = data2.subspan(stride2 * r);
         for (int c = 0; c < row_bytes; ++c) {
-          uint8_t b1 = data1[(stride1 * r) + c];
-          uint8_t b2 = data2[(stride2 * r) + c];
+          uint8_t b1 = row1[c];
+          uint8_t b2 = row2[c];
           uint8_t diff = std::max(b1, b2) - std::min(b1, b2);
           if (diff > tolerance)
             diff_cnt++;
@@ -856,16 +857,16 @@ TEST_P(SVCVideoEncoderTest, EncodeClipTemporalSvcWithEnablingDrop) {
   // Layer Index 1: | | |2| | | |6| | | |10|  |  |
   // Layer Index 2: | |1| |3| |5| |7| |9|  |11|  |
   constexpr size_t kTemporalLayerCycle = 4;
-  constexpr int kTemporalLayerTable[][kTemporalLayerCycle] = {
+  constexpr std::array<int, 4> kTemporalLayerTable[kTemporalLayerCycle] = {
       {0, 0, 0, 0},
       {0, 1, 0, 1},
       {0, 2, 1, 2},
   };
+  auto last_layer =
+      base::span(base::span(kTemporalLayerTable)[num_temporal_layers - 1]);
   for (size_t i = 0; i < chunks.size(); ++i) {
     ASSERT_FALSE(chunks[i].data.empty());
-    EXPECT_EQ(
-        chunks[i].temporal_id,
-        kTemporalLayerTable[num_temporal_layers - 1][i % kTemporalLayerCycle]);
+    EXPECT_EQ(chunks[i].temporal_id, last_layer[i % kTemporalLayerCycle]);
   }
 
   for (int max_layer = 0; max_layer < num_temporal_layers; max_layer++) {
@@ -895,9 +896,9 @@ TEST_P(SVCVideoEncoderTest, EncodeClipTemporalSvcWithEnablingDrop) {
         // Dropped
         continue;
       }
-      const int temporal_id =
-          kTemporalLayerTable[num_temporal_layers - 1]
-                             [encoded_frame_index % kTemporalLayerCycle];
+      const int temporal_id = base::span(
+          kTemporalLayerTable)[num_temporal_layers - 1]
+                              [encoded_frame_index % kTemporalLayerCycle];
       encoded_frame_index++;
       if (temporal_id > max_layer) {
         // Not decoded frame.
