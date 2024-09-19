@@ -49,7 +49,8 @@ enum class GpuErrorReason {
   kOther = 0,
   kDxgiErrorDeviceHung = 1,
   kDxgiErrorDeviceRemoved = 2,
-  kMaxValue = kDxgiErrorDeviceRemoved,
+  kDeviceCreationFailed = 3,
+  kMaxValue = kDeviceCreationFailed,
 };
 
 void FatalGpuErrorFn(const char* msg) {
@@ -60,6 +61,8 @@ void FatalGpuErrorFn(const char* msg) {
     error_reason = GpuErrorReason::kDxgiErrorDeviceHung;
   } else if (msg_str.find("DXGI_ERROR_DEVICE_REMOVED") != std::string::npos) {
     error_reason = GpuErrorReason::kDxgiErrorDeviceRemoved;
+  } else if (msg_str.find("Failed to create device.") != std::string::npos) {
+    error_reason = GpuErrorReason::kDeviceCreationFailed;
   }
   base::UmaHistogramEnumeration("OnDeviceModel.GpuErrorReason", error_reason);
   if (error_reason == GpuErrorReason::kOther) {
