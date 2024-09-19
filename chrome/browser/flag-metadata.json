@@ -4563,7 +4563,7 @@
       "//ash/quick_pair/OWNERS",
       "jackshira@google.com"
     ],
-    "expiry_milestone": 130
+    "expiry_milestone": 133
   },
   {
     "name": "fast-pair-devices-bluetooth-settings",
@@ -4571,7 +4571,7 @@
       "//ash/quick_pair/OWNERS",
       "jackshira@google.com"
     ],
-    "expiry_milestone": 130
+    "expiry_milestone": 133
   },
   {
     "name": "fast-pair-handshake-long-term-refactor",
@@ -4579,7 +4579,7 @@
       "//ash/quick_pair/OWNERS",
       "jackshira@google.com"
     ],
-    "expiry_milestone": 130
+    "expiry_milestone": 133
   },
   {
     "name": "fast-pair-hid",
@@ -4587,7 +4587,7 @@
       "//ash/quick_pair/OWNERS",
       "jackshira@google.com"
     ],
-    "expiry_milestone": 130
+    "expiry_milestone": 133
   },
   {
     "name": "fast-pair-keyboards",
@@ -6134,7 +6134,7 @@
       "chromeos-cross-device-eng@google.com",
       "jackshira@google.com"
     ],
-    "expiry_milestone": 130
+    "expiry_milestone": 133
   },
   {
     "name": "nearby-wifi-direct",
@@ -6142,7 +6142,7 @@
       "chromeos-cross-device-eng@google.com",
       "jackshira@google.com"
     ],
-    "expiry_milestone": 130
+    "expiry_milestone": 133
   },
   {
     "name": "nearby-wifi-lan",
@@ -6150,7 +6150,7 @@
       "chromeos-cross-device-eng@google.com",
       "jackshira@google.com"
     ],
-    "expiry_milestone": 130
+    "expiry_milestone": 133
   },
   {
     "name": "new-ntp-omnibox-layout",
