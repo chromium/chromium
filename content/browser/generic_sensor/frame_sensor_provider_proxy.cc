@@ -18,6 +18,12 @@
 
 using device::mojom::SensorType;
 
+namespace features {
+BASE_FEATURE(kAllowSensorsToEnterBfcache,
+             "AllowSensorsToEnterBfcache",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+}
+
 namespace content {
 
 namespace {
@@ -110,10 +116,13 @@ void FrameSensorProviderProxy::OnPermissionRequestCompleted(
     case SensorType::RELATIVE_ORIENTATION_QUATERNION:
       break;
     default:
-      static_cast<RenderFrameHostImpl*>(&render_frame_host())
-          ->OnBackForwardCacheDisablingStickyFeatureUsed(
-              blink::scheduler::WebSchedulerTrackedFeature::
-                  kRequestedBackForwardCacheBlockedSensors);
+      if (!base::FeatureList::IsEnabled(
+              features::kAllowSensorsToEnterBfcache)) {
+        static_cast<RenderFrameHostImpl*>(&render_frame_host())
+            ->OnBackForwardCacheDisablingStickyFeatureUsed(
+                blink::scheduler::WebSchedulerTrackedFeature::
+                    kRequestedBackForwardCacheBlockedSensors);
+      }
   }
 
   auto* web_contents_sensor_provider =

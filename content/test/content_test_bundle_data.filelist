@@ -6078,6 +6078,7 @@ data/back_forward_cache/page_with_websocket_inline_script.html
 data/back_forward_cache/presentation_controller.html
 data/back_forward_cache/record_events.html
 data/back_forward_cache/record_navigation_start_time_stamp.html
+data/back_forward_cache/sensor.html
 data/back_forward_cache/serial/nested-worker.js
 data/back_forward_cache/serial/worker.js
 data/back_forward_cache/service-worker.js
