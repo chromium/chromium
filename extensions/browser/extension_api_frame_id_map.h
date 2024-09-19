@@ -78,7 +78,7 @@ class ExtensionApiFrameIdMap {
     // window.
     int window_id;
 
-    // The extennsion API document ID of the document in the frame.
+    // The extension API document ID of the document in the frame.
     DocumentId document_id;
 
     // The extension API document ID of the parent document of the frame.

@@ -32,16 +32,18 @@ ExtensionActionIconFactory::ExtensionActionIconFactory(
       observer_(observer),
       should_check_icons_(extension->location() !=
                           mojom::ManifestLocation::kUnpacked) {
-  if (action->default_icon_image())
+  if (action->default_icon_image()) {
     icon_image_observation_.Observe(action->default_icon_image());
+  }
 }
 
 ExtensionActionIconFactory::~ExtensionActionIconFactory() {}
 
 // IconImage::Observer overrides.
 void ExtensionActionIconFactory::OnExtensionIconImageChanged(IconImage* image) {
-  if (observer_)
+  if (observer_) {
     observer_->OnIconUpdated();
+  }
 }
 
 void ExtensionActionIconFactory::OnExtensionIconImageDestroyed(
@@ -51,12 +53,14 @@ void ExtensionActionIconFactory::OnExtensionIconImageDestroyed(
 
 gfx::Image ExtensionActionIconFactory::GetIcon(int tab_id) {
   gfx::Image icon = action_->GetExplicitlySetIcon(tab_id);
-  if (!icon.IsEmpty())
+  if (!icon.IsEmpty()) {
     return icon;
+  }
 
   icon = action_->GetDeclarativeIcon(tab_id);
-  if (!icon.IsEmpty())
+  if (!icon.IsEmpty()) {
     return icon;
+  }
 
   if (cached_default_icon_image_.IsEmpty()) {
     icon = action_->GetDefaultIconImage();

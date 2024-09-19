@@ -90,13 +90,15 @@ class MockSandboxedUnpackerClient : public SandboxedUnpackerClient {
 
   base::FilePath temp_dir() const { return temp_dir_; }
   std::u16string unpack_error_message() const {
-    if (error_)
+    if (error_) {
       return error_->message();
+    }
     return std::u16string();
   }
   CrxInstallErrorType unpack_error_type() const {
-    if (error_)
+    if (error_) {
       return error_->type();
+    }
     return CrxInstallErrorType::NONE;
   }
   int unpack_error_detail() const {

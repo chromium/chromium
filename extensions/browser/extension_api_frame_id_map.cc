@@ -119,14 +119,17 @@ content::RenderFrameHost* ExtensionApiFrameIdMap::GetRenderFrameHostById(
   // Although it is technically possible to map |frame_id| to a RenderFrameHost
   // without WebContents, we choose to not do that because in the extension API
   // frameIds are only guaranteed to be meaningful in combination with a tabId.
-  if (!web_contents)
+  if (!web_contents) {
     return nullptr;
+  }
 
-  if (frame_id == kInvalidFrameId)
+  if (frame_id == kInvalidFrameId) {
     return nullptr;
+  }
 
-  if (frame_id == kTopFrameId)
+  if (frame_id == kTopFrameId) {
     return web_contents->GetPrimaryMainFrame();
+  }
 
   DCHECK_GE(frame_id, 1);
 
@@ -154,15 +157,17 @@ content::RenderFrameHost*
 ExtensionApiFrameIdMap::GetRenderFrameHostByDocumentId(
     const DocumentId& document_id) {
   auto iter = document_id_map_.find(document_id);
-  if (iter == document_id_map_.end())
+  if (iter == document_id_map_.end()) {
     return nullptr;
+  }
   return &iter->second->render_frame_host();
 }
 
 ExtensionApiFrameIdMap::DocumentId ExtensionApiFrameIdMap::DocumentIdFromString(
     const std::string& document_id) {
-  if (document_id.length() != 32)
+  if (document_id.length() != 32) {
     return DocumentId();
+  }
 
   std::string_view string_piece(document_id);
   uint64_t high = 0;
@@ -214,8 +219,9 @@ ExtensionApiFrameIdMap::FrameData ExtensionApiFrameIdMap::GetFrameData(
     content::GlobalRenderFrameHostId render_frame_host_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   auto frame_id_iter = deleted_frame_data_map_.find(render_frame_host_id);
-  if (frame_id_iter != deleted_frame_data_map_.end())
+  if (frame_id_iter != deleted_frame_data_map_.end()) {
     return frame_id_iter->second;
+  }
 
   return KeyToValue(render_frame_host_id, true /* require_live_frame */);
 }

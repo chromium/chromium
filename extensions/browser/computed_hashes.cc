@@ -216,19 +216,22 @@ std::optional<ComputedHashes::Data> ComputedHashes::Compute(
   // for each one.
   Data data;
   for (const auto& full_path : paths) {
-    if (is_cancelled && is_cancelled.Run())
+    if (is_cancelled && is_cancelled.Run()) {
       return std::nullopt;
+    }
 
     base::FilePath relative_path;
     extension_root.AppendRelativePath(full_path, &relative_path);
 
-    if (!should_compute_hashes_for_resource.Run(relative_path))
+    if (!should_compute_hashes_for_resource.Run(relative_path)) {
       continue;
+    }
 
     std::optional<std::vector<std::string>> hashes =
         ComputeAndCheckResourceHash(full_path, block_size);
-    if (hashes)
+    if (hashes) {
       data.Add(relative_path, block_size, std::move(hashes.value()));
+    }
   }
 
   return data;
@@ -238,8 +241,9 @@ bool ComputedHashes::GetHashes(const base::FilePath& relative_path,
                                int* block_size,
                                std::vector<std::string>* hashes) const {
   const Data::HashInfo* hash_info = data_.GetItem(relative_path);
-  if (!hash_info)
+  if (!hash_info) {
     return false;
+  }
 
   *block_size = hash_info->block_size;
   *hashes = hash_info->hashes;
@@ -248,8 +252,9 @@ bool ComputedHashes::GetHashes(const base::FilePath& relative_path,
 
 bool ComputedHashes::WriteToFile(const base::FilePath& path) const {
   // Make sure the directory exists.
-  if (!base::CreateDirectoryAndGetError(path.DirName(), nullptr))
+  if (!base::CreateDirectoryAndGetError(path.DirName(), nullptr)) {
     return false;
+  }
 
   base::Value::List file_list;
   for (const auto& resource_info : data_.items()) {
@@ -277,8 +282,9 @@ bool ComputedHashes::WriteToFile(const base::FilePath& path) const {
   top_dictionary.Set(computed_hashes::kVersionKey, computed_hashes::kVersion);
   top_dictionary.Set(computed_hashes::kFileHashesKey, std::move(file_list));
 
-  if (!base::JSONWriter::Write(top_dictionary, &json))
+  if (!base::JSONWriter::Write(top_dictionary, &json)) {
     return false;
+  }
   if (!base::WriteFile(path, json)) {
     LOG(ERROR) << "Error writing " << path.AsUTF8Unsafe();
     return false;
@@ -308,8 +314,9 @@ std::vector<std::string> ComputedHashes::GetHashesForContent(
     hashes.push_back(std::move(buffer));
 
     // If |contents| is empty, then we want to just exit here.
-    if (bytes_to_read == 0)
+    if (bytes_to_read == 0) {
       break;
+    }
 
     offset += bytes_to_read;
   } while (offset < contents.size());

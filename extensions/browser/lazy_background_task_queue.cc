@@ -68,10 +68,12 @@ bool LazyBackgroundTaskQueue::ShouldEnqueueTask(
     ProcessManager* pm = ProcessManager::Get(browser_context);
     ExtensionHost* background_host =
         pm->GetBackgroundHostForExtension(extension->id());
-    if (!background_host || !background_host->has_loaded_once())
+    if (!background_host || !background_host->has_loaded_once()) {
       return true;
-    if (pm->IsBackgroundHostClosing(extension->id()))
+    }
+    if (pm->IsBackgroundHostClosing(extension->id())) {
       pm->CancelSuspend(extension);
+    }
   }
 
   return false;
@@ -142,8 +144,9 @@ void LazyBackgroundTaskQueue::ProcessPendingTasks(
 
   auto map_it = pending_tasks_.find(key);
   if (map_it == pending_tasks_.end()) {
-    if (BackgroundInfo::HasLazyBackgroundPage(extension))
+    if (BackgroundInfo::HasLazyBackgroundPage(extension)) {
       CHECK(!host);  // lazy page should not load without any pending tasks
+    }
     return;
   }
 
