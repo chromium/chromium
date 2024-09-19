@@ -1276,7 +1276,7 @@ BASE_FEATURE(kAccessibilityIncludeLongClickAction,
 // updated UI to replace existing Chrome Accessibility Settings.
 BASE_FEATURE(kAccessibilityPageZoom,
              "AccessibilityPageZoom",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Controls whether the OS-level font setting is adjusted for.
 const base::FeatureParam<bool> kAccessibilityPageZoomOSLevelAdjustment{
