@@ -22,20 +22,20 @@ namespace safe_browsing {
 
 // static
 std::unique_ptr<ServicesDelegate> ServicesDelegate::Create(
-    SafeBrowsingServiceImpl* safe_browsing_service) {
+    SafeBrowsingService* safe_browsing_service) {
   return base::WrapUnique(new ServicesDelegateAndroid(safe_browsing_service));
 }
 
 // static
 std::unique_ptr<ServicesDelegate> ServicesDelegate::CreateForTest(
-    SafeBrowsingServiceImpl* safe_browsing_service,
+    SafeBrowsingService* safe_browsing_service,
     ServicesDelegate::ServicesCreator* services_creator) {
   NOTREACHED_IN_MIGRATION();
   return base::WrapUnique(new ServicesDelegateAndroid(safe_browsing_service));
 }
 
 ServicesDelegateAndroid::ServicesDelegateAndroid(
-    SafeBrowsingServiceImpl* safe_browsing_service)
+    SafeBrowsingService* safe_browsing_service)
     : ServicesDelegate(safe_browsing_service, /*services_creator=*/nullptr) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 }

@@ -127,7 +127,7 @@ const void* const DownloadProtectionService::kDownloadProtectionDataKey =
     &kDownloadProtectionDataKey;
 
 DownloadProtectionService::DownloadProtectionService(
-    SafeBrowsingServiceImpl* sb_service)
+    SafeBrowsingService* sb_service)
     : sb_service_(sb_service),
       enabled_(false),
       binary_feature_extractor_(new BinaryFeatureExtractor()),
