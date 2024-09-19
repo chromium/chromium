@@ -703,7 +703,7 @@ AnimatedPropertyType SVGElement::AnimatedPropertyTypeForCSSAttribute(
   if (css_property_map.empty()) {
     // Fill the map for the first use.
     struct AttrToTypeEntry {
-      const QualifiedName& attr;
+      const QualifiedName& attr = g_null_name;
       const AnimatedPropertyType prop_type;
     };
     const auto attr_to_types = std::to_array<const AttrToTypeEntry>({
