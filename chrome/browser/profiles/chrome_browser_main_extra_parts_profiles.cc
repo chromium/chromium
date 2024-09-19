@@ -325,6 +325,7 @@
 #include "chrome/browser/ash/input_method/editor_mediator_factory.h"
 #include "chrome/browser/ash/keyed_service/browser_context_keyed_service_factories.h"
 #include "chrome/browser/ash/language_packs/language_pack_font_service_factory.h"
+#include "chrome/browser/ash/lobster/lobster_service_provider.h"
 #include "chrome/browser/ash/policy/dlp/files_policy_notification_manager_factory.h"
 #include "chrome/browser/ash/policy/multi_screen_capture/multi_screen_capture_policy_service_factory.h"
 #include "chrome/browser/ash/policy/skyvault/local_files_migration_manager.h"
@@ -655,6 +656,9 @@ void ChromeBrowserMainExtraPartsProfiles::
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (chromeos::features::IsOrcaEnabled()) {
     ash::input_method::EditorMediatorFactory::GetInstance();
+  }
+  if (ash::features::IsLobsterEnabled()) {
+    LobsterServiceProvider::GetInstance();
   }
   if (base::FeatureList::IsEnabled(ash::features::kLanguagePacksFonts)) {
     ash::language_packs::LanguagePackFontServiceFactory::GetInstance();
