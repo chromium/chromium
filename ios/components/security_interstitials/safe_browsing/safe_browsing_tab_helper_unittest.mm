@@ -953,6 +953,52 @@ TEST_P(SafeBrowsingTabHelperTest, SafeMainFrameRequestDoesNotNotifyClient) {
   EXPECT_FALSE(client_.main_frame_cancellation_decided_called());
 }
 
+// Tests sync check and ShouldAllowResponse() complete, but async
+// check returns after a page loads. Tests that the async check forcefully
+// reloads the page.
+TEST_P(SafeBrowsingTabHelperTest,
+       UnsafeCommittedRedirectChainReloadAndResponse) {
+  base::test::ScopedFeatureList scoped_feature_list_;
+  scoped_feature_list_.InitAndEnableFeature(
+      safe_browsing::kSafeBrowsingAsyncRealTimeCheck);
+  GURL url("http://" + FakeSafeBrowsingService::kAsyncUnsafeHost);
+  ASSERT_FALSE(navigation_manager_->ReloadWasCalled());
+  EXPECT_TRUE(ShouldAllowRequestUrl(url).ShouldAllowNavigation());
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(^() {
+        client_.run_sync_callbacks();
+      }));
+
+  // TODO(crbug.com/359420122): Remove when clean up is complete.
+  if (SafeBrowsingDecisionArrivesBeforeResponse()) {
+    base::RunLoop().RunUntilIdle();
+  }
+
+  web::WebStatePolicyDecider::PolicyDecision response_decision =
+      ShouldAllowResponseUrl(url);
+  EXPECT_TRUE(response_decision.ShouldAllowNavigation());
+
+  // Simulate page loading and navigation being finished.
+  web::FakeNavigationContext context;
+  context.SetHasCommitted(true);
+  web_state_.OnNavigationFinished(&context);
+  StoreUnsafeResource(url);
+
+  client_.run_async_callbacks();
+  // TODO(crbug.com/359420122): Remove when clean up is complete.
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(navigation_manager_->ReloadWasCalled());
+
+  // Simulate forced reload and triggers blocking page logic.
+  auto main_frame_reload_request_decision = ShouldAllowRequestUrl(
+      url, /*for_main_frame=*/true, ui::PageTransition::PAGE_TRANSITION_RELOAD);
+  EXPECT_TRUE(main_frame_reload_request_decision.ShouldAllowNavigation());
+  RunSyncCallbacksThenAsyncCallbacks();
+  auto main_frame_reload_response_decision = ShouldAllowResponseUrl(url);
+  EXPECT_TRUE(main_frame_reload_response_decision.ShouldCancelNavigation());
+  EXPECT_TRUE(main_frame_reload_response_decision.ShouldDisplayError());
+}
+
 INSTANTIATE_TEST_SUITE_P(
     /* No InstantiationName */,
     SafeBrowsingTabHelperTest,

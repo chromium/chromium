@@ -79,7 +79,7 @@ class FakeSafeBrowsingClient : public SafeBrowsingClient {
   variations::VariationsService* GetVariationsService() override;
   bool ShouldBlockUnsafeResource(
       const security_interstitials::UnsafeResource& resource) const override;
-  void OnMainFrameUrlQueryCancellationDecided(web::WebState* web_state,
+  bool OnMainFrameUrlQueryCancellationDecided(web::WebState* web_state,
                                               const GURL& url) override;
 
   scoped_refptr<FakeSafeBrowsingService> safe_browsing_service_;

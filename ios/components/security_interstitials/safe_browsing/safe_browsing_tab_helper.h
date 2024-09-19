@@ -84,6 +84,10 @@ class SafeBrowsingTabHelper
     // return false if navigations occurred before the URL check has finished.
     bool IsQueryStale(const SafeBrowsingQueryManager::QueryData& query_data);
 
+    // Clears and moves `to_be_committed_redirect_chain_` to
+    // `committed_redirect_chain_`.
+    void SetCommittedRedirectChain();
+
     // Returns a policy decision based on query `result`.
     web::WebStatePolicyDecider::PolicyDecision CreatePolicyDecision(
         const SafeBrowsingQueryManager::Query& query,
