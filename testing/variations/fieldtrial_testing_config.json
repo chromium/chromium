@@ -10836,31 +10836,6 @@
             ]
         }
     ],
-    "GwpAsanLinux": [
-        {
-            "platforms": [
-                "chromeos_lacros",
-                "fuchsia"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "params": {
-                        "AllocationSamplingMultiplier": "1500",
-                        "AllocationSamplingRange": "16",
-                        "MaxAllocations": "50",
-                        "MaxMetadata": "210",
-                        "ProcessSamplingBoost2": "10",
-                        "ProcessSamplingProbability": "0.01"
-                    },
-                    "enable_features": [
-                        "GwpAsanMalloc",
-                        "GwpAsanPartitionAlloc"
-                    ]
-                }
-            ]
-        }
-    ],
     "HTTP2": [
         {
             "platforms": [
