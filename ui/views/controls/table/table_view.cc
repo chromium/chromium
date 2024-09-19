@@ -1203,10 +1203,11 @@ void TableView::AdjustCellBoundsForText(size_t visible_column_index,
 }
 
 void TableView::CreateHeaderIfNecessary(ScrollView* scroll_view) {
-  // Only create a header if there is more than one column or the title of the
+  // Only create a header if there is more than one column, or the title of the
   // only column is not empty.
-  if (header_ || (columns_.size() == 1 && columns_[0].title.empty()))
+  if (header_ || (columns_.size() == 1 && columns_[0].title.empty())) {
     return;
+  }
 
   header_ = scroll_view->SetHeader(
       std::make_unique<TableHeader>(weak_factory_.GetWeakPtr()));
@@ -1236,8 +1237,8 @@ void TableView::UpdateVisibleColumnSizes() {
 
   std::vector<int> sizes = views::CalculateTableColumnSizes(
       layout_width_, first_column_padding, header_->font_list(), font_list_,
-      std::max(cell_margin, TableHeader::kHorizontalPadding) * 2,
-      TableHeader::kSortIndicatorWidth, columns, model_);
+      std::max(cell_margin, header_->GetHorizontalPadding()) * 2,
+      header_->GetSortIndicatorWidth(), columns, model_);
   DCHECK_EQ(visible_columns_.size(), sizes.size());
   int x = 0;
   for (size_t i = 0; i < visible_columns_.size(); ++i) {
@@ -2048,6 +2049,16 @@ AXVirtualView* TableView::GetVirtualAccessibilityCell(
     size_t visible_column_index) const {
   return GetVirtualAccessibilityCellImpl(GetVirtualAccessibilityBodyRow(row),
                                          visible_column_index);
+}
+
+void TableView::SetHeaderStyle(const TableHeaderStyle& style) {
+  header_style_ = style;
+  if (header_) {
+    UpdateVisibleColumnSizes();
+    PreferredSizeChanged();
+    SchedulePaint();
+    header_->SchedulePaint();
+  }
 }
 
 AXVirtualView* TableView::GetVirtualAccessibilityCellImpl(

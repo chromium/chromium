@@ -364,10 +364,19 @@ void TaskManagerView::Init() {
   tab_table->set_context_menu_controller(this);
   set_context_menu_controller(this);
 
+  const bool tm_refresh_enabled =
+      base::FeatureList::IsEnabled(features::kTaskManagerDesktopRefresh);
+
   // Has a border if the feature is disabled, since the redesign version doesn't
   // have a border.
-  const bool table_has_border =
-      !base::FeatureList::IsEnabled(features::kTaskManagerDesktopRefresh);
+  bool table_has_border = !tm_refresh_enabled;
+
+  if (tm_refresh_enabled) {
+    views::TableHeaderStyle header_style = {/*vertical_padding=*/16,
+                                            /*horizontal_padding=*/8};
+    tab_table->SetHeaderStyle(header_style);
+  }
+
   tab_table_parent_ = AddChildView(views::TableView::CreateScrollViewWithTable(
       std::move(tab_table), table_has_border));
 
