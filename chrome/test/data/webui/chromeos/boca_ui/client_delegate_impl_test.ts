@@ -93,6 +93,7 @@ class MockRemoteHandler extends PageHandlerRemote {
           sessionDuration: {
             microseconds: 120000000n,
           },
+          teacher: {id: '0', name: 'teacher', email: 'teacher@gmail.com'},
           students: [
             {id: '1', name: 'cat', email: 'cat@gmail.com'},
             {id: '2', name: 'dog', email: 'dog@gmail.com'},
@@ -236,6 +237,7 @@ suite('ClientDelegateTest', function() {
         {
           sessionConfig: {
             sessionDurationInMinutes: 2,
+            teacher: {id: '0', name: 'teacher', email: 'teacher@gmail.com'},
             students: [
               {id: '1', name: 'cat', email: 'cat@gmail.com'},
               {id: '2', name: 'dog', email: 'dog@gmail.com'},

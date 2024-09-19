@@ -153,7 +153,7 @@ TEST_F(BocaAppPageHandlerTest, CreateSessionWithFullInput) {
       mojom::OnTaskConfig::New(/*=is_locked*/ true, std::move(tabs));
 
   const auto config =
-      mojom::Config::New(session_duration, std::move(students),
+      mojom::Config::New(session_duration, nullptr, std::move(students),
                          on_task_config->Clone(), caption_config->Clone());
   // Page handler callback.
   base::test::TestFuture<base::expected<bool, google_apis::ApiErrorCode>>
@@ -278,7 +278,7 @@ TEST_F(BocaAppPageHandlerTest, CreateSessionWithCritialInputOnly) {
   base::test::TestFuture<bool> future_1;
 
   const auto config = mojom::Config::New(
-      session_duration, std::vector<mojom::IdentityPtr>{},
+      session_duration, nullptr, std::vector<mojom::IdentityPtr>{},
       mojom::OnTaskConfigPtr(nullptr), mojom::CaptionConfigPtr(nullptr));
 
   ::boca::UserIdentity teacher;
@@ -327,6 +327,10 @@ TEST_F(BocaAppPageHandlerTest, GetSessionWithFullInputTest) {
       .WillOnce(WithArg<0>(Invoke([&](auto request) {
         auto session = std::make_unique<::boca::Session>();
         session->mutable_duration()->set_seconds(120);
+        auto* teacher = session->mutable_teacher();
+        teacher->set_email("teacher@email.com");
+        teacher->set_full_name("teacher");
+        teacher->set_gaia_id("000");
 
         auto* student_groups_1 =
             session->mutable_roster()->mutable_student_groups()->Add();
@@ -362,6 +366,10 @@ TEST_F(BocaAppPageHandlerTest, GetSessionWithFullInputTest) {
   auto result = std::move(future_1.Take()->get_config());
 
   EXPECT_EQ(120, result->session_duration.InSeconds());
+
+  EXPECT_EQ("teacher", result->teacher->name);
+  EXPECT_EQ("teacher@email.com", result->teacher->email);
+  EXPECT_EQ("000", result->teacher->id);
 
   EXPECT_EQ(true, result->caption_config->caption_enabled);
   EXPECT_EQ(true, result->caption_config->transcription_enabled);

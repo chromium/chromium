@@ -94,6 +94,7 @@ export class ClientDelegateFactory {
           sessionConfig: {
             sessionDurationInMinutes: Number(
                 session.sessionDuration.microseconds / MICRO_SECS_IN_MINUTES),
+            teacher: session.teacher ? session.teacher : undefined,
             students: session.students,
             onTaskConfig: {
               isLocked: session.onTaskConfig?.isLocked,

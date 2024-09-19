@@ -52,6 +52,7 @@ struct Window {
 
 struct Config{
   mojo_base.mojom.TimeDelta session_duration;
+  Identity? teacher;
   // Selected students to be joined for session.
   array<Identity> students;
   OnTaskConfig on_task_config;

@@ -186,13 +186,18 @@ void BocaAppHandler::GetSession(GetSessionCallback callback) {
                   session_on_task_config.active_bundle().locked(),
                   std::move(tabs));
             }
-
+            mojom::IdentityPtr teacher;
+            if (session->has_teacher()) {
+              teacher = mojom::Identity::New(session->teacher().gaia_id(),
+                                             session->teacher().full_name(),
+                                             session->teacher().email());
+            }
             auto config = mojom::Config::New(
                 // Nanos are not used throughout session lifecycle so it's
                 // safe to only parse seconds.
                 base::Seconds(session->duration().seconds()),
-                std::move(students), std::move(on_task_config),
-                std::move(caption_config));
+                std::move(teacher), std::move(students),
+                std::move(on_task_config), std::move(caption_config));
 
             std::move(callback).Run(
                 mojom::SessionResult::NewConfig(std::move(config)));
