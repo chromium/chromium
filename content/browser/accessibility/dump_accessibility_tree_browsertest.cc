@@ -1629,8 +1629,16 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
   RunAriaTest(FILE_PATH_LITERAL("aria-tree-discontinuous.html"));
 }
 
+// https://crbug.com/367650908: flaky on Linux
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_AccessibilityAriaTreeitemNestedInLists \
+  DISABLED_AccessibilityAriaTreeitemNestedInLists
+#else
+#define MAYBE_AccessibilityAriaTreeitemNestedInLists \
+  AccessibilityAriaTreeitemNestedInLists
+#endif
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
-                       AccessibilityAriaTreeitemNestedInLists) {
+                       MAYBE_AccessibilityAriaTreeitemNestedInLists) {
   RunAriaTest(FILE_PATH_LITERAL("aria-treeitem-nested-in-lists.html"));
 }
 
