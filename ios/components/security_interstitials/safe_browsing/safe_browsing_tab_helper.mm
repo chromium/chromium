@@ -168,6 +168,17 @@ bool SafeBrowsingTabHelper::PolicyDecider::IsQueryStale(
          !GetOldestPendingCommittedQuery(query_data);
 }
 
+bool SafeBrowsingTabHelper::PolicyDecider::ShouldReloadOnCommit() {
+  bool should_reload = reload_page_on_commit_;
+
+  // Flip bit to signify a reload has been triggered.
+  if (reload_page_on_commit_) {
+    reload_page_on_commit_ = false;
+  }
+
+  return should_reload;
+}
+
 void SafeBrowsingTabHelper::PolicyDecider::SetCommittedRedirectChain() {
   if (base::FeatureList::IsEnabled(
           safe_browsing::kSafeBrowsingAsyncRealTimeCheck)) {
@@ -177,6 +188,14 @@ void SafeBrowsingTabHelper::PolicyDecider::SetCommittedRedirectChain() {
     }
     to_be_committed_redirect_chain_.clear();
   }
+}
+
+void SafeBrowsingTabHelper::PolicyDecider::ReloadPage() {
+  web::NavigationManager* navigation_manager =
+      web_state()->GetNavigationManager();
+  navigation_manager->DiscardNonCommittedItems();
+  navigation_manager->Reload(web::ReloadType::NORMAL,
+                             /*check_for_repost=*/false);
 }
 
 web::WebStatePolicyDecider::PolicyDecision
@@ -235,7 +254,11 @@ void SafeBrowsingTabHelper::PolicyDecider::HandlePolicyDecision(
 }
 
 void SafeBrowsingTabHelper::PolicyDecider::UpdateForMainFrameDocumentChange() {
-  // TODO(crbug.com/41491791): Update state for async checks on document change.
+  if (ShouldReloadOnCommit()) {
+    ReloadPage();
+  } else {
+    SetCommittedRedirectChain();
+  }
 }
 
 void SafeBrowsingTabHelper::PolicyDecider::UpdateForMainFrameServerRedirect() {
@@ -566,11 +589,7 @@ void SafeBrowsingTabHelper::PolicyDecider::OnMainFrameUrlAsyncQueryDecided(
     }
 
     if (should_display_error && decision.ShouldDisplayError()) {
-      web::NavigationManager* navigation_manager =
-          web_state()->GetNavigationManager();
-      navigation_manager->DiscardNonCommittedItems();
-      navigation_manager->Reload(web::ReloadType::NORMAL,
-                                 /*check_for_repost=*/false);
+      ReloadPage();
     }
     return;
   }
@@ -579,9 +598,15 @@ void SafeBrowsingTabHelper::PolicyDecider::OnMainFrameUrlAsyncQueryDecided(
       GetOldestPendingToBeCommittedQuery(query_data);
   if (to_be_committed_query) {
     UpdateQuery(to_be_committed_query, query_data.type, decision);
-    // TODO(crbug.com/337243708): Add logic for if query is found in
-    // to_be_committed query. Allow commit to pass and reload with
-    // interstitial for "unsafe" page.
+    bool should_display_error = false;
+    if (decision.ShouldCancelNavigation()) {
+      should_display_error =
+          client_->OnMainFrameUrlQueryCancellationDecided(web_state(), url);
+    }
+
+    if (should_display_error && decision.ShouldDisplayError()) {
+      reload_page_on_commit_ = true;
+    }
     return;
   }
 
@@ -831,7 +856,6 @@ void SafeBrowsingTabHelper::NavigationObserver::DidFinishNavigation(
       !navigation_context->IsSameDocument()) {
     policy_decider_->UpdateForMainFrameDocumentChange();
   }
-  policy_decider_->SetCommittedRedirectChain();
 }
 
 void SafeBrowsingTabHelper::NavigationObserver::WebStateDestroyed(
