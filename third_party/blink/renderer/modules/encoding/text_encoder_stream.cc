@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/modules/encoding/text_encoder_stream.h"
 
 #include <stdint.h>
@@ -114,10 +109,9 @@ class TextEncoderStream::Transformer final : public TransformStreamTransformer {
     const wtf_size_t length1 = static_cast<wtf_size_t>(string1.length());
     const wtf_size_t length2 = static_cast<wtf_size_t>(string2.length());
     DOMUint8Array* const array = DOMUint8Array::Create(length1 + length2);
-    if (length1 > 0)
-      memcpy(array->Data(), string1.c_str(), length1);
-    if (length2 > 0)
-      memcpy(array->Data() + length1, string2.c_str(), length2);
+    auto [string1_span, string2_span] = array->ByteSpan().split_at(length1);
+    string1_span.copy_from(base::as_byte_span(string1));
+    string2_span.copy_from(base::as_byte_span(string2));
     return array;
   }
 
