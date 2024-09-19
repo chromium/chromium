@@ -256,7 +256,7 @@ public class TileRenderer {
     /**
      * @return True, if the tile represents a Search query.
      */
-    private boolean isSearchTile(Tile tile) {
+    public boolean isSearchTile(Tile tile) {
         assert mProfile != null;
         TemplateUrlService searchService = TemplateUrlServiceFactory.getForProfile(mProfile);
         return searchService != null
