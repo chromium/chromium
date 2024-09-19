@@ -1199,54 +1199,6 @@ ButtonTitleList InferButtonTitlesForForm(const WebFormElement& web_form) {
   return least_priority_buttons;
 }
 
-// Returns the list items for the passed-in <select> or <selectlist>.
-WebVector<WebElement> GetListItemsForSelectOrSelectList(
-    const WebFormControlElement& element) {
-  if (IsSelectElement(element)) {
-    return element.To<WebSelectElement>().GetListItems();
-  } else {
-    DCHECK(IsSelectListElement(element));
-    return element.To<WebSelectListElement>().GetListItems();
-  }
-}
-
-// Returns the SelectOptions for the given <option> elements.
-//
-// For example,
-//   <select>
-//     <option value=Foo>Bar</option>
-//     <option value=Foo>Foo</option>
-//   </select>
-// returns {{.value = "Foo", .text = "Bar"}, {.value = "Foo", .text = "Foo"}}.
-// For more details, see the documentation of `SelectOption`.
-std::vector<SelectOption> FilterOptionElementsAndGetOptionStrings(
-    const WebVector<WebElement>& option_elements) {
-  // Constrain the maximum list length to prevent a malicious site from DOS'ing
-  // the browser, without entirely breaking autocomplete for some extreme
-  // legitimate sites: http://crbug.com/49332 and http://crbug.com/363094
-  if (option_elements.size() > kMaxListSize) {
-    return {};
-  }
-
-  auto to_string = [](WebString s) {
-    return s.Utf16().substr(0, kMaxStringLength);
-  };
-  std::vector<SelectOption> options;
-  options.reserve(option_elements.size());
-  for (const auto& option_element : option_elements) {
-    if (auto option = option_element.DynamicTo<WebOptionElement>()) {
-      std::u16string text = to_string(option.GetText());
-      if (text.empty()) {
-        text = GetAriaLabel(option_element.GetDocument(), option_element)
-                   .substr(0, kMaxStringLength);
-      }
-      options.push_back(
-          {.value = to_string(option.Value()), .text = std::move(text)});
-    }
-  }
-  return options;
-}
-
 bool ShouldSkipFillField(const FormFieldData::FillData& field,
                          const WebFormControlElement& element) {
   enum class SkipReason {
@@ -1777,6 +1729,56 @@ uint64_t GetMaxLength(const WebFormControlElement& element) {
   return 0;
 }
 
+// Returns the SelectOptions for the given <select> element.
+//
+// For example,
+//   <select>
+//     <option value=Foo>Bar</option>
+//     <option value=Foo>Foo</option>
+//   </select>
+// returns {{.value = "Foo", .text = "Bar"}, {.value = "Foo", .text = "Foo"}}.
+// For more details, see the documentation of `SelectOption`.
+std::vector<SelectOption> GetSelectOptions(
+    const WebFormControlElement& select_or_select_list_element) {
+  DCHECK(IsSelectOrSelectListElement(select_or_select_list_element));
+
+  WebVector<WebElement> maybe_option_elements;
+  if (auto select_element =
+          select_or_select_list_element.DynamicTo<WebSelectElement>()) {
+    maybe_option_elements = select_element.GetListItems();
+  } else if (auto select_list_element =
+                 select_or_select_list_element
+                     .DynamicTo<WebSelectListElement>()) {
+    maybe_option_elements = select_list_element.GetListItems();
+  }
+
+  // Constrain the maximum list length to prevent a malicious site from DOS'ing
+  // the browser, without entirely breaking autocomplete for some extreme
+  // legitimate sites: http://crbug.com/49332 and http://crbug.com/363094
+  if (maybe_option_elements.size() > kMaxListSize) {
+    return {};
+  }
+
+  auto to_string = [](WebString s) {
+    return s.Utf16().substr(0, kMaxStringLength);
+  };
+  std::vector<SelectOption> options;
+  options.reserve(maybe_option_elements.size());
+  for (const auto& maybe_option_element : maybe_option_elements) {
+    if (auto option_element =
+            maybe_option_element.DynamicTo<WebOptionElement>()) {
+      std::u16string text = to_string(option_element.GetText());
+      if (text.empty()) {
+        text = GetAriaLabel(option_element.GetDocument(), option_element)
+                   .substr(0, kMaxStringLength);
+      }
+      options.push_back({.value = to_string(option_element.Value()),
+                         .text = std::move(text)});
+    }
+  }
+  return options;
+}
+
 // Returns the SelectOptions for the <datalist> associated with the given
 // <input> element. The browser may display these options to the user as
 // Autofill suggestions.
@@ -1790,8 +1792,7 @@ uint64_t GetMaxLength(const WebFormControlElement& element) {
 // returns {{.value = "Foo", .text = "Bar"}, {.value = "Foo", .text = ""}}.
 // It is intentional that the `value` takes precedence over the `text` because
 // datalist values are user-visible.
-std::vector<SelectOption> GetDataListSuggestions(
-    const WebInputElement& element) {
+std::vector<SelectOption> GetDataListOptions(const WebInputElement& element) {
   auto to_string = [](WebString s) {
     return s.Utf16().substr(0, kMaxStringLength);
   };
@@ -1970,15 +1971,14 @@ void WebFormControlElementToFormField(
     SetCheckStatus(field, IsCheckableElement(input_element),
                    input_element.IsChecked());
     if (extract_options.contains(ExtractOption::kDatalist)) {
-      field->set_datalist_options(GetDataListSuggestions(input_element));
+      field->set_datalist_options(GetDataListOptions(input_element));
     }
   } else if (IsTextAreaElement(element)) {
     // Nothing more to do in this case.
   } else {
     // Set option strings on the field if available.
     DCHECK(IsSelectOrSelectListElement(element));
-    field->set_options(FilterOptionElementsAndGetOptionStrings(
-        GetListItemsForSelectOrSelectList(element)));
+    field->set_options(GetSelectOptions(element));
   }
   if (extract_options.contains(ExtractOption::kBounds)) {
     if (auto* local_frame = element.GetDocument().GetFrame()) {
@@ -2940,9 +2940,9 @@ void WebFormControlElementToFormFieldForTesting(  // IN-TEST
                                    /*shadow_data=*/nullptr);
 }
 
-std::vector<SelectOption> GetDataListSuggestionsForTesting(  // IN-TEST
+std::vector<SelectOption> GetDataListOptionsForTesting(  // IN-TEST
     const WebInputElement& element) {
-  return GetDataListSuggestions(element);
+  return GetDataListOptions(element);
 }
 
 }  // namespace autofill::form_util

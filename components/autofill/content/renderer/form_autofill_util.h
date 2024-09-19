@@ -288,7 +288,7 @@ void InferLabelForElementsForTesting(
 std::u16string FindChildTextWithIgnoreListForTesting(
     const blink::WebNode& node,
     const std::set<blink::WebNode>& divs_to_skip);
-std::vector<SelectOption> GetDataListSuggestionsForTesting(
+std::vector<SelectOption> GetDataListOptionsForTesting(
     const blink::WebInputElement& element);
 blink::WebFormElement GetClosestAncestorFormElementForTesting(blink::WebNode n);
 bool IsDOMPredecessorForTesting(const blink::WebNode& x,

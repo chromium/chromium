@@ -929,15 +929,14 @@ TEST_F(FormAutofillUtilsTest,
 }
 
 TEST_F(FormAutofillUtilsTest,
-       FindFormAndFieldForFormControlElement_GetDataListSuggestions) {
+       FindFormAndFieldForFormControlElement_GetDataListOptions) {
   LoadHTML(
       "<body><input list='datalist_id' name='count' id='i1'><datalist "
       "id='datalist_id'><option value='1'><option "
       "value='2'></datalist></body>");
   WebDocument doc = GetDocument();
   auto web_control = GetElementById(doc, "i1").To<WebInputElement>();
-  std::vector<SelectOption> options =
-      GetDataListSuggestionsForTesting(web_control);
+  std::vector<SelectOption> options = GetDataListOptionsForTesting(web_control);
   ASSERT_EQ(options.size(), 2u);
   EXPECT_EQ(options[0].value, u"1");
   EXPECT_EQ(options[1].value, u"2");
@@ -946,15 +945,14 @@ TEST_F(FormAutofillUtilsTest,
 }
 
 TEST_F(FormAutofillUtilsTest,
-       FindFormAndFieldForFormControlElement_GetDataListSuggestionsWithLabels) {
+       FindFormAndFieldForFormControlElement_GetDataListOptionsWithLabels) {
   LoadHTML(
       "<body><input list='datalist_id' name='count' id='i1'><datalist "
       "id='datalist_id'><option value='1'>one</option><option "
       "value='2'>two</option></datalist></body>");
   WebDocument doc = GetDocument();
   auto web_control = GetElementById(doc, "i1").To<WebInputElement>();
-  std::vector<SelectOption> options =
-      GetDataListSuggestionsForTesting(web_control);
+  std::vector<SelectOption> options = GetDataListOptionsForTesting(web_control);
   ASSERT_EQ(options.size(), 2u);
   EXPECT_EQ(options[0].value, u"1");
   EXPECT_EQ(options[1].value, u"2");
