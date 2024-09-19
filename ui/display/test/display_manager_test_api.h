@@ -39,7 +39,7 @@ class DISPLAY_EXPORT DisplayManagerTestApi : public VirtualDisplayUtil {
   ~DisplayManagerTestApi() override;
 
   // VirtualDisplayUtil:
-  int64_t AddDisplay(uint8_t id, const DisplayParams& display_params) override;
+  int64_t AddDisplay(const DisplayParams& display_params) override;
   void RemoveDisplay(int64_t display_id) override;
   void ResetDisplays() override;
 
@@ -93,9 +93,6 @@ class DISPLAY_EXPORT DisplayManagerTestApi : public VirtualDisplayUtil {
   static size_t maximum_support_display_;
 
   raw_ptr<DisplayManager> display_manager_;  // not owned
-
-  // TODO(crbug.com/40271794): Remove this once AddDisplay id is removed.
-  base::flat_map<uint64_t, uint8_t> display_id_to_add_display_id_;
 };
 
 class DISPLAY_EXPORT ScopedSetInternalDisplayId {

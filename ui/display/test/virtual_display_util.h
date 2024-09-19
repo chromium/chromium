@@ -49,11 +49,9 @@ class VirtualDisplayUtil {
   // requirements).
   static std::unique_ptr<VirtualDisplayUtil> TryCreate(Screen* screen);
 
-  // `id` is used to uniquely identify the virtual display. This function
-  // returns the generated display::Display id, which can be used with the
-  // Screen instance or passed to `RemoveDisplay`.
-  virtual int64_t AddDisplay(uint8_t id,
-                             const DisplayParams& display_params) = 0;
+  // Adds a virtual display and returns the generated display::Display id, which
+  // can be used with the Screen instance or passed to `RemoveDisplay`.
+  virtual int64_t AddDisplay(const DisplayParams& display_params) = 0;
   // Remove a virtual display corresponding to the specified display ID.
   virtual void RemoveDisplay(int64_t display_id) = 0;
   // Remove all added virtual displays.

@@ -100,15 +100,7 @@ bool VirtualDisplayUtilLinux::IsAPIAvailable() {
 }
 
 int64_t VirtualDisplayUtilLinux::AddDisplay(
-    uint8_t id,
     const DisplayParams& display_params) {
-  if (requested_ids_to_display_ids_.contains(id) ||
-      std::find(requested_ids_.begin(), requested_ids_.end(), id) !=
-          requested_ids_.end()) {
-    LOG(ERROR) << "Virtual display with id " << id
-               << " already exists or requested.";
-    return kInvalidDisplayId;
-  }
   if (current_layout_.configs.size() - initial_layout_.configs.size() >
       kMaxDisplays) {
     LOG(ERROR) << "Cannot exceed " << kMaxDisplays << " virtual displays.";
@@ -118,15 +110,13 @@ int64_t VirtualDisplayUtilLinux::AddDisplay(
   last_requested_layout_ = current_layout_;
   AppendScreen(last_requested_layout_, display_params.resolution,
                display_params.dpi);
-  requested_ids_.push_back(id);
   randr_output_manager_->SetLayout(last_requested_layout_);
-  detected_added_display_ids_.clear();
+  size_t initial_detected_displays = detected_added_display_ids_.size();
   StartWaiting();
-  CHECK_EQ(detected_added_display_ids_.size(), 1u)
+  CHECK_EQ(detected_added_display_ids_.size(), initial_detected_displays + 1u)
       << "Did not detect exactly one new display.";
   // Reconcile the added resizer display ID to the detected display::Display id.
-  int64_t new_display_id = detected_added_display_ids_.front();
-  detected_added_display_ids_.pop_front();
+  int64_t new_display_id = detected_added_display_ids_.back();
   x11::RandRMonitorLayout prev_layout = current_layout_;
   current_layout_ = randr_output_manager_->GetLayout();
   for (const auto& layout : current_layout_.configs) {
@@ -145,7 +135,7 @@ int64_t VirtualDisplayUtilLinux::AddDisplay(
 void VirtualDisplayUtilLinux::RemoveDisplay(int64_t display_id) {
   if (!display_id_to_randr_id_.contains(display_id)) {
     LOG(ERROR) << "Invalid display_id. Missing mapping for " << display_id
-               << " to resizer ID.";
+               << " to randr ID.";
     return;
   }
   last_requested_layout_ = current_layout_;
@@ -168,26 +158,13 @@ void VirtualDisplayUtilLinux::ResetDisplays() {
 
 void VirtualDisplayUtilLinux::OnDisplayAdded(
     const display::Display& new_display) {
-  // TODO(crbug.com/40257169): Support adding multiple displays at a time, or
-  // ignoring external display configuration changes.
-  CHECK_EQ(requested_ids_.size(), 1u)
-      << "An extra display was detected that was either not requested by this "
-         "controller, or multiple displays were requested concurrently. This "
-         "is not supported.";
   detected_added_display_ids_.push_back(new_display.id());
-  uint8_t requested_id = requested_ids_.front();
-  requested_ids_.pop_front();
-  requested_ids_to_display_ids_[requested_id] = new_display.id();
   OnDisplayAddedOrRemoved(new_display.id());
 }
 
 void VirtualDisplayUtilLinux::OnDisplaysRemoved(
     const display::Displays& removed_displays) {
   for (const auto& display : removed_displays) {
-    base::EraseIf(requested_ids_to_display_ids_,
-                  [&](std::pair<uint8_t, int64_t>& pair) {
-                    return pair.second == display.id();
-                  });
     base::EraseIf(
         display_id_to_randr_id_,
         [&](std::pair<DisplayId, x11::RandRMonitorConfig::ScreenId>& pair) {
@@ -208,10 +185,10 @@ void VirtualDisplayUtilLinux::OnDisplayAddedOrRemoved(int64_t id) {
 
 bool VirtualDisplayUtilLinux::RequestedLayoutIsSet() {
   // Checks that the number of virtual displays (delta of last requested layout
-  // minus initial layout) is equal to the number of requested displays.
+  // minus initial layout) is equal to the number of detected virtual displays.
   return last_requested_layout_.configs.size() -
              initial_layout_.configs.size() ==
-         requested_ids_to_display_ids_.size();
+         detected_added_display_ids_.size();
 }
 
 void VirtualDisplayUtilLinux::StartWaiting() {

@@ -33,7 +33,7 @@ class VirtualDisplayUtilLinux : public display::DisplayObserver,
   static bool IsAPIAvailable();
 
   // VirtualDisplayUtil overrides:
-  int64_t AddDisplay(uint8_t id, const DisplayParams& display_params) override;
+  int64_t AddDisplay(const DisplayParams& display_params) override;
   void RemoveDisplay(int64_t display_id) override;
   void ResetDisplays() override;
 
@@ -66,25 +66,13 @@ class VirtualDisplayUtilLinux : public display::DisplayObserver,
   // Last layout request sent to `randr_output_manager_`.
   x11::RandRMonitorLayout last_requested_layout_;
 
-  // There are lots of IDS to track here:
-  //  1. The user-requested ID set in AddDisplay().
-  //  2. The xrandr display ID
-  //  3. The display ID detected by the display::Screen implementation.
-  using RequestedId = uint8_t;
-  using DisplayId = int64_t;
+  using RandrOutputId = int64_t;  // The RandROutputManager output ID
+  using DisplayId = int64_t;      // The display ID used by display::Screen.
 
   // Queue of displays added via OnDisplayAdded. Removed as they are reconciled
   // and moved to `display_id_to_randr_id_`.
   base::circular_deque<DisplayId> detected_added_display_ids_;
-  base::flat_map<DisplayId, x11::RandRMonitorConfig::ScreenId>
-      display_id_to_randr_id_;
-
-  // Tracks display IDs requested in AddDisplay(). The IDs don't do anything in
-  // this implementation, but they are tracked to prevent the user from
-  // specifying the same ID twice without deleting it first (to match other
-  // platform behavior);
-  base::circular_deque<RequestedId> requested_ids_;
-  base::flat_map<RequestedId, DisplayId> requested_ids_to_display_ids_;
+  base::flat_map<DisplayId, RandrOutputId> display_id_to_randr_id_;
 };
 
 }  // namespace test
