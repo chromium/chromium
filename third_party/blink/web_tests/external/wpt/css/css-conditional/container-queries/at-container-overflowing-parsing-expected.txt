@@ -1,0 +1,31 @@
+This is a testharness.js-based test.
+[FAIL] scroll-state(overflowing)
+  assert_equals: expected "true" but got ""
+[FAIL] scroll-state(overflowing: none)
+  assert_equals: expected "true" but got ""
+[FAIL] scroll-state(overflowing: top)
+  assert_equals: expected "true" but got ""
+[FAIL] scroll-state(overflowing: left)
+  assert_equals: expected "true" but got ""
+[FAIL] scroll-state(overflowing: bottom)
+  assert_equals: expected "true" but got ""
+[FAIL] scroll-state(overflowing: right)
+  assert_equals: expected "true" but got ""
+[FAIL] scroll-state(overflowing: inline-start)
+  assert_equals: expected "true" but got ""
+[FAIL] scroll-state(overflowing: inline-end)
+  assert_equals: expected "true" but got ""
+[FAIL] scroll-state(overflowing: block-start)
+  assert_equals: expected "true" but got ""
+[FAIL] scroll-state(overflowing: block-end)
+  assert_equals: expected "true" but got ""
+[FAIL] (scroll-state(overflowing: inline-end))
+  assert_equals: expected "true" but got ""
+[FAIL] scroll-state((overflowing: left))
+  assert_equals: expected "true" but got ""
+[FAIL] scroll-state(not ((overflowing: bottom) and (overflowing: right)))
+  assert_equals: expected "true" but got ""
+[FAIL] scroll-state((overflowing: left) or (overflowing: top))
+  assert_equals: expected "true" but got ""
+Harness: the test ran to completion.
+
