@@ -257,7 +257,7 @@ GaiaIdToPushNotificationPreferenceMapFromCache(
                                 true);
       if (base::FeatureList::IsEnabled(
               send_tab_to_self::kSendTabToSelfIOSPushNotifications)) {
-        [self enableSendTabNotificationsWithBrowserState:browserState];
+        [self setUpAndEnableSendTabNotificationsWithBrowserState:browserState];
       }
     }
   });
@@ -398,34 +398,39 @@ GaiaIdToPushNotificationPreferenceMapFromCache(
 // has authorized full notification permissions, enables Send Tab notifications
 // OR 2) enrolls user in provisional notifications for Send Tab notification
 // type.
-- (void)enableSendTabNotificationsWithBrowserState:
+- (void)setUpAndEnableSendTabNotificationsWithBrowserState:
     (ChromeBrowserState*)browserState {
-  if (!browserState || browserState->GetPrefs()->GetBoolean(
-                           prefs::kSendTabNotificationsPreviouslyDisabled)) {
+  if (!browserState) {
     return;
   }
+
+  // Refresh the local device info now that the client has a Chime
+  // Representative Target ID.
+  syncer::DeviceInfoSyncService* deviceInfoSyncService =
+      DeviceInfoSyncServiceFactory::GetForBrowserState(browserState);
+  deviceInfoSyncService->RefreshLocalDeviceInfo();
 
   AuthenticationService* authService =
       AuthenticationServiceFactory::GetForBrowserState(browserState);
   NSString* gaiaID =
       authService->GetPrimaryIdentity(signin::ConsentLevel::kSignin).gaiaID;
 
-  // Early return if Send Tab notifications are already enabled.
-  if (push_notification_settings::
+  // Early return if 1) the user has previously disabled Send Tab push
+  // notifications, because in that case we don't want to automatically enable
+  // the notification type or 2) if Send Tab notifications are already enabled.
+  if (browserState->GetPrefs()->GetBoolean(
+          prefs::kSendTabNotificationsPreviouslyDisabled) ||
+      push_notification_settings::
           GetMobileNotificationPermissionStatusForClient(
               PushNotificationClientId::kSendTab,
               base::SysNSStringToUTF8(gaiaID))) {
     return;
   }
 
-  syncer::DeviceInfoSyncService* deviceInfoSyncService =
-      DeviceInfoSyncServiceFactory::GetForBrowserState(browserState);
-
   if ([PushNotificationUtil getSavedPermissionSettings] ==
       UNAuthorizationStatusAuthorized) {
     GetApplicationContext()->GetPushNotificationService()->SetPreference(
         gaiaID, PushNotificationClientId::kSendTab, true);
-    deviceInfoSyncService->RefreshLocalDeviceInfo();
   } else {
     [ProvisionalPushNotificationUtil
         enrollUserToProvisionalNotificationsForClientIds:
