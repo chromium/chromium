@@ -1822,8 +1822,7 @@ Permissions you've already given to websites and apps may apply to this account.
         </message>
         <message name="IDS_LENS_PERMISSION_BUBBLE_DIALOG_DESCRIPTION"
           desc="Text that is shown in the Lens permission bubble, giving examples of what Lens can do and informing users that their screenshot will be sent to Google. Includes placeholder for learn more link.">
-          Identify things or places and copy or translate text. When you use Image Search, a
-          screenshot of the page is sent to the server. <ph name="LEARN_MORE">$1<ex>Learn more</ex></ph>
+          Identify things or places and copy or translate text. When you use Image Search, a screenshot of the page is sent to the server. <ph name="LEARN_MORE">$1<ex>Learn more</ex></ph>
         </message>
         <message name="IDS_LENS_PERMISSION_BUBBLE_DIALOG_LEARN_MORE_LINK"
           desc="Text link that is shown to users to learn more about privacy in relation to Google Lens.">
