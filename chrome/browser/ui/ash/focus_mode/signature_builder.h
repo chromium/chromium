@@ -45,6 +45,9 @@ class SignatureBuilder {
       base::OnceCallback<void(const std::string& signature_base)>;
   bool BuildSignatureBase(SignatureBaseCallback callback);
 
+  // Returns a formatted 'Device-Info' HTTP headers string.
+  std::string DeviceInfoHeader() const;
+
  private:
   using SignedCallback =
       base::OnceCallback<void(const std::vector<uint8_t>& signature)>;

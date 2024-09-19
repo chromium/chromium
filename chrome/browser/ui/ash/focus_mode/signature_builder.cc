@@ -139,6 +139,10 @@ void SignatureBuilder::OnCertificateRetrieved(
   }
 }
 
+std::string SignatureBuilder::DeviceInfoHeader() const {
+  return base::StrCat({"Device-Info: ", DeviceInfo()});
+}
+
 void SignatureBuilder::OnBaseSigned(
     HeaderCallback callback,
     const Fields& fields,

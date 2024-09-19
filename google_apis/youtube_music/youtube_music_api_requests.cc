@@ -26,9 +26,11 @@ constexpr char kContentTypeJson[] = "application/json; charset=utf-8";
 namespace google_apis::youtube_music {
 
 GetMusicSectionRequest::GetMusicSectionRequest(RequestSender* sender,
+                                               const std::string& device_info,
                                                Callback callback)
     : UrlFetchRequestBase(sender, ProgressCallback(), ProgressCallback()),
-      callback_(std::move(callback)) {
+      callback_(std::move(callback)),
+      device_info_(device_info) {
   CHECK(!callback_.is_null());
 }
 
@@ -49,6 +51,11 @@ ApiErrorCode GetMusicSectionRequest::MapReasonToError(
 
 bool GetMusicSectionRequest::IsSuccessfulErrorCode(ApiErrorCode error) {
   return error == HTTP_SUCCESS;
+}
+
+std::vector<std::string> GetMusicSectionRequest::GetExtraRequestHeaders()
+    const {
+  return {device_info_};
 }
 
 void GetMusicSectionRequest::ProcessURLFetchResults(
@@ -93,9 +100,11 @@ void GetMusicSectionRequest::OnDataParsed(
 }
 
 GetPlaylistRequest::GetPlaylistRequest(RequestSender* sender,
+                                       const std::string& device_info,
                                        const std::string& playlist_name,
                                        Callback callback)
     : UrlFetchRequestBase(sender, ProgressCallback(), ProgressCallback()),
+      device_info_(device_info),
       playlist_name_(playlist_name),
       callback_(std::move(callback)) {
   CHECK(!callback_.is_null());
@@ -117,6 +126,10 @@ ApiErrorCode GetPlaylistRequest::MapReasonToError(ApiErrorCode code,
 
 bool GetPlaylistRequest::IsSuccessfulErrorCode(ApiErrorCode error) {
   return error == HTTP_SUCCESS;
+}
+
+std::vector<std::string> GetPlaylistRequest::GetExtraRequestHeaders() const {
+  return {device_info_};
 }
 
 void GetPlaylistRequest::ProcessURLFetchResults(

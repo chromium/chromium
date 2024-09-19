@@ -174,7 +174,7 @@ void YouTubeMusicClient::GetMusicSection(GetMusicSectionCallback callback) {
   auto* const request_sender = GetRequestSender();
   request_sender->StartRequestWithAuthRetry(
       std::make_unique<google_apis::youtube_music::GetMusicSectionRequest>(
-          request_sender,
+          request_sender, request_signer_->DeviceInfoHeader(),
           base::BindOnce(&YouTubeMusicClient::OnGetMusicSectionRequestDone,
                          weak_factory_.GetWeakPtr(), base::Time::Now())));
 }
@@ -188,7 +188,7 @@ void YouTubeMusicClient::GetPlaylist(
   auto* const request_sender = GetRequestSender();
   request_sender->StartRequestWithAuthRetry(
       std::make_unique<google_apis::youtube_music::GetPlaylistRequest>(
-          request_sender, playlist_id,
+          request_sender, request_signer_->DeviceInfoHeader(), playlist_id,
           base::BindOnce(&YouTubeMusicClient::OnGetPlaylistRequestDone,
                          weak_factory_.GetWeakPtr(), playlist_id,
                          base::Time::Now())));

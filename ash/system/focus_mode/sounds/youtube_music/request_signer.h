@@ -18,10 +18,16 @@ class ASH_EXPORT RequestSigner {
  public:
   virtual ~RequestSigner() = default;
 
+  // Adds the appropriate headers to attest that the request containing `data`
+  // is from a device with a client certificate.
   using HeadersCallback =
       base::OnceCallback<void(const std::vector<std::string>& headers)>;
   virtual bool GenerateHeaders(base::span<const uint8_t> data,
                                HeadersCallback callback) = 0;
+
+  // Returns a completed 'Device-Info' header for requests that don't require
+  // signing.
+  virtual std::string DeviceInfoHeader() = 0;
 };
 
 }  // namespace ash

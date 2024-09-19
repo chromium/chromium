@@ -78,10 +78,7 @@ class RequestSignerImpl : public ash::RequestSigner {
                        HeadersCallback callback) override {
     signature_builder_->SetPayload(
         std::vector<uint8_t>(data.begin(), data.end()));
-    signature_builder_->SetBrand("ChromeOS");
-    signature_builder_->SetModel("Chromebook");
-    signature_builder_->SetSoftwareVersion(version_info::GetVersionNumber());
-    signature_builder_->SetDeviceId(device_id_);
+    PrepareDeviceInfo();
 
     if (!signature_builder_->BuildHeaders(std::move(callback))) {
       LOG(WARNING) << "Unable to start request signing";
@@ -90,7 +87,19 @@ class RequestSignerImpl : public ash::RequestSigner {
     return true;
   }
 
+  std::string DeviceInfoHeader() override {
+    PrepareDeviceInfo();
+    return signature_builder_->DeviceInfoHeader();
+  }
+
  private:
+  void PrepareDeviceInfo() {
+    signature_builder_->SetBrand("ChromeOS");
+    signature_builder_->SetModel("Chromebook");
+    signature_builder_->SetSoftwareVersion(version_info::GetVersionNumber());
+    signature_builder_->SetDeviceId(device_id_);
+  }
+
   const AccountId account_id_;
   const std::string device_id_;
 

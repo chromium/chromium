@@ -31,7 +31,9 @@ class GetMusicSectionRequest : public UrlFetchRequestBase {
       base::expected<std::unique_ptr<TopLevelMusicRecommendations>,
                      ApiErrorCode>)>;
 
-  GetMusicSectionRequest(RequestSender* sender, Callback callback);
+  GetMusicSectionRequest(RequestSender* sender,
+                         const std::string& device_info,
+                         Callback callback);
   GetMusicSectionRequest(const GetMusicSectionRequest&) = delete;
   GetMusicSectionRequest& operator=(const GetMusicSectionRequest&) = delete;
   ~GetMusicSectionRequest() override;
@@ -42,6 +44,7 @@ class GetMusicSectionRequest : public UrlFetchRequestBase {
   ApiErrorCode MapReasonToError(ApiErrorCode code,
                                 const std::string& reason) override;
   bool IsSuccessfulErrorCode(ApiErrorCode error) override;
+  std::vector<std::string> GetExtraRequestHeaders() const override;
   void ProcessURLFetchResults(
       const network::mojom::URLResponseHead* response_head,
       const base::FilePath response_file,
@@ -56,6 +59,7 @@ class GetMusicSectionRequest : public UrlFetchRequestBase {
       std::unique_ptr<TopLevelMusicRecommendations> recommendations);
 
   Callback callback_;
+  const std::string device_info_;
 
   base::WeakPtrFactory<GetMusicSectionRequest> weak_ptr_factory_{this};
 };
@@ -69,6 +73,7 @@ class GetPlaylistRequest : public UrlFetchRequestBase {
       base::expected<std::unique_ptr<Playlist>, ApiErrorCode>)>;
 
   GetPlaylistRequest(RequestSender* sender,
+                     const std::string& device_info,
                      const std::string& playlist_name,
                      Callback callback);
   GetPlaylistRequest(const GetPlaylistRequest&) = delete;
@@ -81,6 +86,7 @@ class GetPlaylistRequest : public UrlFetchRequestBase {
   ApiErrorCode MapReasonToError(ApiErrorCode code,
                                 const std::string& reason) override;
   bool IsSuccessfulErrorCode(ApiErrorCode error) override;
+  std::vector<std::string> GetExtraRequestHeaders() const override;
   void ProcessURLFetchResults(
       const network::mojom::URLResponseHead* response_head,
       const base::FilePath response_file,
@@ -91,6 +97,8 @@ class GetPlaylistRequest : public UrlFetchRequestBase {
   static std::unique_ptr<Playlist> Parse(const std::string& json);
 
   void OnDataParsed(std::unique_ptr<Playlist> playlist);
+
+  const std::string device_info_;
 
   // Playlist name. Unique identifier of a playlist.
   std::string playlist_name_;
