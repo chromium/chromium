@@ -161,7 +161,9 @@ PageInfoViewFactory::CreateAdPersonalizationPageView() {
 
 std::unique_ptr<views::View> PageInfoViewFactory::CreateCookiesPageView() {
   const std::u16string title_label =
-      ui_delegate_->IsTrackingProtection3pcdEnabled()
+      base::FeatureList::IsEnabled(
+          privacy_sandbox::kTrackingProtection3pcdUx) &&
+              ui_delegate_->IsTrackingProtection3pcdEnabled()
           ? l10n_util::GetStringUTF16(
                 IDS_PAGE_INFO_SUB_PAGE_VIEW_TRACKING_PROTECTION_HEADER)
           : l10n_util::GetStringUTF16(IDS_PAGE_INFO_COOKIES_HEADER);

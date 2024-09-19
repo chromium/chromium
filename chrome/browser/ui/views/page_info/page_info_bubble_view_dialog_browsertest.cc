@@ -110,7 +110,8 @@ class PageInfoBubbleViewDialogBrowserTest : public DialogBrowserTest {
         {// TODO(crbug.com/40248833): Use HTTPS URLs in tests to avoid having
          // to disable this feature.
          features::kHttpsUpgrades,
-         content_settings::features::kTrackingProtection3pcd});
+         content_settings::features::kTrackingProtection3pcd,
+         privacy_sandbox::kTrackingProtection3pcdUx});
   }
 
   PageInfoBubbleViewDialogBrowserTest(
@@ -744,7 +745,8 @@ class PageInfoBubbleViewCookiesSubpageBrowserTest
   PageInfoBubbleViewCookiesSubpageBrowserTest() {
     feature_list_.InitWithFeatures(
         {privacy_sandbox::kPrivacySandboxFirstPartySetsUI},
-        {content_settings::features::kTrackingProtection3pcd});
+        {content_settings::features::kTrackingProtection3pcd,
+         privacy_sandbox::kTrackingProtection3pcdUx});
   }
 
   static base::Time GetReferenceTime() {

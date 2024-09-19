@@ -175,7 +175,9 @@ void PageInfoMainView::SetCookieInfo(const CookiesNewInfo& cookie_info) {
   std::u16string tooltip, title, label = std::u16string();
 
   // Check if 3PCD blocking status is initialized.
-  if (cookie_info.blocking_status != CookieBlocking3pcdStatus::kNotIn3pcd) {
+  if (base::FeatureList::IsEnabled(
+          privacy_sandbox::kTrackingProtection3pcdUx) &&
+      cookie_info.blocking_status != CookieBlocking3pcdStatus::kNotIn3pcd) {
     icon = PageInfoViewFactory::GetBlockingThirdPartyCookiesIcon();
     title = l10n_util::GetStringUTF16(
         IDS_PAGE_INFO_TRACKING_PROTECTION_SITE_INFO_BUTTON_NAME);
@@ -419,8 +421,9 @@ void PageInfoMainView::SetIdentityInfo(const IdentityInfo& identity_info) {
 void PageInfoMainView::SetPageFeatureInfo(const PageFeatureInfo& info) {
 #if BUILDFLAG(IS_WIN) && BUILDFLAG(ENABLE_VR)
   // For now, this has only VR settings.
-  if (!info.is_vr_presentation_in_headset)
+  if (!info.is_vr_presentation_in_headset) {
     return;
+  }
 
   ChromeLayoutProvider* layout_provider = ChromeLayoutProvider::Get();
   page_feature_info_view_
@@ -492,8 +495,9 @@ void PageInfoMainView::SetAdPersonalizationInfo(
 
   ads_personalization_section_->RemoveAllChildViews();
 
-  if (info.is_empty())
+  if (info.is_empty()) {
     return;
+  }
 
   ads_personalization_section_->AddChildView(CreateAdPersonalizationSection());
 
