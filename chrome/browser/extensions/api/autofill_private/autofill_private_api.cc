@@ -19,6 +19,7 @@
 #include "base/values.h"
 #include "chrome/browser/extensions/api/autofill_private/autofill_util.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/user_annotations/user_annotations_service_factory.h"
 #include "chrome/common/extensions/api/autofill_private.h"
 #include "components/autofill/content/browser/content_autofill_client.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
@@ -46,6 +47,8 @@
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/strings/grit/components_branded_strings.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/user_annotations/user_annotations_service.h"
+#include "components/user_annotations/user_annotations_types.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/extension_function.h"
 #include "extensions/browser/extension_function_registry.h"
@@ -1051,20 +1054,33 @@ AutofillPrivateSetAutofillSyncToggleEnabledFunction::Run() {
 
 ExtensionFunction::ResponseAction
 AutofillPrivateGetUserAnnotationsEntriesFunction::Run() {
+  Profile* profile =
+      Profile::FromBrowserContext(GetSenderWebContents()->GetBrowserContext());
+  user_annotations::UserAnnotationsService* user_annotations_service =
+      profile ? UserAnnotationsServiceFactory::GetForProfile(profile) : nullptr;
+
+  if (!user_annotations_service) {
+    return RespondNow(Error(kErrorDataUnavailable));
+  }
+
+  user_annotations_service->RetrieveAllEntries(base::BindOnce(
+      &AutofillPrivateGetUserAnnotationsEntriesFunction::OnEntriesRetrieved,
+      this));
+
+  return did_respond() ? AlreadyResponded() : RespondLater();
+}
+
+void AutofillPrivateGetUserAnnotationsEntriesFunction::OnEntriesRetrieved(
+    user_annotations::UserAnnotationsEntries response) {
   std::vector<autofill_private::UserAnnotationsEntry> result;
-
-  // TODO(crbug.com/361437117): Replace stubby data with real API call result.
-  result.emplace_back();
-  result.back().entry_id = 1;
-  result.back().key = "Date of birth";
-  result.back().value = "15/02/1989";
-
-  result.emplace_back();
-  result.back().entry_id = 2;
-  result.back().key = "Frequent flyer program";
-  result.back().value = "Aadvantage";
-
-  return RespondNow(ArgumentList(
+  result.reserve(response.size());
+  for (optimization_guide::proto::UserAnnotationsEntry& entry : response) {
+    result.emplace_back();
+    result.back().entry_id = entry.entry_id();
+    result.back().key = std::move(entry.key());
+    result.back().value = std::move(entry.value());
+  }
+  Respond(ArgumentList(
       api::autofill_private::GetUserAnnotationsEntries::Results::Create(
           result)));
 }
@@ -1080,9 +1096,26 @@ AutofillPrivateDeleteUserAnnotationsEntryFunction::Run() {
               args());
   EXTENSION_FUNCTION_VALIDATE(parameters);
 
-  // TODO(crbug.com/361437117): Replace stubby data with real API call result.
+  Profile* profile =
+      Profile::FromBrowserContext(GetSenderWebContents()->GetBrowserContext());
+  user_annotations::UserAnnotationsService* user_annotations_service =
+      profile ? UserAnnotationsServiceFactory::GetForProfile(profile) : nullptr;
 
-  return RespondNow(NoArguments());
+  if (!user_annotations_service) {
+    return RespondNow(Error(kErrorDataUnavailable));
+  }
+
+  user_annotations_service->RemoveEntry(
+      parameters->entry_id,
+      base::BindOnce(
+          &AutofillPrivateDeleteUserAnnotationsEntryFunction::OnEntryDeleted,
+          this));
+
+  return did_respond() ? AlreadyResponded() : RespondLater();
+}
+
+void AutofillPrivateDeleteUserAnnotationsEntryFunction::OnEntryDeleted() {
+  Respond(NoArguments());
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -1090,8 +1123,26 @@ AutofillPrivateDeleteUserAnnotationsEntryFunction::Run() {
 
 ExtensionFunction::ResponseAction
 AutofillPrivateDeleteAllUserAnnotationsEntriesFunction::Run() {
-  // TODO(crbug.com/361437117): Add real API call.
-  return RespondNow(NoArguments());
+  Profile* profile =
+      Profile::FromBrowserContext(GetSenderWebContents()->GetBrowserContext());
+  user_annotations::UserAnnotationsService* user_annotations_service =
+      profile ? UserAnnotationsServiceFactory::GetForProfile(profile) : nullptr;
+
+  if (!user_annotations_service) {
+    return RespondNow(Error(kErrorDataUnavailable));
+  }
+
+  user_annotations_service->RemoveAllEntries(
+      base::BindOnce(&AutofillPrivateDeleteAllUserAnnotationsEntriesFunction::
+                         OnAllEntriesDeleted,
+                     this));
+
+  return did_respond() ? AlreadyResponded() : RespondLater();
+}
+
+void AutofillPrivateDeleteAllUserAnnotationsEntriesFunction::
+    OnAllEntriesDeleted() {
+  Respond(NoArguments());
 }
 
 }  // namespace extensions

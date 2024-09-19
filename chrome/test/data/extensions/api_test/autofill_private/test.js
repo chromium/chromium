@@ -729,6 +729,26 @@ var availableTests = [
     chrome.test.assertNoLastError();
     chrome.test.succeed();
   },
+
+  function deleteAllUserAnnotationsEntries() {
+    chrome.autofillPrivate.deleteAllUserAnnotationsEntries();
+    chrome.test.assertNoLastError();
+    chrome.test.succeed();
+  },
+
+
+  function deleteUserAnnotationsEntry() {
+    chrome.autofillPrivate.deleteUserAnnotationsEntry(123);
+    chrome.test.assertNoLastError();
+    chrome.test.succeed();
+  },
+
+  function getUserAnnotationsEntries() {
+    chrome.autofillPrivate.getUserAnnotationsEntries();
+    chrome.test.assertNoLastError();
+    chrome.test.succeed();
+  },
+
 ];
 
 /** @const */
@@ -763,6 +783,9 @@ var TESTS_FOR_CONFIG = {
       ['authenticateUserAndFlipMandatoryAuthToggle'],
   'getLocalCard': ['addNewCreditCard', 'getLocalCard'],
   'bulkDeleteAllCvcs': ['bulkDeleteAllCvcs'],
+  'deleteAllUserAnnotationsEntries': ['deleteAllUserAnnotationsEntries'],
+  'deleteUserAnnotationsEntries': ['deleteUserAnnotationsEntries'],
+  'getUserAnnotationsEntries': ['getUserAnnotationsEntries'],
 };
 
 var testConfig = window.location.search.substring(1);

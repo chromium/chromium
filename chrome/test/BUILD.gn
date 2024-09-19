@@ -4408,6 +4408,7 @@ if (!is_android) {
         # TODO(rockot) bug 505926: The chrome_extensions_browsertests_sources
         # target should be deleted and this line removed. See the
         # chrome_extensions_browsertests_sources target for more.
+        "//components/user_annotations:test_support",
         "//extensions:chrome_extensions_browsertests_sources",
         "//extensions/browser:test_support",
         "//extensions/browser/api/storage:settings_namespace",

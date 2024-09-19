@@ -22,6 +22,25 @@ void TestUserAnnotationsService::ReplaceAllEntries(
   entries_ = std::move(entries);
 }
 
+void TestUserAnnotationsService::RemoveEntry(EntryID entry_id,
+                                             base::OnceClosure callback) {
+  size_t count = 0;
+  for (const optimization_guide::proto::UserAnnotationsEntry& entry :
+       entries_) {
+    if (entry_id == entry.entry_id()) {
+      entries_.erase(entries_.begin() + count);
+      break;
+    }
+    count++;
+  }
+  std::move(callback).Run();
+}
+
+void TestUserAnnotationsService::RemoveAllEntries(base::OnceClosure callback) {
+  entries_.clear();
+  std::move(callback).Run();
+}
+
 void TestUserAnnotationsService::AddFormSubmission(
     optimization_guide::proto::AXTreeUpdate ax_tree_update,
     std::unique_ptr<autofill::FormStructure> form,
@@ -48,6 +67,7 @@ void TestUserAnnotationsService::AddFormSubmission(
 
 void TestUserAnnotationsService::RetrieveAllEntries(
     base::OnceCallback<void(UserAnnotationsEntries)> callback) {
+  count_entries_retrieved_++;
   std::move(callback).Run(entries_);
 }
 

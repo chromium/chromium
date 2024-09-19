@@ -48,8 +48,11 @@ class TestUserAnnotationsService : public UserAnnotationsService {
                          ImportFormCallback callback) override;
   void RetrieveAllEntries(
       base::OnceCallback<void(UserAnnotationsEntries)> callback) override;
+  void RemoveEntry(EntryID entry_id, base::OnceClosure callback) override;
+  void RemoveAllEntries(base::OnceClosure callback) override;
   void RemoveAnnotationsInRange(const base::Time& delete_begin,
                                 const base::Time& delete_end) override;
+  size_t count_entries_retrieved() const { return count_entries_retrieved_; }
 
   std::pair<base::Time, base::Time> last_received_remove_annotations_in_range()
       const {
@@ -68,6 +71,9 @@ class TestUserAnnotationsService : public UserAnnotationsService {
 
   // Saves the last call for `RemoveAnnotationsInRange`.
   std::pair<base::Time, base::Time> last_received_remove_annotations_in_range_;
+
+  // The number of times entries have been retrieved.
+  size_t count_entries_retrieved_ = 0;
 };
 
 }  // namespace user_annotations
