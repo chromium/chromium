@@ -5,6 +5,7 @@
 #include "chrome/browser/sync/test/integration/webapks_helper.h"
 
 #include "chrome/browser/android/webapk/webapk_sync_service.h"
+#include "chrome/browser/android/webapk/webapk_sync_service_factory.h"
 #include "chrome/browser/sync/test/integration/sync_datatype_helper.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 
@@ -23,7 +24,7 @@ std::vector<sync_pb::WebApkSpecifics> SyncEntitiesToWebApkSpecifics(
 }
 
 webapk::WebApkSyncService* GetWebApkSyncServiceFromClient(int index) {
-  return webapk::WebApkSyncService::GetForProfile(
+  return webapk::WebApkSyncServiceFactory::GetForProfile(
       sync_datatype_helper::test()->GetProfile(index));
 }
 

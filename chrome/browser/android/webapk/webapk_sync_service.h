@@ -19,8 +19,6 @@ namespace webapk {
 
 class WebApkSyncService : public KeyedService {
  public:
-  static WebApkSyncService* GetForProfile(Profile* profile);
-
   explicit WebApkSyncService(Profile* profile);
   WebApkSyncService(const WebApkSyncService&) = delete;
   WebApkSyncService& operator=(const WebApkSyncService&) = delete;

@@ -13,6 +13,7 @@
 #include "base/no_destructor.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/android/webapk/webapk_sync_service_factory.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/commerce/product_specifications/product_specifications_service_factory.h"
@@ -310,7 +311,7 @@ syncer::DataTypeController::TypeVector CreateChromeControllers(
 #if BUILDFLAG(IS_ANDROID)
   builder.SetWebApkSyncService(
       base::FeatureList::IsEnabled(syncer::kWebApkBackupAndRestoreBackend)
-          ? webapk::WebApkSyncService::GetForProfile(profile)
+          ? webapk::WebApkSyncServiceFactory::GetForProfile(profile)
           : nullptr);
 #endif  // BUILDFLAG(IS_ANDROID)
 
