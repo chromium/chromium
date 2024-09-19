@@ -46,11 +46,15 @@ extern const base::FeatureParam<std::string> kDevToolsFreestylerDogfoodModelId;
 extern const base::FeatureParam<double> kDevToolsFreestylerDogfoodTemperature;
 
 enum class DevToolsFreestylerUserTier {
-    // Users who are internal testers or validators.
-    // In future, the data from these users will be excluded from training data when logging is enabled.
-    kTesters,
-    // Users in the general public.
-    kPublic
+  // Users who are internal testers or validators.
+  // AIDA does not log these users in product usage metrics.
+  // In future, the data from these users will be excluded from training data
+  // when logging is enabled.
+  kTesters,
+  // Users who are early adopters.
+  kBeta,
+  // Users in the general public.
+  kPublic
 };
 
 extern const base::FeatureParam<DevToolsFreestylerUserTier> kDevToolsFreestylerDogfoodUserTier;
