@@ -74,7 +74,7 @@ class DIPSServiceImpl : public DIPSService, public KeyedService {
       const GURL& final_url,
       base::Time time,
       bool stateful,
-      base::RepeatingCallback<void(const GURL&)> content_settings_callback)>;
+      base::RepeatingCallback<void(const GURL&)> stateful_bounce_callback)>;
 
   DIPSServiceImpl(base::PassKey<DIPSServiceFactory>,
                   content::BrowserContext* context);
@@ -89,9 +89,9 @@ class DIPSServiceImpl : public DIPSService, public KeyedService {
       const GURL& final_url,
       base::Time time,
       bool stateful,
-      base::RepeatingCallback<void(const GURL&)> content_settings_callback) {
+      base::RepeatingCallback<void(const GURL&)> stateful_bounce_callback) {
     RecordBounce(url, has_3pc_exception, final_url, time, stateful,
-                 content_settings_callback);
+                 stateful_bounce_callback);
   }
 
   DIPSCookieMode GetCookieMode() const;
@@ -108,7 +108,7 @@ class DIPSServiceImpl : public DIPSService, public KeyedService {
   void HandleRedirectChain(
       std::vector<DIPSRedirectInfoPtr> redirects,
       DIPSRedirectChainInfoPtr chain,
-      base::RepeatingCallback<void(const GURL&)> content_settings_callback);
+      base::RepeatingCallback<void(const GURL&)> stateful_bounce_callback);
 
   void RecordInteractionForTesting(const GURL& url) override;
 
@@ -168,7 +168,7 @@ class DIPSServiceImpl : public DIPSService, public KeyedService {
       std::vector<DIPSRedirectInfoPtr> redirects,
       DIPSRedirectChainInfoPtr chain,
       size_t index,
-      base::RepeatingCallback<void(const GURL&)> content_settings_callback,
+      base::RepeatingCallback<void(const GURL&)> stateful_bounce_callback,
       const DIPSState url_state);
   void RecordBounce(
       const GURL& url,
@@ -176,12 +176,12 @@ class DIPSServiceImpl : public DIPSService, public KeyedService {
       const GURL& final_url,
       base::Time time,
       bool stateful,
-      base::RepeatingCallback<void(const GURL&)> content_settings_callback);
+      base::RepeatingCallback<void(const GURL&)> stateful_bounce_callback);
   static void HandleRedirect(
       const DIPSRedirectInfo& redirect,
       const DIPSRedirectChainInfo& chain,
       RecordBounceCallback callback,
-      base::RepeatingCallback<void(const GURL&)> content_settings_callback);
+      base::RepeatingCallback<void(const GURL&)> stateful_bounce_callback);
 
   scoped_refptr<base::SequencedTaskRunner> CreateTaskRunner();
 

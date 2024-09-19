@@ -340,7 +340,7 @@ void DIPSServiceImpl::RemoveEvents(const base::Time& delete_begin,
 void DIPSServiceImpl::HandleRedirectChain(
     std::vector<DIPSRedirectInfoPtr> redirects,
     DIPSRedirectChainInfoPtr chain,
-    base::RepeatingCallback<void(const GURL&)> content_settings_callback) {
+    base::RepeatingCallback<void(const GURL&)> stateful_bounce_callback) {
   DCHECK_LE(redirects.size(), chain->length);
 
   if (redirects.empty()) {
@@ -374,7 +374,7 @@ void DIPSServiceImpl::HandleRedirectChain(
       .WithArgs(url)
       .Then(base::BindOnce(&DIPSServiceImpl::GotState,
                            weak_factory_.GetWeakPtr(), std::move(redirects),
-                           std::move(chain), 0, content_settings_callback));
+                           std::move(chain), 0, stateful_bounce_callback));
 }
 
 void DIPSServiceImpl::RecordInteractionForTesting(const GURL& url) {
@@ -395,7 +395,7 @@ void DIPSServiceImpl::GotState(
     std::vector<DIPSRedirectInfoPtr> redirects,
     DIPSRedirectChainInfoPtr chain,
     size_t index,
-    base::RepeatingCallback<void(const GURL&)> content_settings_callback,
+    base::RepeatingCallback<void(const GURL&)> stateful_bounce_callback,
     const DIPSState url_state) {
   DCHECK_LT(index, redirects.size());
 
@@ -415,7 +415,7 @@ void DIPSServiceImpl::GotState(
   HandleRedirect(*redirect, *chain,
                  base::BindRepeating(&DIPSServiceImpl::RecordBounce,
                                      base::Unretained(this)),
-                 content_settings_callback);
+                 stateful_bounce_callback);
 
   if (index + 1 >= redirects.size()) {
     // All redirects handled.
@@ -434,7 +434,7 @@ void DIPSServiceImpl::GotState(
       .Then(base::BindOnce(&DIPSServiceImpl::GotState,
                            weak_factory_.GetWeakPtr(), std::move(redirects),
                            std::move(chain), index + 1,
-                           content_settings_callback));
+                           stateful_bounce_callback));
 }
 
 void DIPSServiceImpl::RecordBounce(
@@ -443,7 +443,7 @@ void DIPSServiceImpl::RecordBounce(
     const GURL& final_url,
     base::Time time,
     bool stateful,
-    base::RepeatingCallback<void(const GURL&)> content_settings_callback) {
+    base::RepeatingCallback<void(const GURL&)> stateful_bounce_callback) {
   // If the bounced URL has a 3PC exception when embedded under the initial or
   // final URL in the redirect,then clear the tracking site from the DIPS DB, to
   // avoid deleting its storage. The exception overrides any bounces from
@@ -491,10 +491,10 @@ void DIPSServiceImpl::RecordBounce(
     return;
   }
 
-  // If the bounce is stateful and not excepted by cookie settings, increment
-  // the bounce counter in PageSpecificContentSettings.
+  // If the bounce is stateful and not excepted by cookie settings, run the
+  // callback.
   if (stateful) {
-    content_settings_callback.Run(final_url);
+    stateful_bounce_callback.Run(final_url);
   }
 
   storage_.AsyncCall(&DIPSStorage::RecordBounce).WithArgs(url, time, stateful);
@@ -505,7 +505,7 @@ void DIPSServiceImpl::HandleRedirect(
     const DIPSRedirectInfo& redirect,
     const DIPSRedirectChainInfo& chain,
     RecordBounceCallback record_bounce,
-    base::RepeatingCallback<void(const GURL&)> content_settings_callback) {
+    base::RepeatingCallback<void(const GURL&)> stateful_bounce_callback) {
   bool initial_site_same = (redirect.site == chain.initial_site);
   bool final_site_same = (redirect.site == chain.final_site);
   DCHECK_LT(redirect.chain_index.value(), chain.length);
@@ -541,7 +541,7 @@ void DIPSServiceImpl::HandleRedirect(
         redirect.url.url, redirect.has_3pc_exception.value(),
         chain.final_url.url, redirect.time,
         /*stateful=*/redirect.access_type > SiteDataAccessType::kRead,
-        content_settings_callback);
+        stateful_bounce_callback);
   }
 
   RedirectCategory category =
