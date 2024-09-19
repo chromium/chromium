@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/functional/bind.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -32,9 +33,11 @@ namespace policy {
 namespace {
 
 constexpr char kInvalidJson[] = R"({"foo": "bar")";
-constexpr char16_t kInvalidJsonParsingError[] =
-    u"Policy parsing error: Invalid JSON string: Line: 1, column: 14, Syntax "
-    u"error.";
+
+// Prefix of the invalid-JSON error. The remainder of the error depends on which
+// specific JSON parser is used.
+constexpr char16_t kInvalidJsonParsingErrorPrefix[] =
+    u"Policy parsing error: Invalid JSON string:";
 
 constexpr char kInvalidPolicyName[] = "invalid-policy-name";
 
@@ -933,10 +936,10 @@ TEST_F(DevicePolicyDecoderTest, DecodeDeviceRestrictionScheduleError) {
   const PolicyMap::Entry* entry = policies.Get(key::kDeviceRestrictionSchedule);
   ASSERT_NE(entry, nullptr);
   EXPECT_TRUE(entry->HasMessage(PolicyMap::MessageType::kError));
-  EXPECT_EQ(
-      kInvalidJsonParsingError,
+  EXPECT_TRUE(base::StartsWith(
       entry->GetLocalizedMessages(PolicyMap::MessageType::kError,
-                                  PolicyMap::Entry::L10nLookupFunction()));
+                                  PolicyMap::Entry::L10nLookupFunction()),
+      kInvalidJsonParsingErrorPrefix));
 }
 
 }  // namespace policy

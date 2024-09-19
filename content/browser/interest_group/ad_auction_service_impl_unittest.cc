@@ -18,6 +18,7 @@
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/features.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/json/json_string_value_serializer.h"
@@ -4156,11 +4157,15 @@ TEST_F(AdAuctionServiceImplTest, UpdateInvalidJSONIgnored) {
 // UpdateJSONParserCrash fails on Android or with the Rust parser because in
 // those conditions the data decoder doesn't use a separate process to parse
 // JSON. On other platforms, the C++ parser runs out-of-proc for safety.
-#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(BUILD_RUST_JSON_READER)
+#if !BUILDFLAG(IS_ANDROID)
 
 // The server response is valid, but we simulate the JSON parser (which may
 // run in a separate process) crashing, so the update doesn't happen.
 TEST_F(AdAuctionServiceImplTest, UpdateJSONParserCrash) {
+  // Disable the Rust JSON parser, as it is in-process and cannot crash.
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatureState(base::features::kUseRustJsonParser, false);
+
   network_responder_->RegisterUpdateResponse(kUpdateUrlPath, R"({
 "ads": [{"renderURL": "https://example.com/new_render"
         }]

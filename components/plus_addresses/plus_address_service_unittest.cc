@@ -403,7 +403,7 @@ TEST_F(PlusAddressServiceRequestsTest, ReservePlusAddress_ReturnsUnconfirmed) {
   ASSERT_FALSE(future.IsReady());
   url_loader_factory().SimulateResponseForPendingRequest(
       kReservePlusAddressEndpoint, test::MakeCreationResponse(profile));
-  ASSERT_TRUE(future.IsReady());
+  ASSERT_TRUE(future.Wait());
   EXPECT_EQ(future.Get()->plus_address, profile.plus_address);
 
   // The service should not save plus_address if it hasn't been confirmed yet.
@@ -420,7 +420,7 @@ TEST_F(PlusAddressServiceRequestsTest, ReservePlusAddress_ReturnsConfirmed) {
   ASSERT_FALSE(future.IsReady());
   url_loader_factory().SimulateResponseForPendingRequest(
       kReservePlusAddressEndpoint, test::MakeCreationResponse(profile));
-  ASSERT_TRUE(future.IsReady());
+  ASSERT_TRUE(future.Wait());
   EXPECT_EQ(future.Get()->plus_address, profile.plus_address);
 
   // The service should save kPlusAddress if it has already been confirmed.
@@ -435,7 +435,7 @@ TEST_F(PlusAddressServiceRequestsTest, ReservePlusAddress_Fails) {
   ASSERT_FALSE(future.IsReady());
   url_loader_factory().SimulateResponseForPendingRequest(
       kReservePlusAddressEndpoint, "", net::HTTP_BAD_REQUEST);
-  ASSERT_TRUE(future.IsReady());
+  ASSERT_TRUE(future.Wait());
   EXPECT_FALSE(future.Get().has_value());
 }
 
@@ -454,7 +454,7 @@ TEST_F(PlusAddressServiceRequestsTest, ConfirmPlusAddress_Successful) {
   ASSERT_FALSE(future.IsReady());
   url_loader_factory().SimulateResponseForPendingRequest(
       kCreatePlusAddressEndpoint, test::MakeCreationResponse(profile));
-  ASSERT_TRUE(future.IsReady());
+  ASSERT_TRUE(future.Wait());
   EXPECT_EQ(future.Get()->plus_address, profile.plus_address);
   // Verify that the kPlusAddress is saved when confirmation is successful.
   EXPECT_TRUE(service().IsPlusAddress(*profile.plus_address));
@@ -464,7 +464,7 @@ TEST_F(PlusAddressServiceRequestsTest, ConfirmPlusAddress_Successful) {
   service().ConfirmPlusAddress(OriginFromFacet(profile.facet),
                                profile.plus_address,
                                second_future.GetCallback());
-  ASSERT_TRUE(second_future.IsReady());
+  ASSERT_TRUE(second_future.Wait());
   EXPECT_EQ(second_future.Get()->plus_address, profile.plus_address);
   service().RemoveObserver(&observer);
 }
@@ -480,7 +480,7 @@ TEST_F(PlusAddressServiceRequestsTest, ConfirmPlusAddress_Fails) {
   ASSERT_FALSE(future.IsReady());
   url_loader_factory().SimulateResponseForPendingRequest(
       kCreatePlusAddressEndpoint, "", net::HTTP_BAD_REQUEST);
-  ASSERT_TRUE(future.IsReady());
+  ASSERT_TRUE(future.Wait());
 
   // An error is propagated from the callback and kPlusAddress is not saved.
   EXPECT_FALSE(future.Get().has_value());
@@ -497,10 +497,14 @@ TEST_F(PlusAddressServiceRequestsTest,
   // Verify that Plus Address creation doesn't occur.
   PlusProfile profile = test::CreatePlusProfile();
   profile.is_confirmed = false;
+  base::test::TestFuture<const PlusProfileOrError&> reserve;
   service().ReservePlusAddress(OriginFromFacet(profile.facet),
-                               base::DoNothing());
+                               reserve.GetCallback());
+  ASSERT_TRUE(reserve.Wait());
+  base::test::TestFuture<const PlusProfileOrError&> confirm;
   service().ConfirmPlusAddress(OriginFromFacet(profile.facet),
-                               profile.plus_address, base::DoNothing());
+                               profile.plus_address, confirm.GetCallback());
+  ASSERT_TRUE(confirm.Wait());
   EXPECT_EQ(url_loader_factory().NumPending(), 0);
 
   // Toggle creation back on by signing in again.
@@ -508,7 +512,7 @@ TEST_F(PlusAddressServiceRequestsTest,
                                              signin::ConsentLevel::kSignin);
 
   // Verify that Plus Address creation occurs and makes a network request.
-  base::test::TestFuture<const PlusProfileOrError&> reserve;
+  reserve.Clear();
   service().ReservePlusAddress(OriginFromFacet(profile.facet),
                                reserve.GetCallback());
   EXPECT_EQ(url_loader_factory().NumPending(), 1);
@@ -516,7 +520,7 @@ TEST_F(PlusAddressServiceRequestsTest,
       kReservePlusAddressEndpoint, test::MakeCreationResponse(profile));
   EXPECT_EQ(reserve.Get()->plus_address, profile.plus_address);
 
-  base::test::TestFuture<const PlusProfileOrError&> confirm;
+  confirm.Clear();
   service().ConfirmPlusAddress(OriginFromFacet(profile.facet),
                                profile.plus_address, confirm.GetCallback());
   EXPECT_EQ(url_loader_factory().NumPending(), 1);
@@ -548,7 +552,7 @@ TEST_F(PlusAddressServiceRequestsTest,
       GoogleServiceAuthError(GoogleServiceAuthError::INVALID_GAIA_CREDENTIALS));
 
   // The auth change calls the callback with an error.
-  ASSERT_TRUE(future.IsReady());
+  ASSERT_TRUE(future.Wait());
   EXPECT_THAT(future.Get(), base::test::ErrorIs(PlusAddressRequestError(
                                 PlusAddressRequestErrorType::kUserSignedOut)));
 
@@ -611,7 +615,7 @@ TEST_F(PlusAddressServiceRequestsTest, OngoingRequestsCancelledOnSignout) {
   EXPECT_EQ(url_loader_factory().NumPending(), 1);
   identity_env().ClearPrimaryAccount();
   EXPECT_EQ(url_loader_factory().NumPending(), 0);
-  ASSERT_TRUE(future.IsReady());
+  ASSERT_TRUE(future.Wait());
   EXPECT_EQ(future.Get(), base::unexpected(PlusAddressRequestError(
                               PlusAddressRequestErrorType::kUserSignedOut)));
 }
@@ -625,19 +629,16 @@ TEST_F(PlusAddressServiceRequestsTest,
   base::HistogramTester histogram_tester;
   base::test::ScopedFeatureList feature_list{
       features::kPlusAddressInlineCreation};
-  base::MockCallback<PlusAddressService::UpdateSuggestionsCallback> callback;
-
-  EXPECT_CALL(
-      callback,
-      Run(ElementsAre(IsCreateInlineSuggestion(/*has_proposed_address=*/true)),
-          _));
+  base::test::TestFuture<std::vector<Suggestion>,
+                         AutofillSuggestionTriggerSource>
+      callback;
 
   Suggestion inline_suggestion(SuggestionType::kCreateNewPlusAddressInline);
   inline_suggestion.payload = Suggestion::PlusAddressPayload();
   std::vector<Suggestion> current_suggestions = {std::move(inline_suggestion)};
   service().OnShowedInlineSuggestion(
       url::Origin::Create(GURL("https://foo.com")), current_suggestions,
-      callback.Get());
+      callback.GetCallback());
   histogram_tester.ExpectUniqueSample(
       kPlusAddressSuggestionMetric,
       SuggestionEvent::kCreateNewPlusAddressInlineReserveLoadingStateShown, 1);
@@ -646,6 +647,10 @@ TEST_F(PlusAddressServiceRequestsTest,
   profile.is_confirmed = false;
   url_loader_factory().SimulateResponseForPendingRequest(
       kReservePlusAddressEndpoint, test::MakeCreationResponse(profile));
+  ASSERT_TRUE(callback.Wait());
+  EXPECT_THAT(
+      callback.Get<0>(),
+      ElementsAre(IsCreateInlineSuggestion(/*has_proposed_address=*/true)));
 }
 
 // Tests that an error suggestion is shown if the reserve call times out.
@@ -717,10 +722,11 @@ TEST_F(PlusAddressServiceRequestsTest, OnAcceptedInlineSuggestion) {
   base::test::ScopedFeatureList feature_list{
       features::kPlusAddressInlineCreation};
   base::HistogramTester histogram_tester;
-  base::MockCallback<PlusAddressService::UpdateSuggestionsCallback>
+  base::test::TestFuture<std::vector<Suggestion>,
+                         AutofillSuggestionTriggerSource>
       update_callback;
-  base::MockCallback<PlusAddressService::HideSuggestionsCallback> hide_callback;
-  base::MockCallback<PlusAddressCallback> fill_callback;
+  base::test::TestFuture<autofill::SuggestionHidingReason> hide_callback;
+  base::test::TestFuture<const std::string&> fill_callback;
 
   PlusProfile profile = test::CreatePlusProfile();
 
@@ -729,33 +735,32 @@ TEST_F(PlusAddressServiceRequestsTest, OnAcceptedInlineSuggestion) {
       Suggestion::PlusAddressPayload(base::UTF8ToUTF16(*profile.plus_address));
   std::vector<Suggestion> current_suggestions = {std::move(inline_suggestion)};
 
-  MockFunction<void()> check;
-  {
-    InSequence s;
-
-    EXPECT_CALL(update_callback, Run(ElementsAre(IsCreateInlineSuggestion(
-                                         /*has_proposed_address=*/true)),
-                                     AutofillSuggestionTriggerSource::
-                                         kPlusAddressUpdatedInBrowserProcess));
-    EXPECT_CALL(check, Call);
-    EXPECT_CALL(hide_callback,
-                Run(autofill::SuggestionHidingReason::kAcceptSuggestion));
-    EXPECT_CALL(fill_callback, Run(*profile.plus_address));
-  }
   service().OnAcceptedInlineSuggestion(
       url::Origin::Create(GURL("https://foo.com")), current_suggestions,
-      /*current_suggestion_index=*/0, update_callback.Get(),
-      hide_callback.Get(), fill_callback.Get(),
+      /*current_suggestion_index=*/0, update_callback.GetCallback(),
+      hide_callback.GetCallback(), fill_callback.GetCallback(),
       /*show_affiliation_error_dialog=*/base::DoNothing(),
       /*show_error_dialog=*/base::DoNothing(),
       /*reshow_suggestions=*/base::DoNothing());
-  check.Call();
 
   histogram_tester.ExpectUniqueSample(
       kPlusAddressSuggestionMetric,
       SuggestionEvent::kCreateNewPlusAddressInlineChosen, 1);
   url_loader_factory().SimulateResponseForPendingRequest(
       kCreatePlusAddressEndpoint, test::MakeCreationResponse(profile));
+
+  ASSERT_TRUE(update_callback.Wait());
+  EXPECT_THAT(update_callback.Get<0>(), ElementsAre(IsCreateInlineSuggestion(
+                                            /*has_proposed_address=*/true)));
+  EXPECT_THAT(
+      update_callback.Get<1>(),
+      AutofillSuggestionTriggerSource::kPlusAddressUpdatedInBrowserProcess);
+
+  ASSERT_TRUE(fill_callback.Wait());
+  EXPECT_THAT(fill_callback.Get(), Eq(*profile.plus_address));
+  ASSERT_TRUE(hide_callback.Wait());
+  EXPECT_THAT(hide_callback.Get(),
+              Eq(autofill::SuggestionHidingReason::kAcceptSuggestion));
 }
 
 // Tests that when the server call to create a plus address from an inline
@@ -765,10 +770,11 @@ TEST_F(PlusAddressServiceRequestsTest,
        OnAcceptedInlineSuggestionAffiliationError) {
   base::test::ScopedFeatureList feature_list{
       features::kPlusAddressInlineCreation};
-  base::MockCallback<PlusAddressService::UpdateSuggestionsCallback>
+  base::test::TestFuture<std::vector<Suggestion>,
+                         AutofillSuggestionTriggerSource>
       update_callback;
-  base::MockCallback<PlusAddressService::HideSuggestionsCallback> hide_callback;
-  base::MockCallback<PlusAddressService::ShowAffiliationErrorDialogCallback>
+  base::test::TestFuture<autofill::SuggestionHidingReason> hide_callback;
+  base::test::TestFuture<std::u16string, std::u16string>
       show_affiliation_error_callback;
 
   PlusProfile profile = test::CreatePlusProfile();
@@ -779,33 +785,33 @@ TEST_F(PlusAddressServiceRequestsTest,
       Suggestion::PlusAddressPayload(base::UTF8ToUTF16(*profile.plus_address));
   std::vector<Suggestion> current_suggestions = {std::move(inline_suggestion)};
 
-  MockFunction<void()> check;
-  {
-    InSequence s;
-
-    EXPECT_CALL(update_callback, Run(ElementsAre(IsCreateInlineSuggestion(
-                                         /*has_proposed_address=*/true)),
-                                     AutofillSuggestionTriggerSource::
-                                         kPlusAddressUpdatedInBrowserProcess));
-    EXPECT_CALL(check, Call);
-    EXPECT_CALL(hide_callback,
-                Run(autofill::SuggestionHidingReason::kAcceptSuggestion));
-    EXPECT_CALL(show_affiliation_error_callback,
-                Run(Eq(u"bar.com"),
-                    base::UTF8ToUTF16(*affiliated_profile.plus_address)));
-  }
   service().OnAcceptedInlineSuggestion(
       url::Origin::Create(GURL("https://foo.com")), current_suggestions,
-      /*current_suggestion_index=*/0, update_callback.Get(),
-      hide_callback.Get(), /*fill_field_callback=*/base::DoNothing(),
-      show_affiliation_error_callback.Get(),
+      /*current_suggestion_index=*/0, update_callback.GetCallback(),
+      hide_callback.GetCallback(), /*fill_field_callback=*/base::DoNothing(),
+      show_affiliation_error_callback.GetCallback(),
       /*show_error_dialog=*/base::DoNothing(),
       /*reshow_suggestions=*/base::DoNothing());
-  check.Call();
 
   url_loader_factory().SimulateResponseForPendingRequest(
       kCreatePlusAddressEndpoint,
       test::MakeCreationResponse(affiliated_profile));
+
+  ASSERT_TRUE(update_callback.Wait());
+  EXPECT_THAT(update_callback.Get<0>(), ElementsAre(IsCreateInlineSuggestion(
+                                            /*has_proposed_address=*/true)));
+  EXPECT_THAT(
+      update_callback.Get<1>(),
+      AutofillSuggestionTriggerSource::kPlusAddressUpdatedInBrowserProcess);
+
+  ASSERT_TRUE(hide_callback.Wait());
+  EXPECT_THAT(hide_callback.Get(),
+              autofill::SuggestionHidingReason::kAcceptSuggestion);
+
+  ASSERT_TRUE(show_affiliation_error_callback.Wait());
+  EXPECT_THAT(show_affiliation_error_callback.Get<0>(), Eq(u"bar.com"));
+  EXPECT_THAT(show_affiliation_error_callback.Get<1>(),
+              Eq(base::UTF8ToUTF16(*affiliated_profile.plus_address)));
 }
 
 // Tests that when the server call to create a plus address from an inline
@@ -1007,17 +1013,21 @@ TEST_F(PlusAddressHttpForbiddenResponseTest, NoDisablingAfterSuccess) {
   ASSERT_FALSE(service().IsPlusAddress(*profile1.plus_address));
 
   // The service remains enabled after a single `HTTP_FORBIDDEN` response.
+  base::test::TestFuture<const PlusProfileOrError&> future;
   service().ConfirmPlusAddress(OriginFromFacet(profile1.facet),
-                               profile1.plus_address, base::DoNothing());
+                               profile1.plus_address, future.GetCallback());
   ASSERT_TRUE(url_loader_factory().SimulateResponseForPendingRequest(
       kCreatePlusAddressEndpoint, "", net::HTTP_FORBIDDEN));
+  ASSERT_TRUE(future.Wait());
   EXPECT_TRUE(service().IsEnabled());
 
   // After a single successful call ...
+  future.Clear();
   service().ConfirmPlusAddress(OriginFromFacet(profile1.facet),
-                               profile1.plus_address, base::DoNothing());
+                               profile1.plus_address, future.GetCallback());
   ASSERT_TRUE(url_loader_factory().SimulateResponseForPendingRequest(
       kCreatePlusAddressEndpoint, test::MakeCreationResponse(profile1)));
+  ASSERT_TRUE(future.Wait());
   EXPECT_TRUE(service().IsPlusAddress(*profile1.plus_address));
 
   // ... even repeated `HTTP_FORBIDDEN` responses do not disable the service.
@@ -1025,10 +1035,12 @@ TEST_F(PlusAddressHttpForbiddenResponseTest, NoDisablingAfterSuccess) {
   for (int i = 0; i < 5; ++i) {
     SCOPED_TRACE(::testing::Message() << "Iteration #" << 1);
     // But a second `HTTP_FORBIDDEN` does.
+    future.Clear();
     service().ConfirmPlusAddress(OriginFromFacet(profile2.facet),
-                                 profile2.plus_address, base::DoNothing());
+                                 profile2.plus_address, future.GetCallback());
     ASSERT_TRUE(url_loader_factory().SimulateResponseForPendingRequest(
         kCreatePlusAddressEndpoint, "", net::HTTP_FORBIDDEN));
+    ASSERT_TRUE(future.Wait());
     EXPECT_TRUE(service().IsEnabled());
   }
 }

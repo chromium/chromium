@@ -177,7 +177,7 @@ TEST(OnDeviceModelFeatureAdapterTest, ConstructOutputMetadata_DefaultSimple) {
 }
 
 TEST(OnDeviceModelFeatureAdapterTest, ConstructOutputMetadata_JSON) {
-  base::test::SingleThreadTaskEnvironment task_environment;
+  base::test::TaskEnvironment task_environment;
   data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
   proto::OnDeviceModelExecutionFeatureConfig config;
   auto* oc = config.mutable_output_config();
