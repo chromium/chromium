@@ -274,19 +274,22 @@ WebInputEventResult MouseEventManager::DispatchMouseEvent(
 // TODO(https://crbug.com/1147674): This bypasses PointerEventManager states!
 // This method is called only from GestureManager, and that's one of the reasons
 // PointerEvents are incomplete for touch gesture.
-WebInputEventResult MouseEventManager::SetMousePositionAndDispatchMouseEvent(
+WebInputEventResult
+MouseEventManager::SetElementUnderMouseAndDispatchMouseEvent(
     Element* target_element,
     const AtomicString& event_type,
     const WebMouseEvent& web_mouse_event) {
+  // This method is used by GestureManager::HandleGestureTap to apply hover
+  // states based on the tap. Note that we do not want to update the cached
+  // mouse position here (using SetLastKnownMousePosition), since that would
+  // cause the hover state to stick to the tap's viewport coordinates after a
+  // scroll.
+  //
+  // TODO(crbug.com/368256331): If there IS a cached mouse position, the hover
+  // state will revert to it as soon as somebody calls MarkHoverStateDirty,
+  // which isn't ideal.
+
   SetElementUnderMouse(target_element, web_mouse_event);
-
-  // Gesture tap should update last known mouse position just like mousemove.
-  // Otherwise, HandleGestureTap and RecomputeMouseHoverState will fight over
-  // SetElementUnderMouse with different ideas about where the mouse is. This
-  // creates flakiness in tests that send taps and listen to mouseout, like
-  // fast/events/touch/gesture/focus-selectionchange-on-tap.html.
-  SetLastKnownMousePosition(web_mouse_event);
-
   return DispatchMouseEvent(
       element_under_mouse_, event_type, web_mouse_event, nullptr, nullptr,
       false, web_mouse_event.id,

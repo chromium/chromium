@@ -52,7 +52,7 @@ class CORE_EXPORT MouseEventManager final
       const PointerId& pointer_id = PointerEventFactory::kInvalidId,
       const String& pointer_type = g_empty_string);
 
-  WebInputEventResult SetMousePositionAndDispatchMouseEvent(
+  WebInputEventResult SetElementUnderMouseAndDispatchMouseEvent(
       Element* target_element,
       const AtomicString& event_type,
       const WebMouseEvent&);
