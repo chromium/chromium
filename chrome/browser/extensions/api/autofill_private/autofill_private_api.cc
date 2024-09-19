@@ -484,7 +484,7 @@ ExtensionFunction::ResponseAction AutofillPrivateRemoveEntryFunction::Run() {
 
   if (personal_data->payments_data_manager().GetIbanByGUID(parameters->guid)) {
     base::RecordAction(base::UserMetricsAction("AutofillIbanDeleted"));
-  } else if (autofill::CreditCard* credit_card =
+  } else if (const autofill::CreditCard* credit_card =
                  personal_data->payments_data_manager().GetCreditCardByGUID(
                      parameters->guid)) {
     base::RecordAction(base::UserMetricsAction("AutofillCreditCardDeleted"));
@@ -738,7 +738,7 @@ ExtensionFunction::ResponseAction AutofillPrivateAddVirtualCardFunction::Run() {
   if (!personal_data_manager || !personal_data_manager->IsDataLoaded())
     return RespondNow(Error(kErrorDataUnavailable));
 
-  autofill::CreditCard* card =
+  const autofill::CreditCard* card =
       personal_data_manager->payments_data_manager().GetCreditCardByServerId(
           parameters->card_id);
   if (!card)
@@ -780,7 +780,7 @@ AutofillPrivateRemoveVirtualCardFunction::Run() {
   if (!personal_data_manager || !personal_data_manager->IsDataLoaded())
     return RespondNow(Error(kErrorDataUnavailable));
 
-  autofill::CreditCard* card =
+  const autofill::CreditCard* card =
       personal_data_manager->payments_data_manager().GetCreditCardByServerId(
           parameters->card_id);
   if (!card)

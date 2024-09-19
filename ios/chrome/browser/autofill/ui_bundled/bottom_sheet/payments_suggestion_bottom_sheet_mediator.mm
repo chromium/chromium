@@ -162,7 +162,7 @@ base::TimeDelta kSelectSuggestionDelay = base::Milliseconds(500);
     (NSString*)identifier {
   CHECK(identifier);
   CHECK(_personalDataManager);
-  autofill::CreditCard* card =
+  const autofill::CreditCard* card =
       _personalDataManager->payments_data_manager().GetCreditCardByGUID(
           base::SysNSStringToUTF8(identifier));
   return card ? std::make_optional(*card) : std::nullopt;

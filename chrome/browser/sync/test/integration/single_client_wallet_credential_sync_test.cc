@@ -158,7 +158,7 @@ class SingleClientWalletCredentialSyncTest : public SyncTest {
   }
 
   bool IsCvcAvailableOnAnyCard(autofill::PersonalDataManager* pdm) {
-    for (autofill::CreditCard* credit_card :
+    for (const autofill::CreditCard* credit_card :
          pdm->payments_data_manager().GetCreditCards()) {
       if (!credit_card->cvc().empty()) {
         return true;
@@ -398,9 +398,9 @@ IN_PROC_BROWSER_TEST_F(SingleClientWalletCredentialSyncTest,
       pdm->payments_data_manager().GetCreditCards();
   ASSERT_EQ(2uL, cards.size());
 
-  autofill::CreditCard* card_with_cvc =
+  const autofill::CreditCard* card_with_cvc =
       (cards[0]->instrument_id() != 123) ? cards[0] : cards[1];
-  autofill::CreditCard* card_without_cvc =
+  const autofill::CreditCard* card_without_cvc =
       (cards[0]->instrument_id() != 123) ? cards[1] : cards[0];
 
   // Check for CVC data on the correct card where the `instrument_id` != 123.
@@ -556,7 +556,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWalletCredentialSyncTest,
       pdm->payments_data_manager().GetCreditCards();
   ASSERT_EQ(2uL, cards.size());
 
-  autofill::CreditCard* card_with_cvc_1 =
+  const autofill::CreditCard* card_with_cvc_1 =
       (cards[1]->instrument_id() == 123) ? cards[0] : cards[1];
   EXPECT_FALSE(card_with_cvc_1->cvc().empty());
   ExpectDefaultWalletCredentialValues(*card_with_cvc_1);
@@ -586,7 +586,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWalletCredentialSyncTest,
   ASSERT_EQ(2uL, cards.size());
 
   card_with_cvc_1 = (cards[1]->instrument_id() == 123) ? cards[0] : cards[1];
-  autofill::CreditCard* card_with_cvc_2 =
+  const autofill::CreditCard* card_with_cvc_2 =
       (cards[1]->instrument_id() == 123) ? cards[1] : cards[0];
 
   EXPECT_FALSE(card_with_cvc_1->cvc().empty());

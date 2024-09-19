@@ -49,7 +49,7 @@ bool PaymentsDataCleaner::DeleteDisusedCreditCards() {
   }
 
   std::vector<CreditCard> cards_to_delete;
-  for (CreditCard* card : cards) {
+  for (const CreditCard* card : cards) {
     if (card->IsDeletable()) {
       cards_to_delete.push_back(*card);
     }

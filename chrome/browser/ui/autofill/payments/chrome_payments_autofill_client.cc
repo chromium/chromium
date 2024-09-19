@@ -747,12 +747,12 @@ void ChromePaymentsAutofillClient::ShowMandatoryReauthOptInConfirmation() {
 void ChromePaymentsAutofillClient::UpdateOfferNotification(
     const AutofillOfferData& offer,
     const OfferNotificationOptions& options) {
-  CreditCard* card = offer.GetEligibleInstrumentIds().empty()
-                         ? nullptr
-                         : client_->GetPersonalDataManager()
-                               ->payments_data_manager()
-                               .GetCreditCardByInstrumentId(
-                                   offer.GetEligibleInstrumentIds()[0]);
+  const CreditCard* card = offer.GetEligibleInstrumentIds().empty()
+                               ? nullptr
+                               : client_->GetPersonalDataManager()
+                                     ->payments_data_manager()
+                                     .GetCreditCardByInstrumentId(
+                                         offer.GetEligibleInstrumentIds()[0]);
 
   if (offer.IsCardLinkedOffer() && !card) {
     return;

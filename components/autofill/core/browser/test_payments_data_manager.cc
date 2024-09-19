@@ -80,7 +80,7 @@ void TestPaymentsDataManager::LoadIbans() {
 }
 
 bool TestPaymentsDataManager::RemoveByGUID(const std::string& guid) {
-  if (CreditCard* credit_card = GetCreditCardByGUID(guid)) {
+  if (const CreditCard* credit_card = GetCreditCardByGUID(guid)) {
     local_credit_cards_.erase(base::ranges::find(
         local_credit_cards_, credit_card, &std::unique_ptr<CreditCard>::get));
     NotifyObservers();
@@ -322,7 +322,8 @@ void TestPaymentsDataManager::SetNicknameForCardWithGUID(
 
 void TestPaymentsDataManager::RemoveCardWithoutNotification(
     const CreditCard& card) {
-  if (CreditCard* existing_credit_card = GetCreditCardByGUID(card.guid())) {
+  if (const CreditCard* existing_credit_card =
+          GetCreditCardByGUID(card.guid())) {
     local_credit_cards_.erase(
         base::ranges::find(local_credit_cards_, existing_credit_card,
                            &std::unique_ptr<CreditCard>::get));

@@ -2584,8 +2584,9 @@ void BrowserAutofillManager::OnDidFillOrPreviewForm(
           safe_filled_autofill_fields);
       // The originally selected masked card is `metrics_->last_selected_card`.
       // So we must log `metrics_->last_selected_card` as opposed to
-      // `absl::get<CreditCard*>(profile_or_credit_card)` to correctly indicate
-      // whether the user filled the form using a masked card suggestion.
+      // `absl::get<const CreditCard*>(profile_or_credit_card)` to correctly
+      // indicate whether the user filled the form using a masked card
+      // suggestion.
       metrics_->credit_card_form_event_logger.OnDidFillFormFillingSuggestion(
           metrics_->last_selected_card, form_structure, trigger_autofill_field,
           filled_fields, safe_fields, metrics_->signin_state_for_metrics,

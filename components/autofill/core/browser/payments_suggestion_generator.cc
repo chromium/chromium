@@ -314,7 +314,7 @@ std::u16string GetDisplayNicknameForCreditCard(
   }
   // Either the card a) has no nickname or b) is a server card and we would
   // prefer to use the nickname of a local card.
-  for (CreditCard* candidate : payments_data.GetCreditCards()) {
+  for (const CreditCard* candidate : payments_data.GetCreditCards()) {
     if (candidate->guid() != card.guid() &&
         candidate->MatchingCardDetails(card) &&
         candidate->HasNonEmptyValidNickname()) {

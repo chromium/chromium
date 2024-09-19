@@ -375,7 +375,7 @@ TEST_P(CreditCardAccessManagerMandatoryReauthFunctionalTest,
   std::string test_number = "4444333322221111";
   base::HistogramTester histogram_tester;
   CreateServerCard(kTestGUID, test_number, kTestServerId);
-  CreditCard* masked_server_card =
+  const CreditCard* masked_server_card =
       personal_data().payments_data_manager().GetCreditCardByGUID(kTestGUID);
 
   credit_card_access_manager().FetchCreditCard(
@@ -492,7 +492,7 @@ TEST_P(CreditCardAccessManagerMandatoryReauthIntegrationTest,
        MandatoryReauth_FetchLocalCard_CvcFillWorksCorrectly) {
   base::HistogramTester histogram_tester;
   CreateLocalCard(kTestGUID, kTestNumber);
-  CreditCard* card =
+  const CreditCard* card =
       personal_data().payments_data_manager().GetCreditCardByGUID(kTestGUID);
 
   credit_card_access_manager().PrepareToFetchCreditCard();
@@ -546,7 +546,7 @@ TEST_P(CreditCardAccessManagerMandatoryReauthIntegrationTest,
   base::HistogramTester histogram_tester;
   std::string test_number = "4444333322221111";
   CreateServerCard(kTestGUID, test_number, kTestServerId);
-  CreditCard* masked_server_card =
+  const CreditCard* masked_server_card =
       personal_data().payments_data_manager().GetCreditCardByGUID(kTestGUID);
 
   credit_card_access_manager().PrepareToFetchCreditCard();
@@ -624,7 +624,7 @@ TEST_F(CreditCardAccessManagerTest, FetchLocalCardSuccess) {
 #endif  // BUILDFLAG(IS_ANDROID)
 
   CreateLocalCard(kTestGUID, kTestNumber);
-  CreditCard* card =
+  const CreditCard* card =
       personal_data().payments_data_manager().GetCreditCardByGUID(kTestGUID);
 
   credit_card_access_manager().PrepareToFetchCreditCard();
@@ -664,7 +664,7 @@ TEST_F(CreditCardAccessManagerTest, FetchNullptrFailure) {
 // response from payments.
 TEST_F(CreditCardAccessManagerTest, FetchServerCardCVCSuccess) {
   CreateServerCard(kTestGUID, kTestNumber);
-  CreditCard* card =
+  const CreditCard* card =
       personal_data().payments_data_manager().GetCreditCardByGUID(kTestGUID);
   base::HistogramTester histogram_tester;
   std::string flow_events_histogram_name =
@@ -703,7 +703,7 @@ TEST_F(CreditCardAccessManagerTest, FetchServerCardCVCSuccess) {
 // from the server.
 TEST_F(CreditCardAccessManagerTest, FetchServerCardCVCNetworkError) {
   CreateServerCard(kTestGUID, kTestNumber);
-  CreditCard* card =
+  const CreditCard* card =
       personal_data().payments_data_manager().GetCreditCardByGUID(kTestGUID);
 
   credit_card_access_manager().PrepareToFetchCreditCard();
@@ -722,7 +722,7 @@ TEST_F(CreditCardAccessManagerTest, FetchServerCardCVCNetworkError) {
 // from the server.
 TEST_F(CreditCardAccessManagerTest, FetchServerCardCVCPermanentFailure) {
   CreateServerCard(kTestGUID, kTestNumber);
-  CreditCard* card =
+  const CreditCard* card =
       personal_data().payments_data_manager().GetCreditCardByGUID(kTestGUID);
 
   credit_card_access_manager().PrepareToFetchCreditCard();
@@ -740,7 +740,7 @@ TEST_F(CreditCardAccessManagerTest, FetchServerCardCVCPermanentFailure) {
 // Ensures that a "try again" response from payments does not end the flow.
 TEST_F(CreditCardAccessManagerTest, FetchServerCardCVCTryAgainFailure) {
   CreateServerCard(kTestGUID, kTestNumber);
-  CreditCard* card =
+  const CreditCard* card =
       personal_data().payments_data_manager().GetCreditCardByGUID(kTestGUID);
 
   credit_card_access_manager().FetchCreditCard(
@@ -864,7 +864,7 @@ TEST_F(CreditCardAccessManagerTest, FetchServerCardFIDOSuccess) {
       "Autofill.BetterAuth.FlowEvents.Fido";
 
   CreateServerCard(kTestGUID, kTestNumber);
-  CreditCard* card =
+  const CreditCard* card =
       personal_data().payments_data_manager().GetCreditCardByGUID(kTestGUID);
   GetFIDOAuthenticator()->SetUserVerifiable(true);
   SetCreditCardFIDOAuthEnabled(true);
@@ -916,7 +916,7 @@ TEST_F(CreditCardAccessManagerTest, LogCvcFillingFIDOSuccess) {
 
   CreditCard server_card = test::WithCvc(test::GetMaskedServerCard());
   personal_data().test_payments_data_manager().AddServerCreditCard(server_card);
-  CreditCard* card =
+  const CreditCard* card =
       personal_data().payments_data_manager().GetCreditCardByInstrumentId(
           server_card.instrument_id());
   GetFIDOAuthenticator()->SetUserVerifiable(true);
@@ -950,7 +950,7 @@ TEST_F(CreditCardAccessManagerTest, DoNotLogCvcFillingFIDOSuccess) {
   CreditCard server_card = test::GetMaskedServerCard();
   server_card.set_cvc(u"");
   personal_data().test_payments_data_manager().AddServerCreditCard(server_card);
-  CreditCard* card =
+  const CreditCard* card =
       personal_data().payments_data_manager().GetCreditCardByInstrumentId(
           server_card.instrument_id());
   GetFIDOAuthenticator()->SetUserVerifiable(true);
@@ -983,7 +983,7 @@ TEST_F(CreditCardAccessManagerTest,
   base::HistogramTester histogram_tester;
   CreditCard local_card = test::WithCvc(test::GetCreditCard());
   personal_data().payments_data_manager().AddCreditCard(local_card);
-  CreditCard* card =
+  const CreditCard* card =
       personal_data().payments_data_manager().GetCreditCardByGUID(
           local_card.guid());
 
@@ -1006,7 +1006,7 @@ TEST_F(CreditCardAccessManagerTest,
   base::HistogramTester histogram_tester;
   CreditCard local_card = test::GetCreditCard();
   personal_data().payments_data_manager().AddCreditCard(local_card);
-  CreditCard* card =
+  const CreditCard* card =
       personal_data().payments_data_manager().GetCreditCardByGUID(
           local_card.guid());
 
@@ -1033,7 +1033,7 @@ TEST_F(CreditCardAccessManagerTest, FetchServerCardWithoutCvcFIDOSuccess) {
   server_card.set_guid(kTestGUID);
   server_card.set_record_type(CreditCard::RecordType::kMaskedServerCard);
   personal_data().test_payments_data_manager().AddServerCreditCard(server_card);
-  CreditCard* card =
+  const CreditCard* card =
       personal_data().payments_data_manager().GetCreditCardByGUID(kTestGUID);
   GetFIDOAuthenticator()->SetUserVerifiable(true);
   SetCreditCardFIDOAuthEnabled(true);
@@ -1065,7 +1065,7 @@ TEST_F(CreditCardAccessManagerTest, FetchServerCardFIDOSuccessWithDcvv) {
 
   // General setup.
   CreateServerCard(kTestGUID, kTestNumber);
-  CreditCard* card =
+  const CreditCard* card =
       personal_data().payments_data_manager().GetCreditCardByGUID(kTestGUID);
   GetFIDOAuthenticator()->SetUserVerifiable(true);
   payments_network_interface().AddFidoEligibleCard(
@@ -1105,7 +1105,7 @@ TEST_F(CreditCardAccessManagerTest,
       "Autofill.BetterAuth.FlowEvents.CvcFallbackFromFido";
 
   CreateServerCard(kTestGUID, kTestNumber);
-  CreditCard* card =
+  const CreditCard* card =
       personal_data().payments_data_manager().GetCreditCardByGUID(kTestGUID);
   GetFIDOAuthenticator()->SetUserVerifiable(true);
   SetCreditCardFIDOAuthEnabled(true);
@@ -1164,7 +1164,7 @@ TEST_F(CreditCardAccessManagerTest,
       "Autofill.BetterAuth.WebauthnResult.ImmediateAuthentication";
 
   CreateServerCard(kTestGUID, kTestNumber);
-  CreditCard* card =
+  const CreditCard* card =
       personal_data().payments_data_manager().GetCreditCardByGUID(kTestGUID);
   GetFIDOAuthenticator()->SetUserVerifiable(true);
   SetCreditCardFIDOAuthEnabled(true);
@@ -1209,7 +1209,7 @@ TEST_F(CreditCardAccessManagerTest,
 TEST_F(CreditCardAccessManagerTest,
        FetchServerCardBadRequestOptionsCVCFallback) {
   CreateServerCard(kTestGUID, kTestNumber);
-  CreditCard* card =
+  const CreditCard* card =
       personal_data().payments_data_manager().GetCreditCardByGUID(kTestGUID);
   GetFIDOAuthenticator()->SetUserVerifiable(true);
   SetCreditCardFIDOAuthEnabled(true);
@@ -1240,7 +1240,7 @@ TEST_F(CreditCardAccessManagerTest,
 // Payments times out.
 TEST_F(CreditCardAccessManagerTest, FetchServerCardFIDOTimeoutCVCFallback) {
   CreateServerCard(kTestGUID, kTestNumber);
-  CreditCard* card =
+  const CreditCard* card =
       personal_data().payments_data_manager().GetCreditCardByGUID(kTestGUID);
   GetFIDOAuthenticator()->SetUserVerifiable(true);
   SetCreditCardFIDOAuthEnabled(true);
@@ -1266,9 +1266,9 @@ TEST_F(CreditCardAccessManagerTest,
   std::string local_guid = "00000000-0000-0000-0000-000000000003";
   CreateServerCard(server_guid, "4594299181086168");
   CreateLocalCard(local_guid, "4409763681177079");
-  CreditCard* server_card =
+  const CreditCard* server_card =
       personal_data().payments_data_manager().GetCreditCardByGUID(server_guid);
-  CreditCard* local_card =
+  const CreditCard* local_card =
       personal_data().payments_data_manager().GetCreditCardByGUID(local_guid);
   GetFIDOAuthenticator()->SetUserVerifiable(true);
 
@@ -1356,7 +1356,7 @@ TEST_F(CreditCardAccessManagerTest, Metrics_LoggingTimedOutCvcFallback) {
   // Setting up a FIDO-enabled user with a local card and a server card.
   std::string server_guid = "00000000-0000-0000-0000-000000000001";
   CreateServerCard(server_guid, "4594299181086168");
-  CreditCard* server_card =
+  const CreditCard* server_card =
       personal_data().payments_data_manager().GetCreditCardByGUID(server_guid);
   GetFIDOAuthenticator()->SetUserVerifiable(true);
   SetCreditCardFIDOAuthEnabled(true);
@@ -1434,7 +1434,7 @@ TEST_F(CreditCardAccessManagerTest, FIDONewCardAuthorization) {
       "Autofill.BetterAuth.FlowEvents.CvcThenFido";
 
   CreateServerCard(kTestGUID, kTestNumber);
-  CreditCard* card =
+  const CreditCard* card =
       personal_data().payments_data_manager().GetCreditCardByGUID(kTestGUID);
   OptUserInToFido();
 
@@ -1489,7 +1489,7 @@ TEST_F(CreditCardAccessManagerTest, FIDONewCardAuthorization) {
 // the form if the user is opted-in to FIDO but no request options are present.
 TEST_F(CreditCardAccessManagerTest,
        FIDONewCardAuthorization_NoRequestOptions_FormFilled) {
-  CreditCard* card = CreateServerCard(kTestGUID, kTestNumber);
+  const CreditCard* card = CreateServerCard(kTestGUID, kTestNumber);
   OptUserInToFido();
 
   // Clear the FIDO request options that were set.
@@ -1518,7 +1518,7 @@ TEST_F(CreditCardAccessManagerTest,
 // form if the user is opted-in to FIDO but the request options are invalid.
 TEST_F(CreditCardAccessManagerTest,
        FIDONewCardAuthorization_InvalidRequestOptions_FormFilled) {
-  CreditCard* card = CreateServerCard(kTestGUID, kTestNumber);
+  const CreditCard* card = CreateServerCard(kTestGUID, kTestNumber);
   OptUserInToFido();
 
   payments_network_interface().ShouldReturnUnmaskDetailsImmediately(true);
@@ -1582,7 +1582,7 @@ TEST_F(CreditCardAccessManagerTest, FIDOOptInSuccess_Android) {
       "Autofill.BetterAuth.WebauthnResult.CheckoutOptIn";
 
   CreateServerCard(kTestGUID, kTestNumber);
-  CreditCard* card =
+  const CreditCard* card =
       personal_data().payments_data_manager().GetCreditCardByGUID(kTestGUID);
   GetFIDOAuthenticator()->SetUserVerifiable(true);
   SetCreditCardFIDOAuthEnabled(false);
@@ -1634,7 +1634,7 @@ TEST_F(CreditCardAccessManagerTest, FIDOOptInSuccess_Android) {
 TEST_F(CreditCardAccessManagerTest,
        FIDOOptInFailure_InvalidResponseRequestOptions) {
   CreateServerCard(kTestGUID, kTestNumber);
-  CreditCard* card =
+  const CreditCard* card =
       personal_data().payments_data_manager().GetCreditCardByGUID(kTestGUID);
   GetFIDOAuthenticator()->SetUserVerifiable(true);
   SetCreditCardFIDOAuthEnabled(false);
@@ -1664,7 +1664,7 @@ TEST_F(CreditCardAccessManagerTest, FIDOOptInUserVerificationFailure) {
       "Autofill.BetterAuth.WebauthnResult.CheckoutOptIn";
 
   CreateServerCard(kTestGUID, kTestNumber);
-  CreditCard* card =
+  const CreditCard* card =
       personal_data().payments_data_manager().GetCreditCardByGUID(kTestGUID);
   GetFIDOAuthenticator()->SetUserVerifiable(true);
   SetCreditCardFIDOAuthEnabled(false);
@@ -1707,7 +1707,7 @@ TEST_F(CreditCardAccessManagerTest, FIDOOptInUserVerificationFailure) {
 // Ensures that enrollment does not happen if the server returns a failure.
 TEST_F(CreditCardAccessManagerTest, FIDOOptInServerFailure) {
   CreateServerCard(kTestGUID, kTestNumber);
-  CreditCard* card =
+  const CreditCard* card =
       personal_data().payments_data_manager().GetCreditCardByGUID(kTestGUID);
   GetFIDOAuthenticator()->SetUserVerifiable(true);
   SetCreditCardFIDOAuthEnabled(false);
@@ -1747,7 +1747,7 @@ TEST_F(CreditCardAccessManagerTest, FIDOOptInServerFailure) {
 // checkbox.
 TEST_F(CreditCardAccessManagerTest, FIDOOptIn_CheckboxDeclined) {
   CreateServerCard(kTestGUID, kTestNumber);
-  CreditCard* card =
+  const CreditCard* card =
       personal_data().payments_data_manager().GetCreditCardByGUID(kTestGUID);
   GetFIDOAuthenticator()->SetUserVerifiable(true);
   SetCreditCardFIDOAuthEnabled(false);
@@ -1777,7 +1777,7 @@ TEST_F(CreditCardAccessManagerTest, FIDOOptIn_CheckboxDeclined) {
 // opt-in request the next time the user downstreams a card.
 TEST_F(CreditCardAccessManagerTest, FIDOSettingsPageOptInSuccess_Android) {
   CreateServerCard(kTestGUID, kTestNumber);
-  CreditCard* card =
+  const CreditCard* card =
       personal_data().payments_data_manager().GetCreditCardByGUID(kTestGUID);
   GetFIDOAuthenticator()->SetUserVerifiable(true);
 
@@ -1823,7 +1823,7 @@ TEST_F(CreditCardAccessManagerTest,
 
   ClearStrikes();
   CreateServerCard(kTestGUID, kTestNumber);
-  CreditCard* card =
+  const CreditCard* card =
       personal_data().payments_data_manager().GetCreditCardByGUID(kTestGUID);
   GetFIDOAuthenticator()->SetUserVerifiable(true);
   SetCreditCardFIDOAuthEnabled(false);
@@ -1883,7 +1883,7 @@ TEST_F(CreditCardAccessManagerTest, FIDOEnrollment_OfferDeclined_Desktop) {
 
   ClearStrikes();
   CreateServerCard(kTestGUID, kTestNumber);
-  CreditCard* card =
+  const CreditCard* card =
       personal_data().payments_data_manager().GetCreditCardByGUID(kTestGUID);
   GetFIDOAuthenticator()->SetUserVerifiable(true);
   SetCreditCardFIDOAuthEnabled(false);
@@ -1921,7 +1921,7 @@ TEST_F(CreditCardAccessManagerTest,
 
   ClearStrikes();
   CreateServerCard(kTestGUID, kTestNumber);
-  CreditCard* card =
+  const CreditCard* card =
       personal_data().payments_data_manager().GetCreditCardByGUID(kTestGUID);
   GetFIDOAuthenticator()->SetUserVerifiable(true);
   SetCreditCardFIDOAuthEnabled(false);
@@ -1960,7 +1960,7 @@ TEST_F(CreditCardAccessManagerTest,
 
   ClearStrikes();
   CreateServerCard(kTestGUID, kTestNumber);
-  CreditCard* card =
+  const CreditCard* card =
       personal_data().payments_data_manager().GetCreditCardByGUID(kTestGUID);
   GetFIDOAuthenticator()->SetUserVerifiable(true);
   SetCreditCardFIDOAuthEnabled(false);
@@ -2008,7 +2008,7 @@ TEST_F(CreditCardAccessManagerTest,
       "Autofill.BetterAuth.OptInCalled.FromCheckoutFlow";
 
   CreateServerCard(kTestGUID, kTestNumber);
-  CreditCard* card =
+  const CreditCard* card =
       personal_data().payments_data_manager().GetCreditCardByGUID(kTestGUID);
   GetFIDOAuthenticator()->SetUserVerifiable(true);
   SetCreditCardFIDOAuthEnabled(false);
@@ -2269,7 +2269,7 @@ TEST_F(CreditCardAccessManagerTest,
   base::HistogramTester histogram_tester;
   // Setting up a FIDO-enabled user with a server card.
   CreateServerCard(kTestGUID, kTestNumber);
-  CreditCard* card =
+  const CreditCard* card =
       personal_data().payments_data_manager().GetCreditCardByGUID(kTestGUID);
   // The user is FIDO-enabled from Payments.
   GetFIDOAuthenticator()->SetUserVerifiable(true);
@@ -2315,7 +2315,7 @@ TEST_F(CreditCardAccessManagerTest,
 TEST_F(CreditCardAccessManagerTest, IntentToOptOut_OptOutAfterUnmaskSucceeds) {
   // Setting up a FIDO-enabled user with a server card.
   CreateServerCard(kTestGUID, kTestNumber);
-  CreditCard* card =
+  const CreditCard* card =
       personal_data().payments_data_manager().GetCreditCardByGUID(kTestGUID);
   // The user is FIDO-enabled from Payments.
   GetFIDOAuthenticator()->SetUserVerifiable(true);
@@ -2352,7 +2352,7 @@ TEST_F(CreditCardAccessManagerTest, IntentToOptOut_OptOutAfterUnmaskSucceeds) {
 TEST_F(CreditCardAccessManagerTest, IntentToOptOut_OptOutAfterUnmaskFails) {
   // Setting up a FIDO-enabled user with a server card.
   CreateServerCard(kTestGUID, kTestNumber);
-  CreditCard* card =
+  const CreditCard* card =
       personal_data().payments_data_manager().GetCreditCardByGUID(kTestGUID);
   // The user is FIDO-enabled from Payments.
   GetFIDOAuthenticator()->SetUserVerifiable(true);
@@ -2390,7 +2390,7 @@ TEST_F(CreditCardAccessManagerTest, IntentToOptOut_OptOutAfterUnmaskFails) {
 TEST_F(CreditCardAccessManagerTest, IntentToOptOut_OptOutFailure) {
   // Setting up a FIDO-enabled user with a server card.
   CreateServerCard(kTestGUID, kTestNumber);
-  CreditCard* card =
+  const CreditCard* card =
       personal_data().payments_data_manager().GetCreditCardByGUID(kTestGUID);
   // The user is FIDO-enabled from Payments.
   GetFIDOAuthenticator()->SetUserVerifiable(true);
@@ -2469,7 +2469,7 @@ TEST_F(CreditCardAccessManagerTest, PreflightCallRateLimited) {
 TEST_F(CreditCardAccessManagerTest,
        UnmaskAuthFlowEvent_AlsoLogsServerCardSubhistogram) {
   CreateServerCard(kTestGUID, kTestNumber);
-  CreditCard* card =
+  const CreditCard* card =
       personal_data().payments_data_manager().GetCreditCardByGUID(kTestGUID);
   base::HistogramTester histogram_tester;
   std::string flow_events_histogram_name =
@@ -2496,7 +2496,7 @@ TEST_F(CreditCardAccessManagerTest,
 // Ensures that |is_authentication_in_progress_| is set correctly.
 TEST_F(CreditCardAccessManagerTest, AuthenticationInProgress) {
   CreateServerCard(kTestGUID, kTestNumber);
-  CreditCard* card =
+  const CreditCard* card =
       personal_data().payments_data_manager().GetCreditCardByGUID(kTestGUID);
 
   EXPECT_FALSE(IsAuthenticationInProgress());
@@ -2564,7 +2564,7 @@ TEST_F(CreditCardAccessManagerTest, GetCachedUnmaskedCards) {
   // Assert that there are no cards cached initially.
   EXPECT_EQ(0U, credit_card_access_manager().GetCachedUnmaskedCards().size());
 
-  CreditCard* masked_server_card =
+  const CreditCard* masked_server_card =
       CreateServerCard(kTestGUID, kTestNumber, kTestServerId);
   CreateServerCard(kTestGUID2, kTestNumber2, kTestServerId2);
   // Add a card to the cache.
@@ -2579,7 +2579,7 @@ TEST_F(CreditCardAccessManagerTest, GetCachedUnmaskedCards) {
 }
 
 TEST_F(CreditCardAccessManagerTest, IsCardPresentInUnmaskedCache) {
-  CreditCard* masked_server_card =
+  const CreditCard* masked_server_card =
       CreateServerCard(kTestGUID, kTestNumber, kTestServerId);
   CreateServerCard(kTestGUID2, kTestNumber2, kTestServerId2);
   // Add a card to the cache.
@@ -2596,7 +2596,7 @@ TEST_F(CreditCardAccessManagerTest, IsCardPresentInUnmaskedCache) {
 }
 
 TEST_F(CreditCardAccessManagerTest, IsVirtualCardPresentInUnmaskedCache) {
-  CreditCard* masked_server_card =
+  const CreditCard* masked_server_card =
       CreateServerCard(kTestGUID, kTestNumber, kTestServerId);
   CreditCard virtual_card = *masked_server_card;
   virtual_card.set_record_type(CreditCard::RecordType::kVirtualCard);
@@ -2624,7 +2624,7 @@ TEST_F(CreditCardAccessManagerTest,
   }
 #endif  // BUILDFLAG(IS_ANDROID)
 
-  CreditCard* masked_server_card =
+  const CreditCard* masked_server_card =
       CreateServerCard(kTestGUID, kTestNumber, kTestServerId);
   CreditCard virtual_card = *masked_server_card;
   virtual_card.set_record_type(CreditCard::RecordType::kVirtualCard);
@@ -2688,7 +2688,7 @@ TEST_F(CreditCardAccessManagerTest,
   }
 #endif  // BUILDFLAG(IS_ANDROID)
 
-  CreditCard* masked_server_card =
+  const CreditCard* masked_server_card =
       CreateServerCard(kTestGUID, kTestNumber, kTestServerId);
   CreditCard virtual_card = *masked_server_card;
   virtual_card.set_record_type(CreditCard::RecordType::kVirtualCard);
@@ -2830,7 +2830,7 @@ TEST_F(CreditCardAccessManagerTest,
 #endif  // BUILDFLAG(IS_IOS)
 
   base::HistogramTester histogram_tester;
-  CreditCard* masked_server_card =
+  const CreditCard* masked_server_card =
       CreateServerCard(kTestGUID, kTestNumber, kTestServerId);
   CreditCard virtual_card = *masked_server_card;
   virtual_card.set_record_type(CreditCard::RecordType::kVirtualCard);
@@ -3134,7 +3134,7 @@ TEST_F(
     CreditCardAccessManagerTest,
     RiskBasedVirtualCardUnmasking_AuthenticationRequired_FidoAndOtp_PrefersFido) {
   base::HistogramTester histogram_tester;
-  CreditCard* masked_server_card =
+  const CreditCard* masked_server_card =
       CreateServerCard(kTestGUID, kTestNumber, kTestServerId);
   CreditCard virtual_card = *masked_server_card;
   virtual_card.set_record_type(CreditCard::RecordType::kVirtualCard);
@@ -3260,7 +3260,7 @@ TEST_F(
     CreditCardAccessManagerTest,
     RiskBasedVirtualCardUnmasking_AuthenticationRequired_FidoOnly_FidoNotOptedIn) {
   base::HistogramTester histogram_tester;
-  CreditCard* masked_server_card =
+  const CreditCard* masked_server_card =
       CreateServerCard(kTestGUID, kTestNumber, kTestServerId);
   CreditCard virtual_card = *masked_server_card;
   virtual_card.set_record_type(CreditCard::RecordType::kVirtualCard);
@@ -3309,7 +3309,7 @@ TEST_F(
 TEST_F(CreditCardAccessManagerTest,
        RiskBasedVirtualCardUnmasking_Failure_NoOptionReturned) {
   base::HistogramTester histogram_tester;
-  CreditCard* masked_server_card =
+  const CreditCard* masked_server_card =
       CreateServerCard(kTestGUID, kTestNumber, kTestServerId);
   CreditCard virtual_card = *masked_server_card;
   virtual_card.set_record_type(CreditCard::RecordType::kVirtualCard);
@@ -3357,7 +3357,7 @@ TEST_F(CreditCardAccessManagerTest,
 TEST_F(CreditCardAccessManagerTest,
        RiskBasedVirtualCardUnmasking_Failure_VirtualCardRetrievalError) {
   base::HistogramTester histogram_tester;
-  CreditCard* masked_server_card =
+  const CreditCard* masked_server_card =
       CreateServerCard(kTestGUID, kTestNumber, kTestServerId);
   CreditCard virtual_card = *masked_server_card;
   virtual_card.set_record_type(CreditCard::RecordType::kVirtualCard);
@@ -3404,7 +3404,7 @@ TEST_F(CreditCardAccessManagerTest,
 TEST_F(CreditCardAccessManagerTest,
        RiskBasedVirtualCardUnmasking_Failure_MerchantOptedOut) {
   base::HistogramTester histogram_tester;
-  CreditCard* masked_server_card =
+  const CreditCard* masked_server_card =
       CreateServerCard(kTestGUID, kTestNumber, kTestServerId);
   CreditCard virtual_card = *masked_server_card;
   virtual_card.set_record_type(CreditCard::RecordType::kVirtualCard);
@@ -3442,7 +3442,7 @@ TEST_F(CreditCardAccessManagerTest,
 TEST_F(CreditCardAccessManagerTest,
        RiskBasedVirtualCardUnmasking_FlowCancelled) {
   base::HistogramTester histogram_tester;
-  CreditCard* masked_server_card =
+  const CreditCard* masked_server_card =
       CreateServerCard(kTestGUID, kTestNumber, kTestServerId);
   CreditCard virtual_card = *masked_server_card;
   virtual_card.set_record_type(CreditCard::RecordType::kVirtualCard);

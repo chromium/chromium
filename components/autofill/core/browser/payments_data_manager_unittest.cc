@@ -674,7 +674,7 @@ TEST_F(PaymentsDataManagerTest, RecordUseOfCard) {
   payments_data_manager().RecordUseOfCard(&card);
   WaitForOnPaymentsDataChanged();
 
-  CreditCard* pdm_card =
+  const CreditCard* pdm_card =
       payments_data_manager().GetCreditCardByGUID(card.guid());
   ASSERT_TRUE(pdm_card);
   EXPECT_EQ(pdm_card->use_count(), 2u);

@@ -1050,7 +1050,7 @@ class BrowserAutofillManagerTest : public testing::Test {
         CreateTestFormField("CVC", "cvc", "", FormControlType::kInputText));
   }
 
-  void PrepareForRealPanResponse(FormData* form, CreditCard* card) {
+  void PrepareForRealPanResponse(FormData* form) {
     // This line silences the warning from PaymentsNetworkInterface about
     // matching sync and Payments server types.
     base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
@@ -1059,14 +1059,15 @@ class BrowserAutofillManagerTest : public testing::Test {
     CreateTestCreditCardFormData(form, /*is_https=*/true,
                                  /*use_month_type=*/false);
     FormsSeen({*form});
-    *card = CreditCard(CreditCard::RecordType::kMaskedServerCard, "a123");
-    test::SetCreditCardInfo(card, "John Dillinger", "1881" /* Visa */, "01",
+    CreditCard card =
+        CreditCard(CreditCard::RecordType::kMaskedServerCard, "a123");
+    test::SetCreditCardInfo(&card, "John Dillinger", "1881" /* Visa */, "01",
                             "2017", "1");
-    card->SetNetworkForMaskedCard(kVisaCard);
+    card.SetNetworkForMaskedCard(kVisaCard);
 
     EXPECT_CALL(*autofill_driver_, ApplyFormAction).Times(AtLeast(1));
     browser_autofill_manager_->AuthenticateThenFillCreditCardForm(
-        *form, form->fields()[0], *card,
+        *form, form->fields()[0], card,
         {.trigger_source = AutofillTriggerSource::kPopup});
   }
 
@@ -5662,8 +5663,7 @@ TEST_F(BrowserAutofillManagerTest, DontSaveCvcInAutocompleteHistory) {
 
 TEST_F(BrowserAutofillManagerTest, DontOfferToSavePaymentsCard) {
   FormData form;
-  CreditCard card;
-  PrepareForRealPanResponse(&form, &card);
+  PrepareForRealPanResponse(&form);
 
   // Manually fill out |form| so we can use it in OnFormSubmitted.
   for (auto& field : test_api(form).fields()) {

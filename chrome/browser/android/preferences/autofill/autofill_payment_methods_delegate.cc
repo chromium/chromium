@@ -82,8 +82,9 @@ void AutofillPaymentMethodsDelegate::InitVirtualCardEnrollment(
     JNIEnv* env,
     int64_t instrument_id,
     const JavaParamRef<jobject>& jcallback) {
-  CreditCard* credit_card = personal_data_manager_->payments_data_manager()
-                                .GetCreditCardByInstrumentId(instrument_id);
+  const CreditCard* credit_card =
+      personal_data_manager_->payments_data_manager()
+          .GetCreditCardByInstrumentId(instrument_id);
   virtual_card_enrollment_manager_->InitVirtualCardEnroll(
       *credit_card, VirtualCardEnrollmentSource::kSettingsPage, std::nullopt,
       profile_->GetPrefs(), base::BindOnce(&risk_util::LoadRiskDataHelper),

@@ -964,7 +964,7 @@ PaymentsDataManager::GetPaymentsSigninStateForMetrics() const {
 
 bool PaymentsDataManager::IsCardPresentAsBothLocalAndServerCards(
     const CreditCard& credit_card) {
-  for (CreditCard* card_from_list : GetCreditCards()) {
+  for (const CreditCard* card_from_list : GetCreditCards()) {
     if (credit_card.IsLocalOrServerDuplicateOf(*card_from_list)) {
       return true;
     }

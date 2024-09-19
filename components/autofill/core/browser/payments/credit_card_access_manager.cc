@@ -89,7 +89,7 @@ void CreditCardAccessManager::UpdateCreditCardFormEventLogger() {
       payments_data_manager().GetCreditCards();
   size_t server_record_type_count = 0;
   size_t local_record_type_count = 0;
-  for (CreditCard* credit_card : credit_cards) {
+  for (const CreditCard* credit_card : credit_cards) {
     if (credit_card->record_type() == CreditCard::RecordType::kLocalCard) {
       local_record_type_count++;
     } else {

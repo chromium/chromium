@@ -307,7 +307,7 @@ void TouchToFillDelegateAndroidImpl::CreditCardSuggestionSelected(
 
   PersonalDataManager* pdm = manager_->client().GetPersonalDataManager();
   CHECK(pdm);
-  CreditCard* card =
+  const CreditCard* card =
       pdm->payments_data_manager().GetCreditCardByGUID(unique_id);
   // TODO(crbug.com/40071928): Figure out why `card` is sometimes nullptr.
   if (!card) {
