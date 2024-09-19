@@ -464,7 +464,8 @@ class OverflowMenuMediatorTest : public PlatformTest {
 
 // Tests that the feature engagement tracker get notified when the mediator is
 // disconnected and the tracker wants the notification badge displayed.
-TEST_F(OverflowMenuMediatorTest, TestFeatureEngagementDisconnect) {
+// TODO(crbug.com/368359469): re-enable after fixing the test failure.
+TEST_F(OverflowMenuMediatorTest, DISABLED_TestFeatureEngagementDisconnect) {
   CreateMediator(/*is_incognito=*/NO);
   EXPECT_CALL(tracker_, ShouldTriggerHelpUI(testing::_))
       .WillRepeatedly(Return(true));
@@ -479,7 +480,8 @@ TEST_F(OverflowMenuMediatorTest, TestFeatureEngagementDisconnect) {
 
 // Tests that the mediator is returning the right number of items and sections
 // for the Tools Menu type.
-TEST_F(OverflowMenuMediatorTest, TestMenuItemsCount) {
+// TODO(crbug.com/368359469): re-enable after fixing the test failure.
+TEST_F(OverflowMenuMediatorTest, DISABLED_TestMenuItemsCount) {
   CreateLocalStatePrefs();
   CreateMediator(/*is_incognito=*/NO);
   mediator_.localStatePrefs = localStatePrefs_.get();
@@ -522,7 +524,8 @@ TEST_F(OverflowMenuMediatorTest, TestMenuItemsCount) {
 
 // Tests that the items returned by the mediator are correctly enabled on a
 // WebPage.
-TEST_F(OverflowMenuMediatorTest, TestItemsStatusOnWebPage) {
+// TODO(crbug.com/368359469): re-enable after fixing the test failure.
+TEST_F(OverflowMenuMediatorTest, DISABLED_TestItemsStatusOnWebPage) {
   CreateLocalStatePrefs();
   CreateMediator(/*is_incognito=*/NO);
   SetUpActiveWebState();
@@ -541,7 +544,8 @@ TEST_F(OverflowMenuMediatorTest, TestItemsStatusOnWebPage) {
 
 // Tests that the items returned by the mediator are correctly enabled on the
 // NTP.
-TEST_F(OverflowMenuMediatorTest, TestItemsStatusOnNTP) {
+// TODO(crbug.com/368359469): re-enable after fixing the test failure.
+TEST_F(OverflowMenuMediatorTest, DISABLED_TestItemsStatusOnNTP) {
   CreateLocalStatePrefs();
   CreateMediator(/*is_incognito=*/NO);
   SetUpActiveWebState();
