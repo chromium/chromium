@@ -8,12 +8,14 @@
 #include "base/test/test_timeouts.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/file_system_access/chrome_file_system_access_permission_context.h"
+#include "chrome/browser/file_system_access/file_system_access_permission_request_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/common/content_settings.h"
+#include "components/permissions/permission_util.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -114,6 +116,21 @@ class FileSystemObserverTest : public InProcessBrowserTest {
             std::vector<base::FilePath>{file_path}));
     EXPECT_TRUE(NavigateToURL(GetWebContents(), test_url_));
     return file_path;
+  }
+
+  base::FilePath CreateDirectoryToBePicked() {
+    base::FilePath dir_path;
+    {
+      base::ScopedAllowBlockingForTesting allow_blocking;
+      EXPECT_TRUE(base::CreateTemporaryDirInDir(
+          temp_dir_.GetPath(), FILE_PATH_LITERAL("test"), &dir_path));
+    }
+
+    ui::SelectFileDialog::SetFactory(
+        std::make_unique<content::FakeSelectFileDialogFactory>(
+            std::vector<base::FilePath>{dir_path}));
+    EXPECT_TRUE(NavigateToURL(GetWebContents(), test_url_));
+    return dir_path;
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -302,6 +319,87 @@ IN_PROC_BROWSER_TEST_F(FileSystemObserverTest,
     auto records = EvalJs(GetWebContents(), get_results_script).ExtractList();
 
     // Expect that we received only one "errored" event.
+    ASSERT_THAT(records.GetList(), testing::SizeIs(1));
+    EXPECT_THAT(records.GetList().front().GetString(),
+                testing::StrEq("errored"));
+  }
+
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    ASSERT_TRUE(base::WriteFile(file, "content v2"));
+    auto records = EvalJs(GetWebContents(), get_results_script).ExtractList();
+
+    // Expect that no more events are received after it's errored.
+    ASSERT_THAT(records.GetList(), testing::IsEmpty());
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(FileSystemObserverTest,
+                       ErrorsAfterRevokeAllActiveGrants) {
+  auto dir = CreateDirectoryToBePicked();
+
+  auto* browser_profile = browser()->profile();
+  TestFileSystemAccessPermissionContext permission_context(browser_profile);
+  content::SetFileSystemAccessPermissionContext(browser_profile,
+                                                &permission_context);
+
+  FileSystemAccessPermissionRequestManager::FromWebContents(GetWebContents())
+      ->set_auto_response_for_test(permissions::PermissionAction::GRANTED);
+
+  std::string setup_script = content::JsReplace(
+      R"""((async () => {
+        // Constants
+        const actionTimeoutMs = $1;
+
+        // Setup observer
+        let records = [];
+        function onChange(recs) {
+          records.push(...recs.map(record => record.type));
+        };
+        self.observer = new FileSystemObserver(onChange);
+
+        // Observe a directory.
+        const dir = await self.showDirectoryPicker();
+        await observer.observe(dir, { recursive: false });
+
+        // Returns a promise that resolves after `actionTimeoutMs` to the list
+        // of records observed by the observer.
+        self.collectRecords = () => {
+          const {promise, resolve} = Promise.withResolvers();
+          setTimeout(() => {
+            resolve([...records]);
+            records = [];
+          }, actionTimeoutMs);
+          return promise;
+        };
+      })())""",
+      base::Int64ToValue(TestTimeouts::action_timeout().InMilliseconds()));
+
+  EXPECT_TRUE(ExecJs(GetWebContents(), setup_script));
+
+  base::FilePath file = dir.Append(FILE_PATH_LITERAL("file.txt"));
+  std::string get_results_script = "collectRecords()";
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    ASSERT_TRUE(base::WriteFile(file, "content"));
+    auto records = EvalJs(GetWebContents(), get_results_script).ExtractList();
+    const std::string expected_change_type =
+        SupportsChangeInfo() ? "appeared" : "unknown";
+
+    // We expect to receive an "appeared" event when the file is created.
+    ASSERT_THAT(records.GetList(), testing::Not(testing::IsEmpty()));
+    EXPECT_THAT(records.GetList().front().GetString(),
+                testing::StrEq(expected_change_type));
+  }
+
+  permission_context.RevokeAllActiveGrants();
+
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    auto records = EvalJs(GetWebContents(), get_results_script).ExtractList();
+
+    // Expect that we received an "errored" event due to the active grants being
+    // revoked.
     ASSERT_THAT(records.GetList(), testing::SizeIs(1));
     EXPECT_THAT(records.GetList().front().GetString(),
                 testing::StrEq("errored"));

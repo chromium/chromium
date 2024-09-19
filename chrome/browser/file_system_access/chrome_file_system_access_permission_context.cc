@@ -1245,6 +1245,15 @@ void ChromeFileSystemAccessPermissionContext::RevokeAllActiveGrants() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   for (auto& [origin, origin_state] : active_permissions_map_) {
+    // Only update `persisted_grant_status` if the state has not already been
+    // set via tab backgrounding. We do this before iterating over grants so
+    // `FileSystemAccessPermissionGrant::Observer`s can update their state
+    // correctly.
+    if (origin_state.persisted_grant_status !=
+        PersistedGrantStatus::kBackgrounded) {
+      origin_state.persisted_grant_status = PersistedGrantStatus::kLoaded;
+    }
+
     for (auto grant_iter = origin_state.read_grants.begin(),
               grant_end = origin_state.read_grants.end();
          grant_iter != grant_end;) {
@@ -1264,12 +1273,6 @@ void ChromeFileSystemAccessPermissionContext::RevokeAllActiveGrants() {
       grant->SetStatus(
           PermissionStatus::ASK,
           PersistedPermissionOptions::kDoNotUpdatePersistedPermission);
-    }
-    // Only update `persisted_grant_status` if the state has not already been
-    // set via tab backgrounding.
-    if (origin_state.persisted_grant_status !=
-        PersistedGrantStatus::kBackgrounded) {
-      origin_state.persisted_grant_status = PersistedGrantStatus::kLoaded;
     }
   }
 }
