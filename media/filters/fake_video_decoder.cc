@@ -147,8 +147,11 @@ void FakeVideoDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
 
 scoped_refptr<VideoFrame> FakeVideoDecoder::MakeVideoFrame(
     const DecoderBuffer& buffer) {
-  return VideoFrame::CreateColorFrame(current_config_.coded_size(), 0, 0, 0,
-                                      buffer.timestamp());
+  auto frame = VideoFrame::CreateVideoHoleFrame(base::UnguessableToken(),
+                                                current_config_.coded_size(),
+                                                buffer.timestamp());
+  DCHECK(frame);
+  return frame;
 }
 
 void FakeVideoDecoder::Reset(base::OnceClosure closure) {
