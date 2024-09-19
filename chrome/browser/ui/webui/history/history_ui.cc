@@ -228,6 +228,7 @@ content::WebUIDataSource* CreateAndAddHistoryUIHTMLSource(Profile* profile) {
       {"learnMore", IDS_LEARN_MORE},
       {"thumbsUp", IDS_THUMBS_UP_RESULTS_A11Y_LABEL},
       {"thumbsDown", IDS_THUMBS_DOWN_OPENS_FEEDBACK_FORM_A11Y_LABEL},
+      {"historyEmbeddingsAnswerHeading", IDS_HISTORY_EMBEDDINGS_ANSWER_HEADING},
   };
   source->AddLocalizedStrings(kHistoryEmbeddingsStrings);
   source->AddInteger("historyEmbeddingsSearchMinimumWordCount",

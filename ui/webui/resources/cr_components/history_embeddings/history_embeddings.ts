@@ -165,6 +165,13 @@ export class HistoryEmbeddingsElement extends HistoryEmbeddingsElementBase {
     return this.i18n('historyEmbeddingsHeading', this.searchQuery);
   }
 
+  private hasAnswer_(): boolean {
+    if (!this.enableAnswers_ || this.loading_) {
+      return false;
+    }
+    return this.searchResult_?.answer !== '';
+  }
+
   private onFeedbackSelectedOptionChanged_(
       e: CustomEvent<{value: CrFeedbackOption}>) {
     this.feedbackState_ = e.detail.value;
@@ -183,6 +190,9 @@ export class HistoryEmbeddingsElement extends HistoryEmbeddingsElementBase {
   }
 
   private onMoreActionsClick_(e: DomRepeatEvent<SearchResultItem>) {
+    e.preventDefault();
+    e.stopPropagation();
+
     const target = e.target as HTMLElement;
     const item = e.model.item;
     this.actionMenuItem_ = item;
@@ -264,7 +274,6 @@ export class HistoryEmbeddingsElement extends HistoryEmbeddingsElementBase {
 
     // Reset feedback state for new results.
     this.feedbackState_ = CrFeedbackOption.UNSPECIFIED;
-
     this.searchResult_ = result;
     this.loading_ = false;
 

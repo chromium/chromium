@@ -187,6 +187,9 @@
   <message name="IDS_HISTORY_EMBEDDINGS_SEARCH_PROMPT" desc="Placeholder text/label for the search input field in the history page when history embeddings is enabled." translateable="false">
     In a few words, describe what you're searching for
   </message>
+  <message name="IDS_HISTORY_EMBEDDINGS_ANSWER_HEADING" desc="Heading for answer section in history search results." translateable="false">
+    Summary
+  </message>
 
   <!-- For Compare -->
   <message name="IDS_COMPARE_HISTORY_EMPTY" desc="Text shown for comparison tables tab when no sets are present.">
