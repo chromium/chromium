@@ -847,8 +847,9 @@ class CrossbenchTest(object):
 
   def _generate_command_list(self, benchmark, benchmark_args, working_dir):
     return (['vpython3'] + [self.options.executable] + [benchmark] +
-            [self.OUTDIR % working_dir] + [self.browser] + benchmark_args +
-            self.driver_path_arg + self.network + self._get_default_args())
+            ['--env-validation=throw'] + [self.OUTDIR % working_dir] +
+            [self.browser] + benchmark_args + self.driver_path_arg +
+            self.network + self._get_default_args())
 
   def execute_benchmark(self,
                         benchmark,
