@@ -131,6 +131,15 @@ class AutofillField : public FormFieldData {
     possible_profile_value_sources_ = std::move(possible_profile_value_sources);
   }
 
+  std::optional<ProfileValueSource> assumed_profile_value_source() const {
+    return assumed_profile_value_source_;
+  }
+
+  void set_assumed_profile_value_source(
+      std::optional<ProfileValueSource> value_source) {
+    assumed_profile_value_source_ = value_source;
+  }
+
   void SetHtmlType(HtmlFieldType type, HtmlFieldMode mode);
 
   void set_previously_autofilled(bool previously_autofilled) {
@@ -457,6 +466,14 @@ class AutofillField : public FormFieldData {
   // contained in `possible_types_` with the additional information in which
   // profile the matching type was detected.
   PossibleProfileValueSources possible_profile_value_sources_;
+
+  // Holds the assumed profile and type of the `value` found in this field.
+  // The assumed source may be derived by using the
+  // `possible_profile_value_sources_` or the `autofill_source_profile_guid_`.
+  // There are no strong guarantees regarding the consistency between those
+  // different fields. The `nullopt` state indicates that no assumed value
+  // source was identified yet.
+  std::optional<ProfileValueSource> assumed_profile_value_source_;
 
   // The field's initial value. By default, it's the same as the field's
   // `value()`, but FormStructure::RetrieveFromCache() may override it.
