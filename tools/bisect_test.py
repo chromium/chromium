@@ -48,13 +48,6 @@ class BisectTestCase(unittest.TestCase):
 
   @classmethod
   def setUpClass(cls):
-    # patch cache filename to prevent pollute working dir.
-    fd, cls.tmp_cache_file = tempfile.mkstemp(suffix='.json')
-    os.close(fd)
-    cls.cache_filename_patcher = patch(
-        'bisect-builds.ArchiveBuild._rev_list_cache_filename',
-        new=PropertyMock(return_value=cls.tmp_cache_file))
-    cls.cache_filename_patcher.start()
     # Patch the name pattern for pkgutil to accept "bisect-builds" as module
     # name.
     if sys.version_info[:2] > (3, 8):
@@ -64,6 +57,14 @@ class BisectTestCase(unittest.TestCase):
           f'(?P<cln>:(?P<obj>{dotted_words})?)?$', re.UNICODE)
       cls.name_pattern_patcher = patch('pkgutil._NAME_PATTERN', name_pattern)
       cls.name_pattern_patcher.start()
+
+    # patch cache filename to prevent pollute working dir.
+    fd, cls.tmp_cache_file = tempfile.mkstemp(suffix='.json')
+    os.close(fd)
+    cls.cache_filename_patcher = patch(
+        'bisect-builds.ArchiveBuild._rev_list_cache_filename',
+        new=PropertyMock(return_value=cls.tmp_cache_file))
+    cls.cache_filename_patcher.start()
 
   @classmethod
   def tearDownClass(cls):
