@@ -1557,9 +1557,9 @@
       status: "experimental",
     },
     // Enables the ability to use Document Policy header to control feature
-    // ExpectNoEmbeddedResources.
+    // ExpectNoLinkedResources.
     {
-      name: "DocumentPolicyExpectNoEmbeddedResources",
+      name: "DocumentPolicyExpectNoLinkedResources",
       status: "experimental",
     },
     // Enables the ability to use Document Policy header to control feature

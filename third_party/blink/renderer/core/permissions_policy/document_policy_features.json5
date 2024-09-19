@@ -86,11 +86,11 @@
       default_value: "false",
     },
     {
-      name: "ExpectNoEmbeddedResources",
-      document_policy_name: "expect-no-embedded-resources",
+      name: "ExpectNoLinkedResources",
+      document_policy_name: "expect-no-linked-resources",
       value_type: "Bool",
       default_value: "false",
-      depends_on: ["DocumentPolicyExpectNoEmbeddedResources"]
+      depends_on: ["DocumentPolicyExpectNoLinkedResources"]
     }
   ],
 }
