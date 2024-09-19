@@ -18,7 +18,6 @@ component("cpp") {
 
   deps = [
     "//base",
-    "//chromeos/constants:constants",
     "//chromeos/ui/vector_icons",
     "//components/vector_icons",
     "//ui/gfx",
