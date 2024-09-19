@@ -211,6 +211,11 @@ export class BrowsingContextProcessor {
         `No browsing context with id ${params.context}`
       );
     }
+    if (!context.isTopLevelContext()) {
+      throw new InvalidArgumentException(
+        'Traversing history is only supported on the top-level context'
+      );
+    }
     await context.traverseHistory(params.delta);
     return {};
   }

@@ -73,6 +73,17 @@ async def traverse_history(websocket, context_id, delta):
         })
 
 
+@pytest.mark.asyncio
+async def test_traverse_history_iframe(websocket, iframe_id):
+    with pytest.raises(
+            Exception,
+            match=str({
+                "error": "invalid argument",
+                "message": "Traversing history is only supported on the top-level context"
+            })):
+        await traverse_history(websocket, iframe_id, 0)
+
+
 async def assert_href_equals(websocket, href):
     response = await read_JSON_message(websocket)
     assert response["params"]["url"] == href
