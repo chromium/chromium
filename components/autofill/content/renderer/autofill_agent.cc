@@ -1368,7 +1368,7 @@ void AutofillAgent::ShowSuggestions(
   }
 
   // Proceed with generating suggestions based on the field type.
-  if (form_util::IsAutofillableInputElement(input_element)) {
+  if (input_element) {
     if (password_generation_agent_ &&
         password_generation_agent_->ShowPasswordGenerationSuggestions(
             input_element)) {
@@ -1380,18 +1380,17 @@ void AutofillAgent::ShowSuggestions(
       is_popup_possibly_visible_ = true;
       return;
     }
-  }
 
-  // Password field elements should only have suggestions shown by the password
-  // AutofillAgent. We call `FormControlType()` instead of
-  // `FormControlTypeForAutofill()` because we are interested in whether the
-  // field is *currently* a password field, not whether it has ever been a
-  // password field.
-  if (input_element &&
-      input_element.FormControlType()  // nocheck
-          == blink::mojom::FormControlType::kInputPassword &&
-      !config_.query_password_suggestions) {
-    return;
+    // Password field elements should only have suggestions shown by the
+    // password AutofillAgent. We call `FormControlType()` instead of
+    // `FormControlTypeForAutofill()` because we are interested in whether the
+    // field is *currently* a password field, not whether it has ever been a
+    // password field.
+    if (input_element.FormControlType() ==  // nocheck
+            blink::mojom::FormControlType::kInputPassword &&
+        !config_.query_password_suggestions) {
+      return;
+    }
   }
 
   QueryAutofillSuggestions(element, trigger_source);
