@@ -99,6 +99,9 @@ export class HeaderElement extends PolymerElement {
     const inputValue = this.getInput_().value;
     this.showingInput_ = false;
     if (!inputValue) {
+      if (this.subtitle) {
+        this.getInput_().value = this.subtitle;
+      }
       return;
     }
     this.subtitle = inputValue;
