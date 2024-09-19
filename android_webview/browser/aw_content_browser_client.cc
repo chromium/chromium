@@ -1435,4 +1435,12 @@ bool AwContentBrowserClient::IsFullCookieAccessAllowed(
 
   return aw_settings->GetAllowThirdPartyCookies();
 }
+
+bool AwContentBrowserClient::AllowNonActivatedCrossOriginPaintHolding() {
+  // In WebView, we allow non-activated cross-origin paint holding, since apps
+  // currently experience this behavior and are in control of what to show. We
+  // can consider disabling it while monitoring for any breakages.
+  return true;
+}
+
 }  // namespace android_webview

@@ -1782,4 +1782,8 @@ bool ContentBrowserClient::IsSaveableNavigation(
 void ContentBrowserClient::OnUiaProviderRequested(bool uia_provider_enabled) {}
 #endif
 
+bool ContentBrowserClient::AllowNonActivatedCrossOriginPaintHolding() {
+  return false;
+}
+
 }  // namespace content

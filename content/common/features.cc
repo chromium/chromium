@@ -612,6 +612,11 @@ BASE_FEATURE(kScrollBubblingFix,
              "ScrollBubblingFix",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Flag guard for fix for crbug.com/40942531.
+BASE_FEATURE(kLimitCrossOriginNonActivatedPaintHolding,
+             "LimitCrossOriginNonActivatedPaintHolding",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Please keep features in alphabetical order.
 
 }  // namespace features
