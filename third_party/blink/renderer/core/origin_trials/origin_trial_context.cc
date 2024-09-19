@@ -537,6 +537,15 @@ bool OriginTrialContext::CanEnableTrialFromName(const StringView& trial_name) {
     return base::FeatureList::IsEnabled(blink::features::kPermissionElement);
   }
 
+  // TODO(crbug.com/362675965): remove after origin trial.
+  if (trial_name == "AISummarizationAPI") {
+    return base::FeatureList::IsEnabled(features::kEnableAISummarizationAPI);
+  }
+
+  if (trial_name == "LanguageDetectionAPI") {
+    return base::FeatureList::IsEnabled(features::kLanguageDetectionAPI);
+  }
+
   return true;
 }
 
