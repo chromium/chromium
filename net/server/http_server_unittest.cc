@@ -21,6 +21,7 @@
 #include "base/auto_reset.h"
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/format_macros.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -951,6 +952,40 @@ TEST_F(HttpServerTest, WrongProtocolRequest) {
     // Reset the state of the connection map.
     connection_map().clear();
   }
+}
+
+// A null byte in the headers should cause the request to be rejected.
+TEST_F(HttpServerTest, NullByteInHeaders) {
+  constexpr char kNullByteInHeader[] =
+      "GET / HTTP/1.1\r\n"
+      "User-Agent: Mozilla\0/\r\n"
+      "\r\n";
+  TestHttpClient client;
+  CreateConnection(&client);
+
+  client.Send(std::string(kNullByteInHeader, std::size(kNullByteInHeader) - 1));
+  client.ExpectUsedThenDisconnectedWithNoData();
+
+  ASSERT_EQ(1u, connection_map().size());
+  ASSERT_FALSE(connection_map().begin()->second);
+  EXPECT_FALSE(HasRequest());
+}
+
+// A null byte in the body should be accepted.
+TEST_F(HttpServerTest, NullByteInBody) {
+  // We use the trailing null byte added by the compiler as the "body" of the
+  // request.
+  constexpr char kNullByteInBody[] =
+      "POST /body HTTP/1.1\r\n"
+      "User-Agent: Mozilla\r\n"
+      "Content-Length: 1\r\n"
+      "\r\n";
+  TestHttpClient client;
+  CreateConnection(&client);
+
+  client.Send(std::string(kNullByteInBody, std::size(kNullByteInBody)));
+  auto request = WaitForRequest();
+  EXPECT_EQ(request.info.data, std::string_view("\0", 1));
 }
 
 class MockStreamSocket : public StreamSocket {
