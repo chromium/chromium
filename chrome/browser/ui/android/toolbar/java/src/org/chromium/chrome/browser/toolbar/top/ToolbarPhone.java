@@ -95,7 +95,9 @@ import java.util.function.BooleanSupplier;
 
 /** Phone specific toolbar implementation. */
 public class ToolbarPhone extends ToolbarLayout
-        implements OnClickListener, OmniboxSuggestionsDropdownScrollListener {
+        implements OnClickListener,
+                OmniboxSuggestionsDropdownScrollListener,
+                ToolbarDataProvider.Observer {
     /** The amount of time transitioning from one theme color to another should take in ms. */
     public static final long THEME_COLOR_TRANSITION_DURATION = 250;
 
@@ -373,6 +375,8 @@ public class ToolbarPhone extends ToolbarLayout
                 trackerSupplier);
         mUserEducationHelper = userEducationHelper;
         mTrackerSupplier = trackerSupplier;
+
+        getToolbarDataProvider().addToolbarDataProviderObserver(this);
     }
 
     @Override
@@ -392,6 +396,8 @@ public class ToolbarPhone extends ToolbarLayout
         if (mTabCountSupplier != null) {
             mTabCountSupplier.removeObserver(mTabCountSupplierObserver);
         }
+
+        getToolbarDataProvider().removeToolbarDataProviderObserver(this);
 
         super.destroy();
     }
@@ -2154,6 +2160,15 @@ public class ToolbarPhone extends ToolbarLayout
         TraceEvent.end("ToolbarPhone.triggerUrlFocusAnimation");
     }
 
+    // ToolbarDataProvider.Observer implementation.
+
+    @Override
+    public void onIncognitoStateChanged() {
+        // Set the correct branded color scheme tinting for the {@link TabSwitcherDrawable} whenever
+        // the incognito state changes.
+        setTabSwitcherDrawableColorScheme(isIncognitoBranded());
+    }
+
     @Override
     public void setTabCountSupplier(ObservableSupplier<Integer> tabCountSupplier) {
         mTabCountSupplier = tabCountSupplier;
@@ -2174,13 +2189,16 @@ public class ToolbarPhone extends ToolbarLayout
             if (isIncognitoSupplier != null) {
                 isIncognito = isIncognitoSupplier.get();
             }
-
-            @BrandedColorScheme
-            int overlayTabStackDrawableScheme =
-                    OmniboxResourceProvider.getBrandedColorScheme(
-                            getContext(), isIncognito, getTabThemeColor());
-            getTabSwitcherButtonCoordinator().setBrandedColorScheme(overlayTabStackDrawableScheme);
+            setTabSwitcherDrawableColorScheme(isIncognito);
         }
+    }
+
+    private void setTabSwitcherDrawableColorScheme(boolean isIncognito) {
+        @BrandedColorScheme
+        int overlayTabStackDrawableScheme =
+                OmniboxResourceProvider.getBrandedColorScheme(
+                        getContext(), isIncognito, getTabThemeColor());
+        getTabSwitcherButtonCoordinator().setBrandedColorScheme(overlayTabStackDrawableScheme);
     }
 
     /**

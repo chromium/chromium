@@ -157,6 +157,7 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
     private long mNativeLocationBarModelAndroid;
     private ObserverList<LocationBarDataProvider.Observer> mLocationBarDataObservers =
             new ObserverList<>();
+    private ObserverList<ToolbarDataProvider.Observer> mToolbarDataObservers = new ObserverList<>();
     protected GURL mVisibleGurl = GURL.emptyGURL();
     protected String mFormattedFullUrl;
     protected String mUrlForDisplay;
@@ -288,6 +289,16 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
     }
 
     @Override
+    public void addToolbarDataProviderObserver(ToolbarDataProvider.Observer observer) {
+        mToolbarDataObservers.addObserver(observer);
+    }
+
+    @Override
+    public void removeToolbarDataProviderObserver(ToolbarDataProvider.Observer observer) {
+        mToolbarDataObservers.removeObserver(observer);
+    }
+
+    @Override
     // TODO(crbug.com/40218072): migrate to GURL.
     @Deprecated
     public String getCurrentUrl() {
@@ -342,7 +353,7 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
     }
 
     void notifyNtpStartedLoading() {
-        for (Observer observer : mLocationBarDataObservers) {
+        for (LocationBarDataProvider.Observer observer : mLocationBarDataObservers) {
             observer.onNtpStartedLoading();
         }
     }
@@ -509,6 +520,10 @@ public class LocationBarModel implements ToolbarDataProvider, LocationBarDataPro
 
     private void notifyIncognitoStateChanged() {
         for (LocationBarDataProvider.Observer observer : mLocationBarDataObservers) {
+            observer.onIncognitoStateChanged();
+        }
+
+        for (ToolbarDataProvider.Observer observer : mToolbarDataObservers) {
             observer.onIncognitoStateChanged();
         }
     }
