@@ -2809,6 +2809,10 @@ test("base_perftests") {
     "//testing:run_perf_test",
   ]
 
+  if (is_win) {
+    sources += [ "time/time_win_perftest.cc" ]
+  }
+
   if (is_android) {
     deps += [ "//testing/android/native_test:native_test_native_code" ]
     shard_timeout = 600
