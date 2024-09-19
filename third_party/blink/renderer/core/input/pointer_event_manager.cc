@@ -1083,33 +1083,43 @@ WebInputEventResult PointerEventManager::SendMousePointerEvent(
         mouse_event.pointer_type)] = true;
   }
 
-  // Only calculate mouse target if either mouse compatibility event or click
-  // should be sent.
-  if (pointer_event->isPrimary() &&
-      (!prevent_mouse_event_for_pointer_type_[ToPointerTypeIndex(
-           mouse_event.pointer_type)] ||
-       (!skip_click_dispatch &&
-        event_type == WebInputEvent::Type::kPointerUp))) {
-    Element* mouse_target =
+  bool send_compat_mouse =
+      pointer_event->isPrimary() &&
+      !prevent_mouse_event_for_pointer_type_[ToPointerTypeIndex(
+          mouse_event.pointer_type)];
+  bool consider_click_dispatch = !skip_click_dispatch &&
+                                 pointer_event->isPrimary() &&
+                                 event_type == WebInputEvent::Type::kPointerUp;
+
+  // Calculate mouse target if either compatibility mouse event or click event
+  // or both should be sent.
+  Element* mouse_target = nullptr;
+  if (send_compat_mouse || consider_click_dispatch) {
+    mouse_target =
         RuntimeEnabledFeatures::BoundaryEventDispatchTracksNodeRemovalEnabled()
             ? mouse_event_manager_->GetElementUnderMouse()
             : NonDeletedElementTarget(effective_target, pointer_event);
-    if (!prevent_mouse_event_for_pointer_type_[ToPointerTypeIndex(
-            mouse_event.pointer_type)]) {
-      result = event_handling_util::MergeEventResult(
-          result,
-          mouse_event_manager_->DispatchMouseEvent(
-              mouse_target, MouseEventNameForPointerEventInputType(event_type),
-              mouse_event, &last_mouse_position, nullptr));
-    }
-    if (!skip_click_dispatch && mouse_target &&
-        event_type == WebInputEvent::Type::kPointerUp) {
-      Element* captured_click_target = GetEffectiveTargetForPointerEvent(
-          nullptr, pointer_event->pointerId());
-      mouse_event_manager_->DispatchMouseClickIfNeeded(
-          mouse_target, captured_click_target, mouse_event,
-          pointer_event->pointerId(), pointer_event->pointerType());
-    }
+  }
+
+  // Dispatch compat mouse events.
+  if (send_compat_mouse) {
+    result = event_handling_util::MergeEventResult(
+        result,
+        mouse_event_manager_->DispatchMouseEvent(
+            mouse_target, MouseEventNameForPointerEventInputType(event_type),
+            mouse_event, &last_mouse_position, nullptr));
+  }
+
+  // Dispatch the click event if applicable.
+  if (!mouse_target) {
+    consider_click_dispatch = false;
+  }
+  if (consider_click_dispatch) {
+    Element* captured_click_target =
+        GetEffectiveTargetForPointerEvent(nullptr, pointer_event->pointerId());
+    mouse_event_manager_->DispatchMouseClickIfNeeded(
+        mouse_target, captured_click_target, mouse_event,
+        pointer_event->pointerId(), pointer_event->pointerType());
   }
 
   if (pointer_event->type() == event_type_names::kPointerup ||
