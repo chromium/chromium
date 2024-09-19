@@ -1742,8 +1742,8 @@ extern const char kPageVisibilityPageContentAnnotationsDescription[];
 extern const char kParallelDownloadingName[];
 extern const char kParallelDownloadingDescription[];
 
-extern const char kPasswordGenerationExperimentName[];
-extern const char kPasswordGenerationExperimentDescription[];
+extern const char kPasswordGenerationSoftNudgeName[];
+extern const char kPasswordGenerationSoftNudgeDescription[];
 
 extern const char kPasswordManagerShowSuggestionsOnAutofocusName[];
 extern const char kPasswordManagerShowSuggestionsOnAutofocusDescription[];

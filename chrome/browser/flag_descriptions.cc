@@ -3017,11 +3017,11 @@ const char kParallelDownloadingName[] = "Parallel downloading";
 const char kParallelDownloadingDescription[] =
     "Enable parallel downloading to accelerate download speed.";
 
-const char kPasswordGenerationExperimentName[] =
-    "Password generation experiment";
-const char kPasswordGenerationExperimentDescription[] =
-    "Enables different experiments that modify content and behavior of the "
-    "existing generated password suggestion dropdown.";
+const char kPasswordGenerationSoftNudgeName[] =
+    "Password generation soft nudge";
+const char kPasswordGenerationSoftNudgeDescription[] =
+    "Enables updated password generation UI with a prominent button and "
+    "previewing the generated password on focus.";
 
 const char kPasswordManagerShowSuggestionsOnAutofocusName[] =
     "Showing password suggestions on autofocused password forms";

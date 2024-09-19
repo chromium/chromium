@@ -16780,38 +16780,6 @@
             ]
         }
     ],
-    "PasswordGenerationExperiment": [
-        {
-            "platforms": [
-                "chromeos",
-                "chromeos_lacros",
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "EnabledWithChunkPassword",
-                    "params": {
-                        "password_generation_variation": "chunk_password"
-                    },
-                    "enable_features": [
-                        "PasswordGenerationExperiment"
-                    ]
-                },
-                {
-                    "name": "EnabledWithNudgePassword",
-                    "params": {
-                        "password_generation_variation": "nudge_password"
-                    },
-                    "enable_features": [
-                        "PasswordGenerationExperiment"
-                    ]
-                }
-            ]
-        }
-    ],
     "PasswordInfobarDisplayLength": [
         {
             "platforms": [

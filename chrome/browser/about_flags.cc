@@ -12012,6 +12012,14 @@ const FeatureEntry kFeatureEntries[] = {
          password_manager::features::kBiometricAuthIdentityCheck)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
+#if !BUILDFLAG(IS_ANDROID)
+    {"password-generation-soft-nudge",
+     flag_descriptions::kPasswordGenerationSoftNudgeName,
+     flag_descriptions::kPasswordGenerationSoftNudgeDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(
+         password_manager::features::kPasswordGenerationSoftNudge)},
+#endif  // !BUILDFLAG(IS_ANDROID)
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the
