@@ -275,6 +275,13 @@ NSAttributedString* FormatHTMLListForUILabel(NSString* listString) {
       @"H:|-0-[containerView]-0-|",
     ];
     ApplyVisualConstraints(constraints, viewsDictionary);
+
+    if (@available(iOS 17, *)) {
+      NSArray<UITrait>* traits = TraitCollectionSetForTraits(
+          @[ UITraitVerticalSizeClass.self, UITraitHorizontalSizeClass.self ]);
+      [self registerForTraitChanges:traits
+                         withAction:@selector(updateToolbarMargins)];
+    }
   }
   return self;
 }
@@ -314,10 +321,16 @@ NSAttributedString* FormatHTMLListForUILabel(NSString* listString) {
   [super willMoveToSuperview:newSuperview];
 }
 
+#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
   [super traitCollectionDidChange:previousTraitCollection];
+  if (@available(iOS 17, *)) {
+    return;
+  }
+
   [self updateToolbarMargins];
 }
+#endif
 
 - (void)safeAreaInsetsDidChange {
   [super safeAreaInsetsDidChange];
