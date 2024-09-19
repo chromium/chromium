@@ -11,6 +11,7 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/android/webapk/webapk_install_service.h"
+#include "chrome/browser/android/webapk/webapk_install_service_factory.h"
 #include "chrome/browser/android/webapk/webapk_restore_web_contents_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/webapps/browser/android/webapk/webapk_types.h"
@@ -181,12 +182,13 @@ void WebApkRestoreTask::Install(const webapps::ShortcutInfo& restore_info,
   // TODO(crbug.com/41496289): We need web_contents to construct the proto,
   // but generating WebAPK on server side and installing the apk can be done
   // in parallel with the next task.
-  WebApkInstallService::Get(profile_)->InstallRestoreAsync(
-      web_contents_manager_->web_contents(), restore_info, primary_icon,
-      webapps::WebappInstallSource::WEBAPK_RESTORE,
-      base::BindOnce(&WebApkRestoreTask::OnFinishedInstall,
-                     weak_factory_.GetWeakPtr(),
-                     fallback_reason != FallbackReason::kNone));
+  WebApkInstallServiceFactory::GetForBrowserContext(profile_)
+      ->InstallRestoreAsync(
+          web_contents_manager_->web_contents(), restore_info, primary_icon,
+          webapps::WebappInstallSource::WEBAPK_RESTORE,
+          base::BindOnce(&WebApkRestoreTask::OnFinishedInstall,
+                         weak_factory_.GetWeakPtr(),
+                         fallback_reason != FallbackReason::kNone));
 }
 
 void WebApkRestoreTask::OnFinishedInstall(bool is_fallback,
