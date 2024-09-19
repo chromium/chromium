@@ -6,7 +6,7 @@
 #define ASH_PUBLIC_CPP_CORAL_DELEGATE_H_
 
 #include "ash/public/cpp/ash_public_export.h"
-#include "ash/public/cpp/coral_util.h"
+#include "chromeos/ash/services/coral/public/mojom/coral_service.mojom.h"
 
 namespace ash {
 
@@ -16,23 +16,20 @@ class ASH_PUBLIC_EXPORT CoralDelegate {
  public:
   virtual ~CoralDelegate() = default;
 
-  // Creates up to one browser with tabs from `cluster`. Launches the apps given
-  // the app ids in `cluster`. This should be called from the post-login
+  // Creates up to one browser with tabs from `group`. Launches the apps given
+  // the app ids in `group`. This should be called from the post-login
   // overview screen and there should be no open applications. See
   // ash/wm/window_restore/README.md for more details about post-login.
-  virtual void LaunchPostLoginCluster(
-      const coral_util::CoralCluster& cluster) = 0;
+  virtual void LaunchPostLoginGroup(coral::mojom::GroupPtr group) = 0;
 
-  // Opens a new desk and adds up to one browser with tabs from `cluster`. Moves
-  // apps to the new desk from existing desks based on the apps from `cluster`.
-  virtual void OpenNewDeskWithCluster(
-      const coral_util::CoralCluster& cluster) = 0;
+  // Opens a new desk and adds up to one browser with tabs from `group`. Moves
+  // apps to the new desk from existing desks based on the apps from `group`.
+  virtual void OpenNewDeskWithGroup(coral::mojom::GroupPtr group) = 0;
 
-  // Creates a saved desk with up to one browser with tabs from `cluster`.
-  // Closes apps based on the apps from `cluster`, and places them in the saved
+  // Creates a saved desk with up to one browser with tabs from `group`.
+  // Closes apps based on the apps from `group`, and places them in the saved
   // desk to be launched at a later time.
-  virtual void CreateSavedDeskFromCluster(
-      const coral_util::CoralCluster& cluster) = 0;
+  virtual void CreateSavedDeskFromGroup(coral::mojom::GroupPtr group) = 0;
 };
 
 }  // namespace ash

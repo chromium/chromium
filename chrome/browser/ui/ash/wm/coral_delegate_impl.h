@@ -15,12 +15,9 @@ class CoralDelegateImpl : public ash::CoralDelegate {
   ~CoralDelegateImpl() override;
 
   // ash::CoralDelegateImpl:
-  void LaunchPostLoginCluster(
-      const ash::coral_util::CoralCluster& cluster) override;
-  void OpenNewDeskWithCluster(
-      const ash::coral_util::CoralCluster& cluster) override;
-  void CreateSavedDeskFromCluster(
-      const ash::coral_util::CoralCluster& cluster) override;
+  void LaunchPostLoginGroup(coral::mojom::GroupPtr group) override;
+  void OpenNewDeskWithGroup(coral::mojom::GroupPtr group) override;
+  void CreateSavedDeskFromGroup(coral::mojom::GroupPtr group) override;
 };
 
 #endif  // CHROME_BROWSER_UI_ASH_WM_CORAL_DELEGATE_IMPL_H_

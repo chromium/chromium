@@ -13,6 +13,10 @@
 
 namespace ash::coral_util {
 
+// TODO(http://b/367328201): Note that some of the structs in this file will be
+// removed eventually in favor of the mojom structs in
+// chromeos/ash/services/coral/public/mojom/coral_service.mojom.
+
 // TODO(zxdan) Look into additional metadata.
 struct ASH_PUBLIC_EXPORT AppData {
   std::string app_id;

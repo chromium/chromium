@@ -8,11 +8,9 @@ CoralDelegateImpl::CoralDelegateImpl() = default;
 
 CoralDelegateImpl::~CoralDelegateImpl() = default;
 
-void CoralDelegateImpl::LaunchPostLoginCluster(
-    const ash::coral_util::CoralCluster& cluster) {}
+void CoralDelegateImpl::LaunchPostLoginGroup(coral::mojom::GroupPtr group) {}
 
-void CoralDelegateImpl::OpenNewDeskWithCluster(
-    const ash::coral_util::CoralCluster& cluster) {}
+void CoralDelegateImpl::OpenNewDeskWithGroup(coral::mojom::GroupPtr group) {}
 
-void CoralDelegateImpl::CreateSavedDeskFromCluster(
-    const ash::coral_util::CoralCluster& cluster) {}
+void CoralDelegateImpl::CreateSavedDeskFromGroup(coral::mojom::GroupPtr group) {
+}

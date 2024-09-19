@@ -13,7 +13,6 @@
 #include "ash/birch/birch_model.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/coral_delegate.h"
-#include "ash/public/cpp/coral_util.h"
 #include "ash/public/cpp/image_downloader.h"
 #include "ash/public/cpp/new_window_delegate.h"
 #include "ash/public/cpp/resources/grit/ash_public_unscaled_resources.h"
@@ -33,6 +32,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chromeos/ash/services/coral/public/mojom/coral_service.mojom.h"
 #include "chromeos/ui/base/file_icon_util.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -1100,14 +1100,17 @@ void BirchCoralItem::PerformAction(bool is_post_login) {
   // Open all related tabs in the same window with the default window bounds.
   // Open related app(s) in its last used window state.
 
+  // TODO(sammiequon): Remove hardcoded group.
+  coral::mojom::GroupPtr temp_group = coral::mojom::Group::New();
+  temp_group->title = "Coral desk";
+
+  // TODO(http://b/365839564): Handle save for later case.
+
   // TODO(http://b/365839465): Handle post-login case.
   if (is_post_login) {
+    Shell::Get()->coral_delegate()->LaunchPostLoginGroup(std::move(temp_group));
     return;
   }
-
-  // TODO(sammiequon): Remove hardcoded cluster.
-  coral_util::CoralCluster temp_cluster;
-  temp_cluster.set_title(u"Coral desk");
 
   DesksController* desks_controller = DesksController::Get();
   if (!desks_controller->CanCreateDesks()) {
@@ -1115,11 +1118,10 @@ void BirchCoralItem::PerformAction(bool is_post_login) {
   }
 
   desks_controller->NewDesk(DesksCreationRemovalSource::kCoral,
-                            temp_cluster.title());
+                            base::UTF8ToUTF16(temp_group->title));
   desks_controller->ActivateDesk(desks_controller->desks().back().get(),
                                  DesksSwitchSource::kCoral);
-  Shell::Get()->coral_delegate()->OpenNewDeskWithCluster(
-      std::move(temp_cluster));
+  Shell::Get()->coral_delegate()->OpenNewDeskWithGroup(std::move(temp_group));
 }
 
 // TODO(b/362530155): Consider refactoring icon loading logic into
