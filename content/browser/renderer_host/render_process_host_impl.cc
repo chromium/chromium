@@ -279,6 +279,10 @@
 #include "ipc/ipc_logging.h"
 #endif
 
+#if BUILDFLAG(IS_OZONE)
+#include "ui/ozone/public/ozone_switches.h"
+#endif
+
 #if BUILDFLAG(CLANG_PROFILING_INSIDE_SANDBOX)
 #include "content/public/common/profiling_utils.h"
 #endif
@@ -3471,6 +3475,9 @@ void RenderProcessHostImpl::PropagateBrowserCommandLineToRenderer(
       switches::kTextGamma,
       switches::kTrySupportedChannelLayouts,
       switches::kRaiseTimerFrequency,
+#endif
+#if BUILDFLAG(IS_OZONE)
+      switches::kOzonePlatform,
 #endif
 #if defined(ENABLE_IPC_FUZZER)
       switches::kIpcDumpDirectory,
