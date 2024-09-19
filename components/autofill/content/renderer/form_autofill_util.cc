@@ -1940,10 +1940,14 @@ void WebFormControlElementToFormField(
   field->set_is_enabled(element.IsEnabled());
   field->set_is_readonly(element.IsReadOnly());
 
-  if (auto input_element = element.DynamicTo<WebInputElement>();
-      IsAutofillableInputElement(input_element)) {
+  if (auto input_element = element.DynamicTo<WebInputElement>()) {
     SetCheckStatus(field, IsCheckableElement(input_element),
                    input_element.IsChecked());
+    if (extract_options.contains(ExtractOption::kDatalist)) {
+      std::vector<SelectOption> datalist_options;
+      GetDataListSuggestions(input_element, &datalist_options);
+      field->set_datalist_options(std::move(datalist_options));
+    }
   } else if (IsTextAreaElement(element)) {
     // Nothing more to do in this case.
   } else {
@@ -1962,13 +1966,6 @@ void WebFormControlElementToFormField(
         field->set_bounds(gfx::RectF(
             render_frame->ConvertViewportToWindow(element.BoundsInWidget())));
       }
-    }
-  }
-  if (extract_options.contains(ExtractOption::kDatalist)) {
-    if (WebInputElement input = element.DynamicTo<WebInputElement>()) {
-      std::vector<SelectOption> datalist_options;
-      GetDataListSuggestions(input, &datalist_options);
-      field->set_datalist_options(std::move(datalist_options));
     }
   }
 
