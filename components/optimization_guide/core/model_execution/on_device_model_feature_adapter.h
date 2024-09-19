@@ -57,6 +57,8 @@ class OnDeviceModelFeatureAdapter final
 
   std::optional<SamplingParams> MaybeSamplingParams() const;
 
+  const proto::Any& GetFeatureMetadata() const;
+
  private:
   friend class base::RefCounted<OnDeviceModelFeatureAdapter>;
   ~OnDeviceModelFeatureAdapter();

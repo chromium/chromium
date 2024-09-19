@@ -7,11 +7,14 @@
 #include <optional>
 
 #include "base/functional/callback_helpers.h"
+#include "base/notreached.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "chrome/browser/ai/ai_test_utils.h"
 #include "components/optimization_guide/core/mock_optimization_guide_model_executor.h"
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
+#include "components/optimization_guide/proto/common_types.pb.h"
+#include "components/optimization_guide/proto/features/prompt_api.pb.h"
 #include "components/optimization_guide/proto/string_value.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -24,6 +27,9 @@ using testing::Test;
 using Role = blink::mojom::AIAssistantInitialPromptRole;
 
 namespace {
+
+using optimization_guide::proto::PromptApiRequest;
+using optimization_guide::proto::PromptApiRole;
 
 const uint32_t kTestMaxContextToken = 10u;
 const uint32_t kTestInitialPromptsToken = 5u;
@@ -59,21 +65,98 @@ std::vector<blink::mojom::AIAssistantInitialPromptPtr> GetTestInitialPrompts() {
   return initial_prompts;
 }
 
+std::string GetContextString(AIAssistant::Context& ctx) {
+  auto msg = ctx.MakeRequest();
+  auto* v = static_cast<optimization_guide::proto::StringValue*>(msg.get());
+  return v->value();
+}
+
+AIAssistant::Context::ContextItem SimpleContextItem(std::string text,
+                                                    uint32_t size) {
+  auto item = AIAssistant::Context::ContextItem();
+  item.tokens = size;
+  auto* prompt = item.prompts.Add();
+  prompt->set_role(PromptApiRole::PROMPT_API_ROLE_SYSTEM);
+  prompt->set_content(text);
+  return item;
+}
+
+const char* FormatPromptRole(PromptApiRole role) {
+  switch (role) {
+    case PromptApiRole::PROMPT_API_ROLE_SYSTEM:
+      return "S: ";
+    case PromptApiRole::PROMPT_API_ROLE_USER:
+      return "U: ";
+    case PromptApiRole::PROMPT_API_ROLE_ASSISTANT:
+      return "M: ";
+    default:
+      NOTREACHED();
+  }
+}
+
+std::string ToString(const PromptApiRequest& request) {
+  std::ostringstream oss;
+  for (const auto& prompt : request.initial_prompts()) {
+    oss << FormatPromptRole(prompt.role()) << prompt.content() << "\n";
+  }
+  for (const auto& prompt : request.prompt_history()) {
+    oss << FormatPromptRole(prompt.role()) << prompt.content() << "\n";
+  }
+  for (const auto& prompt : request.current_prompts()) {
+    oss << FormatPromptRole(prompt.role()) << prompt.content() << "\n";
+  }
+  if (request.current_prompts_size() > 0) {
+    oss << FormatPromptRole(PromptApiRole::PROMPT_API_ROLE_ASSISTANT);
+  }
+  return oss.str();
+}
+
+std::string ToString(const google::protobuf::MessageLite& request_metadata) {
+  if (request_metadata.GetTypeName() ==
+      "optimization_guide.proto.PromptApiRequest") {
+    return ToString(*static_cast<const PromptApiRequest*>(&request_metadata));
+  }
+  if (request_metadata.GetTypeName() ==
+      "optimization_guide.proto.StringValue") {
+    return static_cast<const optimization_guide::proto::StringValue*>(
+               &request_metadata)
+        ->value();
+  }
+  return "unexpected type";
+}
+
+const optimization_guide::proto::Any& GetPromptApiMetadata() {
+  static base::NoDestructor<optimization_guide::proto::Any> data([]() {
+    optimization_guide::proto::PromptApiMetadata metadata;
+    metadata.set_version(1);
+    optimization_guide::proto::Any any;
+    any.set_type_url("type.googleapis.com/" + metadata.GetTypeName());
+    any.set_value(metadata.SerializeAsString());
+    return any;
+  }());
+  return *data;
+}
+
 }  // namespace
 
 class AIAssistantTest : public AITestUtils::AITestBase {
+ public:
+  struct Options {
+    blink::mojom::AIAssistantSamplingParamsPtr sampling_params = nullptr;
+    std::optional<std::string> system_prompt = std::nullopt;
+    std::vector<blink::mojom::AIAssistantInitialPromptPtr> initial_prompts;
+    std::string prompt_input = kTestPrompt;
+    std::string expected_context = "";
+    std::string expected_prompt = kExpectedFormattedTestPrompt;
+    bool use_prompt_api_proto = false;
+  };
+
  protected:
   // The helper function that creates a `AIAssistant` and executes the prompt.
-  void RunPromptTest(
-      const std::string& prompt_input,
-      blink::mojom::AIAssistantSamplingParamsPtr sampling_params,
-      const std::optional<std::string>& system_prompt,
-      std::vector<blink::mojom::AIAssistantInitialPromptPtr> initial_prompts,
-      const std::string& expected_context,
-      const std::string& expected_prompt) {
+  void RunPromptTest(Options options) {
     blink::mojom::AIAssistantSamplingParamsPtr sampling_params_copy;
-    if (sampling_params) {
-      sampling_params_copy = sampling_params->Clone();
+    if (options.sampling_params) {
+      sampling_params_copy = options.sampling_params->Clone();
     }
 
     // Set up mock service.
@@ -94,6 +177,10 @@ class AIAssistantTest : public AITestUtils::AITestBase {
 
           ON_CALL(*session, GetTokenLimits())
               .WillByDefault(AITestUtils::GetFakeTokenLimits);
+          ON_CALL(*session, GetOnDeviceFeatureMetadata())
+              .WillByDefault(options.use_prompt_api_proto
+                                 ? GetPromptApiMetadata
+                                 : AITestUtils::GetFakeFeatureMetadata);
           ON_CALL(*session, GetSamplingParams()).WillByDefault([]() {
             // We don't need to use these value, so just mock it with defaults.
             return optimization_guide::SamplingParams{
@@ -107,28 +194,27 @@ class AIAssistantTest : public AITestUtils::AITestBase {
                          OptimizationGuideModelSizeInTokenCallback callback) {
                     std::move(callback).Run(text.size());
                   });
-
+          ON_CALL(*session, GetContextSizeInTokens(_, _))
+              .WillByDefault(
+                  [](const google::protobuf::MessageLite& request_metadata,
+                     optimization_guide::
+                         OptimizationGuideModelSizeInTokenCallback callback) {
+                    std::move(callback).Run(ToString(request_metadata).size());
+                  });
           ON_CALL(*session, AddContext(_))
-              .WillByDefault([&](const google::protobuf::MessageLite&
-                                     request_metadata) {
-                EXPECT_THAT(
-                    static_cast<const optimization_guide::proto::StringValue*>(
-                        &request_metadata)
-                        ->value(),
-                    expected_context.c_str());
-              });
+              .WillByDefault(
+                  [&](const google::protobuf::MessageLite& request_metadata) {
+                    EXPECT_THAT(ToString(request_metadata),
+                                options.expected_context);
+                  });
           EXPECT_CALL(*session, ExecuteModel(_, _))
               .WillOnce(
                   [&](const google::protobuf::MessageLite& request_metadata,
                       optimization_guide::
                           OptimizationGuideModelExecutionResultStreamingCallback
                               callback) {
-                    EXPECT_THAT(
-                        static_cast<
-                            const optimization_guide::proto::StringValue*>(
-                            &request_metadata)
-                            ->value(),
-                        expected_prompt);
+                    EXPECT_THAT(ToString(request_metadata),
+                                options.expected_prompt);
                     callback.Run(CreateExecutionResult(kTestResponse,
                                                        /*is_complete=*/true));
                   });
@@ -138,8 +224,9 @@ class AIAssistantTest : public AITestUtils::AITestBase {
     mojo::Remote<blink::mojom::AIManager> ai_manager = GetAIManagerRemote();
     mojo::Remote<blink::mojom::AIAssistant> mock_session;
     ai_manager->CreateAssistant(
-        mock_session.BindNewPipeAndPassReceiver(), std::move(sampling_params),
-        system_prompt, std::move(initial_prompts), base::NullCallback());
+        mock_session.BindNewPipeAndPassReceiver(),
+        std::move(options.sampling_params), options.system_prompt,
+        std::move(options.initial_prompts), base::NullCallback());
 
     AITestUtils::MockModelStreamingResponder mock_responder;
 
@@ -162,7 +249,7 @@ class AIAssistantTest : public AITestUtils::AITestBase {
           run_loop.Quit();
         });
 
-    mock_session->Prompt(prompt_input,
+    mock_session->Prompt(options.prompt_input,
                          mock_responder.BindNewPipeAndPassRemote());
     run_loop.Run();
   }
@@ -189,49 +276,76 @@ class AIAssistantTest : public AITestUtils::AITestBase {
 };
 
 TEST_F(AIAssistantTest, PromptDefaultSession) {
-  RunPromptTest(kTestPrompt, /*sampling_params=*/nullptr,
-                /*system_prompt=*/std::nullopt, /*initial_prompts=*/{},
-                /*expected_context=*/"", kExpectedFormattedTestPrompt);
+  RunPromptTest(AIAssistantTest::Options{
+      .prompt_input = kTestPrompt,
+      .expected_prompt = kExpectedFormattedTestPrompt,
+  });
 }
 
 TEST_F(AIAssistantTest, PromptSessionWithSamplingParams) {
-  RunPromptTest(kTestPrompt,
-                blink::mojom::AIAssistantSamplingParams::New(
-                    /*top_k=*/10, /*temperature=*/0.6),
-                /*system_prompt=*/std::nullopt, /*initial_prompts=*/{},
-                /*expected_context=*/"", kExpectedFormattedTestPrompt);
+  RunPromptTest(AIAssistantTest::Options{
+      .sampling_params = blink::mojom::AIAssistantSamplingParams::New(
+          /*top_k=*/10, /*temperature=*/0.6),
+      .prompt_input = kTestPrompt,
+      .expected_prompt = kExpectedFormattedTestPrompt,
+  });
 }
 
 TEST_F(AIAssistantTest, PromptSessionWithSystemPrompt) {
-  RunPromptTest(kTestPrompt, /*sampling_params=*/nullptr, kTestSystemPrompts,
-                /*initial_prompts=*/{}, kExpectedFormattedSystemPrompts,
-                kExpectedFormattedTestPrompt);
+  RunPromptTest(AIAssistantTest::Options{
+      .system_prompt = kTestSystemPrompts,
+      .prompt_input = kTestPrompt,
+      .expected_context = kExpectedFormattedSystemPrompts,
+      .expected_prompt = kExpectedFormattedTestPrompt,
+  });
 }
 
 TEST_F(AIAssistantTest, PromptSessionWithInitialPrompts) {
-  RunPromptTest(kTestPrompt, /*sampling_params=*/nullptr,
-                /*system_prompt=*/std::nullopt, GetTestInitialPrompts(),
-                kExpectedFormattedInitialPrompts, kExpectedFormattedTestPrompt);
+  RunPromptTest(AIAssistantTest::Options{
+      .initial_prompts = GetTestInitialPrompts(),
+      .prompt_input = kTestPrompt,
+      .expected_context = kExpectedFormattedInitialPrompts,
+      .expected_prompt = kExpectedFormattedTestPrompt,
+  });
 }
 
 TEST_F(AIAssistantTest, PromptSessionWithSystemPromptAndInitialPrompts) {
-  RunPromptTest(kTestPrompt, /*sampling_params=*/nullptr, kTestSystemPrompts,
-                GetTestInitialPrompts(),
-                kExpectedFormattedSystemPromptAndInitialPrompts,
-                kExpectedFormattedTestPrompt);
+  RunPromptTest(AIAssistantTest::Options{
+      .system_prompt = kTestSystemPrompts,
+      .initial_prompts = GetTestInitialPrompts(),
+      .prompt_input = kTestPrompt,
+      .expected_context = kExpectedFormattedSystemPromptAndInitialPrompts,
+      .expected_prompt = kExpectedFormattedTestPrompt,
+  });
+}
+
+TEST_F(AIAssistantTest, PromptSessionWithPromptApiRequests) {
+  RunPromptTest(AIAssistantTest::Options{
+      .system_prompt = "Test system prompt",
+      .initial_prompts = GetTestInitialPrompts(),
+      .prompt_input = "Test prompt",
+      .expected_context = ("S: Test system prompt\n"
+                           "U: How are you?\n"
+                           "M: I'm fine, thank you, and you?\n"
+                           "U: I'm fine too.\n"),
+      .expected_prompt = "U: Test prompt\nM: ",
+      .use_prompt_api_proto = true,
+  });
 }
 
 // Tests `AIAssistant::Context` creation without initial prompts.
 TEST(AIAssistantContextCreationTest, CreateContext_WithoutInitialPrompts) {
-  AIAssistant::Context context(kTestMaxContextToken, std::nullopt);
+  AIAssistant::Context context(kTestMaxContextToken, {},
+                               /*use_prompt_api_request*/ false);
   EXPECT_FALSE(context.HasContextItem());
 }
 
 // Tests `AIAssistant::Context` creation with valid initial prompts.
 TEST(AIAssistantContextCreationTest, CreateContext_WithInitialPrompts_Normal) {
   AIAssistant::Context context(
-      kTestMaxContextToken, AIAssistant::Context::ContextItem{
-                                "initial prompts\n", kTestInitialPromptsToken});
+      kTestMaxContextToken,
+      SimpleContextItem("initial prompts\n", kTestInitialPromptsToken),
+      /*use_prompt_api_request*/ false);
   EXPECT_TRUE(context.HasContextItem());
 }
 
@@ -240,10 +354,10 @@ TEST(AIAssistantContextCreationTest, CreateContext_WithInitialPrompts_Normal) {
 TEST(AIAssistantContextCreationTest,
      CreateContext_WithInitialPrompts_Overflow) {
   EXPECT_DEATH_IF_SUPPORTED(
-      AIAssistant::Context context(
-          kTestMaxContextToken,
-          AIAssistant::Context::ContextItem{"long initial prompts\n",
-                                            kTestMaxContextToken + 1u}),
+      AIAssistant::Context context(kTestMaxContextToken,
+                                   SimpleContextItem("long initial prompts\n",
+                                                     kTestMaxContextToken + 1u),
+                                   /*use_prompt_api_request*/ false),
       "");
 }
 
@@ -268,10 +382,9 @@ class AIAssistantContextTest : public testing::Test,
   AIAssistant::Context context_{
       kTestMaxContextToken,
       IsInitializedWithInitialPrompts()
-          ? std::optional<
-                AIAssistant::Context::ContextItem>{{"initial prompts",
-                                                    kTestInitialPromptsToken}}
-          : std::nullopt};
+          ? SimpleContextItem("initial prompts", kTestInitialPromptsToken)
+          : AIAssistant::Context::ContextItem(),
+      /*use_prompt_api_request*/ false};
 };
 
 INSTANTIATE_TEST_SUITE_P(All,
@@ -284,7 +397,7 @@ INSTANTIATE_TEST_SUITE_P(All,
 
 // Tests `GetContextString()` and `HasContextItem()` when the context is empty.
 TEST_P(AIAssistantContextTest, TestContextOperation_Empty) {
-  EXPECT_EQ(context_.GetContextString(), GetInitialPromptsPrefix());
+  EXPECT_EQ(GetContextString(context_), GetInitialPromptsPrefix());
 
   if (IsInitializedWithInitialPrompts()) {
     EXPECT_TRUE(context_.HasContextItem());
@@ -296,35 +409,37 @@ TEST_P(AIAssistantContextTest, TestContextOperation_Empty) {
 // Tests `GetContextString()` and `HasContextItem()` when some items are added
 // to the context.
 TEST_P(AIAssistantContextTest, TestContextOperation_NonEmpty) {
-  context_.AddContextItem({"test", 1u});
-  EXPECT_EQ(context_.GetContextString(), GetInitialPromptsPrefix() + "test");
+  context_.AddContextItem(SimpleContextItem("test", 1u));
+  EXPECT_EQ(GetContextString(context_), GetInitialPromptsPrefix() + "test\n");
   EXPECT_TRUE(context_.HasContextItem());
 
-  context_.AddContextItem({" test again", 2u});
-  EXPECT_EQ(context_.GetContextString(),
-            GetInitialPromptsPrefix() + "test test again");
+  context_.AddContextItem(SimpleContextItem(" test again", 2u));
+  EXPECT_EQ(GetContextString(context_),
+            GetInitialPromptsPrefix() + "test\n test again\n");
   EXPECT_TRUE(context_.HasContextItem());
 }
 
 // Tests `GetContextString()` and `HasContextItem()` when the items overflow.
 TEST_P(AIAssistantContextTest, TestContextOperation_Overflow) {
-  context_.AddContextItem({"test", 1u});
-  EXPECT_EQ(context_.GetContextString(), GetInitialPromptsPrefix() + "test");
+  context_.AddContextItem(SimpleContextItem("test", 1u));
+  EXPECT_EQ(GetContextString(context_), GetInitialPromptsPrefix() + "test\n");
   EXPECT_TRUE(context_.HasContextItem());
 
   // Since the total number of tokens will exceed `kTestMaxContextToken`, the
   // old item will be evicted.
-  context_.AddContextItem({"test long token", GetMaxContextToken()});
-  EXPECT_EQ(context_.GetContextString(),
-            GetInitialPromptsPrefix() + "test long token");
+  context_.AddContextItem(
+      SimpleContextItem("test long token", GetMaxContextToken()));
+  EXPECT_EQ(GetContextString(context_),
+            GetInitialPromptsPrefix() + "test long token\n");
   EXPECT_TRUE(context_.HasContextItem());
 }
 
 // Tests `GetContextString()` and `HasContextItem()` when the items overflow on
 // the first insertion.
 TEST_P(AIAssistantContextTest, TestContextOperation_OverflowOnFirstItem) {
-  context_.AddContextItem({"test very long token", GetMaxContextToken() + 1u});
-  EXPECT_EQ(context_.GetContextString(), GetInitialPromptsPrefix());
+  context_.AddContextItem(
+      SimpleContextItem("test very long token", GetMaxContextToken() + 1u));
+  EXPECT_EQ(GetContextString(context_), GetInitialPromptsPrefix());
   if (IsInitializedWithInitialPrompts()) {
     EXPECT_TRUE(context_.HasContextItem());
   } else {

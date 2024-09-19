@@ -213,8 +213,19 @@ class OptimizationGuideModelExecutor {
         const std::string& text,
         OptimizationGuideModelSizeInTokenCallback callback) = 0;
 
+    // Gets the size in tokens used by request_metadata as it would be formatted
+    // by a call to `AddContext()`. The result will be passed back through the
+    // callback.
+    virtual void GetContextSizeInTokens(
+        const google::protobuf::MessageLite& request_metadata,
+        OptimizationGuideModelSizeInTokenCallback callback) = 0;
+
     // Return the sampling params for the current session.
     virtual const SamplingParams GetSamplingParams() const = 0;
+
+    // Returns the feature_metadata from the
+    // OnDeviceModelExecutionFeatureConfig.
+    virtual const proto::Any& GetOnDeviceFeatureMetadata() const = 0;
   };
 
   // Whether an on-device session can be created for `feature`. An optional

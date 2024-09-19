@@ -39,6 +39,8 @@ class AIManagerKeyedServiceTest : public AITestUtils::AITestBase {
             [&] { return std::make_unique<MockSessionWrapper>(&session_); });
     ON_CALL(session_, GetTokenLimits())
         .WillByDefault(AITestUtils::GetFakeTokenLimits);
+    ON_CALL(session_, GetOnDeviceFeatureMetadata())
+        .WillByDefault(AITestUtils::GetFakeFeatureMetadata);
   }
 
  private:

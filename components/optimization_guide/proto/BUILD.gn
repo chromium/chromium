@@ -27,6 +27,7 @@ proto_library("optimization_guide_proto") {
     "features/history_search_strings.proto",
     "features/model_prototyping.proto",
     "features/product_specifications.proto",
+    "features/prompt_api.proto",
     "features/summarize.proto",
     "features/tab_organization.proto",
     "features/text_safety.proto",
@@ -124,5 +125,15 @@ proto_library("summarize_descriptor") {
   generate_cc = false
   generate_python = false
   generate_descriptor = "summarize.descriptor"
+  proto_deps = [ ":optimization_guide_proto" ]
+}
+
+proto_library("prompt_api_proto_descriptor") {
+  proto_in_dir = "//"
+  proto_out_dir = "components/optimization_guide/proto"
+  sources = [ "features/prompt_api.proto" ]
+  generate_cc = false
+  generate_python = false
+  generate_descriptor = "prompt_api.descriptor"
   proto_deps = [ ":optimization_guide_proto" ]
 }

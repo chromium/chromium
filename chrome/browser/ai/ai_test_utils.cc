@@ -82,3 +82,9 @@ const optimization_guide::TokenLimits& AITestUtils::GetFakeTokenLimits() {
   };
   return limits;
 }
+
+// static
+const optimization_guide::proto::Any& AITestUtils::GetFakeFeatureMetadata() {
+  static base::NoDestructor<optimization_guide::proto::Any> data;
+  return *data;
+}
