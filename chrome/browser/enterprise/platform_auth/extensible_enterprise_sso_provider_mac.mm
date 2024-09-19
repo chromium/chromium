@@ -95,8 +95,23 @@
   ASAuthorizationSingleSignOnCredential* credential = authorization.credential;
   NSDictionary* headers = credential.authenticatedResponse.allHeaderFields;
   net::HttpRequestHeaders request_headers;
+
+  VLOG_POLICY(2, EXTENSIBLE_SSO)
+      << "[ExtensibleEnterpriseSSO] Identity Token" << credential.identityToken;
+
+  VLOG_POLICY(2, EXTENSIBLE_SSO)
+      << "[ExtensibleEnterpriseSSO] Access Token" << credential.accessToken;
+
+  VLOG_POLICY(2, EXTENSIBLE_SSO)
+      << "[ExtensibleEnterpriseSSO] State" << credential.state;
+
+  VLOG_POLICY(2, EXTENSIBLE_SSO) << "[ExtensibleEnterpriseSSO] AuthorizedScopes"
+                                 << credential.authorizedScopes;
+
   for (NSString* key in headers) {
     const std::string header_name = base::SysNSStringToUTF8(key);
+    VLOG_POLICY(2, EXTENSIBLE_SSO)
+        << "[ExtensibleEnterpriseSSO] Received header: " << header_name;
     if (!net::HttpUtil::IsValidHeaderName(header_name)) {
       VLOG_POLICY(2, EXTENSIBLE_SSO)
           << "[ExtensibleEnterpriseSSO] Invalid header name " << header_name;
@@ -110,6 +125,9 @@
           << "[ExtensibleEnterpriseSSO] Invalid header value " << header_value;
       continue;
     }
+    VLOG_POLICY(2, EXTENSIBLE_SSO)
+        << "[ExtensibleEnterpriseSSO] Adding Header to request { "
+        << header_name << " : " << header_value << " }";
 
     request_headers.SetHeader(header_name, header_value);
   }
