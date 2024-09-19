@@ -3179,32 +3179,30 @@ size_t PDFiumEngine::StartPaint(int page_index, const gfx::Rect& dirty) {
 bool PDFiumEngine::ContinuePaint(size_t progressive_index,
                                  SkBitmap& image_data) {
   CHECK_LT(progressive_index, progressive_paints_.size());
+  auto& paint = progressive_paints_[progressive_index];
 
   last_progressive_start_time_ = base::Time::Now();
 
-  int page_index = progressive_paints_[progressive_index].page_index();
-  CHECK(PageIndexInBounds(page_index));
-
-  FPDF_PAGE page = pages_[page_index]->GetPage();
-  if (progressive_paints_[progressive_index].bitmap()) {
+  CHECK(PageIndexInBounds(paint.page_index()));
+  FPDF_PAGE page = pages_[paint.page_index()]->GetPage();
+  if (paint.bitmap()) {
     return FPDF_RenderPage_Continue(page, this) != FPDF_RENDER_TOBECONTINUED;
   }
 
-  gfx::Rect dirty = progressive_paints_[progressive_index].rect();
-  const gfx::Rect pdfium_rect = GetPDFiumRect(page_index, dirty);
+  const gfx::Rect& dirty = paint.rect();
+  const gfx::Rect pdfium_rect = GetPDFiumRect(paint.page_index(), dirty);
 
   bool has_alpha = !!FPDFPage_HasTransparency(page);
   ScopedFPDFBitmap new_bitmap = CreateBitmap(dirty, has_alpha, image_data);
-  FPDFBitmap_FillRect(new_bitmap.get(), pdfium_rect.x(), pdfium_rect.y(),
+  FPDF_BITMAP new_bitmap_ptr = new_bitmap.get();
+  paint.SetBitmapAndImageData(std::move(new_bitmap), image_data);
+  FPDFBitmap_FillRect(new_bitmap_ptr, pdfium_rect.x(), pdfium_rect.y(),
                       pdfium_rect.width(), pdfium_rect.height(), 0xFFFFFFFF);
-  int rv = FPDF_RenderPageBitmap_Start(
-      new_bitmap.get(), page, pdfium_rect.x(), pdfium_rect.y(),
-      pdfium_rect.width(), pdfium_rect.height(),
-      ToPDFiumRotation(layout_.options().default_page_orientation()),
-      GetRenderingFlags(), this);
-  progressive_paints_[progressive_index].SetBitmapAndImageData(
-      std::move(new_bitmap), image_data);
-  return rv != FPDF_RENDER_TOBECONTINUED;
+  return FPDF_RenderPageBitmap_Start(
+             new_bitmap_ptr, page, pdfium_rect.x(), pdfium_rect.y(),
+             pdfium_rect.width(), pdfium_rect.height(),
+             ToPDFiumRotation(layout_.options().default_page_orientation()),
+             GetRenderingFlags(), this) != FPDF_RENDER_TOBECONTINUED;
 }
 
 void PDFiumEngine::FinishPaint(size_t progressive_index, SkBitmap& image_data) {
