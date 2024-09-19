@@ -131,6 +131,7 @@ enum PermissionsPolicyFeature {
   kSharedAutofill = 83,
 
   // Controls access to Direct Sockets.
+  // See https://github.com/WICG/direct-sockets.
   kDirectSockets = 84,
 
   // Client Hint for the preferred color scheme.
@@ -269,6 +270,10 @@ enum PermissionsPolicyFeature {
   // Controlled Frame API.
   // See https://github.com/WICG/controlled-frame.
   kControlledFrame = 125,
+
+  // Controls private network access in the context of Direct Sockets.
+  // See https://github.com/WICG/direct-sockets.
+  kDirectSocketsPrivate = 126,
 
   // Don't change assigned numbers of any item, and don't reuse removed slots.
   // Add new features at the end of the enum.

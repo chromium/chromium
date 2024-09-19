@@ -141,8 +141,12 @@ bool RequiresPrivateNetworkAccess(const net::AddressList& addresses) {
 
 void RequestPrivateNetworkAccess(content::RenderFrameHost& rfh,
                                  base::OnceCallback<void(bool)> callback) {
-  // TODO(crbug.com/367741436): Check the direct-sockets-private permissions
-  // policy in ChromeDirectSocketsDelegate once it's implemented.
+  if (!rfh.IsFeatureEnabled(
+          blink::mojom::PermissionsPolicyFeature::kDirectSocketsPrivate)) {
+    std::move(callback).Run(/*access_allowed=*/false);
+    return;
+  }
+
   // TODO(crbug.com/367934036): Check the DS-PNA content setting in
   // ChromeDirectSocketsDelegate once it's implemented.
   std::move(callback).Run(/*access_allowed=*/true);

@@ -36,6 +36,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features_generated.h"
+#include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom-shared.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/extensions/extension_apitest.h"
@@ -49,6 +50,7 @@
 namespace {
 
 constexpr char kHostname[] = "direct-sockets.com";
+constexpr char kPrivateAddress[] = "10.8.0.1";
 
 constexpr std::string_view kTcpReadWriteScript = R"(
   (async () => {
@@ -257,6 +259,10 @@ base::Value::Dict GenerateManifest(
 
 auto AccessBlocked() {
   return testing::HasSubstr("Access to the requested host is blocked");
+}
+
+auto PrivateNetworkAccessBlocked() {
+  return testing::HasSubstr("Access to private network is blocked");
 }
 
 auto NotDefined(std::string_view symbol) {
@@ -563,10 +569,18 @@ IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsTcpServerApiTest,
 
 class IsolatedWebAppApiTest : public web_app::IsolatedWebAppBrowserTestHarness {
  public:
-  content::RenderFrameHost* InstallAndOpenIsolatedWebApp() {
-    auto app = web_app::IsolatedWebAppBuilder(
-                   web_app::ManifestBuilder().AddPermissionsPolicyWildcard(
-                       blink::mojom::PermissionsPolicyFeature::kDirectSockets))
+  content::RenderFrameHost* InstallAndOpenIsolatedWebApp(
+      bool with_pna = false) {
+    using PermissionsPolicyFeature = blink::mojom::PermissionsPolicyFeature;
+
+    auto manifest_builder =
+        web_app::ManifestBuilder().AddPermissionsPolicyWildcard(
+            PermissionsPolicyFeature::kDirectSockets);
+    if (with_pna) {
+      manifest_builder.AddPermissionsPolicyWildcard(
+          PermissionsPolicyFeature::kDirectSocketsPrivate);
+    }
+    auto app = web_app::IsolatedWebAppBuilder(std::move(manifest_builder))
                    .BuildBundle();
     app->TrustSigningKey();
     web_app::IsolatedWebAppUrlInfo url_info = app->Install(profile()).value();
@@ -595,6 +609,22 @@ IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsTcpIsolatedWebAppTest, TcpReadWrite) {
           .ExtractBool());
 }
 
+IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsTcpIsolatedWebAppTest,
+                       TcpReadWriteFailsWithoutPNAPermission) {
+  content::RenderFrameHost* app_frame =
+      InstallAndOpenIsolatedWebApp(/*with_pna=*/false);
+
+  constexpr std::string_view kTcpPna = R"(
+    (async () => {
+      const socket = new TCPSocket($1, 459);
+      await socket.opened;
+    })();
+  )";
+
+  ASSERT_THAT(EvalJs(app_frame, content::JsReplace(kTcpPna, kPrivateAddress)),
+              ErrorIs(PrivateNetworkAccessBlocked()));
+}
+
 using ChromeDirectSocketsUdpIsolatedWebAppTest =
     ChromeDirectSocketsUdpTest<IsolatedWebAppApiTestWithDirectSocketsEnabled>;
 
@@ -608,13 +638,47 @@ IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsUdpIsolatedWebAppTest, UdpReadWrite) {
 }
 
 IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsUdpIsolatedWebAppTest,
+                       UdpReadWriteFailsWithoutPNAPermission) {
+  content::RenderFrameHost* app_frame =
+      InstallAndOpenIsolatedWebApp(/*with_pna=*/false);
+
+  constexpr std::string_view kUdpPna = R"(
+    (async () => {
+      const socket = new UDPSocket({ remoteAddress: $1, remotePort: 459 });
+      await socket.opened;
+    })();
+  )";
+
+  ASSERT_THAT(EvalJs(app_frame, content::JsReplace(kUdpPna, kPrivateAddress)),
+              ErrorIs(PrivateNetworkAccessBlocked()));
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsUdpIsolatedWebAppTest,
                        UdpServerReadWrite) {
-  content::RenderFrameHost* app_frame = InstallAndOpenIsolatedWebApp();
+  // UDP Bound Mode requires direct-sockets-private permissions policy.
+  content::RenderFrameHost* app_frame =
+      InstallAndOpenIsolatedWebApp(/*with_pna=*/true);
 
   ASSERT_TRUE(
       EvalJs(app_frame, content::JsReplace(kUdpBoundReadWriteScript, kHostname,
                                            test_server()->port()))
           .ExtractBool());
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeDirectSocketsUdpIsolatedWebAppTest,
+                       UdpServerReadWriteFailsWithoutPNAPermission) {
+  content::RenderFrameHost* app_frame =
+      InstallAndOpenIsolatedWebApp(/*with_pna=*/false);
+
+  constexpr std::string_view kUdpBoundPna = R"(
+    (async () => {
+      const socket = new UDPSocket({ localAddress: "0.0.0.0" });
+      await socket.opened;
+    })();
+  )";
+
+  ASSERT_THAT(EvalJs(app_frame, kUdpBoundPna),
+              ErrorIs(PrivateNetworkAccessBlocked()));
 }
 
 using ChromeDirectSocketsTcpServerIsolatedWebAppTest =

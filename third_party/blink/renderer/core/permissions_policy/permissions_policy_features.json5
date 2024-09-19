@@ -255,6 +255,12 @@
       visibility: "IsolatedContext",
     },
     {
+      name: "DirectSocketsPrivate",
+      permissions_policy_name: "direct-sockets-private",
+      depends_on: ["DirectSockets"],
+      visibility: "IsolatedContext",
+    },
+    {
       name: "DisplayCapture",
       permissions_policy_name: "display-capture",
     },
