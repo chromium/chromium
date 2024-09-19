@@ -892,7 +892,7 @@ class ConcatenatingUnderlyingSource final : public UnderlyingSourceBase {
       return ScriptPromiseUntyped::Reject(script_state, exception_state);
     }
     DCHECK(reader_for_stream1_);
-    return ScriptPromiseUntyped::CastUndefined(script_state);
+    return ToResolvedUndefinedPromise(script_state);
   }
 
   ScriptPromiseUntyped Pull(ScriptState* script_state,

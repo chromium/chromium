@@ -35,20 +35,20 @@ class ForwardingUnderlyingSource : public UnderlyingSourceBase {
   ScriptPromiseUntyped Start(ScriptState* script_state,
                              ExceptionState&) override {
     readable_stream_wrapper_->SetController(Controller());
-    return ScriptPromiseUntyped::CastUndefined(script_state);
+    return ToResolvedUndefinedPromise(script_state);
   }
 
   ScriptPromiseUntyped Pull(ScriptState* script_state,
                             ExceptionState&) override {
     readable_stream_wrapper_->Pull();
-    return ScriptPromiseUntyped::CastUndefined(script_state);
+    return ToResolvedUndefinedPromise(script_state);
   }
 
   ScriptPromiseUntyped Cancel(ScriptState* script_state,
                               ScriptValue reason,
                               ExceptionState&) override {
     readable_stream_wrapper_->CloseStream();
-    return ScriptPromiseUntyped::CastUndefined(script_state);
+    return ToResolvedUndefinedPromise(script_state);
   }
 
   void Trace(Visitor* visitor) const override {

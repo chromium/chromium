@@ -198,13 +198,13 @@ class StreamingResponder final
   // `UnderlyingSourceBase` implementation.
   ScriptPromiseUntyped Pull(ScriptState* script_state,
                             ExceptionState& exception_state) override {
-    return ScriptPromiseUntyped::CastUndefined(script_state);
+    return ToResolvedUndefinedPromise(script_state);
   }
 
   ScriptPromiseUntyped Cancel(ScriptState* script_state,
                               ScriptValue reason,
                               ExceptionState& exception_state) override {
-    return ScriptPromiseUntyped::CastUndefined(script_state);
+    return ToResolvedUndefinedPromise(script_state);
   }
 
   // `blink::mojom::blink::ModelStreamingResponder` implementation.

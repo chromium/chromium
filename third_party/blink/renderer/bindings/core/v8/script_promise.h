@@ -113,9 +113,6 @@ class CORE_EXPORT ScriptPromiseUntyped {
   static ScriptPromiseUntyped FromUntypedValueForBindings(ScriptState*,
                                                           v8::Local<v8::Value>);
 
-  // Constructs and returns a ScriptPromiseUntyped resolved with undefined.
-  static ScriptPromiseUntyped CastUndefined(ScriptState*);
-
   static ScriptPromiseUntyped Reject(ScriptState*, const ScriptValue&);
   static ScriptPromiseUntyped Reject(ScriptState*, v8::Local<v8::Value>);
   // Rejects with a given exception. The ExceptionState gets cleared.

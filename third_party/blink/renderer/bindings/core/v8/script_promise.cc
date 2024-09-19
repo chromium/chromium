@@ -200,12 +200,6 @@ ScriptPromise<IDLAny> ScriptPromiseUntyped::Then(ScriptFunction* on_fulfilled,
                                               result_promise);
 }
 
-ScriptPromiseUntyped ScriptPromiseUntyped::CastUndefined(
-    ScriptState* script_state) {
-  return FromUntypedValueForBindings(script_state,
-                                     v8::Undefined(script_state->GetIsolate()));
-}
-
 ScriptPromiseUntyped ScriptPromiseUntyped::FromUntypedValueForBindings(
     ScriptState* script_state,
     v8::Local<v8::Value> value) {

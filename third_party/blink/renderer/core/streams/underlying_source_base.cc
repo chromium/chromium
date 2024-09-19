@@ -30,12 +30,12 @@ ScriptPromiseUntyped UnderlyingSourceBase::StartWrapper(
 
 ScriptPromiseUntyped UnderlyingSourceBase::Start(ScriptState* script_state,
                                                  ExceptionState&) {
-  return ScriptPromiseUntyped::CastUndefined(script_state);
+  return ToResolvedUndefinedPromise(script_state);
 }
 
 ScriptPromiseUntyped UnderlyingSourceBase::Pull(ScriptState* script_state,
                                                 ExceptionState&) {
-  return ScriptPromiseUntyped::CastUndefined(script_state);
+  return ToResolvedUndefinedPromise(script_state);
 }
 
 ScriptPromiseUntyped UnderlyingSourceBase::CancelWrapper(
@@ -50,7 +50,7 @@ ScriptPromiseUntyped UnderlyingSourceBase::CancelWrapper(
 ScriptPromiseUntyped UnderlyingSourceBase::Cancel(ScriptState* script_state,
                                                   ScriptValue reason,
                                                   ExceptionState&) {
-  return ScriptPromiseUntyped::CastUndefined(script_state);
+  return ToResolvedUndefinedPromise(script_state);
 }
 
 void UnderlyingSourceBase::ContextDestroyed() {

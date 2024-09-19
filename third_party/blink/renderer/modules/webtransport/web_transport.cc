@@ -581,13 +581,13 @@ class WebTransport::StreamVendingUnderlyingSource final
                             ExceptionState&) override {
     if (!is_opened_) {
       is_pull_waiting_ = true;
-      return ScriptPromiseUntyped::CastUndefined(script_state);
+      return ToResolvedUndefinedPromise(script_state);
     }
 
     vendor_->RequestStream(WTF::BindOnce(
         &StreamVendingUnderlyingSource::Enqueue, WrapWeakPersistent(this)));
 
-    return ScriptPromiseUntyped::CastUndefined(script_state);
+    return ToResolvedUndefinedPromise(script_state);
   }
 
   // Used by WebTransport to error the stream.

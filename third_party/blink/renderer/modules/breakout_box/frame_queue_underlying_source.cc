@@ -99,7 +99,7 @@ ScriptPromiseUntyped FrameQueueUnderlyingSource<NativeFrameType>::Pull(
   }
   auto frame_queue = frame_queue_handle_.Queue();
   if (!frame_queue)
-    return ScriptPromiseUntyped::CastUndefined(script_state);
+    return ToResolvedUndefinedPromise(script_state);
 
   if (!frame_queue->IsEmpty()) {
     // Enqueuing the frame in the stream controller synchronously can lead to a
@@ -112,7 +112,7 @@ ScriptPromiseUntyped FrameQueueUnderlyingSource<NativeFrameType>::Pull(
                           NativeFrameType>::MaybeSendFrameFromQueueToStream,
                       WrapPersistent(this)));
   }
-  return ScriptPromiseUntyped::CastUndefined(script_state);
+  return ToResolvedUndefinedPromise(script_state);
 }
 
 template <typename NativeFrameType>
@@ -133,7 +133,7 @@ ScriptPromiseUntyped FrameQueueUnderlyingSource<NativeFrameType>::Start(
     }
   }
 
-  return ScriptPromiseUntyped::CastUndefined(script_state);
+  return ToResolvedUndefinedPromise(script_state);
 }
 
 template <typename NativeFrameType>
@@ -143,7 +143,7 @@ ScriptPromiseUntyped FrameQueueUnderlyingSource<NativeFrameType>::Cancel(
     ExceptionState&) {
   DCHECK(realm_task_runner_->RunsTasksInCurrentSequence());
   Close();
-  return ScriptPromiseUntyped::CastUndefined(script_state);
+  return ToResolvedUndefinedPromise(script_state);
 }
 
 template <typename NativeFrameType>
