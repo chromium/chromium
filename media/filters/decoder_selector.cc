@@ -31,16 +31,23 @@ namespace media {
 
 namespace {
 
-const char kSelectDecoderTrace[] = "DecoderSelector::SelectDecoder";
+constexpr char kSelectDecoderTrace[] = "DecoderSelector::SelectDecoder";
 
-template <typename ConfigT, typename DecoderT>
-DecoderPriority NormalDecoderPriority(const ConfigT& config,
-                                      const DecoderT& decoder) {
-  return DecoderPriority::kNormal;
-}
+enum class DecoderPriority {
+  // `kNormal` indicates that the current decoder should continue through with
+  // selection in it's current order.
+  kNormal,
 
-DecoderPriority ResolutionBasedDecoderPriority(const VideoDecoderConfig& config,
-                                               const VideoDecoder& decoder) {
+  // `kDeprioritized` indicates that the current decoder should only be selected
+  // if other decoders have failed.
+  kDeprioritized,
+
+  // `kSkipped` indicates that the current decoder should not be used at all.
+  kSkipped,
+};
+
+DecoderPriority SelectDecoderPriority(const VideoDecoderConfig& config,
+                                      const VideoDecoder& decoder) {
 #if BUILDFLAG(IS_ANDROID)
   constexpr auto kSoftwareDecoderHeightCutoff = 360;
 #elif BUILDFLAG(IS_CHROMEOS_ASH)
@@ -61,37 +68,10 @@ DecoderPriority ResolutionBasedDecoderPriority(const VideoDecoderConfig& config,
              : DecoderPriority::kDeprioritized;
 }
 
-DecoderPriority PreferNonPlatformDecoders(const VideoDecoderConfig& config,
-                                          const VideoDecoder& decoder) {
-  return decoder.IsPlatformDecoder() ? DecoderPriority::kDeprioritized
-                                     : DecoderPriority::kNormal;
-}
-
-DecoderPriority UnifiedDecoderPriority(const VideoDecoderConfig& config,
-                                       const VideoDecoder& decoder) {
-  if (base::FeatureList::IsEnabled(kResolutionBasedDecoderPriority)) {
-    return ResolutionBasedDecoderPriority(config, decoder);
-  } else {
-    return NormalDecoderPriority(config, decoder);
-  }
-}
-
-void SetDefaultDecoderPriorityCB(
-    VideoDecoderSelector::DecoderPriorityCB* out,
-    const DecoderStreamTraits<DemuxerStream::VIDEO>* traits) {
-  if (traits->GetPreferNonPlatformDecoders()) {
-    *out = base::BindRepeating(PreferNonPlatformDecoders);
-  } else {
-    *out = base::BindRepeating(UnifiedDecoderPriority);
-  }
-}
-
-void SetDefaultDecoderPriorityCB(
-    AudioDecoderSelector::DecoderPriorityCB* out,
-    const DecoderStreamTraits<DemuxerStream::AUDIO>*) {
+DecoderPriority SelectDecoderPriority(const AudioDecoderConfig& config,
+                                      const AudioDecoder& decoder) {
   // Platform audio decoders are not currently prioritized or deprioritized
-  *out = base::BindRepeating(
-      NormalDecoderPriority<AudioDecoderConfig, AudioDecoder>);
+  return DecoderPriority::kNormal;
 }
 
 }  // namespace
@@ -100,10 +80,12 @@ template <DemuxerStream::Type StreamType>
 DecoderSelector<StreamType>::DecoderSelector(
     scoped_refptr<base::SequencedTaskRunner> task_runner,
     CreateDecodersCB create_decoders_cb,
-    MediaLog* media_log)
+    MediaLog* media_log,
+    bool enable_priority_based_selection)
     : task_runner_(std::move(task_runner)),
       create_decoders_cb_(std::move(create_decoders_cb)),
-      media_log_(media_log) {
+      media_log_(media_log),
+      enable_priority_based_selection_(enable_priority_based_selection) {
   DETACH_FROM_SEQUENCE(sequence_checker_);
 }
 
@@ -128,9 +110,6 @@ void DecoderSelector<StreamType>::Initialize(StreamTraits* traits,
   stream_ = stream;
   cdm_context_ = cdm_context;
   waiting_cb_ = std::move(waiting_cb);
-  // Only set this here if nobody has overridden it for tests.
-  if (!decoder_priority_cb_)
-    SetDefaultDecoderPriorityCB(&decoder_priority_cb_, traits_);
 }
 
 template <DemuxerStream::Type StreamType>
@@ -204,12 +183,6 @@ void DecoderSelector<StreamType>::PrependDecoder(
   // |create_decoders_cb_|.
   decoders_.insert(decoders_.begin(), std::move(decoder));
   FilterAndSortAvailableDecoders();
-}
-
-template <DemuxerStream::Type StreamType>
-void DecoderSelector<StreamType>::OverrideDecoderPriorityCBForTesting(
-    DecoderPriorityCB decoder_priority_cb) {
-  decoder_priority_cb_ = std::move(decoder_priority_cb);
 }
 
 template <DemuxerStream::Type StreamType>
@@ -365,16 +338,20 @@ template <DemuxerStream::Type StreamType>
 void DecoderSelector<StreamType>::FilterAndSortAvailableDecoders() {
   std::vector<std::unique_ptr<Decoder>> decoders = std::move(decoders_);
   std::vector<std::unique_ptr<Decoder>> deprioritized_decoders;
-  DCHECK(decoder_priority_cb_);
 
   for (auto& decoder : decoders) {
-    // Skip the decoder if this decoder doesn't support encryption for a
-    // decrypting config
-    if (config_.is_encrypted() && !decoder->SupportsDecryption())
+    // If the config is encrypted, skip decoders which don't support encryption.
+    if (config_.is_encrypted() && !decoder->SupportsDecryption()) {
       continue;
+    }
+
+    if (!enable_priority_based_selection_) {
+      decoders_.push_back(std::move(decoder));
+      continue;
+    }
 
     // Run the predicate on this decoder.
-    switch (decoder_priority_cb_.Run(config_, *decoder)) {
+    switch (SelectDecoderPriority(config_, *decoder)) {
       case DecoderPriority::kSkipped:
         continue;
       case DecoderPriority::kNormal:

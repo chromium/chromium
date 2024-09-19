@@ -13,9 +13,11 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "media/base/fake_demuxer_stream.h"
+#include "media/base/media_switches.h"
 #include "media/base/mock_filters.h"
 #include "media/base/mock_media_log.h"
 #include "media/base/test_helpers.h"
@@ -53,15 +55,6 @@ constexpr base::TimeDelta kPrepareDelay = base::Milliseconds(5);
 
 static int GetDecoderId(int i) {
   return i;
-}
-
-DecoderPriority MockDecoderPriority(const VideoDecoderConfig& config,
-                                    const VideoDecoder& decoder) {
-  auto const at_or_above_cutoff = config.visible_rect().height() >=
-                                  TestVideoConfig::LargeCodedSize().height();
-  return at_or_above_cutoff == decoder.IsPlatformDecoder()
-             ? DecoderPriority::kNormal
-             : DecoderPriority::kDeprioritized;
 }
 
 }  // namespace
@@ -106,10 +99,6 @@ class VideoDecoderStreamTest
         &media_log_);
     video_decoder_stream_->set_decoder_change_observer(base::BindRepeating(
         &VideoDecoderStreamTest::OnDecoderChanged, base::Unretained(this)));
-    video_decoder_stream_
-        ->GetDecoderSelectorForTesting(base::PassKey<VideoDecoderStreamTest>())
-        .OverrideDecoderPriorityCBForTesting(
-            base::BindRepeating(MockDecoderPriority));
     if (GetParam().has_prepare) {
       video_decoder_stream_->SetPrepareCB(base::BindRepeating(
           &VideoDecoderStreamTest::PrepareFrame, base::Unretained(this)));
@@ -528,6 +517,8 @@ class VideoDecoderStreamTest
 
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  base::test::ScopedFeatureList enabled_features_{
+      kResolutionBasedDecoderPriority};
 
   StrictMock<MockMediaLog> media_log_;
   std::unique_ptr<VideoDecoderStream> video_decoder_stream_;
@@ -638,12 +629,13 @@ TEST_P(VideoDecoderStreamTest, ConfigChangeSwToHw) {
   EnablePlatformDecoders({1});
 
   // Create a demuxer stream with a config that increases in size
-  auto const size_delta =
-      TestVideoConfig::LargeCodedSize() - TestVideoConfig::NormalCodedSize();
+  auto const size_delta = TestVideoConfig::ExtraLargeCodedSize() -
+                          TestVideoConfig::NormalCodedSize();
   auto const width_delta = size_delta.width() / (kNumConfigs - 1);
   auto const height_delta = size_delta.height() / (kNumConfigs - 1);
   CreateDemuxerStream(TestVideoConfig::NormalCodedSize(),
                       gfx::Vector2dF(width_delta, height_delta));
+  auto base_config = demuxer_stream_->video_decoder_config();
   Initialize();
 
   // Initially we should be using a software decoder
@@ -654,33 +646,12 @@ TEST_P(VideoDecoderStreamTest, ConfigChangeSwToHw) {
 
   // We should end up on a hardware decoder
   EXPECT_TRUE(decoder_->IsPlatformDecoder());
-}
 
-// Tests that the decoder stream will switch from a hardware decoder to a
-// software decoder if the config size decreases
-TEST_P(VideoDecoderStreamTest, ConfigChangeHwToSw) {
-  EnablePlatformDecoders({1});
-
-  // Create a demuxer stream with a config that progressively decreases in size
-  auto const size_delta =
-      TestVideoConfig::LargeCodedSize() - TestVideoConfig::NormalCodedSize();
-  auto const width_delta = size_delta.width() / kNumConfigs;
-  auto const height_delta = size_delta.height() / kNumConfigs;
-  CreateDemuxerStream(TestVideoConfig::LargeCodedSize(),
-                      gfx::Vector2dF(-width_delta, -height_delta));
-  auto base_config = demuxer_stream_->video_decoder_config();
-  Initialize();
-
-  // We should initially be using a hardware decoder
-  EXPECT_TRUE(decoder_);
-  EXPECT_TRUE(decoder_->IsPlatformDecoder());
-  ReadAllFrames();
-
-  // Test goes through 3 size changes from the initial LargeCodedSize, each step
-  // reduces by [width_delta, height_delta].
+  // Test goes through 3 size changes from the initial ExtraLargeCodedSize, each
+  // step increases by [width_delta, height_delta].
   auto expected_config = base_config;
   auto expected_size =
-      expected_config.coded_size() -
+      expected_config.coded_size() +
       gfx::ScaleToCeiledSize(gfx::Size(width_delta, height_delta),
                              kNumConfigs - 1);
   expected_config.set_coded_size(expected_size);
@@ -692,6 +663,26 @@ TEST_P(VideoDecoderStreamTest, ConfigChangeHwToSw) {
     expected_config.SetIsEncrypted(false);  // May be stripped by demuxer.
   }
   EXPECT_TRUE(decoder_->eos_next_configs().back().Matches(expected_config));
+}
+
+// Tests that the decoder stream will switch from a hardware decoder to a
+// software decoder if the config size decreases
+TEST_P(VideoDecoderStreamTest, ConfigChangeHwToSw) {
+  EnablePlatformDecoders({1});
+
+  // Create a demuxer stream with a config that progressively decreases in size
+  auto const size_delta = TestVideoConfig::ExtraLargeCodedSize() -
+                          TestVideoConfig::NormalCodedSize();
+  auto const width_delta = size_delta.width() / (kNumConfigs - 1);
+  auto const height_delta = size_delta.height() / (kNumConfigs - 1);
+  CreateDemuxerStream(TestVideoConfig::ExtraLargeCodedSize(),
+                      gfx::Vector2dF(-width_delta, -height_delta));
+  Initialize();
+
+  // We should initially be using a hardware decoder
+  EXPECT_TRUE(decoder_);
+  EXPECT_TRUE(decoder_->IsPlatformDecoder());
+  ReadAllFrames();
 
   // We should end up on a software decoder
   EXPECT_FALSE(decoder_->IsPlatformDecoder());
