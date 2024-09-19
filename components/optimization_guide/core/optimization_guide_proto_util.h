@@ -5,12 +5,7 @@
 #ifndef COMPONENTS_OPTIMIZATION_GUIDE_CORE_OPTIMIZATION_GUIDE_PROTO_UTIL_H_
 #define COMPONENTS_OPTIMIZATION_GUIDE_CORE_OPTIMIZATION_GUIDE_PROTO_UTIL_H_
 
-namespace autofill {
-class FormData;
-}  // namespace autofill
-
 namespace optimization_guide::proto {
-class FormData;
 class AXTreeUpdate;
 }  // namespace optimization_guide::proto
 
@@ -19,10 +14,6 @@ struct AXTreeUpdate;
 }  // namespace ui
 
 namespace optimization_guide {
-
-// Converts `form_data` to its corresponding form data proto.
-optimization_guide::proto::FormData ToFormDataProto(
-    const autofill::FormData& form_data);
 
 // Populate the AXTreeUpdate proto structure from the ui structure.
 void PopulateAXTreeUpdateProto(

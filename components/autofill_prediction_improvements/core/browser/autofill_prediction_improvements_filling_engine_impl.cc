@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/types/expected.h"
+#include "components/autofill/core/browser/form_processing/optimization_guide_proto_util.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
@@ -66,7 +67,7 @@ void AutofillPredictionImprovementsFillingEngineImpl::
   page_context->set_url(form_data.url().spec());
   page_context->set_title(ax_tree_update.tree_data().title());
   *page_context->mutable_ax_tree_data() = std::move(ax_tree_update);
-  *request.mutable_form_data() = optimization_guide::ToFormDataProto(form_data);
+  *request.mutable_form_data() = ToFormDataProto(form_data);
   *request.mutable_entries() = {
       std::make_move_iterator(user_annotations.begin()),
       std::make_move_iterator(user_annotations.end())};

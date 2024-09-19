@@ -13,6 +13,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/types/expected.h"
+#include "components/autofill/core/browser/form_processing/optimization_guide_proto_util.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/optimization_guide/core/optimization_guide_decider.h"
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
@@ -110,8 +111,7 @@ void UserAnnotationsService::AddFormSubmission(
   page_context->set_url(form->source_url().spec());
   page_context->set_title(ax_tree_update.tree_data().title());
   *page_context->mutable_ax_tree_data() = std::move(ax_tree_update);
-  *request.mutable_form_data() =
-      optimization_guide::ToFormDataProto(form->ToFormData());
+  *request.mutable_form_data() = autofill::ToFormDataProto(form->ToFormData());
   RetrieveAllEntries(
       base::BindOnce(&UserAnnotationsService::ExecuteModelWithEntries,
                      weak_ptr_factory_.GetWeakPtr(), request, std::move(form),
