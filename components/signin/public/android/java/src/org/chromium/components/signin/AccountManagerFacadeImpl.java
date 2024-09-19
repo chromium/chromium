@@ -82,6 +82,9 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
     private int mNumberOfRetries;
     private boolean mDidAccountFetchSucceed;
 
+    private int mPendingTokenRequests;
+    private Runnable mTokenRequestsCompletedCallback;
+
     /**
      * @param delegate the AccountManagerDelegate to use as a backend
      */
@@ -138,6 +141,7 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
         ThreadUtils.assertOnUiThread();
         assert coreAccountInfo != null;
         assert scope != null;
+        pendingRequestStarted();
         ConnectionRetry.runAuthTask(
                 new AuthTask<AccessTokenData>() {
                     @Override
@@ -150,13 +154,31 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
                     @Override
                     public void onSuccess(AccessTokenData token) {
                         callback.onGetTokenSuccess(token);
+                        pendingRequestFinished();
                     }
 
                     @Override
                     public void onFailure(boolean isTransientError) {
                         callback.onGetTokenFailure(isTransientError);
+                        pendingRequestFinished();
                     }
                 });
+    }
+
+    private void pendingRequestStarted() {
+        ThreadUtils.assertOnUiThread();
+        mPendingTokenRequests++;
+    }
+
+    private void pendingRequestFinished() {
+        ThreadUtils.assertOnUiThread();
+        mPendingTokenRequests--;
+        assert mPendingTokenRequests >= 0;
+        if (mPendingTokenRequests == 0 && mTokenRequestsCompletedCallback != null) {
+            Runnable callback = mTokenRequestsCompletedCallback;
+            mTokenRequestsCompletedCallback = null;
+            callback.run();
+        }
     }
 
     @Override
@@ -191,6 +213,18 @@ public class AccountManagerFacadeImpl implements AccountManagerFacade {
                         }
                     }
                 });
+    }
+
+    @Override
+    public void waitForPendingTokenRequestsToComplete(Runnable requestsCompletedCallback) {
+        ThreadUtils.assertOnUiThread();
+        assert mTokenRequestsCompletedCallback == null;
+        if (mPendingTokenRequests == 0) {
+            requestsCompletedCallback.run();
+            return;
+        }
+        // The callback will be invoked when the all pending token requests are finished.
+        mTokenRequestsCompletedCallback = requestsCompletedCallback;
     }
 
     @Override

@@ -13,6 +13,7 @@ import static org.junit.Assert.assertTrue;
 
 import android.accounts.Account;
 
+import androidx.annotation.Nullable;
 import androidx.test.InstrumentationRegistry;
 import androidx.test.filters.SmallTest;
 
@@ -23,39 +24,65 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
+import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.test.util.FakeAccountManagerDelegate;
 import org.chromium.components.signin.test.util.FakeAccountManagerFacade;
 
 import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeoutException;
+import java.util.concurrent.TimeUnit;
 
 /** Tests for {@link AccountManagerFacade}. See also {@link AccountManagerFacadeImplTest}. */
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(Batch.UNIT_TESTS)
 public class AccountManagerFacadeTest {
-    private static final class CustomAccountManagerDelegate extends FakeAccountManagerDelegate {
-        private static final ExecutorService WORKER = Executors.newSingleThreadExecutor();
-
-        private final CallbackHelper mBlockGetAccounts = new CallbackHelper();
+    private static final class BlockingAccountManagerDelegate extends FakeAccountManagerDelegate {
+        private @Nullable CountDownLatch mGetAccountsLatch;
+        private @Nullable CountDownLatch mGetAuthTokenLatch;
 
         @Override
         public Account[] getAccountsSynchronous() throws AccountManagerDelegateException {
-            // Blocks thread that's trying to get accounts from the delegate.
-            try {
-                mBlockGetAccounts.waitForOnly();
-            } catch (TimeoutException e) {
-                throw new RuntimeException(e);
-            }
+            maybeBlockOnLatch(mGetAccountsLatch);
             return super.getAccountsSynchronous();
         }
 
+        void blockGetAccount() {
+            assert mGetAccountsLatch == null;
+            mGetAccountsLatch = new CountDownLatch(1);
+        }
+
         void unblockGetAccounts() {
-            // Unblock the getAccountsSync() from a different thread to avoid deadlock on UI thread
-            WORKER.execute(mBlockGetAccounts::notifyCalled);
+            mGetAccountsLatch.countDown();
+        }
+
+        @Override
+        public AccessTokenData getAuthToken(Account account, String scope) throws AuthException {
+            maybeBlockOnLatch(mGetAuthTokenLatch);
+            return super.getAuthToken(account, scope);
+        }
+
+        void blockGetAuthToken() {
+            assert mGetAuthTokenLatch == null;
+            mGetAuthTokenLatch = new CountDownLatch(1);
+        }
+
+        void unblockGetAuthToken() {
+            mGetAuthTokenLatch.countDown();
+        }
+
+        private void maybeBlockOnLatch(@Nullable CountDownLatch latch) {
+            if (latch == null) {
+                // The method is not blocked,
+                return;
+            }
+            try {
+                if (!latch.await(CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL, TimeUnit.MILLISECONDS)) {
+                    throw new RuntimeException("Timed out waiting for a blocked call!");
+                }
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
         }
     }
 
@@ -76,6 +103,10 @@ public class AccountManagerFacadeTest {
                 throw new RuntimeException("Interrupted or timed-out while waiting for updates", e);
             }
             return mToken;
+        }
+
+        boolean isReady() {
+            return mTokenRetrievedCountDown.getCount() == 0;
         }
 
         @Override
@@ -100,7 +131,8 @@ public class AccountManagerFacadeTest {
     @Test
     @SmallTest
     public void testIsCachePopulated() throws InterruptedException {
-        CustomAccountManagerDelegate blockingDelegate = new CustomAccountManagerDelegate();
+        BlockingAccountManagerDelegate blockingDelegate = new BlockingAccountManagerDelegate();
+        blockingDelegate.blockGetAccount();
         AccountManagerFacade facade =
                 ThreadUtils.runOnUiThreadBlocking(
                         () -> new AccountManagerFacadeImpl(blockingDelegate));
@@ -132,7 +164,8 @@ public class AccountManagerFacadeTest {
     @Test
     @SmallTest
     public void testRunAfterCacheIsPopulated() throws InterruptedException {
-        CustomAccountManagerDelegate blockingDelegate = new CustomAccountManagerDelegate();
+        BlockingAccountManagerDelegate blockingDelegate = new BlockingAccountManagerDelegate();
+        blockingDelegate.blockGetAccount();
         AccountManagerFacade facade =
                 ThreadUtils.runOnUiThreadBlocking(
                         () -> new AccountManagerFacadeImpl(blockingDelegate));
@@ -238,5 +271,35 @@ public class AccountManagerFacadeTest {
                 callback3.getToken(),
                 originalToken);
         assertNotNull(callback3.getToken());
+    }
+
+    @Test
+    @SmallTest
+    public void testWaitForPendingTokenRequestsToComplete() throws Exception {
+        BlockingAccountManagerDelegate blockingDelegate = new BlockingAccountManagerDelegate();
+        blockingDelegate.addAccount(ACCOUNT);
+        blockingDelegate.blockGetAuthToken();
+        AccountManagerFacade facade =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> new AccountManagerFacadeImpl(blockingDelegate));
+
+        CustomGetAccessTokenCallback tokenCallback = new CustomGetAccessTokenCallback();
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> facade.getAccessToken(ACCOUNT, TOKEN_SCOPE, tokenCallback));
+
+        CallbackHelper pendingRequestsCompleteCallback = new CallbackHelper();
+        ThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        facade.waitForPendingTokenRequestsToComplete(
+                                () -> pendingRequestsCompleteCallback.notifyCalled()));
+
+        // Since getAccessToken is blocked, neither of the callbacks should be invoked.
+        assertFalse(tokenCallback.isReady());
+        assertEquals(pendingRequestsCompleteCallback.getCallCount(), 0);
+
+        // Unblock the delegate and wait for callbacks to be invoked.
+        blockingDelegate.unblockGetAuthToken();
+        pendingRequestsCompleteCallback.waitForOnly();
+        assertTrue(tokenCallback.isReady());
     }
 }

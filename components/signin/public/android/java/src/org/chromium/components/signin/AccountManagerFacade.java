@@ -103,6 +103,16 @@ public interface AccountManagerFacade {
     void invalidateAccessToken(String accessToken, @Nullable Runnable completedRunnable);
 
     /**
+     * Wait for all pending token requests and invokes the passed callback. If there are no pending
+     * requests, the callback is invoked immediately. Currently, can only be called once - the
+     * behavior for subsequent calls is not specified.
+     *
+     * @param requestsCompletedCallback callback to call when all pending token requests complete.
+     */
+    @MainThread
+    void waitForPendingTokenRequestsToComplete(Runnable requestsCompletedCallback);
+
+    /**
      * Checks the child account status of the given account.
      *
      * @param coreAccountInfo The CoreAccountInfo to check the child account status.

@@ -164,6 +164,11 @@ public class FakeAccountManagerFacade implements AccountManagerFacade {
     }
 
     @Override
+    public void waitForPendingTokenRequestsToComplete(Runnable requestsCompletedCallback) {
+        throw new UnsupportedOperationException("Not implemented");
+    }
+
+    @Override
     public void checkChildAccountStatus(
             CoreAccountInfo coreAccountInfo, ChildAccountStatusListener listener) {
         if (coreAccountInfo.getEmail().startsWith(CHILD_ACCOUNT_NAME_PREFIX)) {
