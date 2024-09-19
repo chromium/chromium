@@ -642,8 +642,8 @@ void Widget::NotifyNativeViewHierarchyChanged() {
 }
 
 void Widget::NotifyWillRemoveView(View* view) {
-  for (WidgetRemovalsObserver& observer : removals_observers_)
-    observer.OnWillRemoveView(this, view);
+  removals_observers_.Notify(&WidgetRemovalsObserver::OnWillRemoveView, this,
+                             view);
 }
 
 // Converted methods (see header) ----------------------------------------------
@@ -836,8 +836,7 @@ void Widget::CloseWithReason(ClosedReason closed_reason) {
   SaveWindowPlacement();
   ClearFocusFromWidget();
 
-  for (WidgetObserver& observer : observers_)
-    observer.OnWidgetClosing(this);
+  observers_.Notify(&WidgetObserver::OnWidgetClosing, this);
 
   internal::AnyWidgetObserverSingleton::GetInstance()->OnAnyWidgetClosing(this);
 
@@ -857,8 +856,7 @@ void Widget::CloseNow() {
   // a one-way and can't be undone.
   widget_closed_ = true;
 
-  for (WidgetObserver& observer : observers_)
-    observer.OnWidgetClosing(this);
+  observers_.Notify(&WidgetObserver::OnWidgetClosing, this);
   internal::AnyWidgetObserverSingleton::GetInstance()->OnAnyWidgetClosing(this);
 
   DCHECK(native_widget_initialized_) << "Native widget is never initialized.";
@@ -1134,8 +1132,7 @@ void Widget::RunShellDrag(View* view,
   dragged_view_ = view;
   OnDragWillStart();
 
-  for (WidgetObserver& observer : observers_)
-    observer.OnWidgetDragWillStart(this);
+  observers_.Notify(&WidgetObserver::OnWidgetDragWillStart, this);
 
   if (view && view->drag_controller()) {
     view->drag_controller()->OnWillStartDragForView(view);
@@ -1163,8 +1160,7 @@ void Widget::RunShellDrag(View* view,
   }
   OnDragComplete();
 
-  for (WidgetObserver& observer : observers_)
-    observer.OnWidgetDragComplete(this);
+  observers_.Notify(&WidgetObserver::OnWidgetDragComplete, this);
 }
 
 void Widget::CancelShellDrag(View* view) {
@@ -1291,8 +1287,7 @@ FocusTraversable* Widget::GetFocusTraversable() {
 void Widget::ThemeChanged() {
   root_view_->ThemeChanged();
 
-  for (WidgetObserver& observer : observers_)
-    observer.OnWidgetThemeChanged(this);
+  observers_.Notify(&WidgetObserver::OnWidgetThemeChanged, this);
 
   NotifyColorProviderChanged();
 }
@@ -1448,9 +1443,7 @@ void Widget::OnSizeConstraintsChanged() {
     non_client_view_->SizeConstraintsChanged();
   }
 
-  for (WidgetObserver& observer : observers_) {
-    observer.OnWidgetSizeConstraintsChanged(this);
-  }
+  observers_.Notify(&WidgetObserver::OnWidgetSizeConstraintsChanged, this);
 }
 
 void Widget::OnOwnerClosing() {}
@@ -1633,17 +1626,15 @@ bool Widget::OnNativeWidgetActivationChanged(bool active) {
   if (!active && native_widget_initialized_)
     SaveWindowPlacement();
 
-  for (WidgetObserver& observer : observers_)
-    observer.OnWidgetActivationChanged(this, active);
+  observers_.Notify(&WidgetObserver::OnWidgetActivationChanged, this, active);
 
   if (active) {
     base::AutoReset<bool> is_traversing_widget_tree(&is_traversing_widget_tree_,
                                                     true);
     Widget* root = nullptr;
     for (Widget* widget = this; widget; widget = widget->parent()) {
-      for (WidgetObserver& observer : widget->observers_) {
-        observer.OnWidgetTreeActivated(widget, this);
-      }
+      widget->observers_.Notify(&WidgetObserver::OnWidgetTreeActivated, widget,
+                                this);
       root = widget;
     }
 #if BUILDFLAG(IS_WIN)
@@ -1706,8 +1697,7 @@ void Widget::OnNativeWidgetVisibilityChanged(bool visible) {
   View* root = GetRootView();
   if (root)
     root->PropagateVisibilityNotifications(root, visible);
-  for (WidgetObserver& observer : observers_)
-    observer.OnWidgetVisibilityChanged(this, visible);
+  observers_.Notify(&WidgetObserver::OnWidgetVisibilityChanged, this, visible);
   if (GetCompositor() && root && root->layer())
     root->layer()->SetVisible(visible);
 }
@@ -1720,8 +1710,7 @@ void Widget::OnNativeWidgetCreated() {
   DCHECK(widget_delegate_);
   native_widget_->InitModalType(widget_delegate_->GetModalType());
 
-  for (WidgetObserver& observer : observers_)
-    observer.OnWidgetCreated(this);
+  observers_.Notify(&WidgetObserver::OnWidgetCreated, this);
 }
 
 void Widget::OnNativeWidgetDestroying() {
@@ -1758,8 +1747,8 @@ void Widget::OnNativeWidgetMove() {
     widget_delegate_->OnWidgetMove();
   NotifyCaretBoundsChanged(GetInputMethod());
 
-  for (WidgetObserver& observer : observers_)
-    observer.OnWidgetBoundsChanged(this, GetWindowBoundsInScreen());
+  observers_.Notify(&WidgetObserver::OnWidgetBoundsChanged, this,
+                    GetWindowBoundsInScreen());
 }
 
 void Widget::OnNativeWidgetSizeChanged(const gfx::Size& new_size) {
@@ -1772,8 +1761,8 @@ void Widget::OnNativeWidgetSizeChanged(const gfx::Size& new_size) {
   NotifyCaretBoundsChanged(GetInputMethod());
   SaveWindowPlacementIfInitialized();
 
-  for (WidgetObserver& observer : observers_)
-    observer.OnWidgetBoundsChanged(this, GetWindowBoundsInScreen());
+  observers_.Notify(&WidgetObserver::OnWidgetBoundsChanged, this,
+                    GetWindowBoundsInScreen());
 }
 
 void Widget::OnNativeWidgetWorkspaceChanged() {}
@@ -1781,9 +1770,7 @@ void Widget::OnNativeWidgetWorkspaceChanged() {}
 void Widget::OnNativeWidgetWindowShowStateChanged() {
   SaveWindowPlacementIfInitialized();
 
-  for (WidgetObserver& observer : observers_) {
-    observer.OnWidgetShowStateChanged(this);
-  }
+  observers_.Notify(&WidgetObserver::OnWidgetShowStateChanged, this);
 }
 
 void Widget::OnNativeWidgetBeginUserBoundsChange() {
@@ -2375,9 +2362,7 @@ void Widget::HandleWidgetDestroying() {
   if (GetFocusManager() && root_view_) {
     GetFocusManager()->ViewRemoved(root_view_.get());
   }
-  for (WidgetObserver& observer : observers_) {
-    observer.OnWidgetDestroying(this);
-  }
+  observers_.Notify(&WidgetObserver::OnWidgetDestroying, this);
   if (non_client_view_) {
     non_client_view_->WindowClosing();
   }
@@ -2390,8 +2375,8 @@ void Widget::HandleWidgetDestroyed() {
   if (native_widget_destroyed_) {
     return;
   }
-  for (WidgetObserver& observer : observers_)
-    observer.OnWidgetDestroyed(this);
+
+  observers_.Notify(&WidgetObserver::OnWidgetDestroyed, this);
 
   native_widget_destroyed_ = true;
   auto weak_ptr = GetWeakPtr();

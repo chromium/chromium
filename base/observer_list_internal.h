@@ -5,6 +5,7 @@
 #ifndef BASE_OBSERVER_LIST_INTERNAL_H_
 #define BASE_OBSERVER_LIST_INTERNAL_H_
 
+#include <concepts>
 #include <string>
 
 #include "base/base_export.h"
@@ -173,6 +174,9 @@ class WeakLinkNode : public base::LinkNode<WeakLinkNode<ObserverList>> {
   // based on analysis of sampling profiler data and tab_search:top100:2020.
   RAW_PTR_EXCLUSION ObserverList* list_ = nullptr;
 };
+
+template <typename T>
+concept IsMoveOnly = std::move_constructible<T> && !std::copy_constructible<T>;
 
 }  // namespace internal
 }  // namespace base

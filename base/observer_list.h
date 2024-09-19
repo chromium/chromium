@@ -8,6 +8,7 @@
 #include <stddef.h>
 
 #include <algorithm>
+#include <concepts>
 #include <iterator>
 #include <limits>
 #include <ostream>
@@ -65,13 +66,16 @@
 //     }
 //
 //     void NotifyFoo() {
-//       for (Observer& obs : observers_)
-//         obs.OnFoo(this);
+//       observers_.Notify(&Observer::OnFoo, this);
 //     }
 //
 //     void NotifyBar(int x, int y) {
-//       for (Observer& obs : observers_)
-//         obs.OnBar(this, x, y);
+//       // Use manual iteration when Notify() is not suitable, e.g.
+//       // if passing different args to different observers is needed.
+//       for (Observer& obs : observers_) {
+//         gfx::Point local_point = GetLocalPoint(obs, x, y);
+//         obs.OnBar(this, local_point.x(), local_point.y());
+//       }
 //     }
 //
 //    private:
@@ -354,6 +358,36 @@ class ObserverList {
   }
 
   bool empty() const { return !observers_count_; }
+
+  // Notifies all observers. It is safe to add and remove observers from within
+  // the notification method.
+  //
+  // Example:
+  //   // Instead of:
+  //   for (auto& observer : observers_) {
+  //     observer->OnFooChanged(x, y);
+  //   }
+  //   // You can use:
+  //   observers_.Notify(&Observer::OnFooChanged, x, y);
+  //
+  // Requirements:
+  //  - The notification method's arguments must be copyable or implicitly
+  //    convertible from each argument type passed to `Notify()`.
+  //
+  // TODO(crbug.com/40727208): Consider handling return values from observer
+  // methods, which are currently ignored.
+  //
+  // TODO(crbug.com/40727208): Consider adding an overload that supports
+  // move-only arguments by requiring `args` to be callable objects that
+  // returns a value of the desired type.
+  template <typename Method, typename... Args>
+    requires std::invocable<Method, ObserverType*, Args...> &&
+             (... && !internal::IsMoveOnly<Args>)
+  void Notify(Method method, const Args&... args) {
+    for (auto& observer : *this) {
+      std::invoke(method, observer, args...);
+    }
+  }
 
  private:
   friend class internal::WeakLinkNode<ObserverList>;
