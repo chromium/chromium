@@ -1126,17 +1126,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="IOS.DefaultBrowserVideoPromo.Halfscreen"
-    enum="IOSDefaultBrowserVideoPromoAction" expires_after="2024-09-01">
-  <owner>cheickcisse@google.com</owner>
-  <owner>sebsg@chromium.org</owner>
-  <owner>bling-get-set-up@google.com</owner>
-  <summary>
-    The action taken by the user in response to the half screen default browser
-    video promo.
-  </summary>
-</histogram>
-
 <histogram name="IOS.Desktop.{PromoType}.Shown"
     enum="DesktopIOSPromoImpression" expires_after="2025-02-05">
   <owner>aliaaborhamy@google.com</owner>

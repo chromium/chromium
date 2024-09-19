@@ -13945,6 +13945,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="IOS.DefaultBrowserVideoPromo.Halfscreen.Dismiss">
+  <obsolete>This UI was removed in M123.</obsolete>
   <owner>cheickcisse@google.com</owner>
   <owner>sebsg@chromium.org</owner>
   <owner>bling-get-set-up@google.com</owner>
@@ -13954,6 +13955,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="IOS.DefaultBrowserVideoPromo.Halfscreen.Impression">
+  <obsolete>This UI was removed in M123.</obsolete>
   <owner>cheickcisse@google.com</owner>
   <owner>sebsg@chromium.org</owner>
   <owner>bling-get-set-up@google.com</owner>
@@ -13964,6 +13966,7 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="IOS.DefaultBrowserVideoPromo.Halfscreen.ShowMeHow">
+  <obsolete>This UI was removed in M123.</obsolete>
   <owner>cheickcisse@google.com</owner>
   <owner>sebsg@chromium.org</owner>
   <owner>bling-get-set-up@google.com</owner>
