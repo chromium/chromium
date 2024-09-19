@@ -338,7 +338,7 @@ void RenderInputRouter::ForwardGestureEventWithLatencyInfo(
   TRACE_EVENT(
       "input,benchmark,latencyInfo", "LatencyInfo.Flow",
       [&gesture_with_latency](perfetto::EventContext ctx) {
-        ui::LatencyInfo::EmitLatencyInfoStep(
+        ui::LatencyInfo::EmitFirstLatencyInfoStep(
             ctx, gesture_with_latency.latency.trace_id(),
             perfetto::protos::pbzero::ChromeLatencyInfo2::Step::
                 STEP_SEND_INPUT_EVENT_UI,
@@ -479,7 +479,7 @@ void RenderInputRouter::ForwardTouchEventWithLatencyInfo(
 
   TRACE_EVENT("input,benchmark,latencyInfo", "LatencyInfo.Flow",
               [&touch_with_latency](perfetto::EventContext ctx) {
-                ui::LatencyInfo::EmitLatencyInfoStep(
+                ui::LatencyInfo::EmitFirstLatencyInfoStep(
                     ctx, touch_with_latency.latency.trace_id(),
                     perfetto::protos::pbzero::ChromeLatencyInfo2::Step::
                         STEP_SEND_INPUT_EVENT_UI,

@@ -104,9 +104,17 @@ class LatencyInfo {
       const std::vector<LatencyInfo>& latency_info,
       perfetto::protos::pbzero::ChromeLatencyInfo::Step step);
 
-  // Populates fields for a `LatencyInfo.Flow` event for `latency_trace_id` with
-  // `ctx`.
-  static void EmitLatencyInfoStep(
+  // Populates fields for the first `LatencyInfo.Flow` event in a flow, for
+  // `latency_trace_id` with `ctx`.
+  static void EmitFirstLatencyInfoStep(
+      perfetto::EventContext& ctx,
+      int64_t latency_trace_id,
+      perfetto::protos::pbzero::ChromeLatencyInfo2::Step step,
+      perfetto::protos::pbzero::ChromeLatencyInfo2::InputType input_type);
+
+  // Populates fields for an intermediate (i.e. *not* the first)
+  // `LatencyInfo.Flow` event in a flow, for `latency_trace_id` with `ctx`.
+  static void EmitIntermediateLatencyInfoStep(
       perfetto::EventContext& ctx,
       int64_t latency_trace_id,
       perfetto::protos::pbzero::ChromeLatencyInfo2::Step step,
@@ -156,6 +164,14 @@ class LatencyInfo {
   void AddLatencyNumberWithTimestampImpl(LatencyComponentType component,
                                          base::TimeTicks time,
                                          const char* trace_name_str);
+
+  static void EmitLatencyInfoStep(
+      perfetto::EventContext& ctx,
+      int64_t latency_trace_id,
+      perfetto::protos::pbzero::ChromeLatencyInfo2::Step step,
+      perfetto::protos::pbzero::ChromeLatencyInfo2::InputType input_type,
+      perfetto::protos::pbzero::TrackEvent::LegacyEvent::FlowDirection
+          direction);
 
   LatencyMap latency_components_;
 
