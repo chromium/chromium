@@ -78,7 +78,8 @@ const CGFloat kLabelOffset = 3;
 }
 
 - (void)setTabGridButtonStyle:(ToolbarTabGridButtonStyle)tabGridButtonStyle {
-  CHECK(IsTabGroupIndicatorEnabled());
+  CHECK(IsTabGroupIndicatorEnabled() ||
+        tabGridButtonStyle == ToolbarTabGridButtonStyle::kNormal);
   if (_tabGridButtonStyle == tabGridButtonStyle) {
     return;
   }
