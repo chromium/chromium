@@ -548,7 +548,6 @@ URLLoader::URLLoader(
         url_loader_network_observer,
     mojo::PendingRemote<mojom::DevToolsObserver> devtools_observer,
     mojo::PendingRemote<mojom::AcceptCHFrameObserver> accept_ch_frame_observer,
-    net::CookieSettingOverrides cookie_setting_overrides,
     std::unique_ptr<AttributionRequestHelper> attribution_request_helper,
     bool shared_storage_writable_eligible)
     : url_request_context_(context.GetUrlRequestContext()),
@@ -782,24 +781,8 @@ URLLoader::URLLoader(
   url_request_->set_storage_access_api_status(
       request.storage_access_api_status);
 
-  url_request_->cookie_setting_overrides().PutAll(cookie_setting_overrides);
-  if (request.is_outermost_main_frame &&
-      network::cors::IsCorsEnabledRequestMode(request_mode_)) {
-    url_request_->cookie_setting_overrides().Put(
-        net::CookieSettingOverride::kTopLevelStorageAccessGrantEligible);
-  }
-
-  AddAdsHeuristicCookieSettingOverrides(
-      request.is_ad_tagged, url_request_->cookie_setting_overrides());
-
-  // The `kStorageAccessGrantEligible` and
-  // `kStorageAccessGrantEligibleViaHeader` overrides will be applied (in-place)
-  // by individual request jobs as appropriate, but should not be present
-  // initially.
-  CHECK(!url_request_->cookie_setting_overrides().Has(
-      net::CookieSettingOverride::kStorageAccessGrantEligible));
-  CHECK(!url_request_->cookie_setting_overrides().Has(
-      net::CookieSettingOverride::kStorageAccessGrantEligibleViaHeader));
+  url_request_->cookie_setting_overrides() = CalculateCookieSettingOverrides(
+      factory_params_->cookie_setting_overrides, request);
 
   if (shared_dictionary_manager) {
     url_request_->SetSharedDictionaryGetter(
@@ -1617,6 +1600,31 @@ std::optional<net::IsolationInfo> URLLoader::GetIsolationInfo(
   }
 
   return std::nullopt;
+}
+
+// static
+net::CookieSettingOverrides URLLoader::CalculateCookieSettingOverrides(
+    net::CookieSettingOverrides factory_overrides,
+    const ResourceRequest& request) {
+  net::CookieSettingOverrides overrides(factory_overrides);
+  if (request.is_outermost_main_frame &&
+      network::cors::IsCorsEnabledRequestMode(request.mode)) {
+    overrides.Put(
+        net::CookieSettingOverride::kTopLevelStorageAccessGrantEligible);
+  }
+
+  AddAdsHeuristicCookieSettingOverrides(request.is_ad_tagged, overrides);
+
+  // The `kStorageAccessGrantEligible` and
+  // `kStorageAccessGrantEligibleViaHeader` overrides will be applied (in-place)
+  // by individual request jobs as appropriate, but should not be present
+  // initially.
+  CHECK(
+      !overrides.Has(net::CookieSettingOverride::kStorageAccessGrantEligible));
+  CHECK(!overrides.Has(
+      net::CookieSettingOverride::kStorageAccessGrantEligibleViaHeader));
+
+  return overrides;
 }
 
 void URLLoader::OnAuthRequired(net::URLRequest* url_request,

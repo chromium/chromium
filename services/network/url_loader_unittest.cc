@@ -655,7 +655,7 @@ struct URLLoaderOptions {
         std::move(shared_dictionary_checker), std::move(cookie_observer),
         std::move(trust_token_observer), std::move(url_loader_network_observer),
         std::move(devtools_observer), std::move(accept_ch_frame_observer),
-        cookie_setting_overrides, std::move(attribution_request_helper),
+        std::move(attribution_request_helper),
         shared_storage_writable_eligible);
   }
 
@@ -680,7 +680,6 @@ struct URLLoaderOptions {
       mojo::NullRemote();
   mojo::PendingRemote<mojom::AcceptCHFrameObserver> accept_ch_frame_observer =
       mojo::NullRemote();
-  net::CookieSettingOverrides cookie_setting_overrides;
   bool shared_storage_writable_eligible = false;
 
  private:
@@ -872,7 +871,6 @@ class URLLoaderTest : public testing::Test {
     url_loader_options.accept_ch_frame_observer =
         accept_ch_frame_observer_ ? accept_ch_frame_observer_->Bind()
                                   : mojo::NullRemote();
-    url_loader_options.cookie_setting_overrides = cookie_setting_overrides_;
     url_loader = url_loader_options.MakeURLLoader(
         context(), DeleteLoaderCallback(&delete_run_loop, &url_loader),
         loader.BindNewPipeAndPassReceiver(), request, client_.CreateRemote());
@@ -940,6 +938,8 @@ class URLLoaderTest : public testing::Test {
     context().mutable_factory_params().isolation_info =
         net::IsolationInfo::CreateForInternalRequest(url::Origin::Create(url));
     context().mutable_factory_params().is_trusted = is_trusted;
+    context().mutable_factory_params().cookie_setting_overrides =
+        cookie_setting_overrides_;
   }
 
   // Adds a MultipleWritesInterceptor for MultipleWritesInterceptor::GetURL()

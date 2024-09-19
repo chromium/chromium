@@ -194,7 +194,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
       mojo::PendingRemote<mojom::DevToolsObserver> devtools_observer,
       mojo::PendingRemote<mojom::AcceptCHFrameObserver>
           accept_ch_frame_observer,
-      net::CookieSettingOverrides cookie_setting_overrides,
       std::unique_ptr<AttributionRequestHelper> attribution_request_helper,
       bool shared_storage_writable_eligible);
 
@@ -333,6 +332,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   static std::optional<net::IsolationInfo> GetIsolationInfo(
       const net::IsolationInfo& factory_isolation_info,
       bool automatically_assign_isolation_info,
+      const ResourceRequest& request);
+
+  static net::CookieSettingOverrides CalculateCookieSettingOverrides(
+      net::CookieSettingOverrides factory_overrides,
       const ResourceRequest& request);
 
  private:
