@@ -28,6 +28,7 @@ import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
@@ -121,6 +122,8 @@ public class DiscountsIntegrationTest {
     @Test
     @SmallTest
     @Feature({"RenderTest"})
+    @DisableIf.Build(sdk_equals = 32)
+    // Disabled on Android Automotive. See b/368117896
     public void testRenderDiscountContextualPageActionIcon() throws IOException {
         navigateAndWaitForDiscountsContextualPageActionIcon();
         mRenderTestRule.render(
