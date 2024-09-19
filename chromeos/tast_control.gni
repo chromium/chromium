@@ -121,6 +121,9 @@ tast_disabled_tests_from_chrome_all = [
   # b/362457684: test is failing on betty, blocking LKGM.
   "cryptohome.UssMigrationChallengeCredential.rsassa_all@betty",
 
+  # b/367545244: test is failing on brya, blocking LKGM.
+  "audio.CrasDLCManager@brya",
+
   # READ COMMENT AT TOP BEFORE ADDING NEW TESTS HERE.
 ]
 
