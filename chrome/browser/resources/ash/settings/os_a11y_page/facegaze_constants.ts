@@ -111,48 +111,47 @@ export const FACEGAZE_ACTION_ASSIGN_GESTURE_EVENT_NAME =
 export class FaceGazeUtils {
   /**
    * @param gesture The FacialGesture for which to return the display text.
-   * @returns a string containing the user-friendly display text for the
-   *     gesture.
+   * @returns the name of the string containing user-friendly display text for
+   *     the gesture.
    */
-  static getGestureDisplayText(gesture: FacialGesture|null): string {
-    // TODO(b:341770655): Localize these strings.
+  static getGestureDisplayTextName(gesture: FacialGesture|null): string {
     switch (gesture) {
       case FacialGesture.BROW_INNER_UP:
-        return 'Raise eyebrows';
+        return 'faceGazeGestureLabelBrowInnerUp';
       case FacialGesture.BROWS_DOWN:
-        return 'Lower eyebrows';
+        return 'faceGazeGestureLabelBrowsDown';
       case FacialGesture.EYE_SQUINT_LEFT:
-        return 'Squint left eye';
+        return 'faceGazeGestureLabelEyeSquintLeft';
       case FacialGesture.EYE_SQUINT_RIGHT:
-        return 'Squint right eye';
+        return 'faceGazeGestureLabelEyeSquintRight';
       case FacialGesture.EYES_BLINK:
-        return 'Blink both eyes';
+        return 'faceGazeGestureLabelEyesBlink';
       case FacialGesture.EYES_LOOK_DOWN:
-        return 'Look down';
+        return 'faceGazeGestureLabelEyesLookDown';
       case FacialGesture.EYES_LOOK_LEFT:
-        return 'Look left';
+        return 'faceGazeGestureLabelEyesLookLeft';
       case FacialGesture.EYES_LOOK_RIGHT:
-        return 'Look right';
+        return 'faceGazeGestureLabelEyesLookRight';
       case FacialGesture.EYES_LOOK_UP:
-        return 'Look up';
+        return 'faceGazeGestureLabelEyesLookUp';
       case FacialGesture.JAW_LEFT:
-        return 'Open mouth shift left';
+        return 'faceGazeGestureLabelJawLeft';
       case FacialGesture.JAW_OPEN:
-        return 'Open your mouth wide';
+        return 'faceGazeGestureLabelJawOpen';
       case FacialGesture.JAW_RIGHT:
-        return 'Open mouth shift right';
+        return 'faceGazeGestureLabelJawRight';
       case FacialGesture.MOUTH_FUNNEL:
-        return 'Mouth funnel shape';
+        return 'faceGazeGestureLabelMouthFunnel';
       case FacialGesture.MOUTH_LEFT:
-        return 'Stretch left corner of your mouth';
+        return 'faceGazeGestureLabelMouthLeft';
       case FacialGesture.MOUTH_PUCKER:
-        return 'Put lips together (like a kiss)';
+        return 'faceGazeGestureLabelMouthPucker';
       case FacialGesture.MOUTH_RIGHT:
-        return 'Stretch right corner of your mouth';
+        return 'faceGazeGestureLabelMouthRight';
       case FacialGesture.MOUTH_SMILE:
-        return 'Smile';
+        return 'faceGazeGestureLabelMouthSmile';
       case FacialGesture.MOUTH_UPPER_UP:
-        return 'Wrinkle your nose';
+        return 'faceGazeGestureLabelMouthUpperUp';
       default:
         console.error(
             'Display text requested for unsupported FacialGesture ' + gesture);

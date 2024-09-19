@@ -160,7 +160,7 @@ export class FaceGazeActionsCardElement extends FaceGazeActionsCardElementBase {
   }
 
   private getGestureDisplayText_(gesture: FacialGesture|null): string {
-    return FaceGazeUtils.getGestureDisplayText(gesture);
+    return this.i18n(FaceGazeUtils.getGestureDisplayTextName(gesture));
   }
 
   private getGestureIconName_(gesture: FacialGesture|null): string {

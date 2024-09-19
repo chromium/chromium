@@ -345,7 +345,8 @@ export class FaceGazeAddActionDialogElement extends
     return this.i18n(
         'faceGazeActionsDialogGestureThresholdTitle',
         this.selectedGesture_ ?
-            FaceGazeUtils.getGestureDisplayText(this.selectedGesture_) :
+            this.i18n(FaceGazeUtils.getGestureDisplayTextName(
+                this.selectedGesture_)) :
             '');
   }
 
@@ -366,7 +367,7 @@ export class FaceGazeAddActionDialogElement extends
   }
 
   private getGestureDisplayText_(gesture: FacialGesture|null): string {
-    return FaceGazeUtils.getGestureDisplayText(gesture);
+    return this.i18n(FaceGazeUtils.getGestureDisplayTextName(gesture));
   }
 
   private getGestureIconName_(gesture: FacialGesture|null): string {

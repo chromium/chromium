@@ -1364,6 +1364,60 @@
   <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_ACTIONS_DIALOG_GESTURE_THRESHOLD_KNOB_LABEL" desc="Label for knob on slider indicating the confidence threshold for detecting a gesture.">
     Detection threshold
   </message>
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_GESTURE_LABEL_BROW_INNER_UP" desc="This text describes a gesture, or movement, that a user will make with their face. This gesture is used by an accessibility feature to take a certain action (such as a mouse click), so a user can control their computer using facial gestures. For this gesture, the user should move their eyebrows up. See go/face-gestures-loc for illustrations of the gestures.">
+    Raise eyebrows
+  </message>
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_GESTURE_LABEL_BROWS_DOWN" desc="This text describes a gesture, or movement, that a user will make with their face. This gesture is used by an accessibility feature to take a certain action (such as a mouse click), so a user can control their computer using facial gestures. For this gesture, the user should move their eyebrows down. See go/face-gestures-loc for illustrations of the gestures.">
+    Lower eyebrows
+  </message>
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_GESTURE_LABEL_EYE_SQUINT_LEFT" desc="This text describes a gesture, or movement, that a user will make with their face. This gesture is used by an accessibility feature to take a certain action (such as a mouse click), so a user can control their computer using facial gestures. For this gesture, the user should partly close their left eye. See go/face-gestures-loc for illustrations of the gestures.">
+    Squint left eye
+  </message>
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_GESTURE_LABEL_EYE_SQUINT_RIGHT" desc="This text describes a gesture, or movement, that a user will make with their face. This gesture is used by an accessibility feature to take a certain action (such as a mouse click), so a user can control their computer using facial gestures. For this gesture, the user should partly close their right eye. See go/face-gestures-loc for illustrations of the gestures.">
+    Squint right eye
+  </message>
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_GESTURE_LABEL_EYES_BLINK" desc="This text describes a gesture, or movement, that a user will make with their face. This gesture is used by an accessibility feature to take a certain action (such as a mouse click), so a user can control their computer using facial gestures. For this gesture, the user should shut and open both eyes quickly. See go/face-gestures-loc for illustrations of the gestures.">
+    Blink both eyes
+  </message>
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_GESTURE_LABEL_EYES_LOOK_DOWN" desc="This text describes a gesture, or movement, that a user will make with their face. This gesture is used by an accessibility feature to take a certain action (such as a mouse click), so a user can control their computer using facial gestures. For this gesture, the user should move their eyes down. See go/face-gestures-loc for illustrations of the gestures.">
+    Look down
+  </message>
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_GESTURE_LABEL_EYES_LOOK_LEFT" desc="This text describes a gesture, or movement, that a user will make with their face. This gesture is used by an accessibility feature to take a certain action (such as a mouse click), so a user can control their computer using facial gestures. For this gesture, the user should move their eyes left. See go/face-gestures-loc for illustrations of the gestures.">
+    Look left
+  </message>
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_GESTURE_LABEL_EYES_LOOK_RIGHT" desc="This text describes a gesture, or movement, that a user will make with their face. This gesture is used by an accessibility feature to take a certain action (such as a mouse click), so a user can control their computer using facial gestures. For this gesture, the user should move their eyes right. See go/face-gestures-loc for illustrations of the gestures.">
+    Look right
+  </message>
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_GESTURE_LABEL_EYES_LOOK_UP" desc="This text describes a gesture, or movement, that a user will make with their face. This gesture is used by an accessibility feature to take a certain action (such as a mouse click), so a user can control their computer using facial gestures. For this gesture, the user should move their eyes up. See go/face-gestures-loc for illustrations of the gestures.">
+    Look up
+  </message>
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_GESTURE_LABEL_JAW_LEFT" desc="This text describes a gesture, or movement, that a user will make with their face. This gesture is used by an accessibility feature to take a certain action (such as a mouse click), so a user can control their computer using facial gestures. For this gesture, the user should move their bottom jaw to the left. See go/face-gestures-loc for illustrations of the gestures.">
+    Shift jaw left
+  </message>
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_GESTURE_LABEL_JAW_OPEN" desc="This text describes a gesture, or movement, that a user will make with their face. This gesture is used by an accessibility feature to take a certain action (such as a mouse click), so a user can control their computer using facial gestures. For this gesture, the user should open their mouth wide. See go/face-gestures-loc for illustrations of the gestures.">
+    Open your mouth wide
+  </message>
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_GESTURE_LABEL_JAW_RIGHT" desc="This text describes a gesture, or movement, that a user will make with their face. This gesture is used by an accessibility feature to take a certain action (such as a mouse click), so a user can control their computer using facial gestures. For this gesture, the user should move their bottom jaw to the right. See go/face-gestures-loc for illustrations of the gestures.">
+    Shift jaw right
+  </message>
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_GESTURE_LABEL_MOUTH_FUNNEL" desc="This text describes a gesture, or movement, that a user will make with their face. This gesture is used by an accessibility feature to take a certain action (such as a mouse click), so a user can control their computer using facial gestures. For this gesture, the user should make their lips into a circular shape. See go/face-gestures-loc for illustrations of the gestures.">
+    Make a circle with your lips
+  </message>
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_GESTURE_LABEL_MOUTH_LEFT" desc="This text describes a gesture, or movement, that a user will make with their face. This gesture is used by an accessibility feature to take a certain action (such as a mouse click), so a user can control their computer using facial gestures. For this gesture, the user should move the left corner of their mouth further to the left. See go/face-gestures-loc for illustrations of the gestures.">
+    Stretch left corner of your mouth
+  </message>
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_GESTURE_LABEL_MOUTH_PUCKER" desc="This text describes a gesture, or movement, that a user will make with their face. This gesture is used by an accessibility feature to take a certain action (such as a mouse click), so a user can control their computer using facial gestures. For this gesture, the user should pucker their lips together, similar to a kiss gesture. See go/face-gestures-loc for illustrations of the gestures.">
+    Pucker by squeezing lips together
+  </message>
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_GESTURE_LABEL_MOUTH_RIGHT" desc="This text describes a gesture, or movement, that a user will make with their face. This gesture is used by an accessibility feature to take a certain action (such as a mouse click), so a user can control their computer using facial gestures. For this gesture, the user should move the right corner of their mouth further to the right. See go/face-gestures-loc for illustrations of the gestures.">
+    Stretch right corner of your mouth
+  </message>
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_GESTURE_LABEL_MOUTH_SMILE" desc="This text describes a gesture, or movement, that a user will make with their face. This gesture is used by an accessibility feature to take a certain action (such as a mouse click), so a user can control their computer using facial gestures. For this gesture, the user should smile. See go/face-gestures-loc for illustrations of the gestures.">
+    Smile
+  </message>
+  <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_GESTURE_LABEL_MOUTH_UPPER_UP" desc="This text describes a gesture, or movement, that a user will make with their face. This gesture is used by an accessibility feature to take a certain action (such as a mouse click), so a user can control their computer using facial gestures. For this gesture, the user should scrunch up their nose. See go/face-gestures-loc for illustrations of the gestures.">
+    Wrinkle your nose
+  </message>
   <message name="IDS_OS_SETTINGS_ACCESSIBILITY_FACEGAZE_CURSOR_SPEED_SECTION_NAME" desc="The name of a section in settings for controlling the cursor speed.">
     Speed
   </message>
