@@ -5,6 +5,7 @@
 import("//build/chromeos/crosier_tests.gni")
 import("//build/config/chromeos/ui_mode.gni")
 import("//media/media_options.gni")
+import("//rlz/buildflags/buildflags.gni")
 
 assert(is_chromeos_ash)
 
@@ -488,7 +489,6 @@ source_set("browser_tests") {
     "//components/policy/core/common:test_support",
     "//components/policy/test_support",
     "//components/prefs:test_support",
-    "//components/rlz",
     "//components/safe_browsing/core/common:safe_browsing_prefs",
     "//components/signin/public/identity_manager:test_support",
     "//components/user_manager:test_support",
@@ -497,6 +497,7 @@ source_set("browser_tests") {
     "//net:test_support",
     "//net/traffic_annotation:test_support",
     "//remoting/host/chromeos:features",
+    "//rlz/buildflags",
     "//services/network:test_support",
     "//ui/chromeos",
     "//ui/display/manager",
@@ -517,6 +518,10 @@ source_set("browser_tests") {
     "signin:browser_tests",
     "users:browser_tests",
   ]
+
+  if (enable_rlz) {
+    deps += [ "//components/rlz" ]
+  }
 }
 
 source_set("unit_tests") {

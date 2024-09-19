@@ -165,7 +165,6 @@ static_library("main_parts") {
     "//device/bluetooth",
     "//net",
     "//printing/backend",
-    "//rlz/buildflags",
     "//services/audio/public/cpp",
     "//ui/base",
     "//ui/base:features",

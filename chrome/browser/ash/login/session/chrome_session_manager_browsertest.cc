@@ -33,9 +33,9 @@
 
 #if BUILDFLAG(ENABLE_RLZ)
 #include "chrome/browser/ash/login/session/user_session_initializer.h"
-#include "chrome/browser/google/google_brand_chromeos.h"
+#include "chrome/browser/google/google_brand_chromeos.h"  // nogncheck
 #include "chrome/common/chrome_switches.h"
-#include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
+#include "chromeos/ash/components/install_attributes/stub_install_attributes.h"  // nogncheck
 #include "components/user_manager/user_names.h"
 #endif  // BUILDFLAG(ENABLE_RLZ)
 

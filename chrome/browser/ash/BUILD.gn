@@ -1012,10 +1012,6 @@ static_library("ash") {
     "//chrome/browser/ash/dbus:dbus_service_files",
   ]
 
-  if (enable_rlz) {
-    deps += [ "//components/rlz" ]
-  }
-
   if (is_cfm) {
     deps += [
       "//chrome/browser/ash/chromebox_for_meetings",

@@ -4,6 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 import("//chromeos/ash/components/assistant/assistant.gni")
+import("//rlz/buildflags/buildflags.gni")
 
 assert(is_chromeos_ash)
 
@@ -93,7 +94,12 @@ static_library("app_list") {
     "//components/app_constants",
     "//components/pref_registry",
     "//extensions/common",
+    "//rlz/buildflags",
   ]
+
+  if (enable_rlz) {
+    deps += [ "//components/rlz" ]
+  }
 }
 
 static_library("test_support") {
