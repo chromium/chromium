@@ -46,7 +46,7 @@ FindResults::Iterator FindResults::begin() const {
   for (auto& searcher : extra_searchers_) {
     searcher->SetOffset(0);
   }
-  return Iterator(*find_buffer_, text_searcher_, extra_searchers_);
+  return Iterator(find_buffer_, text_searcher_, extra_searchers_);
 }
 
 FindResults::Iterator FindResults::end() const {
@@ -79,10 +79,10 @@ unsigned FindResults::CountForTesting() const {
 
 // FindResults::Iterator implementation.
 FindResults::Iterator::Iterator(
-    const FindBuffer& find_buffer,
+    const FindBuffer* find_buffer,
     TextSearcherICU* text_searcher,
     const Vector<std::unique_ptr<TextSearcherICU>>& extra_searchers)
-    : find_buffer_(&find_buffer) {
+    : find_buffer_(find_buffer) {
   text_searcher_list_.reserve(1 + extra_searchers.size());
   text_searcher_list_.push_back(text_searcher);
   // Initialize match_list_ with a value so that IsAtEnd() returns false.

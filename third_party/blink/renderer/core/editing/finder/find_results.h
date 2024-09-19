@@ -42,7 +42,7 @@ class CORE_EXPORT FindResults {
     using reference = BufferMatchResult&;
 
     Iterator() = default;
-    Iterator(const FindBuffer& find_buffer,
+    Iterator(const FindBuffer* find_buffer,
              TextSearcherICU* text_searcher,
              const Vector<std::unique_ptr<TextSearcherICU>>& extra_searchers);
 
