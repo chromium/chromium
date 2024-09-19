@@ -43,6 +43,7 @@ class ChromeAutofillPredictionImprovementsClient
   user_annotations::UserAnnotationsService* GetUserAnnotationsService()
       override;
   bool IsAutofillPredictionImprovementsEnabledPref() const override;
+  void TryToOpenFeedbackPage(const std::string& feedback_id) override;
 
  protected:
   explicit ChromeAutofillPredictionImprovementsClient(
@@ -53,6 +54,10 @@ class ChromeAutofillPredictionImprovementsClient
       ChromeAutofillPredictionImprovementsClient>;
 
   const raw_ref<const PrefService> prefs_;
+
+  // Returns whether the optimization guide suggests that Autofill prediction
+  // improvements should currently be allowed to report feedback.
+  bool CanShowFeedbackPage();
 
   std::unique_ptr<autofill_prediction_improvements::
                       AutofillPredictionImprovementsFillingEngine>

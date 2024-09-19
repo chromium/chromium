@@ -2632,7 +2632,7 @@ TEST_F(
           AutofillPredictionImprovementsDelegate::UserFeedback::kThumbsUp));
 
   external_delegate().DidPerformButtonActionForSuggestion(
-      Suggestion(SuggestionType::kFillPredictionImprovements),
+      Suggestion(SuggestionType::kPredictionImprovementsFeedback),
       PredictionImprovementsButtonActions::kThumbsUpClicked);
 }
 
@@ -2649,7 +2649,7 @@ TEST_F(
           AutofillPredictionImprovementsDelegate::UserFeedback::kThumbsDown));
 
   external_delegate().DidPerformButtonActionForSuggestion(
-      Suggestion(SuggestionType::kFillPredictionImprovements),
+      Suggestion(SuggestionType::kPredictionImprovementsFeedback),
       PredictionImprovementsButtonActions::kThumbsDownClicked);
 }
 
@@ -2664,7 +2664,7 @@ TEST_F(
               UserClickedLearnMore());
 
   external_delegate().DidPerformButtonActionForSuggestion(
-      Suggestion(SuggestionType::kFillPredictionImprovements),
+      Suggestion(SuggestionType::kPredictionImprovementsFeedback),
       PredictionImprovementsButtonActions::kLearnMoreClicked);
 }
 

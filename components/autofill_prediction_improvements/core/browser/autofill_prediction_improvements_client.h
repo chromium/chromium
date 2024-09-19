@@ -6,6 +6,7 @@
 #define COMPONENTS_AUTOFILL_PREDICTION_IMPROVEMENTS_CORE_BROWSER_AUTOFILL_PREDICTION_IMPROVEMENTS_CLIENT_H_
 
 #include "base/functional/callback_forward.h"
+#include "components/autofill/core/browser/autofill_prediction_improvements_delegate.h"
 
 class GURL;
 
@@ -52,6 +53,9 @@ class AutofillPredictionImprovementsClient {
   // Returns whether `autofill::prefs::kAutofillPredictionImprovementsEnabled`
   // is enabled.
   virtual bool IsAutofillPredictionImprovementsEnabledPref() const = 0;
+
+  // Opens the feedback page if the feature is allowed for feedback.
+  virtual void TryToOpenFeedbackPage(const std::string& feedback_id) = 0;
 };
 
 }  // namespace autofill_prediction_improvements

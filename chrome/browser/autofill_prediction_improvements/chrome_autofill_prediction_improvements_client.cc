@@ -6,6 +6,8 @@
 
 #include "base/check_deref.h"
 #include "chrome/browser/autofill/strike_database_factory.h"
+#include "chrome/browser/feedback/public/feedback_source.h"
+#include "chrome/browser/feedback/show_feedback_page.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -16,10 +18,13 @@
 #include "components/autofill_prediction_improvements/core/browser/autofill_prediction_improvements_filling_engine_impl.h"
 #include "components/autofill_prediction_improvements/core/browser/autofill_prediction_improvements_manager.h"
 #include "components/optimization_guide/core/optimization_guide_proto_util.h"
+#include "components/optimization_guide/proto/model_quality_service.pb.h"
+#include "components/strings/grit/components_strings.h"
 #include "components/user_annotations/user_annotations_service.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "ui/accessibility/ax_tree_update.h"
+#include "ui/base/l10n/l10n_util.h"
 
 ChromeAutofillPredictionImprovementsClient::
     ChromeAutofillPredictionImprovementsClient(
@@ -107,6 +112,41 @@ bool ChromeAutofillPredictionImprovementsClient::
     IsAutofillPredictionImprovementsEnabledPref() const {
   return prefs_->GetBoolean(
       autofill::prefs::kAutofillPredictionImprovementsEnabled);
+}
+
+bool ChromeAutofillPredictionImprovementsClient::CanShowFeedbackPage() {
+  OptimizationGuideKeyedService* opt_guide_keyed_service =
+      OptimizationGuideKeyedServiceFactory::GetForProfile(
+          Profile::FromBrowserContext(GetWebContents().GetBrowserContext()));
+  if (!opt_guide_keyed_service ||
+      !opt_guide_keyed_service->ShouldFeatureBeCurrentlyAllowedForFeedback(
+          optimization_guide::proto::LogAiDataRequest::FeatureCase::
+              kFormsPredictions)) {
+    return false;
+  }
+
+  return true;
+}
+
+void ChromeAutofillPredictionImprovementsClient::TryToOpenFeedbackPage(
+    const std::string& feedback_id) {
+  if (!CanShowFeedbackPage()) {
+    return;
+  }
+  base::Value::Dict feedback_metadata;
+  feedback_metadata.Set("log_id", feedback_id);
+
+  chrome::ShowFeedbackPage(
+      GetWebContents().GetLastCommittedURL(),
+      Profile::FromBrowserContext(GetWebContents().GetBrowserContext()),
+      feedback::kFeedbackSourceAI,
+      /*description_template=*/std::string(),
+      /*description_placeholder_text=*/
+      l10n_util::GetStringUTF8(
+          IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_FEEDBACK_PLACEHOLDER),
+      /*category_tag=*/"autofill_prediction_improvements",
+      /*extra_diagnostics=*/std::string(),
+      /*autofill_metadata=*/base::Value::Dict(), std::move(feedback_metadata));
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(ChromeAutofillPredictionImprovementsClient);

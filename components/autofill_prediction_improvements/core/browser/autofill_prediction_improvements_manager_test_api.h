@@ -25,6 +25,10 @@ class AutofillPredictionImprovementsManagerTestApi {
     manager_->address_suggestions_ = address_suggestions;
   }
 
+  void SetFeedbackId(std::optional<std::string> feedback_id) {
+    manager_->feedback_id_ = feedback_id;
+  }
+
  private:
   raw_ref<AutofillPredictionImprovementsManager> manager_;
 };

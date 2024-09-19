@@ -912,9 +912,7 @@ void AutofillExternalDelegate::DidPerformButtonActionForSuggestion(
             CreateUpdateSuggestionsCallback());
       }
       return;
-    // TODO(crbug.com/362468426): Update the suggestion type in case it is
-    // decided that feedback will be its own suggestion.
-    case SuggestionType::kFillPredictionImprovements: {
+    case SuggestionType::kPredictionImprovementsFeedback: {
       AutofillPredictionImprovementsDelegate* delegate =
           manager_->client().GetAutofillPredictionImprovementsDelegate();
       if (!delegate) {

@@ -312,19 +312,27 @@ void AutofillPredictionImprovementsManager::OnReceivedAXTree(
 void AutofillPredictionImprovementsManager::OnReceivedPredictions(
     const autofill::FormData& form,
     const autofill::FormFieldData& trigger_field,
-    base::expected<autofill::FormData, bool> improved_predictions) {
-  if (!improved_predictions.has_value()) {
+    base::expected<autofill::FormData, bool> prediction_improvements,
+    std::optional<std::string> feedback_id) {
+  if (!prediction_improvements.has_value()) {
     UpdateSuggestions(CreateErrorSuggestion());
     return;
   }
 
-  cache_ = improved_predictions.value();
+  cache_ = prediction_improvements.value();
+  feedback_id_ = feedback_id;
 
   UpdateSuggestions(CreateFillingSuggestions(trigger_field));
 }
 
 void AutofillPredictionImprovementsManager::UserFeedbackReceived(
-    autofill::AutofillPredictionImprovementsDelegate::UserFeedback feedback) {}
+    autofill::AutofillPredictionImprovementsDelegate::UserFeedback feedback) {
+  if (feedback_id_ && feedback ==
+                          autofill::AutofillPredictionImprovementsDelegate::
+                              UserFeedback::kThumbsDown) {
+    client_->TryToOpenFeedbackPage(*feedback_id_);
+  }
+}
 
 void AutofillPredictionImprovementsManager::UserClickedLearnMore() {}
 
@@ -374,6 +382,7 @@ void AutofillPredictionImprovementsManager::OnClickedTriggerSuggestion(
 void AutofillPredictionImprovementsManager::Reset() {
   cache_ = std::nullopt;
   update_suggestions_callback_ = base::NullCallback();
+  feedback_id_ = std::nullopt;
 }
 
 void AutofillPredictionImprovementsManager::UpdateSuggestions(

@@ -80,9 +80,11 @@ class AutofillPredictionImprovementsManager
 
   // The unexpected value is always `false` if there was an error retrieving
   // predictions.
-  void OnReceivedPredictions(const autofill::FormData& form,
-                             const autofill::FormFieldData& trigger_field,
-                             base::expected<autofill::FormData, bool>);
+  void OnReceivedPredictions(
+      const autofill::FormData& form,
+      const autofill::FormFieldData& trigger_field,
+      base::expected<autofill::FormData, bool> prediction_improvements,
+      std::optional<std::string> feedback_id);
 
   // Resets the state of this class.
   void Reset();
@@ -123,6 +125,11 @@ class AutofillPredictionImprovementsManager
   // Address suggestions that will be shown as defined in
   // `CreateFillingSuggestions()` after prediction improvements was triggered.
   std::vector<autofill::Suggestion> address_suggestions_;
+
+  // Stores the execution id for the latest successful retrieval of prediction
+  // improvements. If set, the feedback page will open when the "thumbs down"
+  // icon is clicked.
+  std::optional<std::string> feedback_id_ = std::nullopt;
 
   // Updates currently shown suggestions if their
   // `AutofillClient::SuggestionUiSessionId` hasn't changed since the trigger

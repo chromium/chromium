@@ -57,7 +57,7 @@ void AutofillPredictionImprovementsFillingEngineImpl::
   // TODO(crbug.com/361414075): Check that `user_annotations` aren't empty in
   // `AutofillPredictionImprovementsDelegate::ShouldProvidePredictionImprovements()`.
   if (user_annotations.empty()) {
-    std::move(callback).Run(base::unexpected(false));
+    std::move(callback).Run(base::unexpected(false), std::nullopt);
     return;
   }
 
@@ -88,7 +88,7 @@ void AutofillPredictionImprovementsFillingEngineImpl::OnModelExecuted(
     optimization_guide::OptimizationGuideModelExecutionResult execution_result,
     std::unique_ptr<optimization_guide::ModelQualityLogEntry> log_entry) {
   if (!execution_result.has_value()) {
-    std::move(callback).Run(base::unexpected(false));
+    std::move(callback).Run(base::unexpected(false), std::nullopt);
     return;
   }
 
@@ -97,12 +97,13 @@ void AutofillPredictionImprovementsFillingEngineImpl::OnModelExecuted(
           optimization_guide::proto::FormsPredictionsResponse>(
           execution_result.value());
   if (!maybe_response) {
-    std::move(callback).Run(base::unexpected(false));
+    std::move(callback).Run(base::unexpected(false), std::nullopt);
     return;
   }
 
   FillFormDataWithResponse(form_data, maybe_response->form_data());
-  std::move(callback).Run(std::move(form_data));
+  std::move(callback).Run(std::move(form_data),
+                          log_entry ? log_entry->model_execution_id() : "");
 }
 
 // static

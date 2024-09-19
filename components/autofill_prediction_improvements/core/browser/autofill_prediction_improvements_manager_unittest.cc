@@ -68,6 +68,10 @@ class MockAutofillPredictionImprovementsClient
               IsAutofillPredictionImprovementsEnabledPref,
               (),
               (const override));
+  MOCK_METHOD(void,
+              TryToOpenFeedbackPage,
+              (const std::string& feedback_id),
+              (override));
 };
 
 class MockOptimizationGuideDecider
@@ -229,7 +233,7 @@ TEST_F(AutofillPredictionImprovementsManagerTest, EndToEnd) {
   manager_->OnClickedTriggerSuggestion(form, form.fields().front(),
                                        update_suggestions_callback.Get());
   std::move(axtree_received_callback).Run({});
-  std::move(predictions_received_callback).Run(filled_form);
+  std::move(predictions_received_callback).Run(filled_form, "");
 
   EXPECT_THAT(loading_suggestion,
               ElementsAre(HasType(
@@ -342,6 +346,41 @@ TEST_F(
       address_suggestions,
       ElementsAre(HasType(SuggestionType::kFillPredictionImprovements)));
 }
+
+class AutofillPredictionImprovementsManagerUserFeedbackTest
+    : public AutofillPredictionImprovementsManagerTest,
+      public testing::WithParamInterface<
+          autofill::AutofillPredictionImprovementsDelegate::UserFeedback> {};
+
+// Given a non-null feedback id, tests that an attempt to open the feedback page
+// is only made if `UserFeedback::kThumbsDown` was received.
+TEST_P(AutofillPredictionImprovementsManagerUserFeedbackTest,
+       TryToOpenFeedbackPageNeverCalledIfUserFeedbackThumbsDown) {
+  using UserFeedback =
+      autofill::AutofillPredictionImprovementsDelegate::UserFeedback;
+  AutofillPredictionImprovementsManagerTestApi test_api(manager_.get());
+  test_api.SetFeedbackId("randomstringrjb");
+  EXPECT_CALL(client_, TryToOpenFeedbackPage)
+      .Times(GetParam() == UserFeedback::kThumbsDown);
+  manager_->UserFeedbackReceived(GetParam());
+}
+
+// Tests that the feedback page will never be opened if no feedback id is set.
+TEST_P(AutofillPredictionImprovementsManagerUserFeedbackTest,
+       TryToOpenFeedbackPageNeverCalledIfNoFeedbackIdPresent) {
+  AutofillPredictionImprovementsManagerTestApi test_api(manager_.get());
+  test_api.SetFeedbackId(std::nullopt);
+  EXPECT_CALL(client_, TryToOpenFeedbackPage).Times(0);
+  manager_->UserFeedbackReceived(GetParam());
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    AutofillPredictionImprovementsManagerUserFeedbackTest,
+    testing::Values(autofill::AutofillPredictionImprovementsDelegate::
+                        UserFeedback::kThumbsUp,
+                    autofill::AutofillPredictionImprovementsDelegate::
+                        UserFeedback::kThumbsDown));
 
 class AutofillPredictionImprovementsManagerImportFormTest
     : public AutofillPredictionImprovementsManagerTest,

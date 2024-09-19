@@ -55,5 +55,9 @@
   <message name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_FEEDBACK_THUMBS_DOWN_BUTTON_TOOLTIP" desc="Tooltip displayed on the thumbs down button tooltip." translateable="false">
     Thumbs down
   </message>
-
+  <message name="IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_FEEDBACK_PLACEHOLDER"
+    desc="Placeholder text for the Autofill prediction improvements feedback form."
+    translateable="false">
+    Send feedback for Autofill prediction improvements.
+  </message>
 </grit-part>

@@ -93,11 +93,13 @@ TEST_F(AutofillPredictionImprovementsFillingEngineImplTest, EndToEnd) {
   autofill::FormData form_data;
   form_data.set_fields({form_field_data, form_field_data2});
   optimization_guide::proto::AXTreeUpdate ax_tree;
-  base::test::TestFuture<base::expected<autofill::FormData, bool>> test_future;
+  base::test::TestFuture<base::expected<autofill::FormData, bool>,
+                         std::optional<std::string>>
+      test_future;
   engine()->GetPredictions(form_data, ax_tree, test_future.GetCallback());
 
   base::expected<autofill::FormData, bool> form_data_or_err =
-      test_future.Take();
+      std::get<0>(test_future.Take());
   EXPECT_TRUE(form_data_or_err.has_value());
   EXPECT_EQ(2u, form_data_or_err->fields().size());
   autofill::FormFieldData filled_field_response = form_data_or_err->fields()[0];
@@ -122,11 +124,13 @@ TEST_F(AutofillPredictionImprovementsFillingEngineImplTest,
   autofill::FormData form_data;
   form_data.set_fields({form_field_data});
   optimization_guide::proto::AXTreeUpdate ax_tree;
-  base::test::TestFuture<base::expected<autofill::FormData, bool>> test_future;
+  base::test::TestFuture<base::expected<autofill::FormData, bool>,
+                         std::optional<std::string>>
+      test_future;
   engine()->GetPredictions(form_data, ax_tree, test_future.GetCallback());
 
   base::expected<autofill::FormData, bool> form_data_or_err =
-      test_future.Take();
+      std::get<0>(test_future.Take());
   EXPECT_FALSE(form_data_or_err.has_value());
 }
 
@@ -158,11 +162,13 @@ TEST_F(AutofillPredictionImprovementsFillingEngineImplTest,
   autofill::FormData form_data;
   form_data.set_fields({form_field_data});
   optimization_guide::proto::AXTreeUpdate ax_tree;
-  base::test::TestFuture<base::expected<autofill::FormData, bool>> test_future;
+  base::test::TestFuture<base::expected<autofill::FormData, bool>,
+                         std::optional<std::string>>
+      test_future;
   engine()->GetPredictions(form_data, ax_tree, test_future.GetCallback());
 
   base::expected<autofill::FormData, bool> form_data_or_err =
-      test_future.Take();
+      std::get<0>(test_future.Take());
   EXPECT_FALSE(form_data_or_err.has_value());
 }
 
@@ -189,11 +195,13 @@ TEST_F(AutofillPredictionImprovementsFillingEngineImplTest,
   autofill::FormData form_data;
   form_data.set_fields({form_field_data});
   optimization_guide::proto::AXTreeUpdate ax_tree;
-  base::test::TestFuture<base::expected<autofill::FormData, bool>> test_future;
+  base::test::TestFuture<base::expected<autofill::FormData, bool>,
+                         std::optional<std::string>>
+      test_future;
   engine()->GetPredictions(form_data, ax_tree, test_future.GetCallback());
 
   base::expected<autofill::FormData, bool> form_data_or_err =
-      test_future.Take();
+      std::get<0>(test_future.Take());
   EXPECT_FALSE(form_data_or_err.has_value());
 }
 
