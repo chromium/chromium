@@ -8039,3 +8039,6 @@ crbug.com/365127791 [ Win11 ] virtual/webnn-service-with-gpu/external/wpt/webnn/
 crbug.com/365127791 [ Win11 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/sign.https.any.worker.html?gpu [ Failure Pass ]
 crbug.com/365127791 [ Win11 ] virtual/webnn-service-with-gpu/external/wpt/webnn/validation_tests/pooling.https.any.html?gpu [ Failure Pass ]
 crbug.com/365127791 [ Win11 ] virtual/webnn-service-with-gpu/external/wpt/webnn/validation_tests/pooling.https.any.worker.html?gpu [ Failure Pass ]
+
+# Flaky when run with other fullscreen tests
+crbug.com/364948306 external/wpt/fullscreen/api/element-request-fullscreen-without-user-activation.tentative.https.html [ Failure Pass ]
