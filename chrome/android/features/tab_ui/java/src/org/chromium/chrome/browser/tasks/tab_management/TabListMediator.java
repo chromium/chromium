@@ -2797,14 +2797,18 @@ class TabListMediator implements TabListNotificationHandler {
         } else if (menuId == R.id.delete_shared_group) {
             RecordUserAction.record("TabGroupItemMenu.DeleteShared");
             TabUiUtils.deleteSharedTabGroup(
+                    mContext,
                     (TabGroupModelFilter) mCurrentTabModelFilterSupplier.get(),
                     mActionConfirmationManager,
+                    mModalDialogManager,
                     tabId);
         } else if (menuId == R.id.leave_group) {
             RecordUserAction.record("TabGroupItemMenu.LeaveShared");
             TabUiUtils.leaveTabGroup(
+                    mContext,
                     (TabGroupModelFilter) mCurrentTabModelFilterSupplier.get(),
                     mActionConfirmationManager,
+                    mModalDialogManager,
                     tabId);
         }
     }

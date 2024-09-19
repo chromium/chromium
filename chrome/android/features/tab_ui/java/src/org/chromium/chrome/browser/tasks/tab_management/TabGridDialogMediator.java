@@ -70,6 +70,7 @@ import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.DeviceFormFactor;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.text.EmptyTextWatcher;
 
@@ -176,6 +177,7 @@ public class TabGridDialogMediator
     private final String mComponentName;
     private final Runnable mShowColorPickerPopupRunnable;
     private final ActionConfirmationManager mActionConfirmationManager;
+    private final ModalDialogManager mModalDialogManager;
     private final Profile mOriginalProfile;
     private final @Nullable TabGroupSyncService mTabGroupSyncService;
     private final TabModelObserver mTabModelObserver;
@@ -207,7 +209,8 @@ public class TabGridDialogMediator
             @NonNull DataSharingTabManager dataSharingTabManager,
             String componentName,
             Runnable showColorPickerPopupRunnable,
-            @Nullable ActionConfirmationManager actionConfirmationManager) {
+            @Nullable ActionConfirmationManager actionConfirmationManager,
+            @Nullable ModalDialogManager modalDialogManager) {
         mActivity = activity;
         mDialogController = dialogController;
         mModel = model;
@@ -223,6 +226,7 @@ public class TabGridDialogMediator
         mComponentName = componentName;
         mShowColorPickerPopupRunnable = showColorPickerPopupRunnable;
         mActionConfirmationManager = actionConfirmationManager;
+        mModalDialogManager = modalDialogManager;
         mOriginalProfile =
                 mCurrentTabModelFilterSupplier
                         .get()
@@ -885,14 +889,18 @@ public class TabGridDialogMediator
         } else if (menuId == R.id.delete_shared_group) {
             RecordUserAction.record("TabGridDialogMenu.DeleteShared");
             TabUiUtils.deleteSharedTabGroup(
+                    mActivity,
                     (TabGroupModelFilter) mCurrentTabModelFilterSupplier.get(),
                     mActionConfirmationManager,
+                    mModalDialogManager,
                     tabId);
         } else if (menuId == R.id.leave_group) {
             RecordUserAction.record("TabGridDialogMenu.LeaveShared");
             TabUiUtils.leaveTabGroup(
+                    mActivity,
                     (TabGroupModelFilter) mCurrentTabModelFilterSupplier.get(),
                     mActionConfirmationManager,
+                    mModalDialogManager,
                     tabId);
         }
     }

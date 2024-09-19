@@ -98,6 +98,7 @@ import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.TestActivity;
+import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.url.GURL;
 
@@ -151,6 +152,7 @@ public class TabGridDialogMediatorUnitTest {
     @Mock private DataSharingTabManager mDataSharingTabManager;
     @Mock private Runnable mShowColorPickerPopupRunnable;
     @Mock private ActionConfirmationManager mActionConfirmationManager;
+    @Mock private ModalDialogManager mModalDialogManager;
     @Mock private IdentityServicesProvider mIdentityServicesProvider;
     @Mock private IdentityManager mIdentityManager;
     @Mock private TabGroupSyncService mTabGroupSyncService;
@@ -220,22 +222,7 @@ public class TabGridDialogMediatorUnitTest {
 
         mActivity = Robolectric.buildActivity(TestActivity.class).get();
         mModel = spy(new PropertyModel(TabGridDialogProperties.ALL_KEYS));
-        mMediator =
-                new TabGridDialogMediator(
-                        mActivity,
-                        mDialogController,
-                        mModel,
-                        mCurrentTabModelFilterSupplier,
-                        mTabCreatorManager,
-                        mTabSwitcherResetHandler,
-                        mRecyclerViewPositionSupplier,
-                        mAnimationSourceViewProvider,
-                        mSnackbarManager,
-                        mSharedImageTilesCoordinator,
-                        mDataSharingTabManager,
-                        /* componentName= */ "",
-                        mShowColorPickerPopupRunnable,
-                        mActionConfirmationManager);
+        remakeMediator(/* withResetHandler= */ true, /* withAnimSource= */ true);
 
         mMediator.initWithNative(() -> mTabListEditorController, mTabGroupTitleEditor);
         assertThat(mTabModelObserverCaptor.getAllValues().isEmpty(), equalTo(false));
@@ -822,23 +809,7 @@ public class TabGridDialogMediatorUnitTest {
 
     @Test
     public void tabSelection_stripContext() {
-        mMediator.destroy();
-        mMediator =
-                new TabGridDialogMediator(
-                        mActivity,
-                        mDialogController,
-                        mModel,
-                        mCurrentTabModelFilterSupplier,
-                        mTabCreatorManager,
-                        /* tabSwitcherResetHandler= */ null,
-                        mRecyclerViewPositionSupplier,
-                        mAnimationSourceViewProvider,
-                        mSnackbarManager,
-                        mSharedImageTilesCoordinator,
-                        mDataSharingTabManager,
-                        /* componentName= */ "",
-                        mShowColorPickerPopupRunnable,
-                        mActionConfirmationManager);
+        remakeMediator(/* withResetHandler= */ false, /* withAnimSource= */ true);
 
         mMediator.initWithNative(() -> mTabListEditorController, mTabGroupTitleEditor);
         // Mock that the animation source view is not null, and the dialog is showing.
@@ -1244,22 +1215,7 @@ public class TabGridDialogMediatorUnitTest {
     public void showDialog_FromStrip() {
         // For strip we don't play zoom-in/zoom-out for show/hide dialog, and thus
         // the animationParamsProvider is null.
-        mMediator =
-                new TabGridDialogMediator(
-                        mActivity,
-                        mDialogController,
-                        mModel,
-                        mCurrentTabModelFilterSupplier,
-                        mTabCreatorManager,
-                        mTabSwitcherResetHandler,
-                        mRecyclerViewPositionSupplier,
-                        /* animationSourceViewProvider= */ null,
-                        mSnackbarManager,
-                        mSharedImageTilesCoordinator,
-                        mDataSharingTabManager,
-                        /* componentName= */ "",
-                        mShowColorPickerPopupRunnable,
-                        mActionConfirmationManager);
+        remakeMediator(/* withResetHandler= */ true, /* withAnimSource= */ false);
         mMediator.initWithNative(() -> mTabListEditorController, mTabGroupTitleEditor);
 
         // Mock that the dialog is hidden and animation source view, header title and scrim click
@@ -1297,22 +1253,7 @@ public class TabGridDialogMediatorUnitTest {
     public void showDialog_FromStrip_WithStoredTitle() {
         // For strip we don't play zoom-in/zoom-out for show/hide dialog, and thus
         // the animationParamsProvider is null.
-        mMediator =
-                new TabGridDialogMediator(
-                        mActivity,
-                        mDialogController,
-                        mModel,
-                        mCurrentTabModelFilterSupplier,
-                        mTabCreatorManager,
-                        mTabSwitcherResetHandler,
-                        mRecyclerViewPositionSupplier,
-                        /* animationSourceViewProvider= */ null,
-                        mSnackbarManager,
-                        mSharedImageTilesCoordinator,
-                        mDataSharingTabManager,
-                        /* componentName= */ "",
-                        mShowColorPickerPopupRunnable,
-                        mActionConfirmationManager);
+        remakeMediator(/* withResetHandler= */ true, /* withAnimSource= */ false);
         mMediator.initWithNative(() -> mTabListEditorController, mTabGroupTitleEditor);
         // Mock that the dialog is hidden and animation source view, header title and scrim click
         // runnable are all null.
@@ -1345,22 +1286,7 @@ public class TabGridDialogMediatorUnitTest {
     public void showDialog_FromStrip_SetupAnimation() {
         // For strip we don't play zoom-in/zoom-out for show/hide dialog, and thus
         // the animationParamsProvider is null.
-        mMediator =
-                new TabGridDialogMediator(
-                        mActivity,
-                        mDialogController,
-                        mModel,
-                        mCurrentTabModelFilterSupplier,
-                        mTabCreatorManager,
-                        mTabSwitcherResetHandler,
-                        mRecyclerViewPositionSupplier,
-                        /* animationSourceViewProvider= */ null,
-                        mSnackbarManager,
-                        mSharedImageTilesCoordinator,
-                        mDataSharingTabManager,
-                        /* componentName= */ "",
-                        mShowColorPickerPopupRunnable,
-                        mActionConfirmationManager);
+        remakeMediator(/* withResetHandler= */ true, /* withAnimSource= */ false);
         mMediator.initWithNative(() -> mTabListEditorController, mTabGroupTitleEditor);
         // Mock that the dialog is hidden and animation source view is set to some mock view for
         // testing purpose.
@@ -1694,6 +1620,29 @@ public class TabGridDialogMediatorUnitTest {
                 .review();
 
         verify(mDataSharingTabManager).showRecentActivity(COLLABORATION_ID1);
+    }
+
+    private void remakeMediator(boolean withResetHandler, boolean withAnimSource) {
+        if (mMediator != null) {
+            mMediator.destroy();
+        }
+        mMediator =
+                new TabGridDialogMediator(
+                        mActivity,
+                        mDialogController,
+                        mModel,
+                        mCurrentTabModelFilterSupplier,
+                        mTabCreatorManager,
+                        withResetHandler ? mTabSwitcherResetHandler : null,
+                        mRecyclerViewPositionSupplier,
+                        withAnimSource ? mAnimationSourceViewProvider : null,
+                        mSnackbarManager,
+                        mSharedImageTilesCoordinator,
+                        mDataSharingTabManager,
+                        /* componentName= */ "",
+                        mShowColorPickerPopupRunnable,
+                        mActionConfirmationManager,
+                        mModalDialogManager);
     }
 
     private void resetForDataSharing(boolean isShared) {
