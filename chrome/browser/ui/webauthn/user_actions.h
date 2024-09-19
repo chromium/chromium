@@ -11,8 +11,6 @@
 
 namespace webauthn::user_actions {
 
-// TODO(crbug.com/358277466): Add actions for Windows Hello cases.
-
 // Emits what authenticators are visible to the user in the WebAuthn selection
 // dialog when there are multiple options are available. Targets only GPM,
 // iCloud Keychain and Windows Hello authenticators.

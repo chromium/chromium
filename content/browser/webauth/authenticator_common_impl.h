@@ -281,6 +281,19 @@ class CONTENT_EXPORT AuthenticatorCommonImpl : public AuthenticatorCommon {
       blink::mojom::PublicKeyCredentialReportOptionsPtr options,
       blink::mojom::AuthenticatorStatus rp_id_validation_result);
 
+  void GetMetricsWrappedMakeCredentialCallback(
+      blink::mojom::Authenticator::MakeCredentialCallback callback,
+      blink::mojom::AuthenticatorStatus status,
+      blink::mojom::MakeCredentialAuthenticatorResponsePtr
+          authenticator_response,
+      blink::mojom::WebAuthnDOMExceptionDetailsPtr dom_exception_details);
+
+  void GetMetricsWrappedGetAssertionCallback(
+      blink::mojom::Authenticator::GetAssertionCallback callback,
+      blink::mojom::AuthenticatorStatus status,
+      blink::mojom::GetAssertionAuthenticatorResponsePtr authenticator_response,
+      blink::mojom::WebAuthnDOMExceptionDetailsPtr dom_exception_details);
+
   // Replaces the current |request_handler_| with a
   // |MakeCredentialRequestHandler|, effectively restarting the request.
   void StartMakeCredentialRequest(bool allow_skipping_pin_touch);

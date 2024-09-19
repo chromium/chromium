@@ -43837,6 +43837,24 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="WebAuthn.GetAssertion.Aborted" not_user_triggered="true">
+  <owner>derinel@google.com</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <description>
+    Recorded when the RP requested to cancel the GetAssertion request, just
+    before GetAssertionCallback is called.
+  </description>
+</action>
+
+<action name="WebAuthn.GetAssertion.Cancelled" not_user_triggered="true">
+  <owner>derinel@google.com</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <description>
+    Recorded when the user cancelled the GetAssertion request, just before
+    GetAssertionCallback is called.
+  </description>
+</action>
+
 <action name="WebAuthn.GetAssertion.ChromeProfileAuthenticatorShown"
     not_user_triggered="true">
   <owner>derinel@google.com</owner>
@@ -43844,6 +43862,26 @@ should be able to be added at any place in this file.
   <description>
     Recorded when the user is displayed the system authentication UI to sign in
     with a passkey stored in the Chrome profile.
+  </description>
+</action>
+
+<action name="WebAuthn.GetAssertion.Conditional.Start"
+    not_user_triggered="true">
+  <owner>derinel@google.com</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <description>
+    Recorded when a GetAssertion request with mediation: &quot;conditional&quot;
+    is started.
+  </description>
+</action>
+
+<action name="WebAuthn.GetAssertion.Failure" not_user_triggered="true">
+  <owner>derinel@google.com</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <description>
+    Recorded when the GetAssertion request failed, just before
+    GetAssertionCallback is called. The failures do not include user
+    cancellations, abort signals or timeouts.
   </description>
 </action>
 
@@ -44079,6 +44117,33 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="WebAuthn.GetAssertion.Start" not_user_triggered="true">
+  <owner>derinel@google.com</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <description>
+    Recorded when a GetAssertion request with no mediation =
+    &quot;conditional&quot; is started.
+  </description>
+</action>
+
+<action name="WebAuthn.GetAssertion.Success" not_user_triggered="true">
+  <owner>derinel@google.com</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <description>
+    Recorded when an authenticator handled the GetAssertion request
+    successfully, right before GetAssertionCallback is called.
+  </description>
+</action>
+
+<action name="WebAuthn.GetAssertion.Timeout" not_user_triggered="true">
+  <owner>derinel@google.com</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <description>
+    Recorded when the GetAssertion request for a WebAuthn request timed out,
+    right before GetAssertionCallback is called.
+  </description>
+</action>
+
 <action name="WebAuthn.GetAssertion.TrustGpmDialogShown"
     not_user_triggered="true">
   <owner>derinel@google.com</owner>
@@ -44162,6 +44227,24 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="WebAuthn.MakeCredential.Aborted" not_user_triggered="true">
+  <owner>derinel@google.com</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <description>
+    Recorded when the RP requested to cancel the MakeCredential request, just
+    before MakeCredentialCallback is called.
+  </description>
+</action>
+
+<action name="WebAuthn.MakeCredential.Cancelled" not_user_triggered="true">
+  <owner>derinel@google.com</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <description>
+    Recorded when the user cancelled the MakeCredential request, just before
+    MakeCredentialCallback is called.
+  </description>
+</action>
+
 <action name="WebAuthn.MakeCredential.ChromeProfileAuthenticatorShown"
     not_user_triggered="true">
   <owner>derinel@google.com</owner>
@@ -44178,6 +44261,16 @@ should be able to be added at any place in this file.
   <owner>chrome-webauthn@google.com</owner>
   <description>
     Recorded when the user is displayed a dialog to create a passkey in GPM.
+  </description>
+</action>
+
+<action name="WebAuthn.MakeCredential.Failure" not_user_triggered="true">
+  <owner>derinel@google.com</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <description>
+    Recorded when the MakeCredential request failed, just before
+    MakeCredentialCallback is called. The failures do not include user
+    cancellations, abort signals or timeouts.
   </description>
 </action>
 
@@ -44365,6 +44458,30 @@ should be able to be added at any place in this file.
   <description>
     Recorded when the user is displayed the window to enter the recovery factor
     in order to use GPM passkeys. Recorded during a MakeCredential flow.
+  </description>
+</action>
+
+<action name="WebAuthn.MakeCredential.Start" not_user_triggered="true">
+  <owner>derinel@google.com</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <description>Recorded when the MakeCredential request started.</description>
+</action>
+
+<action name="WebAuthn.MakeCredential.Success" not_user_triggered="true">
+  <owner>derinel@google.com</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <description>
+    Recorded when an authenticator handled the MakeCredential request
+    successfully, right before MakeCredentialCallback is called.
+  </description>
+</action>
+
+<action name="WebAuthn.MakeCredential.Timeout" not_user_triggered="true">
+  <owner>derinel@google.com</owner>
+  <owner>chrome-webauthn@google.com</owner>
+  <description>
+    Recorded when the MakeCredential request for a WebAuthn request timed out,
+    right before MakeCredentialCallback is called.
   </description>
 </action>
 

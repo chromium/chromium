@@ -21,6 +21,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/metrics/user_metrics.h"
 #include "base/notreached.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
@@ -991,6 +992,11 @@ void AuthenticatorCommonImpl::MakeCredential(
     url::Origin caller_origin,
     blink::mojom::PublicKeyCredentialCreationOptionsPtr options,
     MakeCredentialCallback callback) {
+  base::RecordAction(base::UserMetricsAction("WebAuthn.MakeCredential.Start"));
+  callback = base::BindOnce(
+      &AuthenticatorCommonImpl::GetMetricsWrappedMakeCredentialCallback,
+      weak_factory_.GetWeakPtr(), std::move(callback));
+
   if (req_state_) {
     std::move(callback).Run(blink::mojom::AuthenticatorStatus::PENDING_REQUEST,
                             nullptr, nullptr);
@@ -1347,6 +1353,16 @@ void AuthenticatorCommonImpl::GetAssertion(
     blink::mojom::PublicKeyCredentialRequestOptionsPtr options,
     blink::mojom::PaymentOptionsPtr payment_options,
     GetAssertionCallback callback) {
+  if (options->is_conditional) {
+    base::RecordAction(
+        base::UserMetricsAction("WebAuthn.GetAssertion.Conditional.Start"));
+  } else {
+    base::RecordAction(base::UserMetricsAction("WebAuthn.GetAssertion.Start"));
+  }
+  callback = base::BindOnce(
+      &AuthenticatorCommonImpl::GetMetricsWrappedGetAssertionCallback,
+      weak_factory_.GetWeakPtr(), std::move(callback));
+
   if (req_state_) {
     std::move(callback).Run(blink::mojom::AuthenticatorStatus::PENDING_REQUEST,
                             nullptr, nullptr);
@@ -1945,6 +1961,61 @@ void AuthenticatorCommonImpl::ContinueReportAfterRpIdCheck(
         *options->unknown_credential_id, req_state_->relying_party_id);
   }
   CompleteReportRequest(blink::mojom::AuthenticatorStatus::SUCCESS, nullptr);
+}
+
+void AuthenticatorCommonImpl::GetMetricsWrappedMakeCredentialCallback(
+    MakeCredentialCallback original_callback,
+    blink::mojom::AuthenticatorStatus status,
+    blink::mojom::MakeCredentialAuthenticatorResponsePtr authenticator_response,
+    blink::mojom::WebAuthnDOMExceptionDetailsPtr dom_exception_details) {
+  if (req_state_ &&
+      req_state_->request_result == CredentialRequestResult::kTimeout) {
+    base::RecordAction(
+        base::UserMetricsAction("WebAuthn.MakeCredential.Timeout"));
+  } else if (req_state_ && req_state_->request_result ==
+                               CredentialRequestResult::kUserCancelled) {
+    base::RecordAction(
+        base::UserMetricsAction("WebAuthn.MakeCredential.Cancelled"));
+  } else if (status == blink::mojom::AuthenticatorStatus::SUCCESS) {
+    base::RecordAction(
+        base::UserMetricsAction("WebAuthn.MakeCredential.Success"));
+  } else if (status == blink::mojom::AuthenticatorStatus::ABORT_ERROR) {
+    base::RecordAction(
+        base::UserMetricsAction("WebAuthn.MakeCredential.Aborted"));
+  } else {
+    base::RecordAction(
+        base::UserMetricsAction("WebAuthn.MakeCredential.Failure"));
+  }
+  std::move(original_callback)
+      .Run(status, std::move(authenticator_response),
+           std::move(dom_exception_details));
+}
+
+void AuthenticatorCommonImpl::GetMetricsWrappedGetAssertionCallback(
+    blink::mojom::Authenticator::GetAssertionCallback callback,
+    blink::mojom::AuthenticatorStatus status,
+    blink::mojom::GetAssertionAuthenticatorResponsePtr authenticator_response,
+    blink::mojom::WebAuthnDOMExceptionDetailsPtr dom_exception_details) {
+  if (req_state_ &&
+      req_state_->request_result == CredentialRequestResult::kTimeout) {
+    base::RecordAction(
+        base::UserMetricsAction("WebAuthn.GetAssertion.Timeout"));
+  } else if (req_state_ && req_state_->request_result ==
+                               CredentialRequestResult::kUserCancelled) {
+    base::RecordAction(
+        base::UserMetricsAction("WebAuthn.GetAssertion.Cancelled"));
+  } else if (status == blink::mojom::AuthenticatorStatus::SUCCESS) {
+    base::RecordAction(
+        base::UserMetricsAction("WebAuthn.GetAssertion.Success"));
+  } else if (status == blink::mojom::AuthenticatorStatus::ABORT_ERROR) {
+    base::RecordAction(
+        base::UserMetricsAction("WebAuthn.GetAssertion.Aborted"));
+  } else {
+    base::RecordAction(
+        base::UserMetricsAction("WebAuthn.GetAssertion.Failure"));
+  }
+  std::move(callback).Run(status, std::move(authenticator_response),
+                          std::move(dom_exception_details));
 }
 
 void AuthenticatorCommonImpl::Cancel() {
