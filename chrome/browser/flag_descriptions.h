@@ -180,6 +180,9 @@ extern const char kDataSharingDescription[];
 extern const char kDataSharingJoinOnlyName[];
 extern const char kDataSharingJoinOnlyDescription[];
 
+extern const char kHistorySyncAlternativeIllustrationName[];
+extern const char kHistorySyncAlternativeIllustrationDescription[];
+
 extern const char kDeprecateUnloadName[];
 extern const char kDeprecateUnloadDescription[];
 

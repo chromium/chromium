@@ -254,6 +254,11 @@ const char kDataSharingJoinOnlyName[] = "Data Sharing Join Only";
 const char kDataSharingJoinOnlyDescription[] =
     "Enabled Data Sharing Joining flow related UI and features.";
 
+const char kHistorySyncAlternativeIllustrationName[] =
+    "History Sync Alternative Illustration";
+const char kHistorySyncAlternativeIllustrationDescription[] =
+    "Enables history sync alternative illustration.";
+
 const char kDeprecateUnloadName[] = "Deprecate the unload event";
 const char kDeprecateUnloadDescription[] =
     "Controls the default for Permissions-Policy unload. If enabled, unload "

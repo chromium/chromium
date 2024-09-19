@@ -11848,6 +11848,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kDataSharingJoinOnlyDescription, kOsAll,
      FEATURE_VALUE_TYPE(data_sharing::features::kDataSharingJoinOnly)},
 
+    {"history-sync-alternative-illustration",
+     flag_descriptions::kHistorySyncAlternativeIllustrationName,
+     flag_descriptions::kHistorySyncAlternativeIllustrationDescription, kOsAll,
+     FEATURE_VALUE_TYPE(tab_groups::kUseAlternateHistorySyncIllustration)},
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"cros-content-adjusted-refresh-rate",
      flag_descriptions::kCrosContentAdjustedRefreshRateName,
