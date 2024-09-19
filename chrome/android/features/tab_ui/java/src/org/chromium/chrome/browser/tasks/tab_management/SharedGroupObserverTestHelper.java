@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.tasks.tab_management;
 
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.verify;
 
 import org.mockito.ArgumentCaptor;
@@ -20,11 +21,10 @@ import org.chromium.components.tab_group_sync.TabGroupSyncService;
 
 /** Test helpers for {@link SharedGroupObserver} tests. */
 public class SharedGroupObserverTestHelper {
-    private static final String EMAIL1 = "one@gmail.com";
-    private static final String EMAIL2 = "two@gmail.com";
-    private static final String GAIA_ID1 = "gaiaId1";
-    private static final String GAIA_ID2 = "gaiaId2";
-
+    public static final String EMAIL1 = "one@gmail.com";
+    public static final String EMAIL2 = "two@gmail.com";
+    public static final String GAIA_ID1 = "gaiaId1";
+    public static final String GAIA_ID2 = "gaiaId2";
     public static final GroupMember GROUP_MEMBER1 =
             newGroupMember(GAIA_ID1, EMAIL1, MemberRole.OWNER);
     public static final GroupMember GROUP_MEMBER2 =
@@ -62,7 +62,7 @@ public class SharedGroupObserverTestHelper {
 
     /** Responds to a readGroup call on the {@link DataSharingService}. */
     public void respondToReadGroup(String collaborationId, GroupMember... members) {
-        verify(mDataSharingService)
+        verify(mDataSharingService, atLeastOnce())
                 .readGroup(eq(collaborationId), mReadGroupCallbackCaptor.capture());
         GroupData groupData = newGroupData(collaborationId, members);
         GroupDataOrFailureOutcome outcome =
