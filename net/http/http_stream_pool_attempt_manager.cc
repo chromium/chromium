@@ -251,6 +251,17 @@ void HttpStreamPool::AttemptManager::ProcessPendingJob() {
     return;
   }
 
+  // Try to assign an idle stream to a job.
+  if (jobs_.size() > 0 && group_->IdleStreamSocketCount() > 0) {
+    std::unique_ptr<StreamSocket> stream_socket = group_->GetIdleStreamSocket();
+    CHECK(stream_socket);
+    const StreamSocketHandle::SocketReuseType reuse_type =
+        GetReuseTypeFromIdleStreamSocket(*stream_socket);
+    CreateTextBasedStreamAndNotify(std::move(stream_socket), reuse_type,
+                                   LoadTimingInfo::ConnectTiming());
+    return;
+  }
+
   const size_t pending_job_count = PendingJobCount();
   const size_t pending_preconnect_count = PendingPreconnectCount();
 
@@ -260,18 +271,6 @@ void HttpStreamPool::AttemptManager::ProcessPendingJob() {
 
   CHECK(!CanUseExistingQuicSession());
   CHECK(!spdy_session_);
-
-  // Try to assign an idle stream to a job.
-  if (pending_job_count > 0) {
-    std::unique_ptr<StreamSocket> stream_socket = group_->GetIdleStreamSocket();
-    if (stream_socket) {
-      const StreamSocketHandle::SocketReuseType reuse_type =
-          GetReuseTypeFromIdleStreamSocket(*stream_socket);
-      CreateTextBasedStreamAndNotify(std::move(stream_socket), reuse_type,
-                                     LoadTimingInfo::ConnectTiming());
-      return;
-    }
-  }
 
   MaybeAttemptConnection(/*max_attempts=*/1);
 }

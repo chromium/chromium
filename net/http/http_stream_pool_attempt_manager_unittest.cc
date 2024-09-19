@@ -1216,6 +1216,47 @@ TEST_F(HttpStreamPoolAttemptManagerTest,
   EXPECT_THAT(requester.result(), Optional(IsOk()));
 }
 
+// Regression test for crbug.com/368187247. Tests that an idle stream socket
+// is reused when an in-flight connection attempt is slow.
+TEST_F(HttpStreamPoolAttemptManagerTest,
+       SlowTimerFiredAfterIdleSocketAvailable) {
+  resolver()
+      ->AddFakeRequest()
+      ->add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint())
+      .CompleteStartSynchronously(OK);
+
+  HttpStreamKey stream_key =
+      StreamKeyBuilder().set_destination("http://a.test").Build();
+
+  MockConnectCompleter connect_completer;
+  SequencedSocketData data;
+  data.set_connect_data(MockConnect(&connect_completer));
+  socket_factory()->AddSocketDataProvider(&data);
+
+  StreamRequester requester(stream_key);
+  requester.RequestStream(pool());
+  ASSERT_FALSE(requester.result().has_value());
+
+  // Create an active text-based stream and release it to create an idle stream.
+  // The idle stream should be reused for the in-flight request.
+  Group& group = pool().GetOrCreateGroupForTesting(stream_key);
+  std::unique_ptr<HttpStream> stream = group.CreateTextBasedStream(
+      std::make_unique<FakeStreamSocket>(),
+      StreamSocketHandle::SocketReuseType::kReusedIdle,
+      LoadTimingInfo::ConnectTiming());
+  stream.reset();
+  ASSERT_EQ(group.IdleStreamSocketCount(), 0u);
+  ASSERT_EQ(group.ActiveStreamSocketCount(), 2u);
+
+  // Fire the slow timer. It should not attempt another connection.
+  FastForwardBy(HttpStreamPool::kConnectionAttemptDelay);
+  ASSERT_EQ(group.IdleStreamSocketCount(), 0u);
+  ASSERT_EQ(group.ActiveStreamSocketCount(), 2u);
+
+  requester.WaitForResult();
+  EXPECT_THAT(requester.result(), Optional(IsOk()));
+}
+
 TEST_F(HttpStreamPoolAttemptManagerTest, ReachedGroupLimit) {
   constexpr size_t kMaxPerGroup = 4;
   pool().set_max_stream_sockets_per_group_for_testing(kMaxPerGroup);
