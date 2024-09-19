@@ -78,7 +78,8 @@ std::u16string GetStringForDecoration(DecorationType type,
 
 // Returns the decoration string for a recent visit at given `last_visit_time`.
 std::u16string GetStringForRecencyDecorationWithTime(
-    base::Time last_visit_time);
+    base::Time last_visit_time,
+    base::TimeDelta recently_visited_minutes_threshold = base::Minutes(1));
 
 }  // namespace visited_url_ranking
 

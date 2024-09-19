@@ -36,7 +36,8 @@ namespace visited_url_ranking {
 
 namespace {
 
-// Bucketize the value to exponential buckets. Returns lower bound of the bucket.
+// Bucketize the value to exponential buckets. Returns lower bound of the
+// bucket.
 float BucketizeExp(int64_t value, int max_buckets) {
   if (value <= 0) {
     return 0;
@@ -452,7 +453,14 @@ std::u16string GetStringForDecoration(DecorationType type,
 }
 
 std::u16string GetStringForRecencyDecorationWithTime(
-    base::Time last_visit_time) {
+    base::Time last_visit_time,
+    base::TimeDelta recently_visited_minutes_threshold) {
+  if (base::Time::Now() - last_visit_time <
+      recently_visited_minutes_threshold) {
+    return GetStringForDecoration(DecorationType::kVisitedXAgo,
+                                  /*visited_recently=*/true);
+  }
+
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   std::u16string relative_time = FormatRelativeTime(last_visit_time);
   if (relative_time.find(u"hour") != std::string::npos) {
