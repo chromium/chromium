@@ -1231,9 +1231,11 @@ std::vector<Suggestion> GetCreditCardSuggestionsForTouchToFill(
                              ->payments_data_manager()
                              .IsCardEligibleForBenefits(credit_card)) {
       suggestion.labels.push_back({*benefit_label});
-      suggestion.should_display_terms_available = true;
+      suggestion.payload = Suggestion::PaymentsPayload(
+          /* should_display_terms_available= */ true);
     }
     if (credit_card.record_type() == CreditCard::RecordType::kVirtualCard) {
+      suggestion.type = SuggestionType::kVirtualCreditCardEntry;
       suggestion.apply_deactivated_style = !IsCardSuggestionAcceptable(
           credit_card, client, /*is_manual_fallback= */ false);
       suggestion.labels.push_back(std::vector<Suggestion::Text>{
@@ -1242,6 +1244,7 @@ std::vector<Suggestion> GetCreditCardSuggestionsForTouchToFill(
                   ? IDS_AUTOFILL_VIRTUAL_CARD_DISABLED_SUGGESTION_OPTION_VALUE
                   : IDS_AUTOFILL_VIRTUAL_CARD_SUGGESTION_OPTION_VALUE))});
     } else {
+      suggestion.type = SuggestionType::kCreditCardEntry;
       suggestion.labels.push_back(
           std::vector<Suggestion::Text>{Suggestion::Text(
               credit_card.GetInfo(CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR,

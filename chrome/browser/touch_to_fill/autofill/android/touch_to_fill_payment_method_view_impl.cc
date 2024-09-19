@@ -92,7 +92,8 @@ bool TouchToFillPaymentMethodViewImpl::Show(
             env, suggestion.main_text.value, suggestion.minor_text.value,
             suggestion.labels[0][0].value, secondarySubLabel,
             suggestion.apply_deactivated_style,
-            suggestion.should_display_terms_available));
+            suggestion.GetPayload<Suggestion::PaymentsPayload>()
+                .should_display_terms_available));
   }
   Java_TouchToFillPaymentMethodViewBridge_showSheet(
       env, java_object_, std::move(credit_cards_array),

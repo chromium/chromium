@@ -570,11 +570,14 @@ TEST_P(AutofillCreditCardBenefitsLabelTest,
   std::vector<Suggestion> suggestions = GetCreditCardSuggestionsForTouchToFill(
       credit_cards_span, *autofill_client());
 
+  EXPECT_EQ(suggestions[0].type, SuggestionType::kCreditCardEntry);
   EXPECT_THAT(suggestions[0],
               EqualLabels({{expected_benefit_text()},
                            {card().GetInfo(CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR,
                                            app_locale())}}));
-  EXPECT_TRUE(suggestions[0].should_display_terms_available);
+  EXPECT_TRUE(suggestions[0]
+                  .GetPayload<Suggestion::PaymentsPayload>()
+                  .should_display_terms_available);
 }
 
 TEST_P(AutofillCreditCardBenefitsLabelTest,
@@ -586,12 +589,15 @@ TEST_P(AutofillCreditCardBenefitsLabelTest,
   std::vector<Suggestion> suggestions = GetCreditCardSuggestionsForTouchToFill(
       credit_cards_span, *autofill_client());
 
+  EXPECT_EQ(suggestions[0].type, SuggestionType::kVirtualCreditCardEntry);
   EXPECT_THAT(
       suggestions[0],
       EqualLabels({{expected_benefit_text()},
                    {l10n_util::GetStringUTF16(
                        IDS_AUTOFILL_VIRTUAL_CARD_SUGGESTION_OPTION_VALUE)}}));
-  EXPECT_TRUE(suggestions[0].should_display_terms_available);
+  EXPECT_TRUE(suggestions[0]
+                  .GetPayload<Suggestion::PaymentsPayload>()
+                  .should_display_terms_available);
 }
 
 // Checks that the merchant benefit description is not displayed for suggestions
@@ -614,7 +620,9 @@ TEST_P(
   EXPECT_THAT(suggestions[0],
               EqualLabels({{card().GetInfo(CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR,
                                            app_locale())}}));
-  EXPECT_FALSE(suggestions[0].should_display_terms_available);
+  EXPECT_FALSE(suggestions[0]
+                   .GetPayload<Suggestion::PaymentsPayload>()
+                   .should_display_terms_available);
 }
 
 // Checks that the category benefit description is not displayed for suggestions
@@ -642,7 +650,9 @@ TEST_P(
   EXPECT_THAT(suggestions[0],
               EqualLabels({{card().GetInfo(CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR,
                                            app_locale())}}));
-  EXPECT_FALSE(suggestions[0].should_display_terms_available);
+  EXPECT_FALSE(suggestions[0]
+                   .GetPayload<Suggestion::PaymentsPayload>()
+                   .should_display_terms_available);
 }
 
 // Checks that the benefit description is not displayed when benefit suggestions
@@ -663,7 +673,9 @@ TEST_P(AutofillCreditCardBenefitsLabelTest,
   EXPECT_THAT(suggestions[0],
               EqualLabels({{card().GetInfo(CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR,
                                            app_locale())}}));
-  EXPECT_FALSE(suggestions[0].should_display_terms_available);
+  EXPECT_FALSE(suggestions[0]
+                   .GetPayload<Suggestion::PaymentsPayload>()
+                   .should_display_terms_available);
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 #endif  // !BUILDFLAG(IS_IOS)
