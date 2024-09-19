@@ -191,6 +191,7 @@ aggregate_vector_icons("ash_vector_icons") {
     "ks_assistant.icon",
     "ks_browser_search.icon",
     "ks_calculator.icon",
+    "ks_context_menu.icon",
     "ks_dictation.icon",
     "ks_emoji_picker.icon",
     "ks_input_mode_change.icon",

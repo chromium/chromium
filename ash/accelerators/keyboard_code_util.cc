@@ -14,6 +14,7 @@
 #include "build/branding_buildflags.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/events/ash/keyboard_capability.h"
+#include "ui/events/keycodes/keyboard_codes_posix.h"
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 #include "chromeos/ash/resources/internal/icons/vector_icons.h"
@@ -94,6 +95,8 @@ std::u16string GetStringForKeyboardCode(ui::KeyboardCode key_code,
 
 const gfx::VectorIcon* GetVectorIconForKeyboardCode(ui::KeyboardCode key_code) {
   switch (key_code) {
+    case ui::VKEY_APPS:
+      return &ash::kKsContextMenuIcon;
     case ui::VKEY_BROWSER_BACK:
       return &ash::kKsvBrowserBackIcon;
     case ui::VKEY_BROWSER_FORWARD:

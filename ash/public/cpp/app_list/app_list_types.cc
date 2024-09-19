@@ -535,6 +535,9 @@ const gfx::VectorIcon* SearchResultTextItem::GetIconFromCode() const {
     // Accessibility.
     case kKeyboardShortcutAccessibility:
       return &kKsAccessibilityIcon;
+    // Context menu.
+    case kKeyboardShortcutContextMenu:
+      return &kKsContextMenuIcon;
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
     case kKeyboardShortcutKeyboardRightAlt:
       return &kRightAltInternalIcon;

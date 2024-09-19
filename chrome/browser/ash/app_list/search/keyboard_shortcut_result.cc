@@ -79,6 +79,8 @@ std::optional<int> GetStringIdForIconCode(IconCode icon_code) {
       return IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_BROWSER_REFRESH;
     case ash::SearchResultTextItem::kKeyboardShortcutBrowserSearch:
       return IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_BROWSER_SEARCH;
+    case ash::SearchResultTextItem::kKeyboardShortcutContextMenu:
+      return IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_CONTEXT_MENU;
     case ash::SearchResultTextItem::kKeyboardShortcutCalculator:
       return IDS_SHORTCUT_CUSTOMIZATION_ICON_LABEL_LAUNCH_APPLICATION2;
     case ash::SearchResultTextItem::kKeyboardShortcutDictationToggle:
@@ -184,6 +186,8 @@ bool IsModifierKey(ui::KeyboardCode keycode) {
 std::optional<IconCode> KeyboardShortcutResult::GetIconCodeFromKeyboardCode(
     KeyboardCode keyboard_code) {
   switch (keyboard_code) {
+    case (KeyboardCode::VKEY_APPS):
+      return IconCode::kKeyboardShortcutContextMenu;
     case (KeyboardCode::VKEY_BROWSER_BACK):
       return IconCode::kKeyboardShortcutBrowserBack;
     case (KeyboardCode::VKEY_BROWSER_FORWARD):
@@ -326,6 +330,7 @@ KeyboardShortcutResult::GetIconCodeByKeyString(std::u16string_view key_string) {
        {u"MediaPlayPause", IconCode::kKeyboardShortcutMediaPlayPause},
        {u"MediaTrackNext", IconCode::kKeyboardShortcutMediaTrackNext},
        {u"MediaTrackPrevious", IconCode::kKeyboardShortcutMediaTrackPrevious},
+       {u"Menu", IconCode::kKeyboardShortcutContextMenu},
        {u"MicrophoneMuteToggle", IconCode::kKeyboardShortcutMicrophone},
        {u"ModeChange", IconCode::kKeyboardShortcutInputModeChange},
        {u"Power", IconCode::kKeyboardShortcutPower},
