@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ash/browser_context_keyed_service_factories.h"
+#include "chrome/browser/ash/keyed_service/browser_context_keyed_service_factories.h"
 
 #include "ash/constants/ash_features.h"
 #include "ash/webui/help_app_ui/help_app_manager_factory.h"

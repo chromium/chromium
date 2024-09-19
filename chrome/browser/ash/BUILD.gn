@@ -22,11 +22,6 @@ assert(use_ozone)
 static_library("ash") {
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 
-  sources = [
-    "browser_context_keyed_service_factories.cc",
-    "browser_context_keyed_service_factories.h",
-  ]
-
   allow_circular_includes_from = [
     "//chrome/browser/apps/almanac_api_client",
     "//chrome/browser/apps/app_service",

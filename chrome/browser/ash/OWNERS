@@ -11,6 +11,3 @@ xiyuan@chromium.org
 per-file BUILD.gn=*
 
 per-file set_time_dialog*=file://chrome/browser/resources/ash/settings/OWNERS
-
-# Prefer rsult over directory owners.
-per-file browser_context_keyed_service_factories.*=rsult@google.com
