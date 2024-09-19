@@ -1350,7 +1350,9 @@ void ChromeBrowserMainExtraPartsProfiles::
 #if !BUILDFLAG(IS_ANDROID)
   UsbConnectionTrackerFactory::GetInstance();
 #endif
+#if !BUILDFLAG(IS_ANDROID)
   UserAnnotationsServiceFactory::GetInstance();
+#endif
 #if !BUILDFLAG(IS_ANDROID)
   UserEducationServiceFactory::GetInstance();
 #endif

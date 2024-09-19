@@ -2538,6 +2538,7 @@ TEST_F(ChromeBrowsingDataRemoverDelegateTest,
   ASSERT_FALSE(tester.HasProfileAndCard());
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 class ChromeBrowsingDataRemoverDelegateUserAnnotationsTest
     : public ChromeBrowsingDataRemoverDelegateTest {
  public:
@@ -2580,6 +2581,7 @@ TEST_F(ChromeBrowsingDataRemoverDelegateUserAnnotationsTest,
               testing::Pair(testing::Eq(time_now),
                             testing::Eq(time_now + base::Hours(1))));
 }
+#endif
 
 TEST_F(ChromeBrowsingDataRemoverDelegateTest, ZeroSuggestPrefsBasedCacheClear) {
   // Disable in-memory ZPS caching.

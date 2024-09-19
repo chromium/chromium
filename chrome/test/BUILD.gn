@@ -2006,6 +2006,7 @@ if (!is_android) {
       "//chrome/browser/ui/webui/signin",
       "//chrome/browser/ui/webui/top_chrome",
       "//chrome/browser/ui/webui/top_chrome:test_support",
+      "//chrome/browser/user_annotations:browser_tests",
       "//chrome/browser/web_applications:browser_tests",
       "//chrome/browser/web_applications:prevent_close_test_support",
       "//chrome/browser/web_applications:web_applications_test_support",
@@ -3224,7 +3225,6 @@ if (!is_android) {
       "../browser/usb/usb_browser_test_utils.cc",
       "../browser/usb/usb_browser_test_utils.h",
       "../browser/user_agent/user_agent_browsertest.cc",
-      "../browser/user_annotations/user_annotations_service_browsertest.cc",
       "../browser/wake_lock/wake_lock_browsertest.cc",
       "../browser/web_applications/alternative_error_page_override_info_browsertest.cc",
       "../browser/webapps/installable/installable_manager_browsertest.cc",
@@ -4385,6 +4385,7 @@ if (!is_android) {
         "//chrome/browser/controlled_frame:test_support",
         "//chrome/browser/devtools:test_support",
         "//chrome/browser/extensions:test_support",
+        "//chrome/browser/user_annotations:user_annotations",
 
         # TODO(357784804): Remove this explicit dependency on `//c/b/ui/zoom`
         # when tests that include chrome_zoom_level_prefs.h get modularized, eg
@@ -4401,6 +4402,7 @@ if (!is_android) {
         "//components/media_router/browser:test_support",
         "//components/media_router/common:test_support",
         "//components/optimization_guide/optimization_guide_internals/webui",
+        "//components/user_annotations:test_support",
         "//components/web_package",
 
         # TODO(rockot) bug 505926: The chrome_extensions_browsertests_sources
@@ -8299,6 +8301,7 @@ test("unit_tests") {
       "//chrome/browser/ui/webui/top_chrome:test_support",
       "//chrome/browser/ui/zoom",
       "//chrome/browser/ui/zoom:unit_tests",
+      "//chrome/browser/user_annotations",
       "//chrome/browser/web_applications:web_applications_test_support",
       "//chrome/browser/webauthn:test_support",
       "//chrome/browser/webauthn/proto",

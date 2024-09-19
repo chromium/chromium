@@ -85,7 +85,6 @@
 #include "chrome/browser/translate/chrome_translate_client.h"
 #include "chrome/browser/ui/find_bar/find_bar_state.h"
 #include "chrome/browser/ui/find_bar/find_bar_state_factory.h"
-#include "chrome/browser/user_annotations/user_annotations_service_factory.h"
 #include "chrome/browser/webauthn/chrome_authenticator_request_delegate.h"
 #include "chrome/browser/webdata_services/web_data_service_factory.h"
 #include "chrome/common/buildflags.h"
@@ -142,7 +141,6 @@
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_user_settings.h"
 #include "components/tpcd/metadata/browser/manager.h"
-#include "components/user_annotations/user_annotations_service.h"
 #include "components/web_cache/browser/web_cache_manager.h"
 #include "components/webrtc_logging/browser/log_cleanup.h"
 #include "components/webrtc_logging/browser/text_log_list.h"
@@ -185,12 +183,14 @@
 
 
 #if !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/user_annotations/user_annotations_service_factory.h"
 #include "chrome/browser/user_education/browser_feature_promo_storage_service.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
+#include "components/user_annotations/user_annotations_service.h"
 #include "content/public/browser/isolated_web_apps_policy.h"
 #include "content/public/browser/storage_partition_config.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
@@ -1068,11 +1068,13 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
           FROM_HERE, base::DoNothing(),
           CreateTaskCompletionClosure(TracingDataType::kAutofillData));
     }
+#if !BUILDFLAG(IS_ANDROID)
     if (auto* user_annotations_service =
             UserAnnotationsServiceFactory::GetForProfile(profile_)) {
       user_annotations_service->RemoveAnnotationsInRange(delete_begin_,
                                                          delete_end_);
     }
+#endif
   }
 
   //////////////////////////////////////////////////////////////////////////////

@@ -1687,10 +1687,6 @@ static_library("browser") {
     "usb/web_usb_chooser.h",
     "usb/web_usb_histograms.cc",
     "usb/web_usb_histograms.h",
-    "user_annotations/user_annotations_service_factory.cc",
-    "user_annotations/user_annotations_service_factory.h",
-    "user_annotations/user_annotations_web_contents_observer.cc",
-    "user_annotations/user_annotations_web_contents_observer.h",
     "user_bypass/user_bypass_web_contents_observer.cc",
     "user_bypass/user_bypass_web_contents_observer.h",
     "v8_compile_hints/v8_compile_hints_tab_helper.cc",
@@ -4268,6 +4264,7 @@ static_library("browser") {
       "//chrome/browser/ui/webui/signin/batch_upload:mojo_bindings",
       "//chrome/browser/ui/webui/top_chrome",
       "//chrome/browser/ui/webui/top_chrome:impl",
+      "//chrome/browser/user_annotations",
       "//chrome/browser/web_applications",
       "//chrome/browser/web_applications/app_service",
       "//chrome/common/importer:interfaces",
@@ -4349,6 +4346,9 @@ static_library("browser") {
     allow_circular_includes_from += [
       # TODO(crbug.com/40251079): Remove circular dependencies.
       "//chrome/browser/apps/app_service",
+
+      # TODO(crbug.com/366172297): Remove circular dependencies.
+      "//chrome/browser/user_annotations",
 
       # TODO(b/220386256): Remove circular dependency from the browser.
       "//chrome/browser/media/router/discovery/access_code:access_code_sink_service",
