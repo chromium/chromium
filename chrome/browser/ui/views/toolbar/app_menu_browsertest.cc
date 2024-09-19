@@ -293,7 +293,8 @@ IN_PROC_BROWSER_TEST_F(AppMenuBrowserTest, InvokeUi_history) {
 IN_PROC_BROWSER_TEST_F(AppMenuBrowserTest, InvokeUi_bookmarks) {
   ShowAndVerifyUi();
 }
-IN_PROC_BROWSER_TEST_F(AppMenuBrowserTest, InvokeUi_more_tools) {
+// Flaky b/40261456
+IN_PROC_BROWSER_TEST_F(AppMenuBrowserTest, DISABLED_InvokeUi_more_tools) {
   ShowAndVerifyUi();
 }
 
