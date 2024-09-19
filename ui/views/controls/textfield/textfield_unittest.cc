@@ -3258,7 +3258,16 @@ TEST_F(TextfieldTest, HitOutsideTextAreaInRTLTest) {
   base::i18n::SetICUDefaultLocale(locale);
 }
 
-TEST_F(TextfieldTest, OverflowTest) {
+// TODO(https://crbug.com/361276581, https://crbug.com/361247468): Flakes on
+// Fuschia cast Debug bots.
+#if BUILDFLAG(IS_FUCHSIA) && !defined(NDEBUG)
+#define MAYBE_OverflowTest DISABLED_OverflowTest
+#define MAYBE_OverflowInRTLTest DISABLED_OverflowInRTLTest
+#else
+#define MAYBE_OverflowTest OverflowTest
+#define MAYBE_OverflowInRTLTest OverflowInRTLTest
+#endif
+TEST_F(TextfieldTest, MAYBE_OverflowTest) {
   InitTextfield();
 
   std::u16string str;
@@ -3284,7 +3293,7 @@ TEST_F(TextfieldTest, OverflowTest) {
   EXPECT_EQ(501U, textfield_->GetCursorPosition());
 }
 
-TEST_F(TextfieldTest, OverflowInRTLTest) {
+TEST_F(TextfieldTest, MAYBE_OverflowInRTLTest) {
   std::string locale = base::i18n::GetConfiguredLocale();
   base::i18n::SetICUDefaultLocale("he");
 
