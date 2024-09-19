@@ -163,6 +163,10 @@ class GraphInfoBuilder final {
                            uint64_t output_operand_id,
                            uint32_t axis);
 
+  void BuildGatherND(uint64_t input_operand_id,
+                     uint64_t indices_operand_id,
+                     uint64_t output_operand_id);
+
   void BuildGelu(uint64_t input_operand_id, uint64_t output_operand_id);
 
   // A `GemmAttributes` type should have the following members:

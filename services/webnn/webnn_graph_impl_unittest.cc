@@ -2759,6 +2759,123 @@ TEST_F(WebNNGraphImplTest, GatherElementsTest) {
   }
 }
 
+struct GatherNDTester {
+  OperandInfo input;
+  OperandInfo indices;
+  OperandInfo output;
+  bool expected;
+
+  void Test() {
+    auto context_properties = GetContextPropertiesForTesting();
+
+    // Build the graph with mojo type.
+    GraphInfoBuilder builder;
+    uint64_t input_operand_id =
+        builder.BuildInput("input", input.dimensions, input.type);
+    uint64_t indices_operand_id =
+        builder.BuildInput("indices", indices.dimensions, indices.type);
+    uint64_t output_operand_id =
+        builder.BuildOutput("output", output.dimensions, output.type);
+    builder.BuildGatherND(input_operand_id, indices_operand_id,
+                          output_operand_id);
+    EXPECT_EQ(WebNNGraphBuilderImpl::IsValidForTesting(context_properties,
+                                                       builder.GetGraphInfo()),
+              expected);
+  }
+};
+
+TEST_F(WebNNGraphImplTest, GatherNDTest) {
+  {
+    // Test gatherND with 4-D input 3-D indices.
+    GatherNDTester{
+        .input = {.type = OperandDataType::kFloat32,
+                  .dimensions = {3, 4, 5, 6}},
+        .indices = {.type = OperandDataType::kUint32, .dimensions = {3, 7, 2}},
+        .output = {.type = OperandDataType::kFloat32,
+                   .dimensions = {3, 7, 5, 6}},
+        .expected = true}
+        .Test();
+  }
+  {
+    // Test the invalid graph for the input is a scalar.
+    GatherNDTester{
+        .input = {.type = OperandDataType::kFloat32, .dimensions = {}},
+        .indices = {.type = OperandDataType::kUint32, .dimensions = {1, 2}},
+        .output = {.type = OperandDataType::kFloat32, .dimensions = {}},
+        .expected = false}
+        .Test();
+  }
+  {
+    // Test the invalid graph for the indices is a scalar.
+    GatherNDTester{
+        .input = {.type = OperandDataType::kFloat32,
+                  .dimensions = {1, 2, 3, 4, 5}},
+        .indices = {.type = OperandDataType::kUint32, .dimensions = {}},
+        .output = {.type = OperandDataType::kFloat32,
+                   .dimensions = {1, 2, 3, 4, 5}},
+        .expected = false}
+        .Test();
+  }
+  {
+    // Test the invalid graph for indices.shape[-1] is greater than the input
+    // rank.
+    GatherNDTester{
+        .input = {.type = OperandDataType::kFloat32, .dimensions = {1, 2, 3}},
+        .indices = {.type = OperandDataType::kUint32, .dimensions = {1, 4}},
+        .output = {.type = OperandDataType::kFloat32, .dimensions = {1, 2, 3}},
+        .expected = false}
+        .Test();
+  }
+  {
+    // Test the invalid graph for output shapes are not expected.
+    GatherNDTester{
+        .input = {.type = OperandDataType::kFloat32,
+                  .dimensions = {1, 2, 3, 4}},
+        .indices = {.type = OperandDataType::kUint32, .dimensions = {1, 1}},
+        .output = {.type = OperandDataType::kFloat32,
+                   .dimensions = {1, 1, 3, 4}},
+        .expected = false}
+        .Test();
+  }
+  {
+    // Test the invalid graph for output types don't match.
+    GatherNDTester{
+        .input = {.type = OperandDataType::kFloat32,
+                  .dimensions = {1, 2, 3, 4}},
+        .indices = {.type = OperandDataType::kUint32, .dimensions = {1, 1}},
+        .output = {.type = OperandDataType::kFloat16,
+                   .dimensions = {1, 2, 3, 4}},
+        .expected = false}
+        .Test();
+  }
+  {
+    // Test the invalid graph when the output is as same as the input.
+    auto context_properties = GetContextPropertiesForTesting();
+    GraphInfoBuilder builder;
+    uint64_t input_operand_id =
+        builder.BuildInput("input", {2, 3}, OperandDataType::kUint32);
+    uint64_t indices_operand_id =
+        builder.BuildInput("indices", {2, 1}, OperandDataType::kUint32);
+    builder.BuildGatherND(input_operand_id, indices_operand_id,
+                          input_operand_id);
+    EXPECT_FALSE(WebNNGraphBuilderImpl::IsValidForTesting(
+        context_properties, builder.GetGraphInfo()));
+  }
+  {
+    // Test the invalid graph when the output is as same as the indices.
+    auto context_properties = GetContextPropertiesForTesting();
+    GraphInfoBuilder builder;
+    uint64_t input_operand_id =
+        builder.BuildInput("input", {2, 1}, OperandDataType::kUint32);
+    uint64_t indices_operand_id =
+        builder.BuildInput("indices", {2, 1}, OperandDataType::kUint32);
+    builder.BuildGatherND(input_operand_id, indices_operand_id,
+                          indices_operand_id);
+    EXPECT_FALSE(WebNNGraphBuilderImpl::IsValidForTesting(
+        context_properties, builder.GetGraphInfo()));
+  }
+}
+
 struct GeluTester {
   OperandInfo input;
   OperandInfo output;

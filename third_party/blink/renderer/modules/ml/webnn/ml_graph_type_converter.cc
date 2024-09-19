@@ -871,6 +871,23 @@ OperationPtr CreateGatherElementsOperation(
       std::move(gather_elements_mojo));
 }
 
+OperationPtr CreateGatherNDOperation(const OperandToIdMap& operand_to_id_map,
+                                     const MLOperator* gather_nd) {
+  auto gather_nd_mojo = webnn::mojom::blink::GatherND::New();
+  gather_nd_mojo->input_operand_id =
+      GetOperatorInputId(gather_nd, operand_to_id_map, 0);
+  gather_nd_mojo->indices_operand_id =
+      GetOperatorInputId(gather_nd, operand_to_id_map, 1);
+  gather_nd_mojo->output_operand_id =
+      GetOperatorOutputId(gather_nd, operand_to_id_map);
+
+  const auto* options =
+      static_cast<const blink::MLOperatorOptions*>(gather_nd->Options());
+  gather_nd_mojo->label = options->label();
+
+  return webnn::mojom::blink::Operation::NewGatherNd(std::move(gather_nd_mojo));
+}
+
 OperationPtr CreateGeluOperation(const OperandToIdMap& operand_to_id_map,
                                  const MLOperator* gelu) {
   const auto* options =
@@ -1777,6 +1794,10 @@ std::optional<String> SerializeMojoOperation(
     case blink_mojom::Operation::Tag::kGatherElements:
       graph_info->operations.push_back(
           CreateGatherElementsOperation(operand_to_id_map, op));
+      break;
+    case blink_mojom::Operation::Tag::kGatherNd:
+      graph_info->operations.push_back(
+          CreateGatherNDOperation(operand_to_id_map, op));
       break;
     case blink_mojom::Operation::Tag::kGelu:
       graph_info->operations.push_back(

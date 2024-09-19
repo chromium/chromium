@@ -25,6 +25,7 @@ inline constexpr char kElu[] = "elu";
 inline constexpr char kExpand[] = "expand";
 inline constexpr char kGather[] = "gather";
 inline constexpr char kGatherElements[] = "gatherElements";
+inline constexpr char kGatherNd[] = "gatherND";
 inline constexpr char kGelu[] = "gelu";
 inline constexpr char kGemm[] = "gemm";
 inline constexpr char kGru[] = "gru";

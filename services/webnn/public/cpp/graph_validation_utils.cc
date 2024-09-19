@@ -1336,9 +1336,9 @@ base::expected<OperandDescriptor, std::string> ValidateGatherAndInferOutput(
 
   if (input.Rank() <= axis) {
     return base::unexpected(ErrorWithLabel(
-        label,
-        "The axis must be in the range [0, N-1] where N is the rank of input "
-        "tensor."));
+        label, base::StringPrintf("The axis (%u) must be in the range [0, N-1] "
+                                  "where N=%u is the rank of input tensor.",
+                                  axis, input.Rank())));
   }
 
   if (!context_properties.data_type_limits.gather_input.Has(
@@ -1392,9 +1392,10 @@ ValidateGatherElementsAndInferOutput(
 
   if (input.Rank() <= axis) {
     return base::unexpected(ErrorWithLabel(
-        label,
-        "The axis must be in the range [0, N-1] where N is the rank of input "
-        "tensor."));
+        label, base::StringPrintf("The axis (%u) must be in the range [0, N-1] "
+                                  "where N=%u is the rank of input "
+                                  "tensor.",
+                                  axis, input.Rank())));
   }
 
   if (!context_properties.data_type_limits.gather_elements_input.Has(
@@ -1417,7 +1418,10 @@ ValidateGatherElementsAndInferOutput(
 
   if (input.Rank() != indices.Rank()) {
     return base::unexpected(ErrorWithLabel(
-        label, "The input and indices tensor must have the same rank."));
+        label,
+        base::StringPrintf(
+            "The input rank (%u) must be equal to the indices rank (%u).",
+            input.Rank(), indices.Rank())));
   }
 
   for (uint32_t i = 0; i < input.Rank(); ++i) {
@@ -1433,6 +1437,62 @@ ValidateGatherElementsAndInferOutput(
   }
 
   return OperandDescriptor::Create(input.data_type(), indices.shape());
+}
+
+base::expected<OperandDescriptor, std::string> ValidateGatherNDAndInferOutput(
+    const ContextProperties& context_properties,
+    const OperandDescriptor& input,
+    const OperandDescriptor& indices,
+    std::string_view label) {
+  if (input.Rank() == 0) {
+    return base::unexpected(
+        ErrorWithLabel(label, "The input should not be a scalar."));
+  }
+  if (!context_properties.data_type_limits.gather_nd_input.Has(
+          input.data_type())) {
+    return base::unexpected(ErrorWithLabel(
+        label, NotSupportedInputArgumentTypeError(
+                   input.data_type(),
+                   context_properties.data_type_limits.gather_nd_input)));
+  }
+
+  if (indices.Rank() == 0) {
+    return base::unexpected(
+        ErrorWithLabel(label, "The input should not be a scalar."));
+  }
+  static constexpr char kIndicesParam[] = "indices";
+  if (!context_properties.data_type_limits.gather_nd_indices.Has(
+          indices.data_type())) {
+    return base::unexpected(ErrorWithLabel(
+        label, NotSupportedArgumentTypeError(
+                   kIndicesParam, indices.data_type(),
+                   context_properties.data_type_limits.gather_nd_indices)));
+  }
+
+  uint32_t indices_last_dimension_size = indices.shape()[indices.Rank() - 1];
+  if (indices_last_dimension_size > input.Rank()) {
+    return base::unexpected(ErrorWithLabel(
+        label, base::StringPrintf(
+                   "The last dimension size of indices (%u) must be less than "
+                   "or equal to the input rank (%u).",
+                   indices_last_dimension_size, input.Rank())));
+  }
+
+  auto checked_output_rank = base::MakeCheckedNum(indices.Rank()) - 1 +
+                             input.Rank() - indices_last_dimension_size;
+  if (!checked_output_rank.IsValid()) {
+    return base::unexpected(
+        ErrorWithLabel(label, "The output rank is too large."));
+  }
+
+  std::vector<uint32_t> output_shape;
+  output_shape.reserve(checked_output_rank.ValueOrDie());
+  base::ranges::copy(indices.shape().begin(), indices.shape().end() - 1,
+                     std::back_inserter(output_shape));
+  base::ranges::copy(input.shape().begin() + indices_last_dimension_size,
+                     input.shape().end(), std::back_inserter(output_shape));
+
+  return OperandDescriptor::Create(input.data_type(), std::move(output_shape));
 }
 
 GemmAttributes::GemmAttributes() = default;

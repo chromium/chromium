@@ -92,6 +92,8 @@ std::string OpTagToString(mojom::Operation::Tag tag) {
       return ops::kGather;
     case mojom::Operation::Tag::kGatherElements:
       return ops::kGatherElements;
+    case mojom::Operation::Tag::kGatherNd:
+      return ops::kGatherNd;
     case mojom::Operation::Tag::kGelu:
       return ops::kGelu;
     case mojom::Operation::Tag::kGemm:

@@ -392,6 +392,9 @@ ContextProperties GraphBuilderTflite::GetContextProperties() {
        // GatherElements is not implemented.
        /*gather_elements_input=*/{},
        /*gather_elements_indices=*/{},
+       // GatherND is not implemented.
+       /*gather_nd_input=*/{},
+       /*gather_nd_indices=*/{},
        /*gelu_input=*/kFloat32,
        /*gemm_input=*/kFloat32,
        /*gru_input=*/kFloat32,
@@ -675,6 +678,7 @@ base::expected<void, std::string> GraphBuilderTflite::SerializeOperation(
       break;
     case mojom::Operation::Tag::kCumulativeSum:
     case mojom::Operation::Tag::kGatherElements:
+    case mojom::Operation::Tag::kGatherNd:
     case mojom::Operation::Tag::kScatterNd:
       return base::unexpected(NotSupportedOperatorError(op));
   }

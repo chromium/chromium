@@ -264,6 +264,11 @@ class MODULES_EXPORT MLGraphBuilder final : public ScriptWrappable {
                             const MLGatherOptions* options,
                             ExceptionState& exception_state);
 
+  MLOperand* gatherND(const MLOperand* input,
+                      const MLOperand* indices,
+                      const MLOperatorOptions* options,
+                      ExceptionState& exception_state);
+
   MLOperand* gelu(const MLOperand* input,
                   const MLOperatorOptions* options,
                   ExceptionState& exception_state);

@@ -286,6 +286,8 @@ dictionary MLTriangularOptions : MLOperatorOptions {
 
   [RaisesException] MLOperand gatherElements(MLOperand input, MLOperand indices, optional MLGatherOptions options = {});
 
+  [RaisesException] MLOperand gatherND(MLOperand input, MLOperand indices, optional MLOperatorOptions options = {});
+
   [RaisesException] MLOperand gelu(MLOperand input, optional MLOperatorOptions options = {});
 
   [RaisesException] MLOperand gemm(MLOperand a, MLOperand b, optional MLGemmOptions options = {});

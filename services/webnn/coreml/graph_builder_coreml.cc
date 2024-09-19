@@ -696,6 +696,9 @@ ContextProperties GraphBuilderCoreml::GetContextProperties() {
        // GatherElements is not implemented.
        /*gather_elements_input=*/{},
        /*gather_elements_indices=*/{},
+       // GatherND is not implemented.
+       /*gather_nd_input=*/{},
+       /*gather_nd_indices=*/{},
        /*gelu_input=*/DataTypeConstraint::kFloat16To32,
        /*gemm_input=*/DataTypeConstraint::kFloat16To32,
        // Gru is not implemented.
@@ -1016,6 +1019,7 @@ GraphBuilderCoreml::BuildCoreMLModel() {
       case mojom::Operation::Tag::kCumulativeSum:
       case mojom::Operation::Tag::kDequantizeLinear:
       case mojom::Operation::Tag::kGatherElements:
+      case mojom::Operation::Tag::kGatherNd:
       case mojom::Operation::Tag::kGelu:
       case mojom::Operation::Tag::kGru:
       case mojom::Operation::Tag::kGruCell:

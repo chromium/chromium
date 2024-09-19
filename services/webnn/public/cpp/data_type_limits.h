@@ -60,6 +60,8 @@ struct COMPONENT_EXPORT(WEBNN_PUBLIC_CPP) DataTypeLimits {
                  SupportedDataTypes gather_indices,
                  SupportedDataTypes gather_elements_input,
                  SupportedDataTypes gather_elements_indices,
+                 SupportedDataTypes gather_nd_input,
+                 SupportedDataTypes gather_nd_indices,
                  SupportedDataTypes gelu_input,
                  SupportedDataTypes gemm_input,
                  SupportedDataTypes gru_input,
@@ -165,6 +167,8 @@ struct COMPONENT_EXPORT(WEBNN_PUBLIC_CPP) DataTypeLimits {
   SupportedDataTypes gather_indices;
   SupportedDataTypes gather_elements_input;
   SupportedDataTypes gather_elements_indices;
+  SupportedDataTypes gather_nd_input;
+  SupportedDataTypes gather_nd_indices;
   SupportedDataTypes gelu_input;
   SupportedDataTypes gemm_input;
   SupportedDataTypes gru_input;
@@ -263,6 +267,8 @@ inline bool operator==(const DataTypeLimits& lhs, const DataTypeLimits& rhs) {
          lhs.gather_indices == rhs.gather_indices &&
          lhs.gather_elements_input == rhs.gather_elements_input &&
          lhs.gather_elements_indices == rhs.gather_elements_indices &&
+         lhs.gather_nd_input == rhs.gather_nd_input &&
+         lhs.gather_nd_indices == rhs.gather_nd_indices &&
          lhs.gelu_input == rhs.gelu_input &&
          lhs.gemm_input == rhs.gemm_input &&
          lhs.gru_input == rhs.gru_input &&

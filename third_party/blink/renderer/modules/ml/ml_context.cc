@@ -510,6 +510,15 @@ const MLOpSupportLimits* MLContext::opSupportLimits(ScriptState* script_state) {
       data_type_limits.gather_elements_input));
   op_support_limits->setGatherElements(gather_elements);
 
+  MLGatherSupportLimits* gather_nd = MLGatherSupportLimits::Create();
+  gather_nd->setInput(
+      SupportedDataTypesToSupportLimits(data_type_limits.gather_nd_input));
+  gather_nd->setIndices(
+      SupportedDataTypesToSupportLimits(data_type_limits.gather_nd_indices));
+  gather_nd->setOutput(
+      SupportedDataTypesToSupportLimits(data_type_limits.gather_nd_input));
+  op_support_limits->setGatherND(gather_nd);
+
   MLSingleInputSupportLimits* gelu = MLSingleInputSupportLimits::Create();
   gelu->setInput(
       SupportedDataTypesToSupportLimits(data_type_limits.gelu_input));

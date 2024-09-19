@@ -214,6 +214,7 @@ dictionary MLOpSupportLimits {
   MLSingleInputSupportLimits expand;
   MLGatherSupportLimits gather;
   MLGatherSupportLimits gatherElements;
+  MLGatherSupportLimits gatherND;
   MLSingleInputSupportLimits gelu;
   MLGemmSupportLimits gemm;
   MLGruSupportLimits gru;

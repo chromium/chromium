@@ -863,6 +863,12 @@ void RetrieveOperationConnectivity(
       output_ids = {gather_elements->output_operand_id};
       break;
     }
+    case Operation::Tag::kGatherNd: {
+      const auto& gather_nd = operation->get_gather_nd();
+      input_ids = {gather_nd->input_operand_id, gather_nd->indices_operand_id};
+      output_ids = {gather_nd->output_operand_id};
+      break;
+    }
     case Operation::Tag::kGelu: {
       const auto& gelu = operation->get_gelu();
       input_ids = {gelu->input_operand_id};

@@ -1129,6 +1129,37 @@ bool ValidateGatherElements(const ContextProperties& context_properties,
   return true;
 }
 
+bool ValidateGatherND(const ContextProperties& context_properties,
+                      const IdToOperandMap& id_to_operand_map,
+                      const mojom::GatherND& gather_nd,
+                      base::flat_set<uint64_t>& processed_operands) {
+  if (!processed_operands.contains(gather_nd.input_operand_id) ||
+      !processed_operands.contains(gather_nd.indices_operand_id)) {
+    return false;
+  }
+  processed_operands.insert(gather_nd.output_operand_id);
+
+  auto* input = GetMojoOperand(id_to_operand_map, gather_nd.input_operand_id);
+  auto* output = GetMojoOperand(id_to_operand_map, gather_nd.output_operand_id);
+  auto* indices =
+      GetMojoOperand(id_to_operand_map, gather_nd.indices_operand_id);
+  if (!input || !output || !indices || output == input || output == indices) {
+    return false;
+  }
+
+  auto validated_output =
+      ValidateGatherNDAndInferOutput(context_properties, input->descriptor,
+                                     indices->descriptor, gather_nd.label);
+  if (!validated_output.has_value()) {
+    return false;
+  }
+  if (validated_output != output->descriptor) {
+    return false;
+  }
+
+  return true;
+}
+
 bool ValidateGemm(const ContextProperties& context_properties,
                   const IdToOperandMap& id_to_operand_map,
                   const mojom::Gemm& gemm,
@@ -2236,6 +2267,9 @@ bool ValidateOperation(const ContextProperties& context_properties,
       return ValidateGatherElements(context_properties, id_to_operand_map,
                                     *operation.get_gather_elements(),
                                     processed_operands);
+    case mojom::Operation::Tag::kGatherNd:
+      return ValidateGatherND(context_properties, id_to_operand_map,
+                              *operation.get_gather_nd(), processed_operands);
     case mojom::Operation::Tag::kGelu:
       return ValidateUnaryOperation(
           id_to_operand_map, *operation.get_gelu(),

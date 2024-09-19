@@ -217,6 +217,10 @@ ContextProperties ContextImplDml::GetProperties(
        /*gather_elements_input=*/kFloat16To32Ints8To32,
        /*gather_elements_indices=*/kGatherScatterIndicesSupportedDataTypes,
 
+       // GatherND is not implemented.
+       /*gather_nd_input=*/{},
+       /*gather_nd_indices=*/{},
+
        // Gelu is emulated when the feature level is less than 5.1.
        // https://learn.microsoft.com/en-us/windows/ai/directml/api/ns-directml-dml_activation_gelu_operator_desc
        /*gelu_input=*/DataTypeConstraint::kFloat16To32,
