@@ -12,13 +12,19 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/sync/protocol/web_apk_specifics.pb.h"
 
-class Profile;
+namespace syncer {
+class DataTypeStoreService;
+}  // namespace syncer
 
 namespace webapk {
 
 class WebApkSyncService : public KeyedService {
  public:
-  explicit WebApkSyncService(Profile* profile);
+  // DO NOT pass a whole Profile object here, otherwise there is a higher risk
+  // that people retrieve new keyed services internally without declaring
+  // DependsOn() in the factory. See crbug.com/368297674.
+  WebApkSyncService(syncer::DataTypeStoreService* data_type_store_service,
+                    std::unique_ptr<WebApkRestoreManager> restore_manager);
   WebApkSyncService(const WebApkSyncService&) = delete;
   WebApkSyncService& operator=(const WebApkSyncService&) = delete;
   ~WebApkSyncService() override;

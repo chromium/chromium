@@ -8,7 +8,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/types/pass_key.h"
 #include "chrome/browser/android/webapk/webapk_restore_web_contents_manager.h"
-#include "chrome/browser/profiles/profile.h"
 #include "components/security_state/content/security_state_tab_helper.h"
 #include "components/webapps/browser/web_contents/web_app_url_loader.h"
 #include "content/public/browser/web_contents.h"
@@ -16,10 +15,11 @@
 
 namespace webapk {
 
-WebApkRestoreManager::WebApkRestoreManager(Profile* profile)
-    : profile_(profile),
-      web_contents_manager_(
-          std::make_unique<WebApkRestoreWebContentsManager>(profile)),
+WebApkRestoreManager::WebApkRestoreManager(
+    WebApkInstallService* web_apk_install_service,
+    std::unique_ptr<WebApkRestoreWebContentsManager> web_contents_manager)
+    : web_apk_install_service_(web_apk_install_service),
+      web_contents_manager_(std::move(web_contents_manager)),
       sequenced_task_runner_(base::SequencedTaskRunner::GetCurrentDefault()) {}
 
 WebApkRestoreManager::~WebApkRestoreManager() = default;
@@ -98,8 +98,8 @@ std::unique_ptr<WebApkRestoreTask> WebApkRestoreManager::CreateNewTask(
     std::unique_ptr<webapps::ShortcutInfo> restore_info,
     base::Time last_used_time) {
   return std::make_unique<WebApkRestoreTask>(
-      PassKey(), profile_, web_contents_manager(), std::move(restore_info),
-      last_used_time);
+      PassKey(), web_apk_install_service_, web_contents_manager(),
+      std::move(restore_info), last_used_time);
 }
 
 void WebApkRestoreManager::MaybeStartNextTask() {

@@ -7,6 +7,7 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "chrome/browser/android/webapk/webapk_install_service_factory.h"
 #include "chrome/browser/android/webapk/webapk_restore_manager.h"
 #include "chrome/browser/android/webapk/webapk_restore_web_contents_manager.h"
 #include "chrome/browser/profiles/profile.h"
@@ -72,10 +73,11 @@ IN_PROC_BROWSER_TEST_F(WebApkRestoreTaskBrowserTest, CreateAndRunTasks) {
 
   auto web_contents_manager = GetTestWebContentsManager();
 
-  WebApkRestoreTask task(WebApkRestoreManager::PassKeyForTesting(), profile(),
-                         web_contents_manager.get(),
-                         std::make_unique<webapps::ShortcutInfo>(test_url),
-                         base::Time());
+  WebApkRestoreTask task(
+      WebApkRestoreManager::PassKeyForTesting(),
+      WebApkInstallServiceFactory::GetForBrowserContext(profile()),
+      web_contents_manager.get(),
+      std::make_unique<webapps::ShortcutInfo>(test_url), base::Time());
   task.Start(base::BindOnce(&WebApkRestoreTaskBrowserTest::OnTaskCompleted,
                             base::Unretained(this), run_loop.QuitClosure(),
                             test_url));
@@ -102,10 +104,11 @@ IN_PROC_BROWSER_TEST_F(WebApkRestoreTaskBrowserTest, NoManifestPage) {
 
   auto web_contents_manager = GetTestWebContentsManager();
 
-  WebApkRestoreTask task(WebApkRestoreManager::PassKeyForTesting(), profile(),
-                         web_contents_manager.get(),
-                         std::make_unique<webapps::ShortcutInfo>(test_url),
-                         base::Time());
+  WebApkRestoreTask task(
+      WebApkRestoreManager::PassKeyForTesting(),
+      WebApkInstallServiceFactory::GetForBrowserContext(profile()),
+      web_contents_manager.get(),
+      std::make_unique<webapps::ShortcutInfo>(test_url), base::Time());
   task.Start(base::BindOnce(&WebApkRestoreTaskBrowserTest::OnTaskCompleted,
                             base::Unretained(this), run_loop.QuitClosure(),
                             test_url));
@@ -132,10 +135,11 @@ IN_PROC_BROWSER_TEST_F(WebApkRestoreTaskBrowserTest, StartUrlNotLoadable) {
 
   auto web_contents_manager = GetTestWebContentsManager();
 
-  WebApkRestoreTask task(WebApkRestoreManager::PassKeyForTesting(), profile(),
-                         web_contents_manager.get(),
-                         std::make_unique<webapps::ShortcutInfo>(test_url),
-                         base::Time());
+  WebApkRestoreTask task(
+      WebApkRestoreManager::PassKeyForTesting(),
+      WebApkInstallServiceFactory::GetForBrowserContext(profile()),
+      web_contents_manager.get(),
+      std::make_unique<webapps::ShortcutInfo>(test_url), base::Time());
   task.Start(base::BindOnce(&WebApkRestoreTaskBrowserTest::OnTaskCompleted,
                             base::Unretained(this), run_loop.QuitClosure(),
                             test_url));
@@ -164,9 +168,10 @@ IN_PROC_BROWSER_TEST_F(WebApkRestoreTaskBrowserTest, ManifestIdMismatch) {
 
   auto web_contents_manager = GetTestWebContentsManager();
 
-  WebApkRestoreTask task(WebApkRestoreManager::PassKeyForTesting(), profile(),
-                         web_contents_manager.get(),
-                         std::move(test_shortcut_info), base::Time());
+  WebApkRestoreTask task(
+      WebApkRestoreManager::PassKeyForTesting(),
+      WebApkInstallServiceFactory::GetForBrowserContext(profile()),
+      web_contents_manager.get(), std::move(test_shortcut_info), base::Time());
   task.Start(base::BindOnce(&WebApkRestoreTaskBrowserTest::OnTaskCompleted,
                             base::Unretained(this), run_loop.QuitClosure(),
                             test_manifest_id));
@@ -194,9 +199,10 @@ IN_PROC_BROWSER_TEST_F(WebApkRestoreTaskBrowserTest, DownloadIcon) {
   test_shortcut_info->best_primary_icon_url =
       embedded_test_server()->GetURL("/256x256-green.png");
 
-  WebApkRestoreTask task(WebApkRestoreManager::PassKeyForTesting(), profile(),
-                         web_contents_manager.get(),
-                         std::move(test_shortcut_info), base::Time());
+  WebApkRestoreTask task(
+      WebApkRestoreManager::PassKeyForTesting(),
+      WebApkInstallServiceFactory::GetForBrowserContext(profile()),
+      web_contents_manager.get(), std::move(test_shortcut_info), base::Time());
 
   base::RunLoop run_loop;
   task.DownloadIcon(run_loop.QuitClosure());
@@ -213,9 +219,10 @@ IN_PROC_BROWSER_TEST_F(WebApkRestoreTaskBrowserTest, DownloadIconNoIconUrl) {
       embedded_test_server()->GetURL("/manifest_test_page.html"));
   test_shortcut_info->best_primary_icon_url = GURL();
 
-  WebApkRestoreTask task(WebApkRestoreManager::PassKeyForTesting(), profile(),
-                         web_contents_manager.get(),
-                         std::move(test_shortcut_info), base::Time());
+  WebApkRestoreTask task(
+      WebApkRestoreManager::PassKeyForTesting(),
+      WebApkInstallServiceFactory::GetForBrowserContext(profile()),
+      web_contents_manager.get(), std::move(test_shortcut_info), base::Time());
 
   base::RunLoop run_loop;
   task.DownloadIcon(run_loop.QuitClosure());
@@ -232,9 +239,10 @@ IN_PROC_BROWSER_TEST_F(WebApkRestoreTaskBrowserTest, DownloadIconBadIcon) {
   test_shortcut_info->best_primary_icon_url =
       embedded_test_server()->GetURL("/bad_icon.png");
 
-  WebApkRestoreTask task(WebApkRestoreManager::PassKeyForTesting(), profile(),
-                         web_contents_manager.get(),
-                         std::move(test_shortcut_info), base::Time());
+  WebApkRestoreTask task(
+      WebApkRestoreManager::PassKeyForTesting(),
+      WebApkInstallServiceFactory::GetForBrowserContext(profile()),
+      web_contents_manager.get(), std::move(test_shortcut_info), base::Time());
 
   base::RunLoop run_loop;
   task.DownloadIcon(run_loop.QuitClosure());

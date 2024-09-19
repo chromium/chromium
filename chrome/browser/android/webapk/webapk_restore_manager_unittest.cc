@@ -10,6 +10,7 @@
 #include "base/test/task_environment.h"
 #include "base/types/pass_key.h"
 #include "chrome/browser/android/webapk/webapk_helpers.h"
+#include "chrome/browser/android/webapk/webapk_install_service_factory.h"
 #include "chrome/browser/android/webapk/webapk_restore_task.h"
 #include "chrome/browser/android/webapk/webapk_restore_web_contents_manager.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -40,13 +41,13 @@ class MockWebApkRestoreTask : public WebApkRestoreTask {
  public:
   explicit MockWebApkRestoreTask(
       base::PassKey<WebApkRestoreManager> pass_key,
-      Profile* profile,
+      WebApkInstallService* web_apk_install_service,
       WebApkRestoreWebContentsManager* web_contents_manager,
       std::unique_ptr<webapps::ShortcutInfo> shortcut_info,
       base::Time last_used_time,
       std::vector<std::pair<GURL, std::string>>* task_log)
       : WebApkRestoreTask(pass_key,
-                          profile,
+                          web_apk_install_service,
                           web_contents_manager,
                           std::move(shortcut_info),
                           last_used_time),
@@ -84,9 +85,11 @@ class TestWebContentsManager : public WebApkRestoreWebContentsManager {
 class TestWebApkRestoreManager : public WebApkRestoreManager {
  public:
   explicit TestWebApkRestoreManager(Profile* profile)
-      : WebApkRestoreManager(profile) {
-    web_contents_manager_ = std::make_unique<TestWebContentsManager>(profile);
-  }
+      : WebApkRestoreManager(
+            WebApkInstallServiceFactory::GetForBrowserContext(profile),
+            std::make_unique<TestWebContentsManager>(profile)),
+        web_apk_install_service_(
+            WebApkInstallServiceFactory::GetForBrowserContext(profile)) {}
   ~TestWebApkRestoreManager() override = default;
 
   void PrepareTasksFinish(base::OnceClosure on_task_finish) {
@@ -112,11 +115,12 @@ class TestWebApkRestoreManager : public WebApkRestoreManager {
       base::Time last_used_time) override {
     task_log_.emplace_back(shortcut_info->manifest_id, "Create");
     return std::make_unique<MockWebApkRestoreTask>(
-        WebApkRestoreManager::PassKeyForTesting(), profile(),
+        WebApkRestoreManager::PassKeyForTesting(), web_apk_install_service_,
         web_contents_manager(), std::move(shortcut_info), last_used_time,
         &task_log_);
   }
 
+  const raw_ptr<WebApkInstallService> web_apk_install_service_;
   base::OnceClosure on_task_finish_;
   std::vector<std::pair<GURL, std::string>> task_log_;
 };
