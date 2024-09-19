@@ -108,20 +108,6 @@ void MaybeOverrideScanResult(DownloadCheckResultReason reason,
   CHECK(false);
 }
 
-void LogNoticeSeenMetrics(PrefService* prefs) {
-  bool has_seen =
-      prefs->GetBoolean(prefs::kSafeBrowsingAutomaticDeepScanningIPHSeen);
-  if (prefs->GetBoolean(prefs::kDownloadBubblePartialViewEnabled)) {
-    base::UmaHistogramBoolean(
-        "SBClientDownload.AutomaticDeepScanNoticeSeen2.PartialViewEnabled",
-        has_seen);
-  } else {
-    base::UmaHistogramBoolean(
-        "SBClientDownload.AutomaticDeepScanNoticeSeen2.PartialViewSuppressed",
-        has_seen);
-  }
-}
-
 bool ShouldUploadToDownloadFeedback(DownloadCheckResult result) {
   switch (result) {
     case DownloadCheckResult::DANGEROUS_HOST:
@@ -401,8 +387,7 @@ bool CheckClientDownloadRequest::IsUnderAdvancedProtection(
 }
 
 bool CheckClientDownloadRequest::ShouldImmediatelyDeepScan(
-    bool server_requests_prompt,
-    bool log_metrics) const {
+    bool server_requests_prompt) const {
   if (!ShouldPromptForDeepScanning(server_requests_prompt)) {
     return false;
   }
@@ -417,18 +402,6 @@ bool CheckClientDownloadRequest::ShouldImmediatelyDeepScan(
   }
 
   if (DownloadItemWarningData::IsTopLevelEncryptedArchive(item_)) {
-    return false;
-  }
-
-  if (!base::FeatureList::IsEnabled(kDeepScanningPromptRemoval)) {
-    return false;
-  }
-
-  if (log_metrics) {
-    LogNoticeSeenMetrics(profile->GetPrefs());
-  }
-  if (!profile->GetPrefs()->GetBoolean(
-          prefs::kSafeBrowsingAutomaticDeepScanningIPHSeen)) {
     return false;
   }
 
