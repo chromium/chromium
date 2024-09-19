@@ -39,6 +39,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/update_manifest/update_manifest.h"
 #include "chrome/browser/web_applications/isolated_web_apps/update_manifest/update_manifest_fetcher.h"
 #include "chrome/browser/web_applications/locks/web_app_lock_manager.h"
+#include "chrome/browser/web_applications/navigation_capturing_log.h"
 #include "chrome/browser/web_applications/preinstalled_web_app_manager.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
@@ -101,6 +102,7 @@ constexpr char kIsolatedWebAppPolicyManager[] = "IsolatedWebAppPolicyManager";
 #endif  // BUILDFLAG(IS_CHROMEOS)
 constexpr char kIwaKeyDistributionInfoProvider[] =
     "IwaKeyDistributionInfoProvider";
+constexpr char kNavigationCapturing[] = "NavigationCapturing";
 
 constexpr char kNeedsRecordWebAppDebugInfo[] =
     "No debugging info available! Please enable: "
@@ -164,6 +166,7 @@ base::Value::Dict BuildIndexJson() {
   index.Append(kWebAppIphLcPreferences);
   index.Append(kShouldGarbageCollectStoragePartitions);
   index.Append(kLockManager);
+  index.Append(kNavigationCapturing);
   index.Append(kCommandManager);
   index.Append(kIconErrorLog);
   index.Append(kInstallationProcessErrorLog);
@@ -437,6 +440,13 @@ base::Value BuildWebAppDiskStateJson(base::FilePath root_directory,
   return base::Value(std::move(root));
 }
 
+base::Value::Dict BuildNavigationCapturingLog(
+    web_app::WebAppProvider& provider) {
+  base::Value::Dict root;
+  root.Set(kNavigationCapturing, provider.navigation_capturing_log().GetLog());
+  return root;
+}
+
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 class ObliterateStoragePartitionHelper
     : public base::RefCountedThreadSafe<ObliterateStoragePartitionHelper> {
@@ -534,6 +544,7 @@ void WebAppInternalsHandler::BuildDebugInfo(
   root.Append(BuildWebAppLinkCapturingIphPrefsJson(profile));
   root.Append(BuildShouldGarbageCollectStoragePartitionsPrefsJson(profile));
   root.Append(BuildLockManagerJson(*provider));
+  root.Append(BuildNavigationCapturingLog(*provider));
   root.Append(BuildCommandManagerJson(*provider));
   root.Append(BuildIconErrorLogJson(*provider));
   root.Append(BuildInstallProcessErrorLogJson(*provider));

@@ -31,6 +31,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_installation_manager.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_update_manager.h"
 #include "chrome/browser/web_applications/manifest_update_manager.h"
+#include "chrome/browser/web_applications/navigation_capturing_log.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/os_integration/web_app_file_handler_manager.h"
 #include "chrome/browser/web_applications/os_integration/web_app_protocol_handler_manager.h"
@@ -302,6 +303,11 @@ VisitedManifestManager& WebAppProvider::visited_manifest_manager() {
   return *visited_manifest_manager_;
 }
 
+NavigationCapturingLog& WebAppProvider::navigation_capturing_log() {
+  CheckIsConnected();
+  return *navigation_capturing_log_;
+}
+
 void WebAppProvider::Shutdown() {
   command_scheduler_->Shutdown();
   command_manager_->Shutdown();
@@ -380,8 +386,8 @@ void WebAppProvider::CreateSubsystems(Profile* profile) {
 
   web_contents_manager_ = std::make_unique<WebContentsManager>();
   ui_state_manager_ = std::make_unique<WebAppUiStateManager>();
-
   visited_manifest_manager_ = std::make_unique<VisitedManifestManager>();
+  navigation_capturing_log_ = std::make_unique<NavigationCapturingLog>();
 }
 
 void WebAppProvider::ConnectSubsystems() {

@@ -13,6 +13,7 @@
 
 #include "base/functional/callback_helpers.h"
 #include "base/memory/stack_allocated.h"
+#include "base/values.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "components/services/app_service/public/cpp/app_launch_util.h"
@@ -53,6 +54,7 @@ struct AppNavigationResult {
   int tab_index = -1;
   bool enqueue_launch_params = false;
   bool show_iph = false;
+  base::Value::Dict debug_value;
 
   STACK_ALLOCATED();
 };
@@ -163,7 +165,7 @@ void EnqueueLaunchParams(content::WebContents* contents,
 // and showing a navigation capturing IPH bubble, after the appropriate
 // app-scoped WebContents has been identified and prepared for navigation.
 void OnWebAppNavigationAfterWebContentsCreation(
-    const web_app::AppNavigationResult& app_navigation_result,
+    web_app::AppNavigationResult& app_navigation_result,
     const NavigateParams& params);
 
 }  // namespace web_app

@@ -212,6 +212,8 @@ source_set("web_applications") {
     "manifest_update_manager.h",
     "manifest_update_utils.cc",
     "manifest_update_utils.h",
+    "navigation_capturing_log.cc",
+    "navigation_capturing_log.h",
     "os_integration/file_handling_sub_manager.cc",
     "os_integration/file_handling_sub_manager.h",
     "os_integration/os_integration_manager.cc",
