@@ -3328,20 +3328,39 @@ if (current_toolchain == default_toolchain) {
     ]
   }
 
+  # Options shared by all script test targets that call `run_wpt_tests.py`.
+  _common_web_test_options = [
+    "--no-show-results",
+    "--zero-tests-executed-ok",
+  ]
+  if (is_debug) {
+    _common_web_test_options += [ "--debug" ]
+  } else {
+    _common_web_test_options += [ "--release" ]
+  }
+  base_out_dir = rebase_path(get_path_info(root_build_dir, "dir"), "../../.")
+  out_dir = get_path_info(root_build_dir, "name")
+  _common_web_test_options += [
+    "--build-directory",
+    base_out_dir,
+    "--target",
+    out_dir,
+  ]
+
   script_test("chrome_public_wpt") {
     script = "//third_party/blink/tools/run_wpt_tests.py"
-    args = [
-      "--product",
-      "chrome_android",
-      "--test-type",
-      "testharness",
-      "reftest",
-      "crashtest",
-      "print-reftest",
-      "--zero-tests-executed-ok",
-      "--browser-apk",
-      "@WrappedPath(apks/ChromePublic.apk)",
-    ]
+    args = _common_web_test_options + [
+             "--product",
+             "chrome_android",
+             "--test-type",
+             "testharness",
+             "reftest",
+             "crashtest",
+             "print-reftest",
+             "--zero-tests-executed-ok",
+             "--browser-apk",
+             "@WrappedPath(apks/ChromePublic.apk)",
+           ]
     data = [
       "//third_party/blink/web_tests/platform/android/",
       "//third_party/blink/web_tests/MobileTestExpectations",

@@ -82,22 +82,41 @@ script_test("system_webview_crx_smoke_tests") {
   ]
 }
 
+# Options shared by all script test targets that call `run_wpt_tests.py`.
+_common_web_test_options = [
+  "--no-show-results",
+  "--zero-tests-executed-ok",
+]
+if (is_debug) {
+  _common_web_test_options += [ "--debug" ]
+} else {
+  _common_web_test_options += [ "--release" ]
+}
+base_out_dir = rebase_path(get_path_info(root_build_dir, "dir"), "../../.")
+out_dir = get_path_info(root_build_dir, "name")
+_common_web_test_options += [
+  "--build-directory",
+  base_out_dir,
+  "--target",
+  out_dir,
+]
+
 script_test("system_webview_wpt") {
   script = "//third_party/blink/tools/run_wpt_tests.py"
-  args = [
-    "--product",
-    "android_webview",
-    "--test-type",
-    "testharness",
-    "reftest",
-    "crashtest",
-    "print-reftest",
-    "--zero-tests-executed-ok",
-    "--webview-provider",
-    "@WrappedPath(apks/SystemWebView.apk)",
-    "--browser-apk",
-    "@WrappedPath(apks/SystemWebViewShell.apk)",
-  ]
+  args = _common_web_test_options + [
+           "--product",
+           "android_webview",
+           "--test-type",
+           "testharness",
+           "reftest",
+           "crashtest",
+           "print-reftest",
+           "--zero-tests-executed-ok",
+           "--webview-provider",
+           "@WrappedPath(apks/SystemWebView.apk)",
+           "--browser-apk",
+           "@WrappedPath(apks/SystemWebViewShell.apk)",
+         ]
   data = [
     "//third_party/blink/web_tests/platform/webview/",
     "//third_party/blink/web_tests/MobileTestExpectations",
@@ -112,22 +131,22 @@ script_test("system_webview_wpt") {
 
 script_test("trichrome_webview_wpt") {
   script = "//third_party/blink/tools/run_wpt_tests.py"
-  args = [
-    "--product",
-    "android_webview",
-    "--test-type",
-    "testharness",
-    "reftest",
-    "crashtest",
-    "print-reftest",
-    "--zero-tests-executed-ok",
-    "--webview-provider",
-    "@WrappedPath(apks/TrichromeWebView.apk)",
-    "--browser-apk",
-    "@WrappedPath(apks/SystemWebViewShell.apk)",
-    "--additional-apk",
-    "@WrappedPath(apks/TrichromeLibrary.apk)",
-  ]
+  args = _common_web_test_options + [
+           "--product",
+           "android_webview",
+           "--test-type",
+           "testharness",
+           "reftest",
+           "crashtest",
+           "print-reftest",
+           "--zero-tests-executed-ok",
+           "--webview-provider",
+           "@WrappedPath(apks/TrichromeWebView.apk)",
+           "--browser-apk",
+           "@WrappedPath(apks/SystemWebViewShell.apk)",
+           "--additional-apk",
+           "@WrappedPath(apks/TrichromeLibrary.apk)",
+         ]
   data = [
     "//third_party/blink/web_tests/platform/webview/",
     "//third_party/blink/web_tests/MobileTestExpectations",
@@ -143,22 +162,22 @@ script_test("trichrome_webview_wpt") {
 if (android_64bit_target_cpu) {
   script_test("trichrome_webview_wpt_64") {
     script = "//third_party/blink/tools/run_wpt_tests.py"
-    args = [
-      "--product",
-      "android_webview",
-      "--test-type",
-      "testharness",
-      "reftest",
-      "crashtest",
-      "print-reftest",
-      "--zero-tests-executed-ok",
-      "--webview-provider",
-      "@WrappedPath(apks/TrichromeWebView64.apk)",
-      "--browser-apk",
-      "@WrappedPath(apks/SystemWebViewShell.apk)",
-      "--additional-apk",
-      "@WrappedPath(apks/TrichromeLibrary64.apk)",
-    ]
+    args = _common_web_test_options + [
+             "--product",
+             "android_webview",
+             "--test-type",
+             "testharness",
+             "reftest",
+             "crashtest",
+             "print-reftest",
+             "--zero-tests-executed-ok",
+             "--webview-provider",
+             "@WrappedPath(apks/TrichromeWebView64.apk)",
+             "--browser-apk",
+             "@WrappedPath(apks/SystemWebViewShell.apk)",
+             "--additional-apk",
+             "@WrappedPath(apks/TrichromeLibrary64.apk)",
+           ]
     data = [
       "//third_party/blink/web_tests/platform/webview/",
       "//third_party/blink/web_tests/MobileTestExpectations",
