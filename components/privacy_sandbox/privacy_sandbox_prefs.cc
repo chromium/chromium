@@ -64,7 +64,6 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterTimePref(prefs::kPrivacySandboxSentimentSurveyLastSeen,
                              base::Time());
 #if BUILDFLAG(IS_ANDROID)
-  registry->RegisterListPref(prefs::kPrivacySandboxActivityTypeRecord);
   registry->RegisterListPref(prefs::kPrivacySandboxActivityTypeRecord2);
 #endif
   // Register prefs for tracking protection.
