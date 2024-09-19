@@ -136,6 +136,17 @@ impl BigRat {
 		self.den == 1.into()
 	}
 
+	pub(crate) fn try_as_biguint<I: Interrupt>(mut self, int: &I) -> FResult<BigUint> {
+		if self.sign == Sign::Negative && self.num != 0.into() {
+			return Err(FendError::NegativeNumbersNotAllowed);
+		}
+		self = self.simplify(int)?;
+		if self.den != 1.into() {
+			return Err(FendError::FractionToInteger);
+		}
+		Ok(self.num)
+	}
+
 	pub(crate) fn try_as_usize<I: Interrupt>(mut self, int: &I) -> FResult<usize> {
 		if self.sign == Sign::Negative && self.num != 0.into() {
 			return Err(FendError::NegativeNumbersNotAllowed);

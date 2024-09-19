@@ -517,6 +517,7 @@ const COMMON_PHYSICAL_UNITS: &[UnitTuple] = &[
 		"tonne of oil equivalent",
 	),
 	("kgoe", "kgoe", "1/1000 toe", "kilogram of oil equivalent"),
+	("ton_of_tnt", "", "l@4.184 gigajoules", "TNT equivalent"),
 	// TODO remove these compatibility units
 	("lightyear", "lightyears", "light_year", ""),
 	("light", "", "c", ""),

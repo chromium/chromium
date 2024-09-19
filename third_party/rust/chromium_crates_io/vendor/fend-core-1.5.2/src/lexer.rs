@@ -539,7 +539,7 @@ fn parse_symbol(ch: char, input: &mut &str) -> FResult<Token> {
 				Symbol::Equals
 			}
 		}
-		'\u{2260}' => Symbol::NotEquals,       // unicode not equal to symbol
+		'\u{2260}' => Symbol::NotEquals, // unicode not equal to symbol
 		'\\' | '\u{3bb}' => Symbol::Backslash, // lambda symbol
 		'.' => Symbol::Dot,
 		'<' => {

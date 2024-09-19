@@ -611,6 +611,129 @@ impl BigUint {
 		}
 		Ok(self)
 	}
+
+	pub(crate) fn to_words<I: Interrupt>(&self, int: &I) -> FResult<String> {
+		// it would be nice to implement https://www.mrob.com/pub/math/largenum.html at some point
+		let num = self
+			.format(
+				&FormatOptions {
+					base: Base::from_plain_base(10)?,
+					sf_limit: None,
+					write_base_prefix: false,
+				},
+				int,
+			)?
+			.value
+			.to_string();
+
+		if num == "0" {
+			return Ok("zero".to_string());
+		}
+
+		let mut result = String::new();
+		let mut chunks = Vec::new();
+
+		let mut i = num.len();
+		while i > 0 {
+			let start = if i >= 3 { i - 3 } else { 0 };
+			chunks.push(&num[start..i]);
+			i = start;
+		}
+
+		for (i, chunk) in chunks.iter().enumerate().rev() {
+			let part = chunk.parse::<usize>().unwrap_or(0);
+			if part != 0 {
+				if !result.is_empty() {
+					result.push(' ');
+				}
+				convert_below_1000(part, &mut result);
+				if i > 0 {
+					result.push(' ');
+					result.push_str(SCALE_NUMBERS.get(i).ok_or_else(|| FendError::OutOfRange {
+						value: Box::new(num.clone()),
+						range: Range {
+							start: RangeBound::Closed(Box::new("0")),
+							end: RangeBound::Closed(Box::new("10^66 - 1")),
+						},
+					})?);
+				}
+			}
+		}
+
+		Ok(result.trim().to_string())
+	}
+}
+
+const SMALL_NUMBERS: &[&str] = &[
+	"zero",
+	"one",
+	"two",
+	"three",
+	"four",
+	"five",
+	"six",
+	"seven",
+	"eight",
+	"nine",
+	"ten",
+	"eleven",
+	"twelve",
+	"thirteen",
+	"fourteen",
+	"fifteen",
+	"sixteen",
+	"seventeen",
+	"eighteen",
+	"nineteen",
+];
+const TENS: &[&str] = &[
+	"", "", "twenty", "thirty", "forty", "fifty", "sixty", "seventy", "eighty", "ninety",
+];
+const SCALE_NUMBERS: &[&str] = &[
+	"",
+	"thousand",
+	"million",
+	"billion",
+	"trillion",
+	"quadrillion",
+	"quintillion",
+	"sextillion",
+	"septillion",
+	"octillion",
+	"nonillion",
+	"decillion",
+	"undecillion",
+	"duodecillion",
+	"tredecillion",
+	"quattuordecillion",
+	"quindecillion",
+	"sexdecillion",
+	"septendecillion",
+	"octodecillion",
+	"novemdecillion",
+	"vigintillion",
+];
+
+fn convert_below_1000(num: usize, result: &mut String) {
+	if num >= 100 {
+		result.push_str(SMALL_NUMBERS[num / 100]);
+		result.push_str(" hundred");
+		if num % 100 != 0 {
+			result.push_str(" and ");
+		}
+	}
+
+	let remainder = num % 100;
+
+	if remainder < 20 && remainder > 0 {
+		result.push_str(SMALL_NUMBERS[remainder]);
+	} else if remainder >= 20 {
+		result.push_str(TENS[remainder / 10]);
+		if remainder % 10 != 0 {
+			result.push('-');
+			result.push_str(SMALL_NUMBERS[remainder % 10]);
+		}
+	}
 }
 
 impl Ord for BigUint {
@@ -979,6 +1102,24 @@ mod tests {
 		assert_eq!(
 			BigUint::from(1).mul(&BigUint::Large(vec![0, 1]), int)?,
 			BigUint::Large(vec![0, 1])
+		);
+		Ok(())
+	}
+
+	#[test]
+	fn words() -> Res {
+		let int = &crate::interrupt::Never;
+		assert_eq!(
+			BigUint::from(123).to_words(int)?,
+			"one hundred and twenty-three"
+		);
+		assert_eq!(
+			BigUint::from(10_000_347_001_023_000_002).to_words(int)?,
+			"ten quintillion three hundred and forty-seven trillion one billion twenty-three million two"
+		);
+		assert_eq!(
+			BigUint::Large(vec![0, 0x0e3c_bb5a_c574_1c64, 0x1cfd_a3a5_6977_58bf, 0x097e_dd87]).to_words(int).unwrap_err().to_string(),
+			"1000000000000000000000000000000000000000000000000000000000000000000 must lie in the interval [0, 10^66 - 1]"
 		);
 		Ok(())
 	}

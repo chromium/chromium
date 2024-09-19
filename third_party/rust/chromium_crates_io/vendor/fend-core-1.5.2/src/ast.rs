@@ -561,6 +561,7 @@ fn evaluate_add<I: Interrupt>(
 	})
 }
 
+#[allow(clippy::too_many_lines)]
 fn evaluate_as<I: Interrupt>(
 	a: Expr,
 	b: Expr,
@@ -640,6 +641,14 @@ fn evaluate_as<I: Interrupt>(
 					});
 				}
 				return Ok(Value::String(borrow::Cow::Owned(to_roman(a))));
+			}
+			"words" => {
+				let uint = evaluate(a, scope, attrs, context, int)?
+					.expect_num()?
+					.into_unitless_complex(int)?
+					.try_as_real()?
+					.try_as_biguint(int)?;
+				return Ok(Value::String(borrow::Cow::Owned(uint.to_words(int)?)));
 			}
 			_ => (),
 		}

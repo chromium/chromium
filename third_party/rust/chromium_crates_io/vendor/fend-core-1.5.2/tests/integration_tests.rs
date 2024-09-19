@@ -6005,3 +6005,31 @@ fn uppercase_identifiers() {
 
 	expect_error("foo = 1; FOO", Some("unknown identifier 'FOO'"));
 }
+
+#[test]
+fn test_words() {
+	test_eval_simple("1 to words", "one");
+	test_eval_simple("9 to words", "nine");
+	test_eval_simple("15 to words", "fifteen");
+	test_eval_simple("20 to words", "twenty");
+	test_eval_simple("99 to words", "ninety-nine");
+	test_eval_simple("154 to words", "one hundred and fifty-four");
+	test_eval_simple("500 to words", "five hundred");
+	test_eval_simple("999 to words", "nine hundred and ninety-nine");
+	test_eval_simple("1000 to words", "one thousand");
+	test_eval_simple(
+		"4321 to words",
+		"four thousand three hundred and twenty-one",
+	);
+	test_eval_simple("1000000 to words", "one million");
+	test_eval_simple(
+		"1234567 to words",
+		"one million two hundred and thirty-four thousand five hundred and sixty-seven",
+	);
+	test_eval_simple("1000000000 to words", "one billion");
+	test_eval_simple("9876543210 to words", "nine billion eight hundred and seventy-six million five hundred and forty-three thousand two hundred and ten");
+	test_eval_simple("1000000000000 to words", "one trillion");
+	test_eval_simple("1234567890123456 to words", "one quadrillion two hundred and thirty-four trillion five hundred and sixty-seven billion eight hundred and ninety million one hundred and twenty-three thousand four hundred and fifty-six");
+	test_eval_simple("1000000000000000000000 to words", "one sextillion");
+	test_eval_simple("1000000000000000000000000 to words", "one septillion");
+}

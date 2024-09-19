@@ -470,7 +470,7 @@ impl Value {
 		self.convert_to(Self::unitless(), int)
 	}
 
-	fn into_unitless_complex<I: Interrupt>(mut self, int: &I) -> FResult<Complex> {
+	pub(crate) fn into_unitless_complex<I: Interrupt>(mut self, int: &I) -> FResult<Complex> {
 		self = self.remove_unit_scaling(int)?;
 		if !self.is_unitless(int)? {
 			return Err(FendError::ExpectedAUnitlessNumber);

@@ -10,6 +10,7 @@ use std::ops::Neg;
 use std::{fmt, hash, io};
 
 use super::bigrat;
+use super::biguint::BigUint;
 
 #[derive(Clone)]
 pub(crate) struct Real {
@@ -98,6 +99,19 @@ impl Real {
 				let den = BigRat::from(1_000_000_000_000_000_000);
 				let pi = num.div(&den, int)?;
 				Ok(n.mul(&pi, int)?)
+			}
+		}
+	}
+
+	pub(crate) fn try_as_biguint<I: Interrupt>(self, int: &I) -> FResult<BigUint> {
+		match self.pattern {
+			Pattern::Simple(s) => s.try_as_biguint(int),
+			Pattern::Pi(n) => {
+				if n == 0.into() {
+					Ok(BigUint::Small(0))
+				} else {
+					Err(FendError::CannotConvertToInteger)
+				}
 			}
 		}
 	}

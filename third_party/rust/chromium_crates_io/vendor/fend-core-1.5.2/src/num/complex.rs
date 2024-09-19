@@ -52,6 +52,13 @@ impl Complex {
 		})
 	}
 
+	pub(crate) fn try_as_real(self) -> FResult<Real> {
+		if !self.imag.is_zero() {
+			return Err(FendError::ComplexToInteger);
+		}
+		Ok(self.real)
+	}
+
 	pub(crate) fn try_as_usize<I: Interrupt>(self, int: &I) -> FResult<usize> {
 		if !self.imag.is_zero() {
 			return Err(FendError::ComplexToInteger);
