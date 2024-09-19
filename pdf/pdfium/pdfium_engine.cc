@@ -725,18 +725,15 @@ void PDFiumEngine::Paint(const gfx::Rect& rect,
 }
 
 void PDFiumEngine::PostPaint() {
-  for (size_t i = 0; i < progressive_paints_.size(); ++i) {
-    if (progressive_paints_[i].painted())
-      continue;
-
-    // This rectangle must have been merged with another one, that's why we
-    // weren't asked to paint it. Remove it or otherwise we'll never finish
-    // painting.
-    FPDF_RenderPage_Close(
-        pages_[progressive_paints_[i].page_index()]->GetPage());
-    progressive_paints_.erase(progressive_paints_.begin() + i);
-    --i;
+  // Remove all entries that were never painted, as they must have been merged
+  // with other entries. If they are not removed, painting will never finish.
+  for (const ProgressivePaint& entry : progressive_paints_) {
+    if (!entry.painted()) {
+      FPDF_RenderPage_Close(pages_[entry.page_index()]->GetPage());
+    }
   }
+  std::erase_if(progressive_paints_,
+                [](const ProgressivePaint& entry) { return !entry.painted(); });
 }
 
 bool PDFiumEngine::HandleDocumentLoad(std::unique_ptr<UrlLoader> loader,
