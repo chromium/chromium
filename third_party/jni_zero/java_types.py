@@ -260,6 +260,9 @@ class JavaParam:
       return f'_{self.name}'
     return self.name
 
+  def to_java_declaration(self, type_resolver=None):
+    return '%s %s' % (self.java_type.to_java(type_resolver), self.name)
+
 
 class JavaParamList(tuple):
   """Represents a parameter list."""
@@ -268,8 +271,8 @@ class JavaParamList(tuple):
     return JavaParamList(p.to_proxy() for p in self)
 
   def to_java_declaration(self, type_resolver=None):
-    return ', '.join('%s %s' % (p.java_type.to_java(type_resolver), p.name)
-                     for p in self)
+    return ', '.join(
+        p.to_java_declaration(type_resolver=type_resolver) for p in self)
 
   def to_call_str(self):
     return ', '.join(p.name for p in self)

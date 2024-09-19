@@ -1,6 +1,10 @@
 # Copyright 2024 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
+"""Codegen for Java types used to appease the compiler. .class file is discarded.
+
+Needed to avoid ciruclar dependencies in the build graph.
+"""
 
 
 def Generate(java_class,

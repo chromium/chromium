@@ -10,7 +10,6 @@ package J;
 
 public class N {
 
-
     // Original name: org_jni_1zero_SampleProxyEdgeCases_addStructB
     public static native int MYplquli(Object caller, Object b);
     // Original name: org_jni_1zero_SampleProxyEdgeCases_arrayTypes1
@@ -27,4 +26,5 @@ public class N {
     public static native boolean MWbFhvyA(Object sb);
     // Original name: org_jni_1zero_SampleProxyEdgeCases_setStringBuilder
     public static native int MWbFhvyA(int sb);
+
 }

@@ -17,6 +17,7 @@ import string
 import sys
 import zipfile
 
+from codegen import gen_jni_java
 from codegen import header_common
 from codegen import natives_header
 from codegen import register_natives
@@ -122,8 +123,10 @@ def _Generate(options, native_sources, java_sources, priority_java_sources):
   if options.enable_jni_multiplexing:
     whole_hash, priority_hash = _GenerateHashes(present_jni_objs, priority_set)
 
-  stubs = _GenerateStubsAndAssert(options, jni_objs_by_path, native_sources_set,
-                                  java_sources_set)
+  java_only_jni_objs = _CheckForJavaNativeMismatch(options, jni_objs_by_path,
+                                                   native_sources_set,
+                                                   java_sources_set)
+
   short_gen_jni_class = proxy.get_gen_jni_class(
       short=True,
       name_prefix=options.module_name,
@@ -177,8 +180,6 @@ def _Generate(options, native_sources, java_sources, priority_java_sources):
     with common.atomic_output(options.header_path, mode='w') as f:
       f.write(header_content)
 
-  stub_methods_string = ''.join(stubs)
-
   with common.atomic_output(options.srcjar_path) as f:
     with zipfile.ZipFile(f, 'w') as srcjar:
       if options.use_proxy_hash or options.enable_jni_multiplexing:
@@ -198,21 +199,19 @@ def _Generate(options, native_sources, java_sources, priority_java_sources):
             data=CreateProxyJavaFromDict(options,
                                          full_gen_jni_class,
                                          combined_dict,
-                                         stub_methods=stub_methods_string,
+                                         java_only_jni_objs,
                                          forwarding=True))
       else:
         # org/jni_zero/GEN_JNI.java
         common.add_to_zip_hermetic(
             srcjar,
             f'{full_gen_jni_class.full_name_with_slashes}.java',
-            data=CreateProxyJavaFromDict(options,
-                                         gen_jni_class,
-                                         combined_dict,
-                                         stub_methods=stub_methods_string))
+            data=CreateProxyJavaFromDict(options, gen_jni_class, combined_dict,
+                                         java_only_jni_objs))
 
 
-def _GenerateStubsAndAssert(options, jni_objs_by_path, native_sources_set,
-                            java_sources_set):
+def _CheckForJavaNativeMismatch(options, jni_objs_by_path, native_sources_set,
+                                java_sources_set):
   native_only = native_sources_set - java_sources_set
   java_only = java_sources_set - native_sources_set
 
@@ -246,7 +245,7 @@ Unneeded Java files:
   if failed:
     sys.exit(1)
 
-  return [_GenerateStubs(o.proxy_natives) for o in java_only_jni_objs]
+  return java_only_jni_objs
 
 
 def _GenerateHashes(jni_objs, priority_set):
@@ -274,26 +273,6 @@ def _GenerateHashes(jni_objs, priority_set):
   # Make it clear when there are no priority items.
   priority_ret = to_int64(priority_hash) if had_priority else 0
   return whole_ret, priority_ret
-
-
-def _GenerateStubs(natives):
-  final_string = ''
-  for native in natives:
-    template = string.Template("""
-
-    public static ${RETURN_TYPE} ${METHOD_NAME}(${PARAMS_WITH_TYPES}) {
-        throw new RuntimeException("Stub - not implemented!");
-    }""")
-
-    final_string += template.substitute({
-        'RETURN_TYPE':
-        native.proxy_return_type.to_java(),
-        'METHOD_NAME':
-        native.proxy_name,
-        'PARAMS_WITH_TYPES':
-        native.proxy_params.to_java_declaration(),
-    })
-  return final_string
 
 
 def _InsertMultiplexingSwitchCases(signature_to_cpp_calls,
@@ -379,7 +358,7 @@ ${CASES}
 def CreateProxyJavaFromDict(options,
                             gen_jni_class,
                             registration_dict,
-                            stub_methods='',
+                            java_only_jni_objs=None,
                             forwarding=False,
                             whole_hash=None,
                             priority_hash=None):
@@ -422,7 +401,9 @@ ${METHODS}
     methods = registration_dict['FORWARDING_PROXY_METHODS']
   else:
     methods = registration_dict['PROXY_NATIVE_SIGNATURES']
-  methods += stub_methods
+
+  if java_only_jni_objs:
+    methods += gen_jni_java.stubs_for_missing_natives(java_only_jni_objs)
 
   return template.substitute({
       'CLASS_NAME': gen_jni_class.name,
@@ -669,7 +650,8 @@ def _MakeForwardingProxy(options, gen_jni_class, proxy_native):
 def _MakeProxySignature(options, proxy_native):
   params_with_types = proxy_native.proxy_params.to_java_declaration()
   native_method_line = """
-    public static native ${RETURN} ${PROXY_NAME}(${PARAMS_WITH_TYPES});"""
+    public static native ${RETURN} ${PROXY_NAME}(${PARAMS_WITH_TYPES});
+"""
 
   if options.enable_jni_multiplexing:
     # This has to be only one line and without comments because all the proxy
@@ -684,13 +666,13 @@ def _MakeProxySignature(options, proxy_native):
         sorted_signature.param_list, java_types=True)
     params_with_types = ', '.join(params_with_types_list)
   elif options.use_proxy_hash:
-    signature_template = string.Template("""
+    signature_template = string.Template("""\
     // Original name: ${ALT_NAME}""" + native_method_line)
 
     alt_name = proxy_native.proxy_name
     proxy_name = proxy_native.hashed_proxy_name
   else:
-    signature_template = string.Template("""
+    signature_template = string.Template("""\
     // Hashed name: ${ALT_NAME}""" + native_method_line)
 
     # We add the prefix that is sometimes used so that codesearch can find it if

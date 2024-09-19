@@ -10,7 +10,6 @@ package J;
 
 public class N {
 
-
     // Original name: org_jni_1zero_SampleForAnnotationProcessor_bar
     public static native Object M$zHpGqF(Object sample);
     // Original name: org_jni_1zero_SampleForAnnotationProcessor_foo
@@ -55,4 +54,5 @@ public class N {
     public static native Object M3dkhKZM(int zint, Object ints, long zlong, Object longs, short zshort, Object shorts, char zchar, Object chars, byte zbyte, Object bytes, double zdouble, Object doubles, float zfloat, Object floats, boolean zbool, Object bools);
     // Original name: org_jni_1zero_SampleForAnnotationProcessor_testSpecialTypes
     public static native void MomokuWo(Object clazz, Object classes, Object throwable, Object throwables, Object string, Object strings, Object convertedString, Object convertedStrings, Object optionalString, Object tStruct, Object structs, Object obj, Object convertedObj, Object objects, Object nestedInterface, Object view, Object context, Object convertedObjects);
+
 }

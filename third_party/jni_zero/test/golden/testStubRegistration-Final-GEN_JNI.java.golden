@@ -12,7 +12,6 @@ public class GEN_JNI {
     public static final boolean TESTING_ENABLED = false;
     public static final boolean REQUIRE_MOCK = false;
 
-
     // Hashed name: Java_J_N_M$zHpGqF
     public static native Object org_jni_1zero_SampleForAnnotationProcessor_bar(Object sample);
     // Hashed name: Java_J_N_MFxD5gzE
@@ -57,44 +56,55 @@ public class GEN_JNI {
     public static native Object org_jni_1zero_SampleForAnnotationProcessor_testAllPrimitives(int zint, Object ints, long zlong, Object longs, short zshort, Object shorts, char zchar, Object chars, byte zbyte, Object bytes, double zdouble, Object doubles, float zfloat, Object floats, boolean zbool, Object bools);
     // Hashed name: Java_J_N_MomokuWo
     public static native void org_jni_1zero_SampleForAnnotationProcessor_testSpecialTypes(Object clazz, Object classes, Object throwable, Object throwables, Object string, Object strings, Object convertedString, Object convertedStrings, Object optionalString, Object tStruct, Object structs, Object obj, Object convertedObj, Object objects, Object nestedInterface, Object view, Object context, Object convertedObjects);
+public static int org_jni_1zero_SampleProxyEdgeCases_addStructB(
+    Object caller,
+    Object b) {
+  throw new RuntimeException("Native method not present");
+}
 
-    public static int org_jni_1zero_SampleProxyEdgeCases_addStructB(Object caller, Object b) {
-        throw new RuntimeException("Stub - not implemented!");
-    }
+public static Object org_jni_1zero_SampleProxyEdgeCases_arrayTypes1(
+    Object a,
+    Object b) {
+  throw new RuntimeException("Native method not present");
+}
 
-    public static Object org_jni_1zero_SampleProxyEdgeCases_arrayTypes1(Object a, Object b) {
-        throw new RuntimeException("Stub - not implemented!");
-    }
+public static Object org_jni_1zero_SampleProxyEdgeCases_arrayTypes2(
+    Object a,
+    Object b) {
+  throw new RuntimeException("Native method not present");
+}
 
-    public static Object org_jni_1zero_SampleProxyEdgeCases_arrayTypes2(Object a, Object b) {
-        throw new RuntimeException("Stub - not implemented!");
-    }
+public static void org_jni_1zero_SampleProxyEdgeCases_foo_1_1weirdly_1_1escaped_1name1() {
+  throw new RuntimeException("Native method not present");
+}
 
-    public static void org_jni_1zero_SampleProxyEdgeCases_foo_1_1weirdly_1_1escaped_1name1() {
-        throw new RuntimeException("Stub - not implemented!");
-    }
+public static Object org_jni_1zero_SampleProxyEdgeCases_genericsWithNestedClassArray(
+    Object arg) {
+  throw new RuntimeException("Native method not present");
+}
 
-    public static Object org_jni_1zero_SampleProxyEdgeCases_genericsWithNestedClassArray(Object arg) {
-        throw new RuntimeException("Stub - not implemented!");
-    }
+public static void org_jni_1zero_SampleProxyEdgeCases_setBool(
+    Object b,
+    Object i) {
+  throw new RuntimeException("Native method not present");
+}
 
-    public static void org_jni_1zero_SampleProxyEdgeCases_setBool(Object b, Object i) {
-        throw new RuntimeException("Stub - not implemented!");
-    }
+public static boolean org_jni_1zero_SampleProxyEdgeCases_setStringBuilder(
+    Object sb) {
+  throw new RuntimeException("Native method not present");
+}
 
-    public static boolean org_jni_1zero_SampleProxyEdgeCases_setStringBuilder(Object sb) {
-        throw new RuntimeException("Stub - not implemented!");
-    }
+public static int org_jni_1zero_SampleProxyEdgeCases_setStringBuilder(int sb) {
+  throw new RuntimeException("Native method not present");
+}
 
-    public static int org_jni_1zero_SampleProxyEdgeCases_setStringBuilder(int sb) {
-        throw new RuntimeException("Stub - not implemented!");
-    }
+public static boolean org_jni_1zero_TinySample_bar(int a, Object b) {
+  throw new RuntimeException("Native method not present");
+}
 
-    public static boolean org_jni_1zero_TinySample_bar(int a, Object b) {
-        throw new RuntimeException("Stub - not implemented!");
-    }
+public static void org_jni_1zero_TinySample_foo(Object a, int b) {
+  throw new RuntimeException("Native method not present");
+}
 
-    public static void org_jni_1zero_TinySample_foo(Object a, int b) {
-        throw new RuntimeException("Stub - not implemented!");
-    }
+
 }

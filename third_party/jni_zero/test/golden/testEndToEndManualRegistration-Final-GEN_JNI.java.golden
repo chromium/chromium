@@ -12,7 +12,6 @@ public class GEN_JNI {
     public static final boolean TESTING_ENABLED = false;
     public static final boolean REQUIRE_MOCK = false;
 
-
     // Hashed name: Java_J_N_M$zHpGqF
     public static native Object org_jni_1zero_SampleForAnnotationProcessor_bar(Object sample);
     // Hashed name: Java_J_N_MFxD5gzE
@@ -57,4 +56,5 @@ public class GEN_JNI {
     public static native Object org_jni_1zero_SampleForAnnotationProcessor_testAllPrimitives(int zint, Object ints, long zlong, Object longs, short zshort, Object shorts, char zchar, Object chars, byte zbyte, Object bytes, double zdouble, Object doubles, float zfloat, Object floats, boolean zbool, Object bools);
     // Hashed name: Java_J_N_MomokuWo
     public static native void org_jni_1zero_SampleForAnnotationProcessor_testSpecialTypes(Object clazz, Object classes, Object throwable, Object throwables, Object string, Object strings, Object convertedString, Object convertedStrings, Object optionalString, Object tStruct, Object structs, Object obj, Object convertedObj, Object objects, Object nestedInterface, Object view, Object context, Object convertedObjects);
+
 }

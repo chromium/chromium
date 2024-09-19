@@ -12,7 +12,6 @@ public class GEN_JNI {
     public static final boolean TESTING_ENABLED = false;
     public static final boolean REQUIRE_MOCK = false;
 
-
     // Hashed name: Java_J_N_Ms5kPsN2
     public static native void org_jni_1zero_SampleForTests_addStructB(long nativeCPPClass, Object caller, Object b);
     // Hashed name: Java_J_N_MjhRSQvU
@@ -47,4 +46,5 @@ public class GEN_JNI {
     public static native Object org_jni_1zero_SampleForTests_returnAString(long nativeCPPClass, Object caller);
     // Hashed name: Java_J_N_MtJ0n$3y
     public static native void org_jni_1zero_SampleForTests_setNonPODDatatype(Object obj, Object rect);
+
 }
