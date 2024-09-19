@@ -22,6 +22,32 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<variants name="AndroidAppCategories">
+  <variant name="Audio" summary="Android ApplicationInfo.CATEGORY_AUDIO"/>
+  <variant name="Game" summary="Android ApplicationInfo.CATEGORY_GAME"/>
+  <variant name="Image" summary="Android ApplicationInfo.CATEGORY_IMAGE"/>
+  <variant name="Other"
+      summary="Other Android ApplicationInfo categories including
+               CATEGORY_ACCESSIBILITY, CATEGORY_MAPS, CATEGORY_NEWS and
+               CATEGORY_UNDEFINED"/>
+  <variant name="Productivity"
+      summary="Android ApplicationInfo.CATEGORY_PRODUCTIVITY"/>
+  <variant name="Social" summary="Android ApplicationInfo.CATEGORY_SOCIAL"/>
+  <variant name="Video" summary="Android ApplicationInfo.CATEGORY_VIDEO"/>
+</variants>
+
+<variants name="AndroidDataDirectories">
+  <variant name="Data" summary="Android /data directory"/>
+  <variant name="DataApp" summary="Android /data/app directory"/>
+  <variant name="DataData" summary="Android /data/data directory"/>
+  <variant name="DataMedia"
+      summary="Android /data/media/0 directory, excluding
+               /data/media/0/Android"/>
+  <variant name="DataMediaAndroid"
+      summary="Android /data/media/0/Android/ directory"/>
+  <variant name="DataUserDE" summary="Android /data/user_de/0 directory"/>
+</variants>
+
 <variants name="AnrPeriods">
   <variant name="First10MinutesAfterStart"
       summary="10 minutes after ARC start."/>
@@ -928,6 +954,33 @@ chromium-metrics-reviews@google.com.
     2021-09-17; expired 2022-05-01 and brought back 2022-12-07; data may be
     missing.
   </summary>
+</histogram>
+
+<histogram name="Arc.Data.AppCategory.{Target}.DataSize" units="MB"
+    expires_after="2025-10-01">
+  <owner>niwa@google.com</owner>
+  <owner>momohatt@google.com</owner>
+  <owner>arc-storage@google.com</owner>
+  <summary>
+    The combined application data size for apps in the {Target}. The data size
+    (StorageStats.dataBytes) is calculated with
+    StorageStatsManager#queryStatsForPackage, once per user for each ChromeOS
+    milestone update.
+  </summary>
+  <token key="Target" variants="AndroidAppCategories"/>
+</histogram>
+
+<histogram name="Arc.Data.Dir.{Target}.Size" units="MB"
+    expires_after="2025-10-01">
+  <owner>niwa@google.com</owner>
+  <owner>momohatt@google.com</owner>
+  <owner>arc-storage@google.com</owner>
+  <summary>
+    The size of the {Target}. For the root /data directory, the size is reported
+    for every ARC boot. For other directories, the size is reported once per
+    user for each ChromeOS milestone update.
+  </summary>
+  <token key="Target" variants="AndroidDataDirectories"/>
 </histogram>
 
 <histogram name="Arc.DataRemoved.Success" enum="Boolean"
