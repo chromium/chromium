@@ -610,7 +610,7 @@
 <translation id="1444628761356461360">यह सेटिंग डिवाइस मालिक, <ph name="OWNER_EMAIL" /> द्वारा प्रबंधित है.</translation>
 <translation id="144518587530125858">थीम के लिए '<ph name="IMAGE_PATH" />' को लोड नहीं कर सका.</translation>
 <translation id="1447531650545977377">सिंक को चालू करें...</translation>
-<translation id="1447895950459090752">टैब पर कर्सर घुमाकर झलक दिखाने वाला कार्ड</translation>
+<translation id="1447895950459090752">टैब पर कर्सर घुमाने पर झलक दिखाने वाला कार्ड</translation>
 <translation id="1448264954024227422">इस खाते का इस्तेमाल Android ऐप्लिकेशन के साथ किया जा सकता है. अगर आपको किसी और के लिए कोई खाता जोड़ना है, तो अपने <ph name="DEVICE_TYPE" /> में <ph name="LINK_BEGIN" /> एक नया व्यक्ति जोड़ें<ph name="LINK_END" />.
 
 आपने ऐप्लिकेशन को जो अनुमतियां पहले से ही दी हुई हैं वे इस खाते पर लागू हो सकती हैं. <ph name="APPS_LINK_BEGIN" />ऐप्लिकेशन की सेटिंग<ph name="APPS_LINK_END" /> में जाकर, Android ऐप्लिकेशन के लिए अनुमतियों को कंट्रोल किया जा सकता है.</translation>
@@ -1120,7 +1120,7 @@
 <translation id="1780572199786401845">आपत्तिजनक/असुरक्षित कॉन्टेंट की शिकायत करें.</translation>
 <translation id="178092663238929451">अपने आस-पास के लोगों से फ़ाइलें पाने और भेजने के लिए, 'आस-पास शेयर करना' सेट अप करें</translation>
 <translation id="1781291988450150470">मौजूदा पिन</translation>
-<translation id="1781502536226964113">'नया टैब' पेज खोलें</translation>
+<translation id="1781502536226964113">नया टैब खोलें</translation>
 <translation id="1781553166608855614">लिखाई को बोली में बदलने से जुड़ी सेटिंग पर जाएं</translation>
 <translation id="1781771911845953849">खाते और सिंक</translation>
 <translation id="1782101999402987960">आपके एडमिन ने अपडेट ब्लॉक कर दिए हैं</translation>
@@ -2158,7 +2158,7 @@
 <translation id="2497229222757901769">माउस की गति</translation>
 <translation id="2497852260688568942">सिंक को आपके व्यवस्थापक ने अक्षम कर दिया है</translation>
 <translation id="2498539833203011245">छोटा करें</translation>
-<translation id="2498765460639677199">बहुत ज़्यादा बड़ा</translation>
+<translation id="2498765460639677199">बहुत बड़ा</translation>
 <translation id="2500471369733289700">आपकी निजता की सुरक्षा करने के लिए ब्लॉक किया गया</translation>
 <translation id="2501173422421700905">प्रमाणपत्र लंबित है</translation>
 <translation id="2501278716633472235">वापस जाएं</translation>
@@ -3589,7 +3589,7 @@
 <translation id="3563558822383875692">डीएलसी को कॉन्फ़िगर किया जा रहा है.</translation>
 <translation id="3564334271939054422">आप जिस वाई-फ़ाई नेटवर्क (<ph name="NETWORK_ID" />) का उपयोग कर रहे हैं उसके लिए आपको लॉगिन पेज पर जाने की ज़रूरत हो सकती है.</translation>
 <translation id="3564848315152754834">USB सुरक्षा चाबी</translation>
-<translation id="3566211766752891194">टैब में मेमोरी का इस्तेमाल दिखाएं</translation>
+<translation id="3566211766752891194">टैब के मेमोरी इस्तेमाल करने की जानकारी दिखाएं</translation>
 <translation id="3566325075220776093">इस डिवाइस से</translation>
 <translation id="3566721612727112615">कोई साइट नहीं जोड़ी गई</translation>
 <translation id="3567168891086460374">दूसरे तरीके से सेव करें</translation>
@@ -4089,7 +4089,7 @@
 <translation id="3903696968689283281">वाई-फ़ाई डायरेक्ट मालिकों की जानकारी:</translation>
 <translation id="3904326018476041253">जगह की जानकारी</translation>
 <translation id="3905761538810670789">ऐप्लिकेशन को ठीक करें</translation>
-<translation id="3908288065506437185">गुप्त मोड में, तीसरे पक्ष की कुकी को ब्लॉक करें</translation>
+<translation id="3908288065506437185">गुप्त मोड में, तीसरे पक्ष की कुकी ब्लॉक करें</translation>
 <translation id="3908501907586732282">एक्‍सटेंशन चालू करें</translation>
 <translation id="3909701002594999354">सारे कंट्रोल कमांड दिखाएं</translation>
 <translation id="3909791450649380159">&amp;काटें</translation>
@@ -4236,7 +4236,7 @@
 <translation id="3995138139523574647">USB-C डिवाइस (दायां पिछला पोर्ट)</translation>
 <translation id="3995963973192100066">ऐनिमेशन चलाएं</translation>
 <translation id="399788104667917863">टूलबार पर पिन करें</translation>
-<translation id="3998780825367526465">टैब की झलक दिखाने वाली इमेज दिखाएं</translation>
+<translation id="3998780825367526465">टैब की झलक वाली इमेज दिखाएं</translation>
 <translation id="3998976413398910035">प्रिंटर मैनेज करें</translation>
 <translation id="4000360130639414007">Google Play Store या Android ऐप्लिकेशन इस्तेमाल नहीं किए जा सकेंगे</translation>
 <translation id="4001540981461989979">माउस के कर्सर को इधर-उधर ले जाते समय, उसे हाइलाइट की सेटिंग पर जाएं</translation>
@@ -4345,7 +4345,7 @@
 <translation id="4087089424473531098">एक्सटेंशमन बनाया गया:
 
 <ph name="EXTENSION_FILE" />￼</translation>
-<translation id="4087328411748538168">दाईं ओर दिखाएं</translation>
+<translation id="4087328411748538168">दाईं ओर ले जाएं</translation>
 <translation id="4089235344645910861">सेटिंग सेव की गई. सिंक शुरू हो गया.</translation>
 <translation id="4089817585533500276">shift + <ph name="TOP_ROW_KEY" /></translation>
 <translation id="4090103403438682346">पुष्टि हो चुके एक्सेस चालू करें</translation>
@@ -5462,7 +5462,7 @@
 <translation id="4928629450964837566">ज़्यादा सुरक्षित पासवर्ड इस्तेमाल करें</translation>
 <translation id="4929120497462893830">हैश को क्लिपबोर्ड पर कॉपी किया गया</translation>
 <translation id="4929386379796360314">प्रिंट करने की जगहें</translation>
-<translation id="4930406318748549391">साइड पैनल की स्थिति</translation>
+<translation id="4930406318748549391">साइड पैनल की पोज़िशन</translation>
 <translation id="4930447554870711875">डेवलपर</translation>
 <translation id="4930714375720679147">चालू करें</translation>
 <translation id="4931347390544064118">नेटवर्क डिफ़ॉल्ट का इस्तेमाल करते समय, हो सकता है कि सुरक्षित कनेक्शन हमेशा उपलब्ध न हों. यह पक्का करने के लिए कि आप हमेशा सुरक्षित कनेक्शन का इस्तेमाल करें, कोई दूसरी कंपनी चुनें.</translation>
@@ -5477,7 +5477,7 @@
 <translation id="4940448324259979830">इस खाते को <ph name="PROFILE_NAME" /> मैनेज करता है</translation>
 <translation id="4940845626435830013">डिस्क साइज़ रिज़र्व करें</translation>
 <translation id="4941246025622441835">एंटरप्राइज़ प्रबंधन के लिए डिवाइस को नामांकित करते समय इस डिवाइस अनुरोध का उपयोग करें:</translation>
-<translation id="4941627891654116707">फ़ॉन्ट का आकार</translation>
+<translation id="4941627891654116707">फ़ॉन्ट साइज़</translation>
 <translation id="4941963255146903244">अपने फ़ोन में मौजूद फ़ोटो, मीडिया, और ऐप्लिकेशन देखें</translation>
 <translation id="494286511941020793">प्रॉक्सी कॉन्फ़िगरेशन सहायता</translation>
 <translation id="4943368462779413526">फ़ुटबॉल</translation>
@@ -8461,7 +8461,7 @@
 <translation id="7167486101654761064">इस प्रकार की फ़ाइलें &amp;हमेशा खोलें</translation>
 <translation id="716775164025088943">अब आपके बुकमार्क, इतिहास, पासवर्ड, और दूसरी चीज़ों को सिंक नहीं किया जाएगा.</translation>
 <translation id="716810439572026343"><ph name="FILE_NAME" /> डाउनलोड हो रही है</translation>
-<translation id="7168109975831002660">फ़ॉन्ट का कम से कम साइज़</translation>
+<translation id="7168109975831002660">फ़ॉन्ट का छोटा से छोटा साइज़</translation>
 <translation id="7169122689956315694">डिवाइसों के आस-पास होने पर सूचना मिलने की सुविधा चालू करें</translation>
 <translation id="7170236477717446850">प्रोफ़ाइल फ़ोटो</translation>
 <translation id="7171000599584840888">प्रोफ़ाइल जोड़ें...</translation>
