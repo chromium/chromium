@@ -199,6 +199,9 @@
     <message name="IDS_PLUS_ADDRESS_MODAL_CREATE_ERROR" desc="The error text shown below the suggested plus address if a plus address could not be created." translateable="false">
       Can't create plus address address. Try again.
     </message>
+    <message name="IDS_PLUS_ADDRESS_MODAL_CREATE_TIMEOUT_ERROR" desc="The error text shown below the suggested plus address if a plus address could not be created due to a timeout." translateable="false">
+      Make sure you're online and try again.
+    </message>
     <message name="IDS_PLUS_ADDRESS_MODAL_CREATE_ERROR_BUTTON" desc="The message on the accept button after an error has occurred during an attempt to create a plus address." translateable="false">
       Try again
     </message>

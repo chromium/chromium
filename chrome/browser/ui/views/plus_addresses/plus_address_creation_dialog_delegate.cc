@@ -199,7 +199,6 @@ std::unique_ptr<views::View> CreateDescription(
 
 std::unique_ptr<views::Label> CreateErrorMessageLabel() {
   return views::Builder<views::Label>()
-      .SetText(l10n_util::GetStringUTF16(IDS_PLUS_ADDRESS_MODAL_CREATE_ERROR))
       .SetTextContext(views::style::CONTEXT_LABEL)
       .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
       .SetProperty(views::kElementIdentifierKey,
@@ -590,7 +589,7 @@ void PlusAddressCreationDialogDelegate::ShowConfirmResult(
   }
   if (base::FeatureList::IsEnabled(
           features::kPlusAddressUpdatedErrorStatesInOnboardingModal)) {
-    ShowCreateErrorMessage();
+    ShowCreateErrorMessage(maybe_plus_profile.error().IsTimeoutError());
     confirm_button_->SetText(
         l10n_util::GetStringUTF16(IDS_PLUS_ADDRESS_MODAL_CREATE_ERROR_BUTTON));
     confirm_button_->SetEnabled(true);
@@ -717,11 +716,15 @@ void PlusAddressCreationDialogDelegate::ShowErrorStateUI() {
           ->GetWebContentsModalDialogHost());
 }
 
-void PlusAddressCreationDialogDelegate::ShowCreateErrorMessage() {
+void PlusAddressCreationDialogDelegate::ShowCreateErrorMessage(
+    bool is_timeout) {
   plus_address_container_->SetProperty(
       views::kMarginsKey,
       gfx::Insets::TLBR(kPlusAddressLabelVerticalMargin, 0, 0, 0));
   plus_address_container_->ShowIcon(PlusAddressContainerView::Icon::kError);
+  create_error_message_label_->SetText(l10n_util::GetStringUTF16(
+      is_timeout ? IDS_PLUS_ADDRESS_MODAL_CREATE_TIMEOUT_ERROR
+                 : IDS_PLUS_ADDRESS_MODAL_CREATE_ERROR));
   create_error_message_label_->SetVisible(true);
 }
 

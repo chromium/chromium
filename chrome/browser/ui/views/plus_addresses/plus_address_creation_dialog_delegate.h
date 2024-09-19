@@ -76,7 +76,7 @@ class PlusAddressCreationDialogDelegate : public views::BubbleDialogDelegate,
 
   // Updates the icon in the suggested address box to an error icon and shows an
   // error message below the suggested plus address container.
-  void ShowCreateErrorMessage();
+  void ShowCreateErrorMessage(bool is_timeout);
 
   void HideCreateErrorMessage();
 
