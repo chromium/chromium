@@ -596,6 +596,7 @@ Ang taong may passphrase mo lang ang makakapagbasa ng iyong naka-encrypt na data
 <translation id="3823019343150397277">IBAN</translation>
 <translation id="38243391581572867">Hindi available ang Lens sa account na ito.</translation>
 <translation id="3830886834687455630">I-update ang mga serbisyo ng Google Play para tingnan ang iyong mga password</translation>
+<translation id="3843603704176567761">Posibleng hindi na gumana ang mga password sa device na ito. Para patuloy na magamit ang iyong mga password, i-update ang mga serbisyo ng Google Play.</translation>
 <translation id="3845098929839618392">Buksan sa Incognito tab</translation>
 <translation id="3847319713229060696">Tumulong na pahusayin ang seguridad sa web para sa lahat</translation>
 <translation id="3856096718352044181">Paki-verify na valid na provider ito o subukan ulit sa ibang pagkakataon</translation>
@@ -677,6 +678,7 @@ Ang taong may passphrase mo lang ang makakapagbasa ng iyong naka-encrypt na data
 <translation id="4257230861809842349">Mag-delete ng mga password mula sa Google Password Manager?</translation>
 <translation id="426652736638196239">Sa device lang na ito ise-save ang IBAN na ito</translation>
 <translation id="4269820728363426813">Kopyahin ang address ng link</translation>
+<translation id="4270730597186910506">Subaybayan o huwag subaybayan ang isang produkto.</translation>
 <translation id="4277529130885813215">Gumamit ng ibang device</translation>
 <translation id="4282440837784183472">Pinapamahalaan ng iyong organisasyong <ph name="MANAGED_DOMAIN" /> ang account kung saan ka nagsa-sign in at kung paano magagamit ang Chrome. Puwedeng i-set up o paghigpitan ng iyong administrator ang ilang partikular na feature.</translation>
 <translation id="4285846616383034558">Cookies, cache, at iba pang data ng site</translation>

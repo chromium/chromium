@@ -7049,6 +7049,13 @@ Se a política não for definida, o valor padrão global será usado para todos 
 <translation id="6207607210601267301">Desativar a autenticação sem PIN para o host de acesso remoto</translation>
 <translation id="6208896993204286313">Reportar informações da política do <ph name="PRODUCT_NAME" /></translation>
 <translation id="6210259502936598222">Reportar informações sobre a versão do SO e do <ph name="PRODUCT_NAME" /></translation>
+<translation id="6215023506958127056">Controla a instalação de extensões externas.
+
+Se a política for ativada, as extensões externas não poderão ser instaladas.
+
+Se ela for desativada ou deixada sem definição, extensões externas poderão ser instaladas.
+
+As extensões externas e a instalação estão documentadas em https://developer.chrome.com/docs/extensions/how-to/distribute/install-extensions.</translation>
 <translation id="6220835555850906733">Se a política for definida como ativada ou não for definida, todas as saídas de áudio compatíveis nos dispositivos dos usuários terão permissão.
 
       Se a política for definida como desativada, nenhuma saída de áudio terá permissão enquanto as contas dos usuários estiverem conectadas.

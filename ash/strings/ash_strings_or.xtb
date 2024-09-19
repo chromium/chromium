@@ -78,6 +78,7 @@
 <translation id="1240638468526743569">ଏକ ଆପ</translation>
 <translation id="1242198791279543032">ବିଜ୍ଞପ୍ତିଗୁଡ଼ିକୁ ମ୍ୟୁଟ କରାଯାଇଛି</translation>
 <translation id="1242883863226959074">ଡିଭାଇସ୍</translation>
+<translation id="1245476784081715330">ବଢ଼ିଆ କାମ!</translation>
 <translation id="1245644940275736236">Assistantକୁ ଯାଆନ୍ତୁ</translation>
 <translation id="124678866338384709">ସାମ୍ପ୍ରତିକ ଟାବ୍ ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="1246890715821376239">ଅସମର୍ଥିତ ଆପଗୁଡ଼ିକ</translation>
@@ -842,6 +843,7 @@
 <translation id="3958714870339660776">ପୂରା ଦିନ</translation>
 <translation id="3962859241508114581">ପୂର୍ବବର୍ତ୍ତୀ ଟ୍ରାକ୍</translation>
 <translation id="3963124517343721543">ଆପଣଙ୍କର ପୂର୍ବବର୍ତ୍ତୀ ୱିଣ୍ଡୋ ଏବଂ ଟାବଗୁଡ଼ିକୁ ଖୋଲି ଆପଣ ଯେଉଁଠି ଛାଡ଼ିଥିଲେ ସେଠାରୁ ସହଜରେ ଜାରି ରଖନ୍ତୁ। ପରେ କରିବାକୁ ଥିବା କାର୍ଯ୍ୟଗୁଡ଼ିକ ପାଇଁ ଆପଣ ପର୍ସନାଲାଇଜ କରାଯାଇଥିବା ପରାମର୍ଶଗୁଡ଼ିକ ମଧ୍ୟ ଦେଖିବେ।</translation>
+<translation id="396506362088290977">ଆପଣଙ୍କ ମାଇକର ସାଉଣ୍ଡକୁ ପରୀକ୍ଷା କରନ୍ତୁ</translation>
 <translation id="3969043077941541451">ବନ୍ଦ ଅଛି</translation>
 <translation id="3970324493235864154">ଆପଣଙ୍କ ଫୋନର ବିଜ୍ଞପ୍ତିଗୁଡ଼ିକୁ ଭ୍ୟୁ କରନ୍ତୁ</translation>
 <translation id="397105322502079400">ଗଣନା କରାଯାଉଛି…</translation>
@@ -899,6 +901,7 @@
 <translation id="4156293514828496577"><ph name="PERCENTAGE" />% ବେଟେରୀ ଚାର୍ଜ ବାକି ଅଛି (ପ୍ରାୟ <ph name="TIME_LEFT" />)।
 ବେଟେରୀ ଲାଇଫକୁ ବଢ଼ାଇବା ପାଇଁ କିଛି ଫିଚରକୁ ସୀମିତ କରାଯାଇଛି।</translation>
 <translation id="4160919062868802509">ଏକାଧିକ ଅଡିଓ ସୋର୍ସ ଚିହ୍ନଟ ହୋଇଛି</translation>
+<translation id="416245495747357243">ସମ୍ପୂର୍ଣ୍ଣ ହୋଇଛି!</translation>
 <translation id="4165275524535002941">କବୁଲ ଡିସପ୍ଲେଗୁଡ଼ିକୁ ସମର୍ଥନ କରିନପାରେ</translation>
 <translation id="4177415338862979658">ବିବରଣୀ ଯାଞ୍ଚ କରିବାକୁ କ୍ଲିକ କରନ୍ତୁ</translation>
 <translation id="4177913004758410636">{0,plural, =1{ଗୋଟିଏ ଦିନ ଭିତରେ ଡିଭାଇସକୁ ଅପଡେଟ କରନ୍ତୁ}other{# ଦିନ ଭିତରେ ଡିଭାଇସକୁ ଅପଡେଟ କରନ୍ତୁ}}</translation>
@@ -984,6 +987,7 @@
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> ବନ୍ଦ ଅଛି।</translation>
 <translation id="4417647906073317561">ଫୋକସ ସେଟିଂସ। ବ୍ୟବହାର କରିବା ଆରମ୍ଭ କରିବା ପାଇଁ ଏକ ଟାଇମର, ଟାସ୍କ ଓ ମ୍ୟୁଜିକ ସେଟ କରନ୍ତୁ।</translation>
 <translation id="4424159417645388645">ଡେସ୍କ 5</translation>
+<translation id="4426817706804363424">ଅଭିନନ୍ଦନ!</translation>
 <translation id="4430019312045809116">ଭଲ୍ୟୁମ୍</translation>
 <translation id="4441283832827406317">ଆପଗୁଡ଼ିକୁ ନାମ ଅନୁସାରେ ସର୍ଟ କରାଯାଇଛି</translation>
 <translation id="4445159312344259901">ଅନଲକ କରିବାକୁ ସାଇନ୍ ଇନ୍ କରନ୍ତୁ</translation>
@@ -1248,6 +1252,7 @@
 <translation id="5283198616748585639">1 ମିନିଟ୍ ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="528468243742722775">ସମାପ୍ତ କରନ୍ତୁ</translation>
 <translation id="5286194356314741248">ସ୍କାନ୍ ହେଉଛି</translation>
+<translation id="528641622273682395">ମାଇକ ପରୀକ୍ଷାକୁ ଟୋଗଲ କରନ୍ତୁ</translation>
 <translation id="5297423144044956168">କୌଣସି ମୋବାଇଲ ଡିଭାଇସ୍ ମିଳିଲା ନାହିଁ</translation>
 <translation id="5297704307811127955">ବନ୍ଦ</translation>
 <translation id="5300589172476337783">ପ୍ରଦର୍ଶନ କରନ୍ତୁ</translation>
@@ -1259,7 +1264,7 @@
 <translation id="5314219114274263156">ସ୍କ୍ରିନ୍ ରେକର୍ଡିଂ ନିଆଯାଇଛି</translation>
 <translation id="5314489738835854379">ୱିଣ୍ଡୋଗୁଡ଼ିକ ମାଧ୍ୟମରେ ପଛକୁ ଯାଆନ୍ତୁ</translation>
 <translation id="5316716239522500219">ମିରର୍ ମନିଟର୍</translation>
-<translation id="5317780077021120954">ସଞ୍ଚୟ</translation>
+<translation id="5317780077021120954">ସେଭ କରନ୍ତୁ</translation>
 <translation id="5319712128756744240">ନୂଆ ଡିଭାଇସକୁ ପେୟାର କରନ୍ତୁ</translation>
 <translation id="5322611492012084517">ଆପଣଙ୍କ ଫୋନ୍ ମିଳି ପାରୁନାହିଁ</translation>
 <translation id="5323994101633366939">ଡେସ୍କର ନାମ ଲୁଚାନ୍ତୁ</translation>
@@ -1275,6 +1280,7 @@
 <translation id="536019650977002321">ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟର ଅଡିଓ କେପଚରକୁ ଅନୁମତି ଦିଅନ୍ତି ନାହିଁ। ଅଧିକ ସୂଚନା ପାଇଁ ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟରଙ୍କ ସହ କଣ୍ଟାକ୍ଟ କରନ୍ତୁ।</translation>
 <translation id="5361524080961918551"><ph name="LANGUAGE" /> ସ୍ପିଚ ଫାଇଲଗୁଡ଼ିକୁ ଆଂଶିକ ଭାବେ ଡାଉନଲୋଡ କରାଯାଇଛି</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> ଏହି ଟାବକୁ ଯାଆନ୍ତୁ</translation>
+<translation id="5363835273551457276">ଆପଣଙ୍କ ମାଇକ୍ରୋଫୋନର ସାଉଣ୍ଡକୁ ଆପଣ ପରୀକ୍ଷା କରିପାରିବେ। ଏହା ବନ୍ଦ କରିବା ପାଇଁ ପେନେଲକୁ ବନ୍ଦ କରନ୍ତୁ।</translation>
 <translation id="5364693579536176785">ଷ୍ଟୋରେଜ ସ୍ପେସ</translation>
 <translation id="5369573834963677938">ଡିଭାଇସରେ ଅନ୍ୟ ୟୁଜରମାନଙ୍କ ପାଇଁ ଫେସ କଣ୍ଟ୍ରୋଲ ଉପଲବ୍ଧ ହେବ</translation>
 <translation id="5369717264580061086">Files ଆପରେ ଥିବା ଫାଇଲର ପ୍ରିଭ୍ୟୁ କରନ୍ତୁ</translation>
@@ -1415,6 +1421,7 @@
 <translation id="5802516411616338943">କୁଇକ ସେଟିଂସ ଖୋଲନ୍ତୁ</translation>
 <translation id="5804651031882187592">"SIMକୁ ଲକ କରନ୍ତୁ" ସେଟିଂ ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="5805809050170488595"><ph name="NETWORK_NAME" /> ସକ୍ରିୟ କରିବାକୁ କ୍ଲିକ୍ କରନ୍ତୁ</translation>
+<translation id="5818796501620225415">ଆପଣ ଅଧିକ ସମୟ ଯୋଗ କରିପାରିବେ ବା ଆପଣଙ୍କ ଫୋକସ ସେସନକୁ ଶେଷ କରିପାରିବେ</translation>
 <translation id="5819918159912280082">ଆପଣଙ୍କ Chromebook ଅପ୍ରତ୍ୟାଶିତ ଭାବେ ରିଷ୍ଟାର୍ଟ ହୋଇଛି। ଆପଣଙ୍କ ପୂର୍ବବର୍ତ୍ତୀ ୱିଣ୍ଡୋ ଏବଂ ଆପ୍ସ ଖୋଲନ୍ତୁ।</translation>
 <translation id="5823239091726045201">ୱେବରେ Google Tasks</translation>
 <translation id="5825969630400862129">ସଂଯୁକ୍ତ ଥିବା ଡିଭାଇସଗୁଡ଼ିକର ସେଟିଂସ୍</translation>
@@ -2124,6 +2131,7 @@
 <translation id="8262312463845990408">ପ୍ଲେବେକ ଟୋଗଲ କରନ୍ତୁ</translation>
 <translation id="8268302343625273732">Google Classroomରେ ସମସ୍ତ ଆସାଇନମେଣ୍ଟ ଦେଖନ୍ତୁ</translation>
 <translation id="8277261673056602147">ଆପଣଙ୍କ ସ୍କ୍ରିନରେ ଟେକ୍ସଟକୁ ହାଇଲାଇଟ କରନ୍ତୁ</translation>
+<translation id="8282784978194352587">ଆପଣ ସଫଳ ହୋଇଛନ୍ତି!</translation>
 <translation id="8287009018010202411">ଉତ୍ପାଦନକ୍ଷମତା</translation>
 <translation id="828708037801473432">ବନ୍ଦ</translation>
 <translation id="8297006494302853456">ଦୁର୍ବଳ</translation>
@@ -2201,6 +2209,7 @@
 <translation id="8609384513243082612">ନୂଆ ଟାବ୍ ଖୋଲନ୍ତୁ</translation>
 <translation id="861045123704058818">ଆପ୍ସକୁ ଅସ୍ଥାୟୀ ଭାବେ ବର୍ଗ ଅନୁଯାୟୀ ବ୍ୟବସ୍ଥିତ କରାଯାଇଛି</translation>
 <translation id="8612216344243590325">ଗୁରୁତ୍ୱପୂର୍ଣ୍ଣ ଫାଇଲଗୁଡ଼ିକୁ ଡେସ୍କଟପ ପରିବର୍ତ୍ତେ <ph name="HOLDING_SPACE_TITLE" />ରେ ରଖନ୍ତୁ। ଏବେ ଫାଇଲଗୁଡ଼ିକୁ <ph name="HOLDING_SPACE_TITLE" />କୁ ଡ୍ରାଗ କରନ୍ତୁ।</translation>
+<translation id="8612338981637220013">ସାବାସ!</translation>
 <translation id="8614517853887502247">"ଦେଖିବା ସମ୍ବନ୍ଧିତ ସୁରକ୍ଷା" ସୁବିଧା ଚାଲୁ ଥିବା ଯୋଗୁଁ <ph name="APP_1_TITLE" /> ଏବଂ <ph name="APP_2_TITLE" /> ବିଜ୍ଞପ୍ତିଗୁଡ଼ିକ ଲୁକ୍କାୟିତ ଅଛି</translation>
 <translation id="8615778328722901791">ଟୁଲବାର ଖୋଲନ୍ତୁ</translation>
 <translation id="8619000641825875669">OneDrive</translation>
@@ -2243,6 +2252,7 @@
 <translation id="8742057891287715849"><ph name="NAME" /> · <ph name="SERVICE_PROVIDER" />: ସକ୍ରିୟ କରାଯାଉଛି...</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
+<translation id="8751299148074971734">ଏହାକୁ ଜାରି ରଖନ୍ତୁ!</translation>
 <translation id="8753368202781196133">ବର୍ତ୍ତମାନ ଏହି ଭାଷାକୁ ସପୋର୍ଟ କରୁନାହିଁ।</translation>
 <translation id="8755498163081687682">ଆପଣଙ୍କ ପରିଚୟ ଯାଞ୍ଚ କରନ୍ତୁ: ଏହା ଆପଣ ଅଟନ୍ତି ବୋଲି <ph name="ORIGIN_NAME" /> ସୁନିଶ୍ଚିତ କରିବାକୁ ଚାହୁଁଛି</translation>
 <translation id="875593634123171288">VPN ସେଟିଂସ୍‌ ଦେଖାନ୍ତୁ</translation>

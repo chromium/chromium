@@ -3249,6 +3249,7 @@
 <translation id="3308852433423051161">正在載入 Google 助理…</translation>
 <translation id="3309124184713871355">建築作品</translation>
 <translation id="3309330461362844500">憑證設定檔 ID</translation>
+<translation id="331080746368555063">私人網站可能會納入貴公司的內部網路等項目</translation>
 <translation id="3311445899360743395">系統可能會從這部裝置中移除與這個應用程式相關聯的資料。</translation>
 <translation id="3312470654018965389">正在設定 Linux 容器</translation>
 <translation id="3312883087018430408">如要搜尋特定網站或 Chrome，請在網址列輸入相應的搜尋捷徑，然後按下你慣用的鍵盤快速鍵。舉例來說，如果只要搜尋書籤，請輸入「@bookmarks」，然後按下 Tab 鍵或空白鍵。</translation>
@@ -3279,6 +3280,7 @@
 <translation id="3335947283844343239">重新開啟先前關閉的分頁</translation>
 <translation id="3336855445806447827">不確定</translation>
 <translation id="3337568642696914359">禁止網站處理通訊協定</translation>
+<translation id="333863344734218290">在你造訪不安全的公開和私人網站時發出警告</translation>
 <translation id="3340620525920140773">下載完成：<ph name="FILE_NAME" />。</translation>
 <translation id="3340978935015468852">設定</translation>
 <translation id="3341091511696469129">Chrome 可產生並翻譯以下語言的字幕</translation>
@@ -6888,6 +6890,7 @@
 <translation id="5983716913605894570">生成中...</translation>
 <translation id="5984222099446776634">最近造訪的網站</translation>
 <translation id="5985458664595100876">網址格式無效。支援的格式為 \\server\share 和 smb://server/share。</translation>
+<translation id="5985556342298151179">由裝置管理員安裝的 Chrome 應用程式。</translation>
 <translation id="598810097218913399">移除指派設定</translation>
 <translation id="5990266201903445068">僅限 Wi-Fi</translation>
 <translation id="5990386583461751448">已翻譯</translation>
@@ -7303,6 +7306,7 @@
 <translation id="628726841779494414">前往印表機設定管理印表機</translation>
 <translation id="6287828400772161253">Android 手機 (<ph name="HOST_DEVICE_NAME" />)</translation>
 <translation id="6290613030083731160">附近沒有可分享內容的裝置。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
+<translation id="6291580570300353047">儲存空間不足，因此無法復原。</translation>
 <translation id="6291741848715722067">確認碼</translation>
 <translation id="6291953229176937411">在 Finder 中顯示(&amp;S)</translation>
 <translation id="6292699686837272722">將分頁縮成中寬度</translation>
@@ -8442,6 +8446,7 @@
 <translation id="7131431455372521159">所有 TrackPoint 均已中斷連線</translation>
 <translation id="7131896909366247105">「<ph name="APP_NAME" />」等待中</translation>
 <translation id="7134098520442464001">縮小文字</translation>
+<translation id="713415364723069564">網站可以判斷你的機器是否安裝了相關網頁應用程式，而且該網站及其子網域都能存取這類資訊。</translation>
 <translation id="7134951043985383439">下載的檔案有危險</translation>
 <translation id="7135729336746831607">要開啟藍牙功能嗎？</translation>
 <translation id="7136694880210472378">設為預設</translation>
@@ -8564,6 +8569,7 @@
 <translation id="7232750842195536390">無法重新命名</translation>
 <translation id="723343421145275488">使用 <ph name="VISUAL_SEARCH_PROVIDER" />搜尋圖片</translation>
 <translation id="7234010996000898150">正在取消 Linux 還原作業</translation>
+<translation id="7235305658956131898">由裝置管理員安裝的 Android 應用程式。</translation>
 <translation id="7235716375204803342">正在擷取活動...</translation>
 <translation id="7235737137505019098">安全金鑰的空間不足，無法建立帳戶。</translation>
 <translation id="7235873936132740888">網站可以在你點選特定類型的連結時處理特殊工作，例如在你的電子郵件用戶端建立新郵件，或在線上日曆中新增活動</translation>
@@ -8642,6 +8648,7 @@
 <translation id="7289386924227731009"><ph name="WINDOW_TITLE" /> - 已要求權限，按下 F6 鍵即可回覆</translation>
 <translation id="7290005709287747471">停用</translation>
 <translation id="7290242001003353852">這項登入服務 (由 <ph name="SAML_DOMAIN" /> 代管) 正在存取您的攝影機。</translation>
+<translation id="7290524928495200538">已安裝的相關應用程式</translation>
 <translation id="7292067737327289208">你的<ph name="BEGIN_LINK" />瀏覽器是由貴機構管理<ph name="END_LINK" />，<ph name="BEGIN_LINK" />設定檔則是由 <ph name="PROFILE_DOMAIN" /> 管理<ph name="END_LINK" /></translation>
 <translation id="7292147651179697920">請家長前往「設定」授予存取權</translation>
 <translation id="7292195267473691167"><ph name="LOCALE" /> (<ph name="VARIANT" />)</translation>
@@ -9469,6 +9476,7 @@
 <translation id="7883792253546618164">你隨時可以取消訂閱。</translation>
 <translation id="7884372232153418877">{NUM_SITES,plural, =1{查看傳送大量通知的網站 (1 個)}other{查看傳送大量通知的網站 ({NUM_SITES} 個)}}</translation>
 <translation id="788453346724465748">正在載入帳戶資訊...</translation>
+<translation id="7886087451482920026">使用 Google 智慧鏡頭選取文字</translation>
 <translation id="7886279613512920452">{COUNT,plural, =1{1 個項目}other{# 個項目}}</translation>
 <translation id="7886605625338676841">eSIM 卡</translation>
 <translation id="7887174313503389866">觀看導覽內容，瞭解最重要的隱私權和安全性控制項。如要查看更多選項，請前往個別設定。</translation>
@@ -10995,6 +11003,7 @@
 <translation id="8973263196882835828">啟用即時字幕 (&amp;E)</translation>
 <translation id="8973557916016709913">重設為預設縮放比例</translation>
 <translation id="8973596347849323817">你可以根據個人需求自訂這個裝置，日後也可前往「設定」變更這些無障礙功能。</translation>
+<translation id="8973648401056792381">由裝置管理員安裝的網頁應用程式。</translation>
 <translation id="897414447285476047">發生連線問題，因此目標檔案並未下載完成。</translation>
 <translation id="8974261761101622391">尋找「<ph name="EXTENSION_NAME" />」的替代擴充功能</translation>
 <translation id="897525204902889653">隔離服務</translation>

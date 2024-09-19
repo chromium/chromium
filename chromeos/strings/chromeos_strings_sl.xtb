@@ -1048,6 +1048,8 @@
 <translation id="628726841779494414">Upravljanje tiskalnikov v nastavitvah tiskalnika</translation>
 <translation id="6292095526077353682">Med polnjenjem pokaži ohranjevalnik zaslona za</translation>
 <translation id="629550705077076970">zatemnitev osvetlitve tipkovnice</translation>
+<translation id="6301193653204230066">Varnostna ponastavitev izklopi razširitve brskalnika Chrome ter omrežne in druge nastavitve ponastavi na varne privzete nastavitve.
+          Zavihki, datoteke, piškotki in zgodovina ostanejo nespremenjeni.</translation>
 <translation id="6302401976930124515">Preizkus <ph name="TEST_NAME" /> je preklican.</translation>
 <translation id="631063167932043783">Raziščite aplikacijo</translation>
 <translation id="6318437367327684789">za vedno</translation>
@@ -1057,6 +1059,7 @@
 <translation id="6325525973963619867">Ni uspelo</translation>
 <translation id="6327262166342360252">To zaslonsko ozadje je bilo ustvarjeno z umetno inteligenco s tem besedilom: »<ph name="PROMPT" />«.</translation>
 <translation id="6331191339300272798">Samodejna temna tema</translation>
+<translation id="6335228876613776082">Prenos modela je končan</translation>
 <translation id="6340526405444716530">Prilagoditev</translation>
 <translation id="6348252528297699679">Lokacijo lahko izklopite v Nastavitve &gt; Zasebnost in varnost &gt; Nastavitve zasebnosti &gt; Dostop do lokacije. <ph name="LINK_BEGIN" />Več o tem<ph name="LINK_END" /></translation>
 <translation id="6348738456043757611">Uporabniško ime in geslo</translation>
@@ -1551,6 +1554,7 @@
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Album v Googlu Foto</translation>
 <translation id="8775713578693478175">APN modema</translation>
+<translation id="877735394245039557">Poteka prenos modela</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">To omrežje ima morda prestrezni portal.</translation>
 <translation id="8797082062139985406">Ustvarjanje imena z Googlovo umetno inteligenco</translation>

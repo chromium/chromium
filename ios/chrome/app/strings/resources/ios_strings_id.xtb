@@ -50,6 +50,7 @@
 <translation id="1219674500290482172">Tidak dapat terhubung ke internet.</translation>
 <translation id="1227113644794103810">Tab tidak aktif</translation>
 <translation id="1231733316453485619">Aktifkan sinkronisasi?</translation>
+<translation id="1253032109800629289">Sembunyikan "Dapatkan Notifikasi Pemantauan Harga"</translation>
 <translation id="1258491128795710625">Yang Baru</translation>
 <translation id="1263231323834454256">Daftar bacaan</translation>
 <translation id="1263433075299269530">Tab terakhir yang dibuka</translation>
@@ -395,6 +396,7 @@ Mesin telusur Anda adalah <ph name="DSE_NAME" />. Lihat petunjuknya untuk mengha
 <translation id="2870560284913253234">Situs</translation>
 <translation id="2876369937070532032">Mengirimkan URL beberapa halaman yang Anda kunjungi ke Google, jika keamanan Anda berisiko</translation>
 <translation id="2883151425485251736">Melihat dan mengedit topik yang disembunyikan dari akun Anda</translation>
+<translation id="2888631381369839306">Notifikasi pemantauan harga diaktifkan</translation>
 <translation id="288902476966286676">Kembali ke pengirim</translation>
 <translation id="2894757982205307093">Tab baru di grup</translation>
 <translation id="2905479111267140204">Anda memiliki <ph name="NUMBER_OF_PASSWORDS" /> sandi yang digunakan ulang yang dapat membahayakan keamanan Anda.</translation>
@@ -577,6 +579,7 @@ Lihat petunjuk mesin telusur untuk menghapus histori penelusuran Anda, jika memu
 <translation id="3851938967634752633">Sandi untuk <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" />, dan <ph name="NUMBER_OF_ACCOUNTS" /> lainnya akan dihapus. Akun Anda tidak akan dihapus.</translation>
 <translation id="3858860766373142691">Nama</translation>
 <translation id="3861908220442487587">Alamat ini hanya disimpan di perangkat ini. Untuk menggunakannya di perangkat lain, pindahkan alamat ke Akun Google Anda, <ph name="USER_EMAIL" /></translation>
+<translation id="3868495844258915202">Tampilkan URL lengkap</translation>
 <translation id="3876833929577368454">Selalu tanya saya</translation>
 <translation id="3885587018298784481">Bergabung dengan grup keluarga</translation>
 <translation id="3888863481921783344">Ini akan digunakan untuk menampilkan calon tamu undangan untuk acara Anda.</translation>
@@ -864,6 +867,7 @@ Lihat petunjuk mesin telusur untuk menghapus histori penelusuran Anda, jika memu
 <translation id="5210365745912300556">Tutup tab</translation>
 <translation id="5211488077761630279">Izinkan "<ph name="SITE_NAME" />" menggunakan <ph name="PERMISSION" />?</translation>
 <translation id="5217245356412073535">Anda dapat mengubah tampilan situs default ke mode desktop di Setelan &gt; Setelan konten</translation>
+<translation id="5217329997012062137">Saat Anda menggunakan Google Lens, screenshot halaman akan dikirim ke Google.</translation>
 <translation id="5220945116117011963">Buat acara kalender melalui tanggal</translation>
 <translation id="5222676887888702881">Logout</translation>
 <translation id="5228579091201413441">Aktifkan sinkronisasi</translation>
@@ -876,6 +880,7 @@ Lihat petunjuk mesin telusur untuk menghapus histori penelusuran Anda, jika memu
 <translation id="5271265092610673171">{count,plural, =1{Kolom wajib diisi masih kosong. Isi kolom sebelum menyimpan.}other{Beberapa kolom wajib diisi masih kosong. Isi kolom sebelum menyimpan.}}</translation>
 <translation id="5271549068863921519">Simpan sandi</translation>
 <translation id="5279600392753459966">Blokir semua</translation>
+<translation id="5282340693022193851">Untuk mendapatkan notifikasi pemantauan harga, aktifkan notifikasi di Setelan iOS.</translation>
 <translation id="5294624619177114121">Notifikasi seluler</translation>
 <translation id="5295239312320826323">Hapus akun <ph name="USER_EMAIL" />?</translation>
 <translation id="5300589172476337783">Tampilkan</translation>
@@ -1638,6 +1643,7 @@ Situs dapat menggunakan cookie untuk melihat aktivitas penjelajahan Anda di berb
 <translation id="8712534545803964353">Mencari di halaman…</translation>
 <translation id="8712637175834984815">Mengerti</translation>
 <translation id="8722229818691036192">Akun di perangkat ini</translation>
+<translation id="8722649775263832315">Ketuk atau tandai untuk menelusuri apa saja dengan Google Lens</translation>
 <translation id="8725066075913043281">Coba lagi</translation>
 <translation id="8728922029615312208">Tutup semua</translation>
 <translation id="8730621377337864115">Selesai</translation>

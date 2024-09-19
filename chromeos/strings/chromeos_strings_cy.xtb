@@ -35,6 +35,7 @@
 <translation id="1155154308031262006">Rhowch neges annog</translation>
 <translation id="115705039208660697">pîn-afalau</translation>
 <translation id="1164939766849482256">Arbedwr sgrîn o wawr i dywyll</translation>
+<translation id="1166688493741195933">Wedi methu â chynhyrchu enwau recordio</translation>
 <translation id="1167755866710282443">Agorwch y ddewislen i bersonoleiddio allweddi. Llusgwch y ddewislen i'w symud.</translation>
 <translation id="1171349345463658120">lagŵn tywod</translation>
 <translation id="1173894706177603556">Ailenwi</translation>
@@ -342,6 +343,7 @@
 <translation id="2560876255701405320">Rhestr o recordiadau sain</translation>
 <translation id="2561093647892030937">lemwnau</translation>
 <translation id="2570743873672969996">Wrthi'n rhedeg y prawf <ph name="TEST_NAME" />...</translation>
+<translation id="2573178735329662769">Wrthi'n recordio holl sain Chromebook</translation>
 <translation id="2575552334616524665">Gallwch droi hyn ymlaen yn y Gosodiadau neu'r ddewislen <ph name="THREE_DOTS_MENU_ICON" /></translation>
 <translation id="2576253868710695442">Bydd hyn yn cymryd hyd at 2GB o'r storfa</translation>
 <translation id="2584547424703650812">Disgleirwedd</translation>
@@ -494,6 +496,7 @@
 <translation id="3502426834823382181">gweld pob ap</translation>
 <translation id="3510890413042482857">Anfon <ph name="BEGIN_LINK1" />data olrhain perfformiad<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">Diweddariad ChromeOS</translation>
+<translation id="3522508178835057262">Am y tro, ni chefnogir trawsgrifiad sy'n hirach na <ph name="MAX_WORD_LENGTH" /> o eiriau</translation>
 <translation id="3527036260304016759">Wedi methu - Gwall anhysbys</translation>
 <translation id="353214771040290298">Wedi gorffen golygu</translation>
 <translation id="3532980081107202182">Tua <ph name="MIN_REMAINING" /> o funudau ar ôl</translation>
@@ -509,6 +512,7 @@
 <translation id="3588034708467091142">Gwnewch yn siŵr eich bod wedi cysylltu â'r rhyngrwyd a rhowch gynnig arall arni.</translation>
 <translation id="3594280220611906414"><ph name="USER_FRIENDLY_APN_NAME" /> yw'r enw hawdd ei ddefnyddio ar gyfer <ph name="APN_NAME" />.</translation>
 <translation id="3595596368722241419">Mae'r batri yn llawn</translation>
+<translation id="3600063043775287169">Pan fydd sain Chromebook ymlaen, mae'r Recordydd yn dal yr holl sain sy'n chwarae ar y ddyfais hon. Gwnewch yn siŵr eich bod eisiau recordio pob sain.</translation>
 <translation id="3600339377155080675">Adlewyrchu sgrîn</translation>
 <translation id="3602290021589620013">Rhagolwg</translation>
 <translation id="3603829704940252505">Rhithffurf</translation>
@@ -711,6 +715,7 @@
 <translation id="4602266091140407479">Meic</translation>
 <translation id="4607282946861182308">Methu â chreu lluniau o hyn. Rhowch gynnig ar anogwr arall.</translation>
 <translation id="4609350030397390689">Disgleirdeb y bysellfwrdd i lawr</translation>
+<translation id="4623061655523261501">Recordio enwau a gynhyrchwyd yn llwyddiannus</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> allan o <ph name="TOTAL_PAGE_NUMBER" />. Pwyswch Enter i ganslo'r dasg argraffu hon.</translation>
 <translation id="463791356324567266">Wrthi'n canslo sganio...</translation>
 <translation id="4644611440022666152">Troi ymlaen a lawrlwytho</translation>
@@ -1043,6 +1048,8 @@
 <translation id="628726841779494414">Rheoli eich argraffwyr yng ngosodiadau'r argraffydd</translation>
 <translation id="6292095526077353682">Tra'n gwefru, dangos arbedwr sgrîn am</translation>
 <translation id="629550705077076970">pylu bysellfwrdd</translation>
+<translation id="6301193653204230066">Mae ailosod diogelwch yn diffodd estyniadau porwr Chrome ac yn ailosod gosodiadau rhwydwaith a gosodiadau eraill i osodiadau diogel diofyn.
+          Ni fydd eich tabiau, ffeiliau, cwcis a hanes yn cael eu newid.</translation>
 <translation id="6302401976930124515">Mae'r prawf <ph name="TEST_NAME" /> wedi'i ganslo</translation>
 <translation id="631063167932043783">Ap Explore</translation>
 <translation id="6318437367327684789">am byth</translation>
@@ -1052,6 +1059,7 @@
 <translation id="6325525973963619867">Wedi methu</translation>
 <translation id="6327262166342360252">Crëwyd y papur wal hwn gydag AI gan ddefnyddio'r testun canlynol: "<ph name="PROMPT" />".</translation>
 <translation id="6331191339300272798">Thema dywyll awtomatig</translation>
+<translation id="6335228876613776082">Mae lawrlwytho'r model wedi'i gwblhau</translation>
 <translation id="6340526405444716530">Personoleiddio</translation>
 <translation id="6348252528297699679">Gallwch ddiffodd lleoliad yn y Gosodiadau &gt; Preifatrwydd a diogelwch &gt; Rheolyddion preifatrwydd &gt; Mynediad lleoliad. <ph name="LINK_BEGIN" />Dysgu rhagor<ph name="LINK_END" /></translation>
 <translation id="6348738456043757611">Enw defnyddiwr a chyfrinair</translation>
@@ -1213,6 +1221,7 @@
 <translation id="708426984172631313">WEDI STOPIO</translation>
 <translation id="7086168019478250425">traeth bywdywynnol</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
+<translation id="7086916854357021265">Cynhyrchu enwau recordio</translation>
 <translation id="7097908713073775559">lliwgar</translation>
 <translation id="710028965487274708">Wedi methu - Wedi Methu ag Awdurdodi</translation>
 <translation id="7101959270679078188">Datgloi'r <ph name="DEVICE_NAME" /> i barhau â'r broses ddiweddaru</translation>
@@ -1545,6 +1554,7 @@ Lawrlwythwch y model trawsgrifio (hyd at 100MB) i gael y trawsgrifiadau hyn.</tr
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Albwm Google Photos</translation>
 <translation id="8775713578693478175">APN Modem</translation>
+<translation id="877735394245039557">Mae'r model wrthi'n cael ei lawrlwytho</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">Mae'n bosib bod gan y rhwydwaith hwn borth caeth</translation>
 <translation id="8797082062139985406">Creu enw gan ddefnyddio Google AI</translation>

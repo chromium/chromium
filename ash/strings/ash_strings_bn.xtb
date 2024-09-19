@@ -78,6 +78,7 @@
 <translation id="1240638468526743569">একটি অ্যাপ</translation>
 <translation id="1242198791279543032">বিজ্ঞপ্তি মিউট করা আছে</translation>
 <translation id="1242883863226959074">ডিভাইস</translation>
+<translation id="1245476784081715330">অসাধারণ!</translation>
 <translation id="1245644940275736236">Assistant-এ যান</translation>
 <translation id="124678866338384709">বর্তমান ট্যাব বন্ধ করুন</translation>
 <translation id="1246890715821376239">কাজ করে না এমন অ্যাপ</translation>
@@ -842,6 +843,7 @@
 <translation id="3958714870339660776">সারা দিন</translation>
 <translation id="3962859241508114581">আগের ট্র্যাক চালান</translation>
 <translation id="3963124517343721543">আপনার আগের উইন্ডো ও ডেটা খুলে যেখানে শেষ করেছেন সেখান থেকে সহজেই শুরু করুন। এছাড়াও পরে যে কাজগুলি করতে হবে সেই সম্পর্কে পছন্দমতো সাজেশন দেখতে পাবেন।</translation>
+<translation id="396506362088290977">আপনার মাইক্রোফোনের সাউন্ড টেস্ট করুন</translation>
 <translation id="3969043077941541451">বন্ধ আছে</translation>
 <translation id="3970324493235864154">আপনার ফোনের বিজ্ঞপ্তি দেখুন</translation>
 <translation id="397105322502079400">গণনা করা হচ্ছে...</translation>
@@ -899,6 +901,7 @@
 <translation id="4156293514828496577"><ph name="PERCENTAGE" />% ব্য়াটারির চার্জ আছে (প্রায় <ph name="TIME_LEFT" />)।
 ব্যাটারির আয়ু বাড়াতে কিছু ফিচার সীমিত করা হয়েছে।</translation>
 <translation id="4160919062868802509">একাধিক অডিও সোর্স শনাক্ত করা হয়েছে</translation>
+<translation id="416245495747357243">হয়ে গেছে!</translation>
 <translation id="4165275524535002941">কেবলের মাধ্যমে কানেক্ট করা হলে সিগন্যাল নাও দেখা যেতে পারে</translation>
 <translation id="4177415338862979658">বিবরণের জন্য চেক করতে ক্লিক করুন</translation>
 <translation id="4177913004758410636">{0,plural, =1{এক দিনের মধ্যে ডিভাইস আপডেট করুন}one{# দিনের মধ্যে ডিভাইস আপডেট করুন}other{# দিনের মধ্যে ডিভাইস আপডেট করুন}}</translation>
@@ -984,6 +987,7 @@
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> বন্ধ আছে।</translation>
 <translation id="4417647906073317561">ফোকাস মোড সংক্রান্ত সেটিংস। এটি ব্যবহার করতে, টাইমার, টাস্ক ও মিউজিক সেট করুন।</translation>
 <translation id="4424159417645388645">ডেস্ক ৫</translation>
+<translation id="4426817706804363424">এগিয়ে যান!</translation>
 <translation id="4430019312045809116">ভলিউম</translation>
 <translation id="4441283832827406317">নাম অনুযায়ী অ্যাপ সাজানো হয়েছে</translation>
 <translation id="4445159312344259901">আনলক করতে সাইন-ইন করুন</translation>
@@ -1248,6 +1252,7 @@
 <translation id="5283198616748585639">১ মিনিট যোগ করুন</translation>
 <translation id="528468243742722775">শেষ</translation>
 <translation id="5286194356314741248">স্ক্যান হচ্ছে</translation>
+<translation id="528641622273682395">মাইক্রোফোন টেস্ট করার জন্য টগল করুন</translation>
 <translation id="5297423144044956168">কোনও মোবাইল ডিভাইস খুঁজে পাওয়া যায়নি</translation>
 <translation id="5297704307811127955">বন্ধ করা আছে</translation>
 <translation id="5300589172476337783">দেখান</translation>
@@ -1275,6 +1280,7 @@
 <translation id="536019650977002321">আপনার অ্যাডমিনিস্ট্রেটর অডিও ক্যাপচারের অনুমতি দেয় না। আরও তথ্যের জন্য আপনার অ্যাডমিনিস্ট্রেটরের সাথে যোগাযোগ করুন।</translation>
 <translation id="5361524080961918551"><ph name="LANGUAGE" /> স্পিচ ফাইল আংশিক ডাউনলোড করা হয়েছে</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> এই ট্যাবে যান</translation>
+<translation id="5363835273551457276">আপনি নিজের মাইক্রোফোনের সাউন্ড টেস্ট করতে পারবেন। থামাতে প্যানেল বন্ধ করুন।</translation>
 <translation id="5364693579536176785">স্টোরেজের জায়গা</translation>
 <translation id="5369573834963677938">ডিভাইসটিতে ফেস কন্ট্রোল অন্যান্য ব্যবহারকারীদের জন্য উপলভ্য হবে</translation>
 <translation id="5369717264580061086">Files অ্যাপে ফাইলের প্রিভিউ দেখুন</translation>
@@ -1415,6 +1421,7 @@
 <translation id="5802516411616338943">'দ্রুত সেটিংস' মেনু খুলুন</translation>
 <translation id="5804651031882187592">"সিম কার্ড লক করা" সেটিং বন্ধ করা</translation>
 <translation id="5805809050170488595"><ph name="NETWORK_NAME" /> চালু করতে ক্লিক করুন</translation>
+<translation id="5818796501620225415">আপনি আরও সময় যোগ করতে অথবা আপনার ফোকাস সেশন শেষ করতে পারবেন</translation>
 <translation id="5819918159912280082">আপনার Chromebook অপ্রত্যাশিতভাবে আবার চালু হয়েছে। আপনার আগের উইন্ডো ও অ্যাপ খুলুন।</translation>
 <translation id="5823239091726045201">ওয়েবে Google Tasks</translation>
 <translation id="5825969630400862129">কানেক্ট করা ডিভাইসের সেটিংস</translation>
@@ -2126,6 +2133,7 @@
 <translation id="8262312463845990408">প্লেব্যাক টগল করুন</translation>
 <translation id="8268302343625273732">Google Classroom-এ সব অ্যাসাইনমেন্ট দেখুন</translation>
 <translation id="8277261673056602147">আপনার স্ক্রিনে টেক্সট হাইলাইট করুন</translation>
+<translation id="8282784978194352587">আপনি পেরেছেন!</translation>
 <translation id="8287009018010202411">প্রোডাক্টিভিটি</translation>
 <translation id="828708037801473432">বন্ধ করা আছে</translation>
 <translation id="8297006494302853456">দুর্বল</translation>
@@ -2203,6 +2211,7 @@
 <translation id="8609384513243082612">নতুন ট্যাব খুলুন</translation>
 <translation id="861045123704058818">অস্থায়ীভাবে অ্যাপ বিভাগ অনুযায়ী সাজানো হয়েছে</translation>
 <translation id="8612216344243590325">গুরুত্বপূর্ণ ফাইলগুলি ডেস্কটপের পরিবর্তে <ph name="HOLDING_SPACE_TITLE" />-এ রাখুন। ফাইলগুলি শুধুমাত্র <ph name="HOLDING_SPACE_TITLE" />-এ টেনে আনুন।</translation>
+<translation id="8612338981637220013">আপনি জমিয়ে দিয়েছেন!</translation>
 <translation id="8614517853887502247">ভিউ সংক্রান্ত নিরাপত্তা চালু থাকার জন্য <ph name="APP_1_TITLE" /> এবং <ph name="APP_2_TITLE" />-এর বিজ্ঞপ্তি লুকানো আছে</translation>
 <translation id="8615778328722901791">টুলবার খুলুন</translation>
 <translation id="8619000641825875669">OneDrive</translation>
@@ -2245,6 +2254,7 @@
 <translation id="8742057891287715849"><ph name="NAME" /> · <ph name="SERVICE_PROVIDER" />: চালু করা হচ্ছে...</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
+<translation id="8751299148074971734">চালিয়ে যান!</translation>
 <translation id="8753368202781196133">এই মুহূর্তে এই ভাষাটি কাজ করবে না।</translation>
 <translation id="8755498163081687682">আপনার পরিচয় যাচাই করুন: <ph name="ORIGIN_NAME" /> আপনার পরিচয় যাচাই করতে চায়</translation>
 <translation id="875593634123171288">VPN সেটিংস দেখান</translation>

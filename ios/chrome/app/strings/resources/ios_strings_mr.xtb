@@ -50,6 +50,7 @@
 <translation id="1219674500290482172">इंटरनेटशी कनेक्ट करण्यात अक्षम.</translation>
 <translation id="1227113644794103810">इनॅक्टिव्ह टॅब</translation>
 <translation id="1231733316453485619">सिंक सुरू करायचे का?</translation>
+<translation id="1253032109800629289">"किमतीचा माग ठेवण्यासंबंधित नोटिफिकेशन मिळवा" लपवा</translation>
 <translation id="1258491128795710625">नवीन काय आहे</translation>
 <translation id="1263231323834454256">वाचन सूची</translation>
 <translation id="1263433075299269530">तुमचा शेवटी उघडलेला टॅब</translation>
@@ -395,6 +396,7 @@
 <translation id="2870560284913253234">साइट</translation>
 <translation id="2876369937070532032">तुमची सुरक्षा धोक्यात असते तेव्हा, तुम्ही भेट दिलेल्या काही पेजचे URL Google ला पाठवते</translation>
 <translation id="2883151425485251736">तुम्ही तुमच्या खात्यामधून लपवलेले विषय पहा आणि ते संपादित करा</translation>
+<translation id="2888631381369839306">किमतीचा माग ठेवण्यासंबंधित नोटिफिकेशन सुरू केली आहेत</translation>
 <translation id="288902476966286676">पाठवणाऱ्याकडे परत पाठवा</translation>
 <translation id="2894757982205307093">गटामधील नवीन टॅब</translation>
 <translation id="2905479111267140204">तुमच्याकडे ज्यांमुळे तुमची सुरक्षा धोक्यात येऊ शकते असे पुन्हा वापरलेले <ph name="NUMBER_OF_PASSWORDS" /> पासवर्ड आहेत.</translation>
@@ -577,6 +579,7 @@
 <translation id="3851938967634752633"><ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> आणि <ph name="NUMBER_OF_ACCOUNTS" /> इतर खात्यांचे पासवर्ड हटवले जातील. तुमची खाती हटवली जाणार नाहीत.</translation>
 <translation id="3858860766373142691">नाव</translation>
 <translation id="3861908220442487587">हा पत्ता फक्त या डिव्हाइसमध्ये सेव्ह केला आहे. तुमच्या डिव्हाइसवर वापरण्यासाठी, तो तुमच्या <ph name="USER_EMAIL" /> या Google खाते वर हलवा</translation>
+<translation id="3868495844258915202">संपूर्ण URL दाखवा</translation>
 <translation id="3876833929577368454">प्रत्येक वेळी मला विचारा</translation>
 <translation id="3885587018298784481">कुटुंब गटामध्ये सामील व्हा</translation>
 <translation id="3888863481921783344">हे तुम्हाला तुमच्या इव्हेंटसाठी संभाव्य निमंत्रितांना दाखवण्यासाठी वापरले जाईल.</translation>
@@ -864,6 +867,7 @@
 <translation id="5210365745912300556">टॅब बंद करा</translation>
 <translation id="5211488077761630279">"<ph name="SITE_NAME" />" ला तुमच्या <ph name="PERMISSION" /> वापरण्याची अनुमती द्यायची आहे का?</translation>
 <translation id="5217245356412073535">तुम्ही सेटिंग्ज &gt; आशय सेटिंग्ज यामध्ये डीफॉल्ट साइट दृश्य हे डेस्कटॉप मोडमध्ये बदलू शकता</translation>
+<translation id="5217329997012062137">तुम्ही Google Lens वापरता, तेव्हा पेजचा स्क्रीनशॉट Google ला पाठवला जातो.</translation>
 <translation id="5220945116117011963">तारखांमधून कॅलेंडर इव्हेंट तयार करा</translation>
 <translation id="5222676887888702881">साइन आउट करा</translation>
 <translation id="5228579091201413441">सिंक सुरू करा</translation>
@@ -876,6 +880,7 @@
 <translation id="5271265092610673171">{count,plural, =1{भरणे आवश्यक असलेले फील्ड रिकामे आहे. सेव्ह करण्याआधी भरा.}other{भरणे आवश्यक असलेली फील्ड रिकामी आहेत. सेव्ह करण्याआधी ती भरा.}}</translation>
 <translation id="5271549068863921519">पासवर्ड सेव्ह करा</translation>
 <translation id="5279600392753459966">सर्व अवरोधित करा</translation>
+<translation id="5282340693022193851">किमतीचा माग ठेवण्यासंबंधित नोटिफिकेशन मिळवण्यासाठी, तुमच्या iOS सेटिंग्ज मध्ये नोटिफिकेशन सुरू करा.</translation>
 <translation id="5294624619177114121">मोबाइल नोटिफिकेशन</translation>
 <translation id="5295239312320826323"><ph name="USER_EMAIL" /> हे खाते काढून टाकायचे आहे का?</translation>
 <translation id="5300589172476337783">दर्शवा</translation>
@@ -1639,6 +1644,7 @@
 <translation id="8712534545803964353">पेजमध्ये शोधा…</translation>
 <translation id="8712637175834984815">समजले</translation>
 <translation id="8722229818691036192">या डिव्हाइसवरील खाती</translation>
+<translation id="8722649775263832315">Google Lens वापरून काहीही शोधण्यासाठी टॅप करा किंवा हायलाइट करा</translation>
 <translation id="8725066075913043281">पुन्हा प्रयत्न करा</translation>
 <translation id="8728922029615312208">सर्व बंद करा</translation>
 <translation id="8730621377337864115">पूर्ण झाले</translation>

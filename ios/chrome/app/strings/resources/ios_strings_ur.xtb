@@ -50,6 +50,7 @@
 <translation id="1219674500290482172">انٹرنیٹ سے منسلک ہونے سے قاصر ہے۔</translation>
 <translation id="1227113644794103810">غیر فعال ٹیبز</translation>
 <translation id="1231733316453485619">مطابقت پذیری آن کریں؟</translation>
+<translation id="1253032109800629289">"قیمت کی ٹریکنگ کی اطلاعات حاصل کریں" کو چھپائیں</translation>
 <translation id="1258491128795710625">نیا کیا ہے</translation>
 <translation id="1263231323834454256">پڑھنے کی فہرست</translation>
 <translation id="1263433075299269530">آپ کا آخری کھلا ہوا ٹیب</translation>
@@ -395,6 +396,7 @@
 <translation id="2870560284913253234">سائٹ</translation>
 <translation id="2876369937070532032">‏آپ کو سیکیورٹی کا خطرہ لاحق ہونے پر، Google کو آپ کے ملاحظہ کئے جانے والے چند صفحات کے URLs بھیجتا ہے</translation>
 <translation id="2883151425485251736">ان موضوعات کو دیکھیں اور ان میں ترمیم کریں جنہیں آپ نے اپنے اکاؤنٹ سے چھپایا ہے۔</translation>
+<translation id="2888631381369839306">قیمت کی ٹریکنگ کی اطلاعات آن ہیں</translation>
 <translation id="288902476966286676">پَارسَل ارسال کنندہ کو واپس کر دیا گیا</translation>
 <translation id="2894757982205307093">گروپ میں نیا ٹیب</translation>
 <translation id="2905479111267140204">آپ کے پاس <ph name="NUMBER_OF_PASSWORDS" /> دوبارہ استعمال کردہ پاس ورڈز ہیں جن سے آپ کی سیکیورٹی کو خطرہ لاحق ہو سکتا ہے۔</translation>
@@ -876,6 +878,7 @@
 <translation id="5271265092610673171">{count,plural, =1{مطلوبہ فیلڈ خالی ہے۔ محفوظ کرنے سے پہلے اسے پُر کریں۔}other{کچھ مطلوبہ فیلڈز خالی ہیں۔ محفوظ کرنے سے پہلے انہیں پُر کریں۔}}</translation>
 <translation id="5271549068863921519">پاس ورڈ محفوظ کریں</translation>
 <translation id="5279600392753459966">سبھی کو مسدود کریں</translation>
+<translation id="5282340693022193851">‏قیمت کی ٹریکنگ کی اطلاعات حاصل کرنے کے لیے، اپنے iOS کی ترتیبات میں اطلاعات کو آن کریں۔</translation>
 <translation id="5294624619177114121">موبائل اطلاعات</translation>
 <translation id="5295239312320826323"><ph name="USER_EMAIL" /> اکاؤنٹ ہٹائیں؟</translation>
 <translation id="5300589172476337783">دکھائیں</translation>

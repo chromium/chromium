@@ -50,6 +50,7 @@
 <translation id="1219674500290482172">اتصال به اینترنت امکان‌پذیر نیست.</translation>
 <translation id="1227113644794103810">برگه‌های غیرفعال</translation>
 <translation id="1231733316453485619">همگام‌سازی روشن شود؟</translation>
+<translation id="1253032109800629289">پنهان کردن «اعلان‌های دریافت پیگیری قیمت»</translation>
 <translation id="1258491128795710625">ویژگی‌های جدید</translation>
 <translation id="1263231323834454256">فهرست خواندن</translation>
 <translation id="1263433075299269530">آخرین برگه باز شما</translation>
@@ -395,6 +396,7 @@
 <translation id="2870560284913253234">سایت</translation>
 <translation id="2876369937070532032">‏اگر امنیتتان درخطر باشد، نشانی وب برخی از صفحه‌هایی را که بازدید می‌کنید به Google می‌فرستد</translation>
 <translation id="2883151425485251736">مشاهده و ویرایش موضوع‌هایی که در حسابتان پنهان کرده‌اید</translation>
+<translation id="2888631381369839306">اعلان‌های «پیگیری قیمت» روشن شد</translation>
 <translation id="288902476966286676">برگرداندن به فرستنده</translation>
 <translation id="2894757982205307093">برگه جدید در گروه</translation>
 <translation id="2905479111267140204"><ph name="NUMBER_OF_PASSWORDS" /> گذرواژه دوباره‌استفاده‌شده دارید که می‌تواند امنیت شما را به‌خطر بیندازد.</translation>
@@ -577,6 +579,7 @@
 <translation id="3851938967634752633">گذرواژه‌های <ph name="WEBSITE" />، <ph name="SECOND_WEBSITE" />، و <ph name="NUMBER_OF_ACCOUNTS" /> مورد دیگر حذف خواهد شد. حساب‌هایتان حذف نخواهد شد.</translation>
 <translation id="3858860766373142691">نام</translation>
 <translation id="3861908220442487587">‏این نشانی فقط در این دستگاه ذخیره شده است. برای استفاده از این نشانی در دستگاه‌های دیگر، آن را به «حساب Google» (<ph name="USER_EMAIL" />) منتقل کنید.</translation>
+<translation id="3868495844258915202">نمایش نشانی وب کامل</translation>
 <translation id="3876833929577368454">هربار از من سؤال شود</translation>
 <translation id="3885587018298784481">پیوستن به گروه خانواده</translation>
 <translation id="3888863481921783344">از این دسترسی برای نمایش دعوت‌شوندگان بالقوه به رویدادتان استفاده می‌شود.</translation>
@@ -864,6 +867,7 @@
 <translation id="5210365745912300556">بستن برگه</translation>
 <translation id="5211488077761630279">«<ph name="SITE_NAME" />» مجاز باشد از <ph name="PERMISSION" /> استفاده کند؟</translation>
 <translation id="5217245356412073535">در «تنظیمات &gt; تنظیمات محتوا»، می‌توانید نمای پیش‌فرض سایت را به میز کار تغییر دهید</translation>
+<translation id="5217329997012062137">‏وقتی از «لنز Google» استفاده می‌کنید، نماگرفتی از صفحه به Google ارسال می‌شود.</translation>
 <translation id="5220945116117011963">ایجاد «رویداد تقویم» از تاریخ‌ها</translation>
 <translation id="5222676887888702881">خروج از سیستم</translation>
 <translation id="5228579091201413441">فعال کردن همگام‌سازی</translation>
@@ -876,6 +880,7 @@
 <translation id="5271265092610673171">{count,plural, =1{یکی‌از فیلدهای الزامی خالی است. آن را قبل‌از ذخیره کردن پر کنید.}one{تعدادی از فیلدهای الزامی خالی است. آن‌ها را قبل‌از ذخیره کردن پر کنید.}other{تعدادی از فیلدهای الزامی خالی است. آن‌ها را قبل‌از ذخیره کردن پر کنید.}}</translation>
 <translation id="5271549068863921519">ذخیره گذرواژه</translation>
 <translation id="5279600392753459966">انسداد همه</translation>
+<translation id="5282340693022193851">‏برای دریافت اعلان‌های «پیگیری قیمت»، اعلان‌ها را در «تنظیمات» iOS روشن کنید.</translation>
 <translation id="5294624619177114121">اعلان‌های تلفن همراه</translation>
 <translation id="5295239312320826323">حساب <ph name="USER_EMAIL" /> برداشته شود؟</translation>
 <translation id="5300589172476337783">نمایش</translation>
@@ -1638,6 +1643,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="8712534545803964353">پیدا کردن در صفحه…</translation>
 <translation id="8712637175834984815">متوجه شدم</translation>
 <translation id="8722229818691036192">حساب‌های موجود در این دستگاه</translation>
+<translation id="8722649775263832315">‏با تک‌ضرب زدن یا برجسته کردن، هر چیزی را با «لنز Google» جستجو کنید</translation>
 <translation id="8725066075913043281">تلاش دوباره</translation>
 <translation id="8728922029615312208">بستن همه</translation>
 <translation id="8730621377337864115">تمام</translation>

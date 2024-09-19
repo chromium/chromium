@@ -35,6 +35,7 @@
 <translation id="1155154308031262006">Въведете подкана</translation>
 <translation id="115705039208660697">ананаси</translation>
 <translation id="1164939766849482256">Скрийнсейвър „От зазоряване до здрачаване“</translation>
+<translation id="1166688493741195933">Генерирането на имена на записите не бе успешно</translation>
 <translation id="1167755866710282443">Отворете менюто, за да персонализирате клавишите. Плъзнете менюто за преместване.</translation>
 <translation id="1171349345463658120">пясъчна лагуна</translation>
 <translation id="1173894706177603556">Преименуване</translation>
@@ -342,6 +343,7 @@
 <translation id="2560876255701405320">Списък с аудиозаписи</translation>
 <translation id="2561093647892030937">лимони</translation>
 <translation id="2570743873672969996">Изпълняван тест: <ph name="TEST_NAME" /></translation>
+<translation id="2573178735329662769">Записване на цялото аудио от Chromebook</translation>
 <translation id="2575552334616524665">Можете да включите това от настройките или от менюто <ph name="THREE_DOTS_MENU_ICON" /></translation>
 <translation id="2576253868710695442">Той ще заеме до 2 GB в хранилището</translation>
 <translation id="2584547424703650812">Сияйни пейзажи</translation>
@@ -494,6 +496,7 @@
 <translation id="3502426834823382181">преглед на всички приложения</translation>
 <translation id="3510890413042482857">Изпращане на <ph name="BEGIN_LINK1" />данните от проследяването на ефективността<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">Chrome OS: Актуал.</translation>
+<translation id="3522508178835057262">Засега не се поддържат преписи с повече от <ph name="MAX_WORD_LENGTH" /> думи</translation>
 <translation id="3527036260304016759">Неуспешно – неизвестна грешка</translation>
 <translation id="353214771040290298">Край на редактирането</translation>
 <translation id="3532980081107202182">Остават около <ph name="MIN_REMAINING" /> минути</translation>
@@ -509,6 +512,7 @@
 <translation id="3588034708467091142">Проверете дали имате връзка с интернет и опитайте отново.</translation>
 <translation id="3594280220611906414"><ph name="USER_FRIENDLY_APN_NAME" /> е лесното за използване име на <ph name="APN_NAME" />.</translation>
 <translation id="3595596368722241419">Батерията е заредена</translation>
+<translation id="3600063043775287169">Когато аудиото от Chromebook е включено, „Рекордер“ записва целия звук, който се възпроизвежда на това устройство. Уверете се, че искате да записвате всички звуци.</translation>
 <translation id="3600339377155080675">Дублиране на екрана</translation>
 <translation id="3602290021589620013">Визуализация</translation>
 <translation id="3603829704940252505">Аватар</translation>
@@ -711,6 +715,7 @@
 <translation id="4602266091140407479">Микрофон</translation>
 <translation id="4607282946861182308">Не могат да се създадат изображения на това. Опитайте с друга подкана.</translation>
 <translation id="4609350030397390689">Намаляване на яркостта на клавиатурата</translation>
+<translation id="4623061655523261501">Имената на записите бяха генерирани успешно</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> от <ph name="TOTAL_PAGE_NUMBER" />. Натиснете Enter, за да откажете заданието за отпечатване</translation>
 <translation id="463791356324567266">Сканирането се отменя...</translation>
 <translation id="4644611440022666152">Включване и изтегляне</translation>
@@ -1216,6 +1221,7 @@
 <translation id="708426984172631313">СПРЯН</translation>
 <translation id="7086168019478250425">биолуминeсцентен плаж</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
+<translation id="7086916854357021265">Генерират се имена на записите</translation>
 <translation id="7097908713073775559">разноцветни</translation>
 <translation id="710028965487274708">Неуспешно – Удостоверяването не бе успешно</translation>
 <translation id="7101959270679078188">Отключете устройството (<ph name="DEVICE_NAME" />), за да продължите процеса на актуализиране</translation>

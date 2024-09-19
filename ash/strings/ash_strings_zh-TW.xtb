@@ -78,6 +78,7 @@
 <translation id="1240638468526743569">某個應用程式</translation>
 <translation id="1242198791279543032">已忽略通知</translation>
 <translation id="1242883863226959074">裝置</translation>
+<translation id="1245476784081715330">太棒了！</translation>
 <translation id="1245644940275736236">啟動 Google 助理</translation>
 <translation id="124678866338384709">關閉目前的分頁</translation>
 <translation id="1246890715821376239">不支援的應用程式</translation>
@@ -214,6 +215,7 @@
 <translation id="1703117532528082099">讓使用中的視窗固定在畫面左側。</translation>
 <translation id="1708345662127501511">桌面：<ph name="DESK_NAME" /></translation>
 <translation id="1709762881904163296">網路設定</translation>
+<translation id="171610090693716835">聆聽個人化專注模式播放清單，專心處理手邊工作。免付費體驗 YouTube Premium 3 個月，享受零廣告的 YouTube Music 和 YouTube 服務。</translation>
 <translation id="1719094688023114093">即時字幕功能已開啟。</translation>
 <translation id="1720011244392820496">開啟 Wi-Fi 同步功能</translation>
 <translation id="1720230731642245863">無線基地台已關閉</translation>
@@ -840,6 +842,7 @@
 <translation id="3958714870339660776">全天</translation>
 <translation id="3962859241508114581">上一首曲目</translation>
 <translation id="3963124517343721543">開啟先前的視窗和分頁，輕鬆繼續未完成的操作。此外，系統也會顯示個人化的後續事項建議。</translation>
+<translation id="396506362088290977">測試麥克風音效</translation>
 <translation id="3969043077941541451">關閉</translation>
 <translation id="3970324493235864154">查看手機的通知</translation>
 <translation id="397105322502079400">計算中…</translation>
@@ -896,6 +899,7 @@
 <translation id="4151054805501931758">人像修飾</translation>
 <translation id="4156293514828496577">剩餘電量：<ph name="PERCENTAGE" />% (約 <ph name="TIME_LEFT" />)。為延長電池續航力，某些功能會受到限制。</translation>
 <translation id="4160919062868802509">偵測到多個音訊來源</translation>
+<translation id="416245495747357243">辛苦了！</translation>
 <translation id="4165275524535002941">連接線可能不支援螢幕</translation>
 <translation id="4177415338862979658">按一下即可瞭解詳情</translation>
 <translation id="4177913004758410636">{0,plural, =1{請在 1 天內更新裝置}other{請在 # 天內更新裝置}}</translation>
@@ -981,6 +985,7 @@
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" />功能已關閉。</translation>
 <translation id="4417647906073317561">專注模式設定。你可以設定計時器、工作和音樂，讓工作更有效率。</translation>
 <translation id="4424159417645388645">桌面 5</translation>
+<translation id="4426817706804363424">做得好！</translation>
 <translation id="4430019312045809116">音量</translation>
 <translation id="4441283832827406317">依名稱將應用程式排序</translation>
 <translation id="4445159312344259901">登入即可解鎖</translation>
@@ -1245,6 +1250,7 @@
 <translation id="5283198616748585639">增加 1 分鐘</translation>
 <translation id="528468243742722775">結束</translation>
 <translation id="5286194356314741248">掃描中</translation>
+<translation id="528641622273682395">切換麥克風測試</translation>
 <translation id="5297423144044956168">找不到行動裝置</translation>
 <translation id="5297704307811127955">關閉</translation>
 <translation id="5300589172476337783">顯示</translation>
@@ -1272,6 +1278,7 @@
 <translation id="536019650977002321">管理員不允許擷取音訊，詳情請洽管理員。</translation>
 <translation id="5361524080961918551">已下載部分<ph name="LANGUAGE" />語音檔</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> 前往這個分頁</translation>
+<translation id="5363835273551457276">你可以測試麥克風音效。關閉面板即可停止測試。</translation>
 <translation id="5364693579536176785">儲存空間</translation>
 <translation id="5369573834963677938">裝置的其他使用者將可使用臉部控制功能</translation>
 <translation id="5369717264580061086">使用「檔案」應用程式預覽檔案</translation>
@@ -1405,6 +1412,7 @@
 <translation id="5777841717266010279">停止共用螢幕？</translation>
 <translation id="5779721926447984944">固定的檔案</translation>
 <translation id="5785221443435874078">移除這項建議</translation>
+<translation id="5787431783058088906">取得獎勵</translation>
 <translation id="5788127256798019331">Play 檔案</translation>
 <translation id="5788535737706478207">重新開啟最後關閉的分頁或視窗</translation>
 <translation id="5790085346892983794">成功</translation>
@@ -1635,6 +1643,7 @@
 <translation id="6574587113394758819">檢視防護功能已開啟，因此系統隱藏了 <ph name="APP_TITLE" /> 的通知</translation>
 <translation id="6574622320167699133">已由手機解鎖，按一下或輕觸即可繼續使用。</translation>
 <translation id="6578407462441924264">未命名</translation>
+<translation id="6582012689384648647">如要使用個人化專注模式播放清單，請授予 YouTube Music 存取權</translation>
 <translation id="6582034443359256692">正在計算電池充電量。</translation>
 <translation id="6585808820553845416">這個工作階段將在 <ph name="SESSION_TIME_REMAINING" />後結束。</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />，<ph name="SECONDARY_TEXT" /></translation>
@@ -1873,6 +1882,7 @@
 <translation id="7477793887173910789">控管你的音樂、影片等項目</translation>
 <translation id="7488762544858401571">已編輯版本</translation>
 <translation id="7489261257412536105">進入或退出全螢幕模式</translation>
+<translation id="7490157877815329797">如要享受不受廣告干擾的音樂服務和個人化專注模式音樂，請試試 YouTube Music Premium</translation>
 <translation id="7490360161041035804">你可以固定重要檔案，包括 Google 雲端硬碟檔案。如要固定項目，請將游標懸停在該項目上，或是開啟「檔案」應用程式，並在項目上按一下滑鼠右鍵。</translation>
 <translation id="7497767806359279797">選擇語言和鍵盤配置</translation>
 <translation id="7507162824403726948">完成身分驗證</translation>
@@ -2122,6 +2132,7 @@
 <translation id="8262312463845990408">切換播放</translation>
 <translation id="8268302343625273732">查看 Google Classroom 中的所有作業</translation>
 <translation id="8277261673056602147">醒目顯示畫面上的文字</translation>
+<translation id="8282784978194352587">你做到了！</translation>
 <translation id="8287009018010202411">效率提升</translation>
 <translation id="828708037801473432">關閉</translation>
 <translation id="8297006494302853456">弱</translation>
@@ -2147,6 +2158,7 @@
 <translation id="8380784334203145311">晚安，</translation>
 <translation id="8382715499079447151">檢視防護</translation>
 <translation id="8383614331548401927">歡迎頁面要事回顧</translation>
+<translation id="838540623579162843">訂閱 Music Premium</translation>
 <translation id="8388750414311082622">無法移除最後一個桌面。</translation>
 <translation id="8394567579869570560">你的家長已鎖定這部裝置</translation>
 <translation id="8401850874595457088">輸入語言選單</translation>
@@ -2199,6 +2211,7 @@
 <translation id="8609384513243082612">開啟新分頁</translation>
 <translation id="861045123704058818">系統會暫時依類別整理應用程式</translation>
 <translation id="8612216344243590325">請勿將重要檔案放在桌面上，而是要放在「<ph name="HOLDING_SPACE_TITLE" />」(只需將檔案拖曳到「<ph name="HOLDING_SPACE_TITLE" />」即可)。</translation>
+<translation id="8612338981637220013">暢行無阻！</translation>
 <translation id="8614517853887502247">檢視防護功能已開啟，因此系統隱藏了 <ph name="APP_1_TITLE" /> 和 <ph name="APP_2_TITLE" /> 的通知</translation>
 <translation id="8615778328722901791">開啟工具列</translation>
 <translation id="8619000641825875669">OneDrive</translation>
@@ -2240,6 +2253,7 @@
 <translation id="8735678380411481005">鍵盤背光顏色</translation>
 <translation id="8742057891287715849"><ph name="NAME" /> · <ph name="SERVICE_PROVIDER" />：啟用中...</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />，<ph name="SCREEN_SHARE_STATUS" /></translation>
+<translation id="8751299148074971734">繼續努力！</translation>
 <translation id="8753368202781196133">目前不支援這個語言。</translation>
 <translation id="8755498163081687682">驗證身分：<ph name="ORIGIN_NAME" /> 要求確認你的身分</translation>
 <translation id="875593634123171288">顯示 VPN 設定</translation>

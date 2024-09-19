@@ -106,6 +106,7 @@ Se queres ver máis opcións de configuración que usen datos para mellorar a t�
 <translation id="1413446866325418126">Gardar datos na túa Conta de Google</translation>
 <translation id="1414981605391750300">Contactando con Google. É posible que esta acción tarde un minuto…</translation>
 <translation id="1416550906796893042">Versión da aplicación</translation>
+<translation id="1419753403124156396">Queres reiniciar Chrome?</translation>
 <translation id="1428770807407000502">Queres desactivar a sincronización?</translation>
 <translation id="1430915738399379752">Imprimir</translation>
 <translation id="1435593198351412143">Abrir PDF automaticamente</translation>
@@ -229,6 +230,7 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="2067805253194386918">texto</translation>
 <translation id="2079545284768500474">Desfacer</translation>
 <translation id="2082238445998314030">Resultado <ph name="RESULT_NUMBER" /> de <ph name="TOTAL_RESULTS" /></translation>
+<translation id="2088833076121753253">Para rematar a configuración da función de autocompletar, reinicia Chrome agora. As pestanas volverán abrirse automaticamente.</translation>
 <translation id="2091863218454846791">Mostrando vista compacta</translation>
 <translation id="2093731487903423814">últimos 15 minutos</translation>
 <translation id="2096012225669085171">Sincroniza e personaliza o contido en todos os dispositivos</translation>
@@ -594,6 +596,7 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="3823019343150397277">IBAN</translation>
 <translation id="38243391581572867">Lens non está dispoñible nesta conta.</translation>
 <translation id="3830886834687455630">Actualiza os servizos de Google Play para comprobar os contrasinais</translation>
+<translation id="3843603704176567761">Os contrasinais poden deixar de funcionar en breve neste dispositivo. Para poder seguir usándoos, actualiza os servizos de Google Play.</translation>
 <translation id="3845098929839618392">Abrir en pestana de incógnito</translation>
 <translation id="3847319713229060696">Axudar a mellorar a seguranza na Web para todos</translation>
 <translation id="3856096718352044181">Verifica que se trate dun fornecedor válido ou téntao de novo máis tarde.</translation>
@@ -666,6 +669,7 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="4216511743389425832">Escoitar esta páxina</translation>
 <translation id="4225725533026049334">Seguindo</translation>
 <translation id="4225895483398857530">Atallo da barra de ferramentas</translation>
+<translation id="4232376164796433044">Contrasinais e autocompletado</translation>
 <translation id="4242533952199664413">Abrir configuración</translation>
 <translation id="4248098802131000011">Protexe os teus contrasinais fronte a violacións da seguranza dos datos e outros problemas de seguranza</translation>
 <translation id="424864128008805179">Queres pechar sesión en Chrome?</translation>
@@ -674,6 +678,7 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="4257230861809842349">Queres eliminar contrasinais do xestor de contrasinais de Google?</translation>
 <translation id="426652736638196239">Este IBAN só se gardará neste dispositivo</translation>
 <translation id="4269820728363426813">Copiar enderezo da ligazón</translation>
+<translation id="4270730597186910506">Iniciar ou deter o seguimento dun produto.</translation>
 <translation id="4277529130885813215">Usar outro dispositivo</translation>
 <translation id="4282440837784183472">A túa organización, <ph name="MANAGED_DOMAIN" />, xestiona a conta na que estás iniciando sesión e o xeito no que se usa Chrome. A persoa administradora pode configurar ou restrinxir determinadas funcións.</translation>
 <translation id="4285846616383034558">Cookies, memoria caché e outros datos dos sitios</translation>
@@ -748,6 +753,7 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="4609429330876432068">Combináronse as túas listas de contrasinais gardados de Chrome e <ph name="CHROME_CHANNEL" />. Podes seguir autocompletando os contrasinais gardados en ambas as dúas aplicacións.</translation>
 <translation id="4616150815774728855">Abrir <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619564267100705184">Verificar a túa identidade</translation>
+<translation id="4620032614425803188">Servizos de autocompletar</translation>
 <translation id="4624065194742029982">Modo de incógnito de Chrome</translation>
 <translation id="4634124774493850572">Usar contrasinal</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 contrasinal vulnerado}other{# contrasinais vulnerados}}</translation>
@@ -900,6 +906,7 @@ Só poderán ler os teus datos encriptados as persoas que coñezan a túa frase 
 <translation id="5264813352784073502">últimas 48 horas</translation>
 <translation id="5267572070504076962">Activa Navegación segura para obter protección contra os sitios perigosos</translation>
 <translation id="5271967389191913893">O dispositivo non pode abrir o contido que se debe descargar.</translation>
+<translation id="5273031377282080577">A persoa administradora xestiona esta opción de configuración.</translation>
 <translation id="5292796745632149097">Enviar a</translation>
 <translation id="5301876394151419436">Tes a sesión iniciada como <ph name="EMAIL" />. Podes deter a sincronización cando queiras na configuración. Google pode personalizar a Busca e outros servizos en función do teu historial.</translation>
 <translation id="5304593522240415983">Este campo non pode quedar baleiro</translation>
@@ -1234,6 +1241,7 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="6775840696761158817">Cando toques ou escribas na barra de enderezos ou na caixa de busca, verás suxestións do teu buscador predeterminado. Esta opción está desactivada no modo de incógnito.</translation>
 <translation id="6785476624617658922">Condicións de servizo adicionais de Chrome e Chrome OS</translation>
 <translation id="6795633245022906657">Abre rapidamente unha pestana nova. Para editar este atallo, vai a Configuración.</translation>
+<translation id="679956319013005046">Para configurar o teu servizo preferido de autocompletar, primeiro engádeo na <ph name="BEGIN_LINK" />configuración de Android<ph name="END_LINK" />.</translation>
 <translation id="6802555630140434547">Pecharase a ventá</translation>
 <translation id="6803791793483522764">Revisar as notificacións</translation>
 <translation id="6811034713472274749">A páxina está lista para vela</translation>
@@ -1465,6 +1473,7 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />elimina os 
 <translation id="7707922173985738739">Utilizaranse datos móbiles</translation>
 <translation id="7709918231054955894">Accede a todas as túas pestanas</translation>
 <translation id="7733878270780732638">Non hai suficiente espazo no dispositivo.</translation>
+<translation id="774876555279732384">Os servizos de autocompletar tamén se xestionan na <ph name="BEGIN_LINK" />configuración de Android<ph name="END_LINK" />.</translation>
 <translation id="7759809451544302770">Opcionais</translation>
 <translation id="7762668264895820836">Tarxeta SD <ph name="SD_CARD_NUMBER" /></translation>
 <translation id="7764225426217299476">Engadir enderezo</translation>

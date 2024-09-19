@@ -1607,6 +1607,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="211803431539496924">Confirmar atualizações de segurança estendidas?</translation>
 <translation id="2118594521750010466">Corrigir agora</translation>
 <translation id="2119461801241504254">O "Navegação segura" está ativado e continua protegendo você de sites e downloads nocivos</translation>
+<translation id="2119602978828978573">Idiomas disponíveis para a Legenda instantânea</translation>
 <translation id="2120297377148151361">Atividade e interações</translation>
 <translation id="2120639962942052471"><ph name="PERMISSION" /> bloqueada</translation>
 <translation id="2121055421682309734">{COUNT,plural, =0{Os cookies foram bloqueados}=1{Os cookies foram bloqueados, com 1 exceção}one{Os cookies foram bloqueados, com {COUNT} exceção}other{Os cookies foram bloqueados, com {COUNT} exceções}}</translation>
@@ -2676,6 +2677,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2864601841139725659">Definir a foto do seu perfil</translation>
 <translation id="2865057607286263192">Toque nas teclas e pressione para digitar acentos e caracteres especiais. Esta opção desativa o pressionamento para repetir as teclas do alfabeto. Disponível apenas em inglês (EUA).</translation>
 <translation id="2865919525181940183">Captura de tela dos programas que estão em exibição</translation>
+<translation id="286643536820867504">Cria legendas automaticamente para os idiomas disponíveis. O áudio nunca sai do dispositivo.</translation>
 <translation id="286674810810214575">Verificando fontes de energia…</translation>
 <translation id="2867768963760577682">Abrir como guia fixada</translation>
 <translation id="2868746137289129307">Esta extensão está desatualizada e desativada por uma política empresarial. Ela poderá ser ativada automaticamente quando uma versão recente estiver disponível.</translation>
@@ -3297,6 +3299,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="333863344734218290">Avisa sobre sites públicos e particulares sem segurança</translation>
 <translation id="3340620525920140773">Download concluído: <ph name="FILE_NAME" />.</translation>
 <translation id="3340978935015468852">configurações</translation>
+<translation id="3341091511696469129">O Chrome pode criar e traduzir legendas nos idiomas mostrados aqui</translation>
 <translation id="3341699307020049241">PIN incorreto. Você tem <ph name="RETRIES" /> tentativas restantes.</translation>
 <translation id="3341703758641437857">Permitir acesso a URLs de arquivo
 </translation>
@@ -5877,6 +5880,7 @@ Use Ctrl + Alt + Diminuir brilho para diminuir o zoom.</translation>
 <translation id="5214639857958972833">Favorito "<ph name="BOOKMARK_TITLE" />" criado.</translation>
 <translation id="5215450412607891876">Ativar atualizações de segurança estendidas</translation>
 <translation id="5215502535566372932">Selecione um país</translation>
+<translation id="5216674789212441076">Traduz legendas instantâneas automaticamente. As legendas são enviadas ao Google para tradução.</translation>
 <translation id="5220011581825921581">pesquisar + seta para cima</translation>
 <translation id="5221516927483787768">Não foi possível transmitir <ph name="HOST_NAME" /></translation>
 <translation id="5222403284441421673">Download não seguro bloqueado</translation>
@@ -7327,6 +7331,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="628726841779494414">Gerencie suas impressoras nas configurações de impressora</translation>
 <translation id="6287828400772161253">Smartphone Android (<ph name="HOST_DEVICE_NAME" />)</translation>
 <translation id="6290613030083731160">Não há dispositivos disponíveis por perto. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
+<translation id="6291580570300353047">Não é possível restaurar devido à falta de espaço de armazenamento.</translation>
 <translation id="6291741848715722067">Código de confirmação</translation>
 <translation id="6291953229176937411">&amp;Mostrar no Finder</translation>
 <translation id="6292699686837272722">as guias são encolhidas para uma largura média</translation>
@@ -7972,6 +7977,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="6785739405821760313">Mostrando os espaços de trabalho salvos. Pressione Tab para navegar.</translation>
 <translation id="6785915470941880363">Rolagem reversa <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
 <translation id="67862343314499040">Violeta</translation>
+<translation id="6786480815699355166">Somente os idiomas disponíveis na Legenda instantânea podem ser traduzidos</translation>
 <translation id="6786747875388722282">Extensões</translation>
 <translation id="6787097042755590313">Outra guia</translation>
 <translation id="6787531944787756058">O nome de usuário <ph name="USER_EMAIL" /> foi salvo apenas neste dispositivo. Detalhes</translation>
@@ -10570,6 +10576,7 @@ Mantenha a sua chave de arquivo em um local seguro. Você precisará dela para c
 <translation id="8656888282555543604">Ativar registro de braille</translation>
 <translation id="8657393004602556571">Quer descartar o feedback?</translation>
 <translation id="8657542881463614516">Use um gesto de deslizar para navegar entre as páginas</translation>
+<translation id="865857184419171576">Traduzir legendas para o</translation>
 <translation id="865936634714975126">Adicione um parâmetro de consulta ao URL para selecionar tipos no carregamento da página. Exemplo: chrome://device-log/?types=Bluetooth,USB</translation>
 <translation id="8659608856364348875">Contatos do <ph name="FEATURE_NAME" /></translation>
 <translation id="8659609431223166673">Janela movida para baixo</translation>

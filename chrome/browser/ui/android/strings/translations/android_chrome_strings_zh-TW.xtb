@@ -106,6 +106,7 @@
 <translation id="1413446866325418126">將資料儲存到 Google 帳戶</translation>
 <translation id="1414981605391750300">正在連線至 Google。可能需要一分鐘…</translation>
 <translation id="1416550906796893042">應用程式版本</translation>
+<translation id="1419753403124156396">要重新啟動 Chrome 嗎？</translation>
 <translation id="1428770807407000502">要關閉同步處理嗎？</translation>
 <translation id="1430915738399379752">列印</translation>
 <translation id="1435593198351412143">自動開啟 PDF</translation>
@@ -229,6 +230,7 @@
 <translation id="2067805253194386918">文字</translation>
 <translation id="2079545284768500474">復原</translation>
 <translation id="2082238445998314030">第 <ph name="RESULT_NUMBER" /> 個結果，共 <ph name="TOTAL_RESULTS" /> 個</translation>
+<translation id="2088833076121753253">如要完成自動填入設定程序，請立即重新啟動 Chrome。你的分頁會自動重新開啟。</translation>
 <translation id="2091863218454846791">目前顯示的是密集檢視</translation>
 <translation id="2093731487903423814">過去 15 分鐘</translation>
 <translation id="2096012225669085171">讓多部裝置保持同步，並提供人化體驗</translation>
@@ -594,6 +596,7 @@
 <translation id="3823019343150397277">IBAN</translation>
 <translation id="38243391581572867">這個帳戶無法使用智慧鏡頭。</translation>
 <translation id="3830886834687455630">必須更新 Google Play 服務才能檢查密碼</translation>
+<translation id="3843603704176567761">裝置上的部分密碼不久後將無法存取。如要繼續使用，請更新 Google Play 服務。</translation>
 <translation id="3845098929839618392">在無痕分頁中開啟</translation>
 <translation id="3847319713229060696">協助我們改善所有人的網路安全性</translation>
 <translation id="3856096718352044181">請驗證供應商是否有效，或稍後再試</translation>
@@ -666,6 +669,7 @@
 <translation id="4216511743389425832">朗讀這頁內容</translation>
 <translation id="4225725533026049334">追蹤中</translation>
 <translation id="4225895483398857530">工具列捷徑</translation>
+<translation id="4232376164796433044">密碼和自動填入</translation>
 <translation id="4242533952199664413">開啟設定</translation>
 <translation id="4248098802131000011">確保密碼安全，避免發生資料侵害或其他安全性問題</translation>
 <translation id="424864128008805179">要登出 Chrome 嗎？</translation>
@@ -674,6 +678,7 @@
 <translation id="4257230861809842349">要從 Google 密碼管理工具中刪除密碼嗎？</translation>
 <translation id="426652736638196239">這個 IBAN 只會儲存在這部裝置上</translation>
 <translation id="4269820728363426813">複製連結網址</translation>
+<translation id="4270730597186910506">追蹤或取消追蹤商品。</translation>
 <translation id="4277529130885813215">改用其他裝置</translation>
 <translation id="4282440837784183472">貴機構 (<ph name="MANAGED_DOMAIN" />) 會管理你登入的帳戶和 Chrome 的使用方式。系統管理員可以設定或限制特定功能。</translation>
 <translation id="4285846616383034558">Cookie、快取和其他網站資料</translation>
@@ -748,6 +753,7 @@
 <translation id="4609429330876432068">Chrome 和 <ph name="CHROME_CHANNEL" /> 儲存的密碼清單已合併，這兩個應用程式仍可自動填入所有已儲存的密碼。</translation>
 <translation id="4616150815774728855">開啟 <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619564267100705184">驗證身分</translation>
+<translation id="4620032614425803188">自動填入服務</translation>
 <translation id="4624065194742029982">Chrome 無痕模式</translation>
 <translation id="4634124774493850572">使用密碼</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 組密碼外洩}other{# 組密碼外洩}}</translation>
@@ -900,6 +906,7 @@
 <translation id="5264813352784073502">過去 24 小時</translation>
 <translation id="5267572070504076962">開啟安全瀏覽功能即可防範危險網站</translation>
 <translation id="5271967389191913893">裝置無法開啟您要下載的這項內容。</translation>
+<translation id="5273031377282080577">系統管理員會管理這項設定。</translation>
 <translation id="5292796745632149097">傳送到</translation>
 <translation id="5301876394151419436">目前登入的帳戶是 <ph name="EMAIL" />。你隨時可以前往設定停止同步。Google 可能會根據你的歷史記錄，在 Google 搜尋和其他服務中提供個人化體驗。</translation>
 <translation id="5304593522240415983">這個欄位不能留空</translation>
@@ -1234,6 +1241,7 @@
 <translation id="6775840696761158817">當你輕觸網址列/搜尋框，或在當中輸入內容時，預設搜尋引擎會顯示建議。這項功能在無痕模式中為關閉狀態。</translation>
 <translation id="6785476624617658922">Chrome 和 Chrome OS 的《附加服務條款》</translation>
 <translation id="6795633245022906657">快速開啟新分頁。如要編輯這個捷徑，請前往 [設定]。</translation>
+<translation id="679956319013005046">如要設定偏好的自動填入服務，請先在 <ph name="BEGIN_LINK" />Android 設定<ph name="END_LINK" />中新增該項服務。</translation>
 <translation id="6802555630140434547">視窗即將關閉</translation>
 <translation id="6803791793483522764">檢查通知權限</translation>
 <translation id="6811034713472274749">你可以瀏覽這個網頁了</translation>
@@ -1465,6 +1473,7 @@
 <translation id="7707922173985738739">使用行動數據</translation>
 <translation id="7709918231054955894">取得所有分頁</translation>
 <translation id="7733878270780732638">裝置的可用空間不足。</translation>
+<translation id="774876555279732384">你也可以透過 <ph name="BEGIN_LINK" />Android 設定<ph name="END_LINK" />管理自動填入服務。</translation>
 <translation id="7759809451544302770">選填</translation>
 <translation id="7762668264895820836">SD 卡 <ph name="SD_CARD_NUMBER" /></translation>
 <translation id="7764225426217299476">新增地址</translation>

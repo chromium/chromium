@@ -78,6 +78,7 @@ Tālāk ir norādīti daži ieteikumi darba sākšanai.</translation>
 <translation id="1240638468526743569">Lietotne</translation>
 <translation id="1242198791279543032">Paziņojumi ir izslēgti</translation>
 <translation id="1242883863226959074">ierīcē</translation>
+<translation id="1245476784081715330">Lieliski!</translation>
 <translation id="1245644940275736236">Atvērt Asistentu</translation>
 <translation id="124678866338384709">Aizvērt pašreizējo cilni</translation>
 <translation id="1246890715821376239">Neatbalstītas lietotnes</translation>
@@ -842,6 +843,7 @@ Pievienojiet ierīci barošanas avotam.</translation>
 <translation id="3958714870339660776">Visu dienu</translation>
 <translation id="3962859241508114581">Iepriekšējais ieraksts</translation>
 <translation id="3963124517343721543">Ērti turpiniet darbu no vietas, kur to pārtraucāt, atverot iepriekšējos logus un cilnes. Būs redzami arī personalizēti ieteikumi par nākamajām darbībām.</translation>
+<translation id="396506362088290977">Mikrofona skaņas pārbaude</translation>
 <translation id="3969043077941541451">Izslēgt</translation>
 <translation id="3970324493235864154">Skatīt tālruņa paziņojumus</translation>
 <translation id="397105322502079400">Aprēķina...</translation>
@@ -899,6 +901,7 @@ Pievienojiet ierīci barošanas avotam.</translation>
 <translation id="4156293514828496577">Atlikušais akumulatora uzlādes līmenis ir <ph name="PERCENTAGE" />% (aptuveni <ph name="TIME_LEFT" />).
 Dažas funkcijas ir ierobežotas, lai palielinātu akumulatora darbības ilgumu.</translation>
 <translation id="4160919062868802509">Konstatēti vairāki audio avoti</translation>
+<translation id="416245495747357243">Gatavs!</translation>
 <translation id="4165275524535002941">Iespējams, vads neatbalsta displejus</translation>
 <translation id="4177415338862979658">Noklikšķiniet, lai skatītu detalizētu informāciju</translation>
 <translation id="4177913004758410636">{0,plural, =1{Ierīce jāatjaunina dienas laikā}zero{Ierīce jāatjaunina # dienu laikā}one{Ierīce jāatjaunina # dienas laikā}other{Ierīce jāatjaunina # dienu laikā}}</translation>
@@ -984,6 +987,7 @@ Dažas funkcijas ir ierobežotas, lai palielinātu akumulatora darbības ilgumu.
 <translation id="4412944820643904175">Funkcija <ph name="FEATURE_NAME" /> ir izslēgta.</translation>
 <translation id="4417647906073317561">Fokusa režīma iestatījumi. Iestatiet taimeri, uzdevumu un mūziku, lai koncentrētos.</translation>
 <translation id="4424159417645388645">5. darbvieta</translation>
+<translation id="4426817706804363424">Vareni!</translation>
 <translation id="4430019312045809116">Skaļums</translation>
 <translation id="4441283832827406317">Lietotnes ir kārtotas pēc nosaukuma</translation>
 <translation id="4445159312344259901">Pierakstieties, lai atbloķētu</translation>
@@ -1248,6 +1252,7 @@ Varat arī izmantot īsinājumtaustiņus. Vispirms atzīmējiet tekstu un pēc t
 <translation id="5283198616748585639">Pievienot 1 min</translation>
 <translation id="528468243742722775">Beigas</translation>
 <translation id="5286194356314741248">Notiek skenēšana</translation>
+<translation id="528641622273682395">Pārslēgt mikrofona pārbaudi</translation>
 <translation id="5297423144044956168">Netika atrasta neviena mobilā ierīce</translation>
 <translation id="5297704307811127955">Izslēgta</translation>
 <translation id="5300589172476337783">Rādīt</translation>
@@ -1275,6 +1280,7 @@ Nav pievienota neviena ierīce.</translation>
 <translation id="536019650977002321">Jūsu administrators neļauj tvert audio. Lai uzzinātu vairāk, sazinieties ar administratoru.</translation>
 <translation id="5361524080961918551">Runas faili (<ph name="LANGUAGE" />) ir daļēji lejupielādēti</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> Pāriet uz šo cilni</translation>
+<translation id="5363835273551457276">Varat pārbaudīt mikrofona skaņu. Lai pārtrauktu pārbaudi, aizveriet paneli.</translation>
 <translation id="5364693579536176785">krātuves vieta</translation>
 <translation id="5369573834963677938">Sejas vadības funkcija būs pieejama citiem ierīces lietotājiem.</translation>
 <translation id="5369717264580061086">Priekšskatīt failu lietotnē Faili</translation>
@@ -1415,6 +1421,7 @@ Nav pievienota neviena ierīce.</translation>
 <translation id="5802516411616338943">Atvērt ātros iestatījumus</translation>
 <translation id="5804651031882187592">Iestatījuma “Bloķēt SIM karti” izslēgšana</translation>
 <translation id="5805809050170488595">Noklikšķiniet, lai aktivizētu tīklu <ph name="NETWORK_NAME" /></translation>
+<translation id="5818796501620225415">Varat pievienot vairāk laika vai pārtraukt fokusa režīma sesiju.</translation>
 <translation id="5819918159912280082">Jūsu Chromebook dators tika negaidīti restartēts. Atveriet iepriekšējos logus un lietotnes.</translation>
 <translation id="5823239091726045201">Google uzdevumi tīmeklī</translation>
 <translation id="5825969630400862129">Saistīto ierīču iestatījumi</translation>
@@ -2125,6 +2132,7 @@ Lai izslēgtu ierīci, vēlreiz nospiediet un turiet ierīces barošanas pogu.</
 <translation id="8262312463845990408">Pārslēgt atskaņošanu</translation>
 <translation id="8268302343625273732">Skatīt visus uzdevumus pakalpojumā Google Classroom</translation>
 <translation id="8277261673056602147">Ekrānā atzīmējiet tekstu</translation>
+<translation id="8282784978194352587">Jums izdevās!</translation>
 <translation id="8287009018010202411">Produktivitāte</translation>
 <translation id="828708037801473432">Izslēgts</translation>
 <translation id="8297006494302853456">Vājš</translation>
@@ -2202,6 +2210,7 @@ Lai izslēgtu ierīci, vēlreiz nospiediet un turiet ierīces barošanas pogu.</
 <translation id="8609384513243082612">Atvērt jaunu cilni</translation>
 <translation id="861045123704058818">Lietotnes ir īslaicīgi sakārtotas pēc kategorijas.</translation>
 <translation id="8612216344243590325">Glabājiet svarīgus failus šeit: <ph name="HOLDING_SPACE_TITLE" /> (nevis darbvirsmā). Vienkārši velciet failus šeit: <ph name="HOLDING_SPACE_TITLE" />.</translation>
+<translation id="8612338981637220013">Jums lieliski izdodas!</translation>
 <translation id="8614517853887502247">Lietotņu <ph name="APP_1_TITLE" /> un <ph name="APP_2_TITLE" /> paziņojumi ir paslēpti, jo ir ieslēgta skatīšanas aizsardzība.</translation>
 <translation id="8615778328722901791">Atvērt rīkjoslu</translation>
 <translation id="8619000641825875669">OneDrive</translation>
@@ -2244,6 +2253,7 @@ Lai izslēgtu ierīci, vēlreiz nospiediet un turiet ierīces barošanas pogu.</
 <translation id="8742057891287715849"><ph name="NAME" /> · <ph name="SERVICE_PROVIDER" />: notiek aktivizācija…</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />.
         <ph name="SCREEN_SHARE_STATUS" />.</translation>
+<translation id="8751299148074971734">Tā turpiniet!</translation>
 <translation id="8753368202781196133">Šī valoda pašlaik netiek atbalstīta.</translation>
 <translation id="8755498163081687682">Identitātes apstiprināšana: <ph name="ORIGIN_NAME" /> vēlas apstiprināt jūsu identitāti</translation>
 <translation id="875593634123171288">Rādīt VPN iestatījumus</translation>

@@ -446,6 +446,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="1771254328977666895">Se prishistorikken</translation>
 <translation id="1777422078676229054">Foto (arkiv)</translation>
 <translation id="1778646502362731194">JIS B0</translation>
+<translation id="1785118555253503473">Vil du installere nettapper?</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" /> – trykk på Tab og deretter på Enter for å administrere informasjon, personvern og sikkerhet i Google-kontoen din</translation>
 <translation id="1793631236004319016">Sist brukt for <ph name="NUM_HOURS_MINUTES_SECONDS" /> siden.</translation>
@@ -677,6 +678,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="2212735316055980242">Innstillingene ble ikke funnet</translation>
 <translation id="2213606439339815911">Henter oppføringer …</translation>
 <translation id="2213612003795704869">Siden er skrevet ut</translation>
+<translation id="2215368073167343359">Autofyll med Google</translation>
 <translation id="2215539479425228550">Klatring og fjellklatring</translation>
 <translation id="2215727959747642672">Filredigering</translation>
 <translation id="2215963164070968490">Hunder</translation>
@@ -709,6 +711,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="2262243747453050782">HTTP-feil</translation>
 <translation id="2265192657948645752">Jobber innen detaljhandel</translation>
 <translation id="2265356434276802347">Dette regelen skal ikke ha mer enn <ph name="MAX_ITEMS_LIMIT" /> fremhevede oppføringer.</translation>
+<translation id="2266175583972138136">Vilkår gjelder for kortfordeler</translation>
 <translation id="2267047181501709434">Bekrefter identiteten din …</translation>
 <translation id="2268044343513325586">Finstem</translation>
 <translation id="2268966938956566076">Last opp om <ph name="MINUTES" /> min</translation>
@@ -1163,6 +1166,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="3157931365184549694">Gjenopprett</translation>
 <translation id="3158539265159265653">Plate</translation>
 <translation id="3162559335345991374">Det kan hende at Wifi-nettverket du bruker, krever at du besøker en påloggingsside.</translation>
+<translation id="316638481603975524">Kan be om å få installere nettapper</translation>
 <translation id="3168744840365648658">Radioutstyr</translation>
 <translation id="3168938241115725594">Klassiske kjøretøy</translation>
 <translation id="3169472444629675720">Discover</translation>
@@ -1797,6 +1801,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="4269264543938335308">Badetøy</translation>
 <translation id="4269599248168651462">Tjenersertifikatet er utstedt til et ikke-unikt navn.</translation>
 <translation id="4270541775497538019">Hylle 6</translation>
+<translation id="4271652479722040953">Når utvidelser legges til i Chrome, sendes relevante data om disse utvidelsene til tredjeparter for analyse og kan være synlige for administratoren din. Dataene inkluderer informasjon om utvidelsene, for eksempel navn, installeringstidspunkt og installeringskilde, samt aktivitet knyttet til disse utvidelsene (for eksempel bytte av faner, kontakt med nettsteder eller bruk av informasjonskapsler). Disse dataene samles inn både for utvidelser som er installert fra Chrome Nettmarked, og for utvidelser som er installert utenfor nettbutikken.</translation>
 <translation id="4275830172053184480">Start enheten din på nytt</translation>
 <translation id="4276974990916607331">Nei takk</translation>
 <translation id="4277028893293644418">Tilbakestill passordet</translation>
@@ -1878,6 +1883,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="4406896451731180161">søkeresultater</translation>
 <translation id="4408413947728134509">Informasjonskapsler <ph name="NUM_COOKIES" /></translation>
 <translation id="4412074349188076601">Denne konfigurasjonen er merket som installerbar, men det finnes ingen avbildning for denne arkitekturen, så den kan ikke installeres.</translation>
+<translation id="4414452699610169758">Bruk Google Passordlagring og Chrome Autofyll til å lagre og fylle ut passord, betalingsmåter og adresser</translation>
 <translation id="4414515549596849729">informasjonskapsler og nettstedsdata</translation>
 <translation id="4415156962929755728">Plast (høy glans)</translation>
 <translation id="4415426530740016218">Henteadresse</translation>
@@ -2322,6 +2328,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="5273658854610202413">Advarsel: Denne regelen ble ikke sammenslått som angitt i PolicyDictionaryMultipleSourceMergeList-regelen fordi den ikke er en del av ordlistereglene som kan slås sammen.</translation>
 <translation id="5278778426231952189">Last opp nå</translation>
 <translation id="5279286380302340275">Administrer nedlastinger</translation>
+<translation id="5280963125494874678">nettapper</translation>
 <translation id="5283044957620376778">B1</translation>
 <translation id="5284295735376057059">Dokumentegenskaper</translation>
 <translation id="528468243742722775">Avslutt</translation>
@@ -2824,6 +2831,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="6221311046884916259">Vil du lagre dette kortet i Google-kontoen din?</translation>
 <translation id="6221892641068781024">Forenklet visning</translation>
 <translation id="6222527803348563979">Brevpapir</translation>
+<translation id="62231116988543150">kunne installere nettapper</translation>
 <translation id="6224281071334553713">Smykkesteiner og smykker</translation>
 <translation id="6226163402662242066"><ph name="MANAGE_CHROME_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" /> – trykk på Tab og deretter på Enter for å gi tilgjengelighetsverktøyene dine personlig preg i Chrome-innstillingene</translation>
 <translation id="6228346913624365233">Luksuskjøretøy</translation>
@@ -3087,6 +3095,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="6694681292321232194"><ph name="FIND_MY_PHONE_FOCUSED_FRIENDLY_MATCH_TEXT" /> – trykk på Tab og deretter på Enter for å finne enheten din i Google-kontoen</translation>
 <translation id="6695428916538794739">Action- og eventyrfilmer</translation>
 <translation id="6696424331653607346">Reisebøker og reiseskildringer</translation>
+<translation id="6696575039575740785">Installering av nettapper er ikke tillatt</translation>
 <translation id="6698097747703777657">Har du ikke mottatt noen kode? <ph name="BEGIN_LINK" />Få en ny kode<ph name="END_LINK" /></translation>
 <translation id="6698381487523150993">Opprettet:</translation>
 <translation id="67007264085648978">Tidslinje</translation>
@@ -3200,6 +3209,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="6915804003454593391">Bruker:</translation>
 <translation id="6916193791494646625">Oppgi årsaken til nedlastingen (obligatorisk)</translation>
 <translation id="6917795328362592458">Passordet du nettopp brukte, er funnet i et databrudd. For å sikre kontoene dine anbefaler Passordlagring at du sjekker de lagrede passordene dine.</translation>
+<translation id="6921197121276419421">Installering av nettapper er tillatt</translation>
 <translation id="6924013822850225188">Velg om du vil se kortfordelene dine i kassen (bankens vilkår gjelder)</translation>
 <translation id="6925267999184670015">North American B+</translation>
 <translation id="6926216138694948720">Kroppsutsmykning</translation>
@@ -3378,6 +3388,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="7232352818707016189">Flere handlinger for Sammenligning-tabellen</translation>
 <translation id="7233592378249864828">Skriv ut bekreftelsesark</translation>
 <translation id="7234112195906418665">Reise og transport</translation>
+<translation id="7234585564776614047">Autofyll med en annen tjeneste</translation>
 <translation id="7236417832106250253"><ph name="PROGRESS_PERCENT" /> % er fullført | <ph name="ESTIMATED_REMAINING_TIME" /></translation>
 <translation id="7237166092326447040">Gaver og artikler til spesielle anledninger</translation>
 <translation id="7237454422623102448">Systeminnstillinger</translation>
@@ -3696,6 +3707,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="7761701407923456692">Tjenerens sertifikat samsvarer ikke med nettadressen.</translation>
 <translation id="7764225426217299476">Legg til adresse</translation>
 <translation id="7766518757692125295">Skjørt</translation>
+<translation id="7766899888934244586">Nettapper</translation>
 <translation id="7767278989746220252">Terrasse, plen og hage</translation>
 <translation id="776749070095465053">Stoff</translation>
 <translation id="7773005668374414287">Samme rekkefølge – forsiden opp</translation>
@@ -4038,6 +4050,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="8409413588194360210">betalingsbehandlere</translation>
 <translation id="8412145213513410671">Kræsj (<ph name="CRASH_COUNT" />)</translation>
 <translation id="8412392972487953978">Du må angi den samme passordfrasen to ganger.</translation>
+<translation id="8414322570408428950">Utvidelseshendelse inntreffer</translation>
 <translation id="8416694386774425977">Nettverkskonfigurasjonen er ugyldig og kan ikke importeres.
 Mer informasjon:
 <ph name="DEBUG_INFO" /></translation>
@@ -4289,6 +4302,7 @@ Mer informasjon:
 <translation id="8891031436559779793">Du blir varslet hvis prisen settes ned på noe nettsted.</translation>
 <translation id="8891727572606052622">Ugyldig modus for proxy-tjener.</translation>
 <translation id="8894794286471754040">Langsiden først</translation>
+<translation id="8895334001368918465">For å bruke en annen autofylltjeneste i Chrome, slå den på i Android-innstillingene og her</translation>
 <translation id="8897428486789851669">Svømming</translation>
 <translation id="8899807382908246773">Forstyrrende annonser</translation>
 <translation id="8903921497873541725">Zoom inn</translation>

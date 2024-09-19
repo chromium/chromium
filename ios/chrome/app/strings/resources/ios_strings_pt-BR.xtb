@@ -577,6 +577,7 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="3851938967634752633">As senhas de <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> e mais <ph name="NUMBER_OF_ACCOUNTS" /> outras contas vão ser excluídas. Suas contas não serão excluídas.</translation>
 <translation id="3858860766373142691">Nome</translation>
 <translation id="3861908220442487587">O endereço está salvo apenas neste dispositivo. Para usar em outros dispositivos, transfira-o para sua Conta do Google <ph name="USER_EMAIL" />.</translation>
+<translation id="3868495844258915202">Mostrar URL completo</translation>
 <translation id="3876833929577368454">Perguntar sempre</translation>
 <translation id="3885587018298784481">Entrar em um grupo familiar</translation>
 <translation id="3888863481921783344">Essa informação vai ser usada para mostrar possíveis convidados para seu evento.</translation>
@@ -864,6 +865,7 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="5210365745912300556">Fechar guia</translation>
 <translation id="5211488077761630279">Permitir que o site <ph name="SITE_NAME" /> use <ph name="PERMISSION" />?</translation>
 <translation id="5217245356412073535">Você pode mudar a visualização padrão do site para computador em Configurações &gt; Configurações de conteúdo</translation>
+<translation id="5217329997012062137">Quando você usa o Lens, uma captura de tela da página é enviada ao Google.</translation>
 <translation id="5220945116117011963">Criar eventos da agenda usando datas</translation>
 <translation id="5222676887888702881">Sair</translation>
 <translation id="5228579091201413441">Ativar sincronização</translation>
@@ -1638,6 +1640,7 @@ Eles também podem usar cookies para ver sua atividade de navegação em diferen
 <translation id="8712534545803964353">Localizar na página…</translation>
 <translation id="8712637175834984815">Entendi</translation>
 <translation id="8722229818691036192">Contas neste dispositivo</translation>
+<translation id="8722649775263832315">Toque ou destaque para pesquisar o que quiser com o Google Lens</translation>
 <translation id="8725066075913043281">Tentar novamente</translation>
 <translation id="8728922029615312208">Fechar todas</translation>
 <translation id="8730621377337864115">Concluir</translation>

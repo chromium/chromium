@@ -35,6 +35,7 @@
 <translation id="1155154308031262006">Adja meg a kívánt utasítást</translation>
 <translation id="115705039208660697">ananászok</translation>
 <translation id="1164939766849482256">Hajnaltól sötétig képernyőkímélő</translation>
+<translation id="1166688493741195933">Nem sikerült a felvételnevek generálása</translation>
 <translation id="1167755866710282443">A kulcsok személyre szabásához nyissa meg a menüt. Az áthelyezéshez húzza a megfelelő helyre a menüt.</translation>
 <translation id="1171349345463658120">homokos lagúna</translation>
 <translation id="1173894706177603556">Átnevezés</translation>
@@ -495,6 +496,7 @@
 <translation id="3502426834823382181">összes app megtekintése</translation>
 <translation id="3510890413042482857"><ph name="BEGIN_LINK1" />Teljesítménykövetési adatok<ph name="END_LINK1" /> elküldése</translation>
 <translation id="3517001332549868749">ChromeOS-frissítés</translation>
+<translation id="3522508178835057262">Egyelőre nem támogatjuk a(z) <ph name="MAX_WORD_LENGTH" /> szónál hosszabb átiratokat</translation>
 <translation id="3527036260304016759">Sikertelen – Ismeretlen hiba</translation>
 <translation id="353214771040290298">Szerkesztés kész</translation>
 <translation id="3532980081107202182">Körülbelül <ph name="MIN_REMAINING" /> perc van hátra</translation>
@@ -713,6 +715,7 @@
 <translation id="4602266091140407479">Mikrofon</translation>
 <translation id="4607282946861182308">Nem lehet képeket létrehozni erről. Próbálkozzon egy másik üzenettel.</translation>
 <translation id="4609350030397390689">Billentyűzet fényerejének csökkentése</translation>
+<translation id="4623061655523261501">Sikerült a felvételnevek generálása</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" />. oldal az összesen <ph name="TOTAL_PAGE_NUMBER" /> oldalból A nyomtatási feladat törléséhez nyomja meg az Enter billentyűt.</translation>
 <translation id="463791356324567266">Beolvasás megszakítása…</translation>
 <translation id="4644611440022666152">Bekapcsolás és letöltés</translation>
@@ -1045,6 +1048,8 @@
 <translation id="628726841779494414">A nyomtatókat a nyomtatóbeállításokban kezelheti</translation>
 <translation id="6292095526077353682">Képernyőkímélő megjelenítése töltés közben ennyi ideig:</translation>
 <translation id="629550705077076970">billentyűzet elsötétítése</translation>
+<translation id="6301193653204230066">A biztonsági visszaállítás kikapcsolja a Chrome-bővítményeket, és visszaállítja a hálózati és egyéb beállításokat a biztonságos alapértelmezett értékekre.
+          Alapjai, fájljai, cookie-jai és előzményei nem változnak.</translation>
 <translation id="6302401976930124515">Teszt (<ph name="TEST_NAME" />) megszakítva</translation>
 <translation id="631063167932043783">Felfedezés alkalmazás</translation>
 <translation id="6318437367327684789">a végtelenségig</translation>
@@ -1054,6 +1059,7 @@
 <translation id="6325525973963619867">Nem sikerült</translation>
 <translation id="6327262166342360252">Ezt a háttérképet AI hozta létre a következő szöveg alapján: „<ph name="PROMPT" />”.</translation>
 <translation id="6331191339300272798">Automatikus sötét téma</translation>
+<translation id="6335228876613776082">A modell letöltése befejeződött</translation>
 <translation id="6340526405444716530">Személyre szabás</translation>
 <translation id="6348252528297699679">A helyadatokat a Beállítások &gt; Adatvédelem és biztonság &gt; Adatvédelmi beállítások &gt; Helyhozzáférés menüpontban kapcsolhatja ki. <ph name="LINK_BEGIN" />További információ<ph name="LINK_END" />.</translation>
 <translation id="6348738456043757611">Felhasználónév és jelszó</translation>
@@ -1215,6 +1221,7 @@
 <translation id="708426984172631313">LEÁLLÍTVA</translation>
 <translation id="7086168019478250425">biolumineszcens tengerpart</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
+<translation id="7086916854357021265">Felvételnevek generálása…</translation>
 <translation id="7097908713073775559">színes</translation>
 <translation id="710028965487274708">Sikertelen – Sikertelen hitelesítés</translation>
 <translation id="7101959270679078188">Oldja fel a következő eszköz zárolását a frissítési folyamat folytatásához: <ph name="DEVICE_NAME" /></translation>
@@ -1547,6 +1554,7 @@ Ha szeretné használni az átiratokat, töltse le az átírási modellt (legfel
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Google Fotók-album</translation>
 <translation id="8775713578693478175">Modem APN</translation>
+<translation id="877735394245039557">A modell letöltése folyamatban van</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">Előfordulhat, hogy a hálózat hitelesítési portállal rendelkezik</translation>
 <translation id="8797082062139985406">Név létrehozása a Google AI használatával</translation>

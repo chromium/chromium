@@ -446,6 +446,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="1771254328977666895">Shiko historikun e çmimeve</translation>
 <translation id="1777422078676229054">Fotografi (arkivore)</translation>
 <translation id="1778646502362731194">JIS B0</translation>
+<translation id="1785118555253503473">Të instalohen aplikacionet e uebit?</translation>
 <translation id="1791429645902722292">Smart Lock-u i Google</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />, shtyp butonin Tab pastaj Enter për të menaxhuar informacionin, privatësinë dhe sigurinë tënde në "Llogarinë tënde të Google</translation>
 <translation id="1793631236004319016">Përdorur së fundi <ph name="NUM_HOURS_MINUTES_SECONDS" /> më parë</translation>
@@ -677,6 +678,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2212735316055980242">Politika nuk u gjet</translation>
 <translation id="2213606439339815911">Po merr hyrjet...</translation>
 <translation id="2213612003795704869">Faqja u printua</translation>
+<translation id="2215368073167343359">"Plotësimi automatik" me Google</translation>
 <translation id="2215539479425228550">Ngjitje dhe alpinizëm</translation>
 <translation id="2215727959747642672">Modifikimi i skedarëve</translation>
 <translation id="2215963164070968490">Qentë</translation>
@@ -709,6 +711,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="2262243747453050782">Gabim në HTTP</translation>
 <translation id="2265192657948645752">Punë në sektorin e shitjeve me pakicë</translation>
 <translation id="2265356434276802347">Kjo politikë nuk duhet të ketë më shumë se <ph name="MAX_ITEMS_LIMIT" /> hyrje të veçuara.</translation>
+<translation id="2266175583972138136">Zbatohen kushtet për përfitimet e kartës</translation>
 <translation id="2267047181501709434">Po verifikon identitetin tënd...</translation>
 <translation id="2268044343513325586">Ripërpuno</translation>
 <translation id="2268966938956566076">Ngarko pas <ph name="MINUTES" /> min.</translation>
@@ -1163,6 +1166,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="3157931365184549694">Restauro</translation>
 <translation id="3158539265159265653">Disku</translation>
 <translation id="3162559335345991374">Lidhja Wi-Fi që po përdor mund të të kërkojë që të vizitosh faqen e saj të identifikimit.</translation>
+<translation id="316638481603975524">Mund të kërkojë të instalojë aplikacione uebi</translation>
 <translation id="3168744840365648658">Pajisje radiofonike</translation>
 <translation id="3168938241115725594">Automjete klasike</translation>
 <translation id="3169472444629675720">Discover</translation>
@@ -1797,6 +1801,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="4269264543938335308">Kostume banje</translation>
 <translation id="4269599248168651462">Certifikata e serverit është lëshuar për një emër jounik.</translation>
 <translation id="4270541775497538019">Stivuesi 6</translation>
+<translation id="4271652479722040953">Kur shtesat shtohen te Chrome, të dhënat përkatëse për këto shtesa dërgohen te palët e treta për analizë dhe mund të jenë të dukshme për administratorin tënd. Të dhënat përfshijnë informacione për shtesat si p.sh. emrin, kohën e instalimit, burimin e instalimit, si dhe aktivitetin e lidhur me këto shtesa (si p.sh. ndryshimin e skedave, kontaktin me uebsajtet ose qasjen te kukit). Këto të dhëna mblidhen për shtesat e instaluara nga "Dyqani i uebit i Chrome", si dhe nga shtesat jashtë dyqanit.</translation>
 <translation id="4275830172053184480">Rinise pajisjen</translation>
 <translation id="4276974990916607331">Jo, faleminderit</translation>
 <translation id="4277028893293644418">Rivendos fjalëkalimin</translation>
@@ -1878,6 +1883,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="4406896451731180161">rezultatet e kërkimit</translation>
 <translation id="4408413947728134509">Kukit <ph name="NUM_COOKIES" /></translation>
 <translation id="4412074349188076601">Ky konfigurim është shënuar si i instalueshëm, por për këtë arkitekturë nuk ofrohet asnjë imazh, prandaj ai nuk mund të instalohet.</translation>
+<translation id="4414452699610169758">Përdor "Menaxherin e fjalëkalimeve të Google" dhe "Plotësimin automatik" të Chrome për të ruajtur dhe plotësuar fjalëkalimet, mënyrat e pagesës dhe adresat</translation>
 <translation id="4414515549596849729">kukit dhe të dhënat e faqes</translation>
 <translation id="4415156962929755728">Plastikë (me shkëlqim të lartë)</translation>
 <translation id="4415426530740016218">Adresa e marrjes</translation>
@@ -2322,6 +2328,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="5273658854610202413">Paralajmërim: Kjo politikë nuk është bashkuar siç specifikohet në politikën PolicyDictionaryMultipleSourceMergeList sepse nuk është pjesë e politikave të fjalorit që mund të bashkohen.</translation>
 <translation id="5278778426231952189">Ngarko tani</translation>
 <translation id="5279286380302340275">Menaxho shkarkimet</translation>
+<translation id="5280963125494874678">aplikacionet e uebit</translation>
 <translation id="5283044957620376778">B1</translation>
 <translation id="5284295735376057059">Karakteristikat e dokumentit</translation>
 <translation id="528468243742722775">Fundi</translation>
@@ -2823,6 +2830,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6221311046884916259">Dëshiron që ta ruash këtë kartë te "Llogaria jote e Google"?</translation>
 <translation id="6221892641068781024">Pamja e thjeshtuar</translation>
 <translation id="6222527803348563979">Kancelari</translation>
+<translation id="62231116988543150">Mund të instalojë aplikacione uebi</translation>
 <translation id="6224281071334553713">Gurë të çmuar dhe stoli</translation>
 <translation id="6226163402662242066"><ph name="MANAGE_CHROME_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />, Shtyp "Tab" dhe më pas "Enter" për të personalizuar veglat e qasshmërisë te cilësimet e Chrome</translation>
 <translation id="6228346913624365233">Automjete luksoze</translation>
@@ -3086,6 +3094,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6694681292321232194"><ph name="FIND_MY_PHONE_FOCUSED_FRIENDLY_MATCH_TEXT" />. Shtyp "Tab" dhe më pas "Enter" për të përdorur "Gjej pajisjen tënde" me "Llogarinë tënde të Google"</translation>
 <translation id="6695428916538794739">Filma me aksion dhe aventurë</translation>
 <translation id="6696424331653607346">Udhëzues udhëtimesh dhe libra udhëtimesh</translation>
+<translation id="6696575039575740785">Instalimi i aplikacioneve të uebit nuk lejohet</translation>
 <translation id="6698097747703777657">Nuk e more kodin tënd? <ph name="BEGIN_LINK" />Merr kod të ri<ph name="END_LINK" /></translation>
 <translation id="6698381487523150993">Krijuar:</translation>
 <translation id="67007264085648978">Shiriti kohor</translation>
@@ -3199,6 +3208,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6915804003454593391">Përdoruesi:</translation>
 <translation id="6916193791494646625">Jep arsyen për shkarkimin (e detyrueshme)</translation>
 <translation id="6917795328362592458">Fjalëkalimi që sapo përdore u gjet në një nxjerrje të paautorizuar të të dhënave. Për të mbrojtur llogaritë e tua, "Menaxheri i fjalëkalimeve" rekomandon që të kontrollosh fjalëkalimet e ruajtura.</translation>
+<translation id="6921197121276419421">Instalimi i aplikacioneve të uebit lejohet</translation>
 <translation id="6924013822850225188">Zgjidh nëse do t'i shikosh përfitimet e kartës në përfundim të blerjes (zbatohen kushtet e bankës)</translation>
 <translation id="6925267999184670015">B+ (Amerika e Veriut)</translation>
 <translation id="6926216138694948720">Art trupor</translation>
@@ -3376,6 +3386,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="7232352818707016189">Më shumë veprime për "Krahaso tavolinën"</translation>
 <translation id="7233592378249864828">Printo fletën e konfirmimit</translation>
 <translation id="7234112195906418665">Udhëtimi dhe transporti</translation>
+<translation id="7234585564776614047">Plotëso automatikisht duke përdorur një shërbim tjetër</translation>
 <translation id="7236417832106250253">Përfunduar: <ph name="PROGRESS_PERCENT" />% | <ph name="ESTIMATED_REMAINING_TIME" /></translation>
 <translation id="7237166092326447040">Dhurata dhe artikuj për ngjarje të veçanta</translation>
 <translation id="7237454422623102448">Cilësimet e sistemit</translation>
@@ -3695,6 +3706,7 @@ Detaje shtesë:
 <translation id="7761701407923456692">Certifikata e serverit nuk përputhet me URL-në.</translation>
 <translation id="7764225426217299476">Shto adresë</translation>
 <translation id="7766518757692125295">Bordura</translation>
+<translation id="7766899888934244586">Aplikacionet e uebit</translation>
 <translation id="7767278989746220252">Oborri. veranda dhe kopshti</translation>
 <translation id="776749070095465053">Pëlhurë</translation>
 <translation id="7773005668374414287">E njëjta renditje e kthyer lart</translation>
@@ -3727,6 +3739,7 @@ Detaje shtesë:
 <translation id="7831993212387676366">Çfarë është "Lista e blerjeve"?</translation>
 <translation id="7840103971441592723">Regjistrimi i ekranit ka filluar</translation>
 <translation id="784137052867620416">Statistikat për blerjet</translation>
+<translation id="7842611866969435396">Fillojmë</translation>
 <translation id="784404208867107517">Historiku i grupimit</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Asnjë}=1{1 aplikacion (<ph name="EXAMPLE_APP_1" />)}=2{2 aplikacione (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# aplikacione (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="785476343534277563">Sporte universitare</translation>
@@ -4036,6 +4049,7 @@ Detaje shtesë:
 <translation id="8409413588194360210">përpunuesit e pagesave</translation>
 <translation id="8412145213513410671">Ndërprerjet aksidentale (<ph name="CRASH_COUNT" />)</translation>
 <translation id="8412392972487953978">Duhet ta fusësh dy herë të njëjtën frazë kalimi.</translation>
+<translation id="8414322570408428950">Ndodh ngjarja e shtesës</translation>
 <translation id="8416694386774425977">Konfigurimi i rrjetit është i pavlefshëm dhe nuk mund të importohej.
 Detaje shtesë:
 <ph name="DEBUG_INFO" /></translation>
@@ -4287,6 +4301,7 @@ Detaje shtesë:
 <translation id="8891031436559779793">Do të njoftohesh nëse ulet çmimi në ndonjë sajt.</translation>
 <translation id="8891727572606052622">Modalitet i pavlefshëm përfaqësuesi.</translation>
 <translation id="8894794286471754040">Ana e gjatë në fillim</translation>
+<translation id="8895334001368918465">Për të përdorur një shërbim tjetër të plotësimit automatik në Chrome, aktivizoje atë te cilësimet e Android dhe këtu</translation>
 <translation id="8897428486789851669">Noti</translation>
 <translation id="8899807382908246773">Reklamat ndërhyrëse</translation>
 <translation id="8903921497873541725">Zmadho</translation>

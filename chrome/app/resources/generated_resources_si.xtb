@@ -1595,6 +1595,7 @@
 <translation id="211803431539496924">දීර්ඝ කළ ආරක්‍ෂක යාවත්කාලීන තහවුරු කරන්නද?</translation>
 <translation id="2118594521750010466">දැන් නිරාකරණ කරන්න</translation>
 <translation id="2119461801241504254">ආරක්‍ෂිත බ්‍රවුස් කිරීම සක්‍රීයයි, හානිකර වෙබ් අඩවිවලින් සහ බාගැනීම්වලින් ඔබව ආරක්‍ෂා කරයි</translation>
+<translation id="2119602978828978573">සජීවී සිරස්තල භාෂා සඳහා සහය දක්වයි</translation>
 <translation id="2120297377148151361">ක්‍රියාකාරකම් සහ අන්තර්ක්‍රියා</translation>
 <translation id="2120639962942052471"><ph name="PERMISSION" /> අවහිර කළා</translation>
 <translation id="2121055421682309734">{COUNT,plural, =0{කුකී අවහිරයි}=1{කුකී අවහිරයි, 1 ව්‍යතිරේකයක්}one{කුකී අවහිරයි, ව්‍යතිරේක {COUNT}ක්}other{කුකී අවහිරයි, ව්‍යතිරේක {COUNT}ක්}}</translation>
@@ -2665,6 +2666,7 @@
 <translation id="2864601841139725659">ඔබගේ පැතිකඩ පින්තූරය සකසන්න</translation>
 <translation id="2865057607286263192">උච්චාරණ ලකුණු සහ විශේෂ අනුලකුණු බැලීමට යතුරු පුවරු යතුරු ඔබා අල්ලාගෙන සිටින්න. මෙය හෝඩියේ යතුරු සඳහා නැවත නැවතත් යතුරු එබීම ක්‍රියා විරහිත කරයි. ඉංග්‍රීසි (එක්සත් ජනපදය) සඳහා පමණක් ලද හැක.</translation>
 <translation id="2865919525181940183">දැනට තිරයේ ඇති වැඩසටහන්වල තිර රුව</translation>
+<translation id="286643536820867504">සහාය දක්වන භාෂා සඳහා ස්වයංක්‍රීයව සිරස්තල නිර්මාණය කරයි. ශ්‍රව්‍ය කිසි විටෙකත් ඔබේ උපාංගයෙන් පිට නොවේ.</translation>
 <translation id="286674810810214575">බල මූලාශ්‍ර පරීක්‍ෂා කෙරේ...</translation>
 <translation id="2867768963760577682">ඇමිණූ ටැබයක් ලෙස විවෘත කරන්න</translation>
 <translation id="2868746137289129307">මෙම දිගුව පැරණි හා ව්‍යවසාය ප්‍රතිපත්තිය මගින් අක්‍රීය කර ඇත. එය නව සංස්කරණයක් පවතින විට නැවත සක්‍රීය වනු ඇත.</translation>
@@ -3284,6 +3286,7 @@
 <translation id="333863344734218290">අනාරක්ෂිත පොදු සහ පෞද්ගලික අඩවි සඳහා ඔබට අනතුරු අඟවයි</translation>
 <translation id="3340620525920140773">බාගැනීම සම්පූර්ණයි: <ph name="FILE_NAME" />.</translation>
 <translation id="3340978935015468852">සැකසීම්</translation>
+<translation id="3341091511696469129">Chrome හට මෙහි පෙන්වා ඇති භාෂා සඳහා සිරස්තල සෑදීමට සහ පරිවර්තනය කිරීමට හැක</translation>
 <translation id="3341699307020049241">වැරදි රහස් අංකය. ඔබට ප්‍රයත්න <ph name="RETRIES" /> ක් ඉතිරිව ඇත.</translation>
 <translation id="3341703758641437857">ගොනු URL වෙත ප්‍රවේශයට ඉඩ දෙන්න</translation>
 <translation id="334171495789408663">ටෝකනය පිටපත් කර ඇත</translation>
@@ -5864,6 +5867,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="5214639857958972833">'<ph name="BOOKMARK_TITLE" />' පිටුසන නිර්මාණය කරන ලදී.</translation>
 <translation id="5215450412607891876">දීර්ඝ කළ ආරක්‍ෂක යාවත්කාලීන සක්‍රීය කරන්න</translation>
 <translation id="5215502535566372932">රට තෝරන්න</translation>
+<translation id="5216674789212441076">සජීවී සිරස්තල ස්වයංක්‍රීයව පරිවර්තනය කරයි. පරිවර්තනය සඳහා සිරස්තල Google වෙත යවනු ලැබේ.</translation>
 <translation id="5220011581825921581">සෙවීම + ඉහළ ඊතලය</translation>
 <translation id="5221516927483787768"><ph name="HOST_NAME" /> විකාශය කළ නොහැකි වේ</translation>
 <translation id="5222403284441421673">අනාරක්‍ෂිත බාගැනීම අවහිර කළා</translation>
@@ -7956,6 +7960,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="6785739405821760313">සුරකින ලද මේස බැලීම. සංචාලනය කිරීමට පටිත්ත ඔබන්න.</translation>
 <translation id="6785915470941880363">ප්‍රතිවර්තන අනුචලනය <ph name="LINK_BEGIN" />තවත් දැන ගන්න<ph name="LINK_END" /></translation>
 <translation id="67862343314499040">ජම්බූල</translation>
+<translation id="6786480815699355166">පරිවර්තනය කළ හැක්කේ සහාය දක්වන සජීවී සිරස්තල භාෂා පමණි</translation>
 <translation id="6786747875388722282">දිගු</translation>
 <translation id="6787097042755590313">වෙනත් ටැබය</translation>
 <translation id="6787531944787756058"><ph name="USER_EMAIL" /> පරිශීලක නාමය සුරැකෙන්නේ මෙම උපාංගයට පමණි. විස්තර බලන්න</translation>
@@ -10551,6 +10556,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="8656888282555543604">බ්‍රේල් ඇතුළු වීම සබල කරන්න</translation>
 <translation id="8657393004602556571">ඔබට ප්‍රතිපෝෂණය ඉවත ලෑමට අවශ්‍යද?</translation>
 <translation id="8657542881463614516">පිටු අතර සංචලන කිරීමට ස්වයිප් ඉංගිතයක් භාවිත කරන්න</translation>
+<translation id="865857184419171576">සිරස්තල පරිවර්තනය කරන්නේ</translation>
 <translation id="865936634714975126">පිටු පැටවීම මත වර්ග තේරීමට URL තුළ විමසුම් පරාමිතියක් එක් කරන්න. උදාහරණය: chrome://device-log/?types=Bluetooth,USB</translation>
 <translation id="8659608856364348875"><ph name="FEATURE_NAME" /> සම්බන්ධතා</translation>
 <translation id="8659609431223166673">කවුළුව පහළට ගෙන ගියා</translation>

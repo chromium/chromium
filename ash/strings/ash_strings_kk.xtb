@@ -215,6 +215,7 @@
 <translation id="1703117532528082099">Белсенді терезе сол жаққа бекітілген.</translation>
 <translation id="1708345662127501511">Жұмыс үстелі: <ph name="DESK_NAME" /></translation>
 <translation id="1709762881904163296">Желі параметрлері</translation>
+<translation id="171610090693716835">Зейін қоюға арналған жекелендірілген ойнату тізімдерімен тренділерден қалыспаңыз. YouTube Premium-ді 3 ай тегін пайдаланып, YouTube Music пен YouTube-ті жарнамасыз тамашалаңыз.</translation>
 <translation id="1719094688023114093">Live Caption қосулы.</translation>
 <translation id="1720011244392820496">Wi-Fi деректерін синхрондауды қосу</translation>
 <translation id="1720230731642245863">Хотспот өшірулі</translation>
@@ -1414,6 +1415,7 @@
 <translation id="5777841717266010279">Экран бөлісуді тоқтату қажет пе?</translation>
 <translation id="5779721926447984944">Бекітілген файлдар</translation>
 <translation id="5785221443435874078">Осы ұсынысты өшіру</translation>
+<translation id="5787431783058088906">Бонусты алу</translation>
 <translation id="5788127256798019331">Play файлдары</translation>
 <translation id="5788535737706478207">Соңғы жабылған қойындыны немесе терезені қайта ашу</translation>
 <translation id="5790085346892983794">Орындалды</translation>
@@ -1421,6 +1423,7 @@
 <translation id="5802516411616338943">Жылдам параметрлерді ашу</translation>
 <translation id="5804651031882187592">"SIM картасын құлыптау" параметрін өшіру</translation>
 <translation id="5805809050170488595"><ph name="NETWORK_NAME" /> іске қосу үшін басыңыз</translation>
+<translation id="5818796501620225415">Көбірек уақыт қосуға немесе зейін қою сеансын аяқтауға болады.</translation>
 <translation id="5819918159912280082">Chromebook күтпеген жерден өшіп қосылды. Алдыңғы терезелер мен қолданбаларды ашыңыз.</translation>
 <translation id="5823239091726045201">Ғаламтордағы Google Tasks</translation>
 <translation id="5825969630400862129">Байланысқан құрылғылар параметрлері</translation>
@@ -1644,6 +1647,7 @@
 <translation id="6574587113394758819"><ph name="APP_TITLE" /> хабарландыруы жасырылған, себебі көруден қорғау режимі қосулы тұр.</translation>
 <translation id="6574622320167699133">Құлпы телефон арқылы ашылды. Кіру үшін түртіңіз немесе басыңыз.</translation>
 <translation id="6578407462441924264">Атауы жоқ</translation>
+<translation id="6582012689384648647">Зейін қоюға арналған жекелендірілген ойнату тізімдерін алу үшін YouTube Music-ті пайдалануға рұқсат беріңіз.</translation>
 <translation id="6582034443359256692">Батареяның зарядталу деңгейі есептеліп жатыр.</translation>
 <translation id="6585808820553845416">Сеанс <ph name="SESSION_TIME_REMAINING" /> уақыттан кейін аяқталады.</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
@@ -1882,6 +1886,7 @@
 <translation id="7477793887173910789">Музыканы, бейнелерді және т.б. басқарыңыз.</translation>
 <translation id="7488762544858401571">Өзгертілді</translation>
 <translation id="7489261257412536105">Толық экранға кіру немесе шығу</translation>
+<translation id="7490157877815329797">Музыканы жарнамасыз тыңдау және зейін қоюға арналған жекелендірілген музыкадан ләззат алу үшін YouTube Music Premium жазылымын пайдаланып көріңіз.</translation>
 <translation id="7490360161041035804">Маңызды файлдарды, соның ішінде Google Drive файлдарын бекітуге болады. Бекіту үшін элементке курсорды апарыңыз немесе Files қолданбасын ашыңыз және элементті тінтуірдің оң жақ түймесімен басыңыз.</translation>
 <translation id="7497767806359279797">Тілді және пернетақтаны таңдау</translation>
 <translation id="7507162824403726948">Жеке басыңызды растауды аяқтаңыз</translation>
@@ -2157,6 +2162,7 @@
 <translation id="8380784334203145311">Қайырлы түн!</translation>
 <translation id="8382715499079447151">Көруден қорғау режимі</translation>
 <translation id="8383614331548401927">Welcome Recap</translation>
+<translation id="838540623579162843">Music Premium-ге жазылыңыз</translation>
 <translation id="8388750414311082622">Соңғы жұмыс үстелін өшіру мүмкін емес.</translation>
 <translation id="8394567579869570560">Ата-анаңыз бұл құрылғыны құлыптады</translation>
 <translation id="8401850874595457088">Тіл мәзіріне кіру</translation>

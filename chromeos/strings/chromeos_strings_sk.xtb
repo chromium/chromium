@@ -35,6 +35,7 @@
 <translation id="1155154308031262006">Zadajte pokyn</translation>
 <translation id="115705039208660697">ananásy</translation>
 <translation id="1164939766849482256">Šetrič obrazovky s témou Od úsvitu do tmy</translation>
+<translation id="1166688493741195933">Názvy nahrávok sa nepodarilo vygenerovať</translation>
 <translation id="1167755866710282443">Ak chcete prispôsobiť klávesy, otvorte ponuku. Pohybujte sa jej presúvaním.</translation>
 <translation id="1171349345463658120">piesočná lagúna</translation>
 <translation id="1173894706177603556">Premenovať</translation>
@@ -342,6 +343,7 @@
 <translation id="2560876255701405320">Zoznam zvukových nahrávok</translation>
 <translation id="2561093647892030937">citróny</translation>
 <translation id="2570743873672969996">Prebieha test <ph name="TEST_NAME" />...</translation>
+<translation id="2573178735329662769">Nahrávanie všetkých zvukov prehrávaných v Chromebooku</translation>
 <translation id="2575552334616524665">Môžete to zapnúť v Nastaveniach alebo ponuke <ph name="THREE_DOTS_MENU_ICON" /></translation>
 <translation id="2576253868710695442">Zaberie to až 2 GB priestoru</translation>
 <translation id="2584547424703650812">Svetelné panorámy</translation>
@@ -494,6 +496,7 @@
 <translation id="3502426834823382181">zobrazenie všetkých aplikácií</translation>
 <translation id="3510890413042482857">Odosielať <ph name="BEGIN_LINK1" />údaje o sledovaní výkonnosti<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">Aktualiz. ChromeOS</translation>
+<translation id="3522508178835057262">Prepis s viac než <ph name="MAX_WORD_LENGTH" /> slovami momentálne nie je podporovaný</translation>
 <translation id="3527036260304016759">Nepodarilo sa – neznáma chyba</translation>
 <translation id="353214771040290298">Dokončiť úpravy</translation>
 <translation id="3532980081107202182">Zostávajúci čas je približne <ph name="MIN_REMAINING" /> min.</translation>
@@ -509,6 +512,7 @@
 <translation id="3588034708467091142">Skontrolujte, či máte pripojenie k internetu, a skúste to znova.</translation>
 <translation id="3594280220611906414"><ph name="USER_FRIENDLY_APN_NAME" /> je pohodlný názov pre <ph name="APN_NAME" />.</translation>
 <translation id="3595596368722241419">Batéria je nabitá</translation>
+<translation id="3600063043775287169">Keď je zvuk Chromebooku zapnutý, Diktafón zaznamenáva všetky zvuky prehrávané v tomto zariadení. Uistite sa, že chcete nahrávať všetky zvuky.</translation>
 <translation id="3600339377155080675">Zrkadlenie obrazovky</translation>
 <translation id="3602290021589620013">Ukážka</translation>
 <translation id="3603829704940252505">Avatar</translation>
@@ -711,6 +715,7 @@
 <translation id="4602266091140407479">Mikrofón</translation>
 <translation id="4607282946861182308">Obrázky tohto sa nedajú vytvoriť. Vyskúšajte iný pokyn.</translation>
 <translation id="4609350030397390689">Zníženie jasu klávesnice</translation>
+<translation id="4623061655523261501">Názvy nahrávok boli úspešne vygenerované</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> z <ph name="TOTAL_PAGE_NUMBER" />. Tlačovú úlohu zrušíte stlačením klávesa Enter.</translation>
 <translation id="463791356324567266">Ruší sa skenovanie…</translation>
 <translation id="4644611440022666152">Zapnúť a stiahnuť</translation>
@@ -1043,6 +1048,8 @@
 <translation id="628726841779494414">Spravujte tlačiarne v ich nastaveniach</translation>
 <translation id="6292095526077353682">Zobrazovať počas nabíjania šetrič obrazovky pre zariadenie</translation>
 <translation id="629550705077076970">stmavenie farieb klávesnice</translation>
+<translation id="6301193653204230066">Bezpečnostný reset vypne rozšírenia prehliadača Chrome a resetuje sieť a ďalšie nastavenia na bezpečné predvolené hodnoty.
+          Vaše karty, súbory (aj cookie) a história sa nezmenia.</translation>
 <translation id="6302401976930124515">Test <ph name="TEST_NAME" /> bol zrušený</translation>
 <translation id="631063167932043783">Preskúmať aplikáciu</translation>
 <translation id="6318437367327684789">na neurčito</translation>
@@ -1052,6 +1059,7 @@
 <translation id="6325525973963619867">Zlyhanie</translation>
 <translation id="6327262166342360252">Táto tapeta bola vytvorená umelou inteligenciou pomocou nasledujúceho textu: <ph name="PROMPT" />.</translation>
 <translation id="6331191339300272798">Automatický tmavý motív</translation>
+<translation id="6335228876613776082">Sťahovanie modelu bolo dokončené</translation>
 <translation id="6340526405444716530">Prispôsobenie</translation>
 <translation id="6348252528297699679">Polohu môžete vypnúť v sekcii Nastavenia &gt; Ochrana súkromia a zabezpečenie &gt; Nastavenia ochrany súkromia &gt; Prístup k polohe. <ph name="LINK_BEGIN" />Ďalšie informácie<ph name="LINK_END" /></translation>
 <translation id="6348738456043757611">Používateľské meno a heslo</translation>
@@ -1213,6 +1221,7 @@
 <translation id="708426984172631313">ZASTAVENÉ</translation>
 <translation id="7086168019478250425">svetielkujúca pláž</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
+<translation id="7086916854357021265">Generujú sa názvy nahrávok</translation>
 <translation id="7097908713073775559">farebnými</translation>
 <translation id="710028965487274708">Nepodarilo sa – nepodarilo sa autorizovať</translation>
 <translation id="7101959270679078188">Ak chcete pokračovať v aktualizácii, odomknite <ph name="DEVICE_NAME" /></translation>
@@ -1545,6 +1554,7 @@ Ak chcete mať tieto prepisy k dispozícii, stiahnite si model prepisov (až 10
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Album Fotiek Google</translation>
 <translation id="8775713578693478175">Názov prístupového bodu modemu</translation>
+<translation id="877735394245039557">Sťahuje sa model</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">Táto sieť môže mať prihlasovací portál</translation>
 <translation id="8797082062139985406">Vytvoriť názov pomocou umelej inteligencie od Googlu</translation>

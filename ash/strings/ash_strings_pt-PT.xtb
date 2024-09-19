@@ -78,6 +78,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="1240638468526743569">Uma app</translation>
 <translation id="1242198791279543032">O som das notificações está desativado</translation>
 <translation id="1242883863226959074">dispositivo</translation>
+<translation id="1245476784081715330">Excelente!</translation>
 <translation id="1245644940275736236">Aceder ao Assistente</translation>
 <translation id="124678866338384709">Fechar o separador atual</translation>
 <translation id="1246890715821376239">Apps não suportadas</translation>
@@ -843,6 +844,7 @@ Ligue o dispositivo à corrente.</translation>
 <translation id="3958714870339660776">Todo o dia</translation>
 <translation id="3962859241508114581">Faixa anterior</translation>
 <translation id="3963124517343721543">Continue facilmente onde parou abrindo as janelas e os separadores anteriores. Também irá ver sugestões personalizadas de coisas a fazer a seguir.</translation>
+<translation id="396506362088290977">Teste o som do microfone</translation>
 <translation id="3969043077941541451">Desativado</translation>
 <translation id="3970324493235864154">Veja as notificações do telemóvel</translation>
 <translation id="397105322502079400">A calcular...</translation>
@@ -900,6 +902,7 @@ Ligue o dispositivo à corrente.</translation>
 <translation id="4156293514828496577"><ph name="PERCENTAGE" />% de bateria restante (cerca de <ph name="TIME_LEFT" />).
 Algumas funcionalidades são limitadas para aumentar a autonomia da bateria.</translation>
 <translation id="4160919062868802509">Várias origens de áudio detetadas</translation>
+<translation id="416245495747357243">Está feito!</translation>
 <translation id="4165275524535002941">O cabo pode não ser compatível com ecrãs</translation>
 <translation id="4177415338862979658">Clique para ver os detalhes</translation>
 <translation id="4177913004758410636">{0,plural, =1{Atualize o dispositivo dentro de um dia}other{Atualize o dispositivo dentro de # dias}}</translation>
@@ -985,6 +988,7 @@ Algumas funcionalidades são limitadas para aumentar a autonomia da bateria.</tr
 <translation id="4412944820643904175">A funcionalidade <ph name="FEATURE_NAME" /> está desativada.</translation>
 <translation id="4417647906073317561">Definições do Modo sem distrações. Defina um temporizador, uma tarefa e uma música para se concentrar.</translation>
 <translation id="4424159417645388645">Espaço de trabalho 5</translation>
+<translation id="4426817706804363424">Muito bem!</translation>
 <translation id="4430019312045809116">Volume</translation>
 <translation id="4441283832827406317">As apps estão ordenadas pelo nome</translation>
 <translation id="4445159312344259901">Iniciar sessão p/ desbloquear</translation>
@@ -1249,6 +1253,7 @@ Também pode usar o atalho de teclado. Primeiro, realce o texto e, em seguida, p
 <translation id="5283198616748585639">Adicionar 1 min</translation>
 <translation id="528468243742722775">Sair</translation>
 <translation id="5286194356314741248">A procurar</translation>
+<translation id="528641622273682395">Ative/desative o teste do microfone</translation>
 <translation id="5297423144044956168">Não foram encontrados dispositivos móveis</translation>
 <translation id="5297704307811127955">Desativada</translation>
 <translation id="5300589172476337783">Mostrar</translation>
@@ -1276,6 +1281,7 @@ Nenhum dispositivo ligado.</translation>
 <translation id="536019650977002321">O seu administrador não permite a captura de áudio. Contacte o administrador para obter mais informações.</translation>
 <translation id="5361524080961918551">Ficheiros de voz em <ph name="LANGUAGE" /> parcialmente transferidos</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> Aceder a este separador</translation>
+<translation id="5363835273551457276">Pode testar o som do microfone. Feche o painel para parar.</translation>
 <translation id="5364693579536176785">espaço de armazenamento</translation>
 <translation id="5369573834963677938">O controlo facial vai estar disponível para outros utilizadores no dispositivo</translation>
 <translation id="5369717264580061086">Pré-visualizar o ficheiro na app Files</translation>
@@ -1417,6 +1423,7 @@ Nenhum dispositivo ligado.</translation>
 <translation id="5802516411616338943">Abrir Definições rápidas</translation>
 <translation id="5804651031882187592">Desative a definição "Bloquear SIM"</translation>
 <translation id="5805809050170488595">Clicar para ativar <ph name="NETWORK_NAME" /></translation>
+<translation id="5818796501620225415">Adicione mais tempo ou termine a sessão do Foco</translation>
 <translation id="5819918159912280082">O Chromebook reiniciou inesperadamente. Abra as janelas e as apps anteriores.</translation>
 <translation id="5823239091726045201">Google Tasks na Web</translation>
 <translation id="5825969630400862129">Definições de dispositivos associados</translation>
@@ -2129,6 +2136,7 @@ Para encerrar o dispositivo, prima sem soltar o botão ligar/desligar novamente 
 <translation id="8262312463845990408">Ativar/desativar reprodução</translation>
 <translation id="8268302343625273732">Ver todos os trabalhos no Google Classroom</translation>
 <translation id="8277261673056602147">Realce texto no ecrã</translation>
+<translation id="8282784978194352587">Conseguiu!</translation>
 <translation id="8287009018010202411">Produtividade</translation>
 <translation id="828708037801473432">Desativada</translation>
 <translation id="8297006494302853456">Fraca</translation>
@@ -2207,6 +2215,7 @@ Para encerrar o dispositivo, prima sem soltar o botão ligar/desligar novamente 
 <translation id="8609384513243082612">Abrir novo separador</translation>
 <translation id="861045123704058818">As apps são organizadas temporariamente por categoria</translation>
 <translation id="8612216344243590325">Mantenha os ficheiros importantes em <ph name="HOLDING_SPACE_TITLE" /> em vez de os guardar no ambiente de trabalho. Basta arrastar os ficheiros para <ph name="HOLDING_SPACE_TITLE" />.</translation>
+<translation id="8612338981637220013">Está imparável!</translation>
 <translation id="8614517853887502247">As notificações das apps <ph name="APP_1_TITLE" /> e <ph name="APP_2_TITLE" /> estão ocultas porque a proteção da visualização está ativada</translation>
 <translation id="8615778328722901791">Abrir barra de ferramentas</translation>
 <translation id="8619000641825875669">OneDrive</translation>
@@ -2249,6 +2258,7 @@ Para encerrar o dispositivo, prima sem soltar o botão ligar/desligar novamente 
 <translation id="8742057891287715849"><ph name="NAME" /> · <ph name="SERVICE_PROVIDER" />: a ativar…</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
+<translation id="8751299148074971734">Continue assim!</translation>
 <translation id="8753368202781196133">De momento, este idioma não é suportado.</translation>
 <translation id="8755498163081687682">Valide a sua identidade: <ph name="ORIGIN_NAME" /> quer confirmar a sua identidade.</translation>
 <translation id="875593634123171288">Mostrar definições da VPN</translation>

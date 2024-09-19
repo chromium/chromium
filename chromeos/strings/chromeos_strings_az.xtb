@@ -35,6 +35,7 @@
 <translation id="1155154308031262006">Sorğu daxil edin</translation>
 <translation id="115705039208660697">ananaslar</translation>
 <translation id="1164939766849482256">"Sübhdən axşama" ekran qoruyucusu</translation>
+<translation id="1166688493741195933">Səsyazma adları yaratmaq mümkün olmadı</translation>
 <translation id="1167755866710282443">Düymələri fərdiləşdirmək üçün menyunu açın. Hərəkət etdirmək üçün menyunu sürüşdürün.</translation>
 <translation id="1171349345463658120">qumlu göl</translation>
 <translation id="1173894706177603556">Adını dəyişin</translation>
@@ -342,6 +343,7 @@
 <translation id="2560876255701405320">Audioyazılar siyahısı</translation>
 <translation id="2561093647892030937">limonlar</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> testi icra edilir...</translation>
+<translation id="2573178735329662769">Bütün Chromebook audiosu qeydə alınır</translation>
 <translation id="2575552334616524665">Bunu Ayarlarda və ya <ph name="THREE_DOTS_MENU_ICON" /> menyusunda yandıra bilərsiniz</translation>
 <translation id="2576253868710695442">Bunun üçün 2 GB-a qədər yaddaş istifadə ediləcək</translation>
 <translation id="2584547424703650812">Parıldayan mənzərələr</translation>
@@ -494,6 +496,7 @@
 <translation id="3502426834823382181">bütün tətbiqlərə baxın</translation>
 <translation id="3510890413042482857"><ph name="BEGIN_LINK1" />Performans izləmə datasını<ph name="END_LINK1" /> göndərin</translation>
 <translation id="3517001332549868749">ChromeOS güncəlləməsi</translation>
+<translation id="3522508178835057262">Hazırda <ph name="MAX_WORD_LENGTH" /> sözdən artıq transkript dəstəklənmir</translation>
 <translation id="3527036260304016759">Alınmadı - Naməlum xəta</translation>
 <translation id="353214771040290298">Redaktəni bitirin</translation>
 <translation id="3532980081107202182">Təxminən <ph name="MIN_REMAINING" /> dəqiqə qalıb</translation>
@@ -509,6 +512,7 @@
 <translation id="3588034708467091142">İnternetə qoşulduğunuzdan əmin olun və yenidən cəhd edin.</translation>
 <translation id="3594280220611906414"><ph name="APN_NAME" /> üçün istifadəçiyə uyğun ad: <ph name="USER_FRIENDLY_APN_NAME" />.</translation>
 <translation id="3595596368722241419">Batareya doludur</translation>
+<translation id="3600063043775287169">Chromebook audiosu aktiv olduqda Diktofon həmin cihazda səslənən bütün audionu qeydə alır. Bütün səslərin qeydə alınmasını istədiyinizə əmin olun.</translation>
 <translation id="3600339377155080675">Ekran əks olunması</translation>
 <translation id="3602290021589620013">Önizləmə</translation>
 <translation id="3603829704940252505">Avatar</translation>
@@ -711,6 +715,7 @@
 <translation id="4602266091140407479">Mikrofon</translation>
 <translation id="4607282946861182308">Bunun şəkillərini yaratmaq olmur. Başqa sorğu ilə cəhd edin.</translation>
 <translation id="4609350030397390689">Klaviatura parlaqlığını azaldın</translation>
+<translation id="4623061655523261501">Səsyazma adları yaradıldı</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" />/<ph name="TOTAL_PAGE_NUMBER" />. Çap işini ləğv etmək üçün Enter düyməsinə basın.</translation>
 <translation id="463791356324567266">Skanlama ləğv edilir...</translation>
 <translation id="4644611440022666152">Yandırın və endirin</translation>
@@ -1043,6 +1048,8 @@
 <translation id="628726841779494414">Printer ayarlarında printerləri idarə edin</translation>
 <translation id="6292095526077353682">Şarj zamanı ekran qoruyucusu göstərilsin</translation>
 <translation id="629550705077076970">klaviaturanın qaraldılması</translation>
+<translation id="6301193653204230066">Təhlükəsiz sıfırlama Chrome brauzer artırmalarını deaktiv edir, eyni zamanda şəbəkə və digər ayarları təhlükəsiz defoltlara sıfırlayır.
+          Tablar, fayllar, kukilər və tarixçə dəyişməyəcək.</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> testi ləğv edilib</translation>
 <translation id="631063167932043783">Tətbiqi araşdırın</translation>
 <translation id="6318437367327684789">həmişə</translation>
@@ -1052,6 +1059,7 @@
 <translation id="6325525973963619867">Alınmadı</translation>
 <translation id="6327262166342360252">Bu divar kağızı aşağıdakı mətn əsasında AI ilə yaradıldı: "<ph name="PROMPT" />."</translation>
 <translation id="6331191339300272798">Avtomatik qaranlıq tema</translation>
+<translation id="6335228876613776082">Modelin endirilməsi tamamlandı</translation>
 <translation id="6340526405444716530">Fərdiləşdirmə</translation>
 <translation id="6348252528297699679">Məkanı Ayarlar &gt; Məxfilik və güvənlik &gt; Məxfilik nizamlayıcıları &gt; Məkana giriş bölməsində söndürə bilərsiniz. <ph name="LINK_BEGIN" />Ətraflı məlumat<ph name="LINK_END" /></translation>
 <translation id="6348738456043757611">İstifadəçi adı və parol</translation>
@@ -1213,6 +1221,7 @@
 <translation id="708426984172631313">DAYANDIRILIB</translation>
 <translation id="7086168019478250425">biolüminesensiya xüsusiyyətli çimərlik</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
+<translation id="7086916854357021265">Səsyazma adları yaradılır</translation>
 <translation id="7097908713073775559">rəngarəng</translation>
 <translation id="710028965487274708">Alınmadı - Doğrulama Alınmadı</translation>
 <translation id="7101959270679078188">Güncəllənmə prosesinə davam etmək üçün <ph name="DEVICE_NAME" /> cihazını kiliddən çıxarın</translation>
@@ -1545,6 +1554,7 @@ Bu transkripsiyaları əldə etmək üçün transkripsiya modelini (maksimum 100
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Google Foto albomu</translation>
 <translation id="8775713578693478175">Modem APN-i</translation>
+<translation id="877735394245039557">Modelin endirilməsi davam edir</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">Bu şəbəkənin avtorizasiya portalı ola bilər</translation>
 <translation id="8797082062139985406">Google Sİ ilə ad yaradın</translation>

@@ -78,6 +78,7 @@
 <translation id="1240638468526743569">אפליקציה כלשהי</translation>
 <translation id="1242198791279543032">ההתראות מושתקות</translation>
 <translation id="1242883863226959074">מכשיר</translation>
+<translation id="1245476784081715330">עבודה טובה!</translation>
 <translation id="1245644940275736236">‏מעבר ל-Assistant</translation>
 <translation id="124678866338384709">סגירת הכרטיסייה הנוכחית</translation>
 <translation id="1246890715821376239">אפליקציות שאינן נתמכות</translation>
@@ -843,6 +844,7 @@
 <translation id="3958714870339660776">כל היום</translation>
 <translation id="3962859241508114581">הטראק הקודם</translation>
 <translation id="3963124517343721543">אפשר לפתוח את הכרטיסיות והחלונות הקודמים כדי להמשיך בקלות מהמקום שבו הפסקת. יוצגו לך גם הצעות בהתאמה אישית לדברים שאפשר לעשות.</translation>
+<translation id="396506362088290977">בדיקת צליל המיקרופון</translation>
 <translation id="3969043077941541451">כבוי</translation>
 <translation id="3970324493235864154">הצגת ההתראות שבטלפון</translation>
 <translation id="397105322502079400">מתבצע חישוב...</translation>
@@ -900,6 +902,7 @@
 <translation id="4156293514828496577">רמת הטעינה שנותרה בסוללה: %<ph name="PERCENTAGE" /> (בערך <ph name="TIME_LEFT" />).
 חלק מהתכונות מוגבלות כדי להאריך את חיי הסוללה.</translation>
 <translation id="4160919062868802509">זוהו מספר מקורות אודיו</translation>
+<translation id="416245495747357243">סיימת!</translation>
 <translation id="4165275524535002941">יכול להיות שהכבל לא תומך במסכים</translation>
 <translation id="4177415338862979658">ניתן ללחוץ כדי לראות פרטים נוספים</translation>
 <translation id="4177913004758410636">{0,plural, =1{עליך לעדכן את המכשיר בתוך יום אחד}one{עליך לעדכן את המכשיר תוך # ימים}two{עליך לעדכן את המכשיר תוך יומיים}other{עליך לעדכן את המכשיר תוך # ימים}}</translation>
@@ -985,6 +988,7 @@
 <translation id="4412944820643904175">התכונה <ph name="FEATURE_NAME" /> מושבתת.</translation>
 <translation id="4417647906073317561">ההגדרות של מצב הריכוז. אפשר להגדיר טיימר, משימה ומוזיקה כדי להיכנס לקצב העבודה.</translation>
 <translation id="4424159417645388645">שולחן עבודה וירטואלי 5</translation>
+<translation id="4426817706804363424">כל הכבוד!</translation>
 <translation id="4430019312045809116">עוצמת קול</translation>
 <translation id="4441283832827406317">האפליקציות ממוינות לפי שם</translation>
 <translation id="4445159312344259901">יש להיכנס כדי לבטל את הנעילה</translation>
@@ -1249,6 +1253,7 @@
 <translation id="5283198616748585639">הוספת דקה</translation>
 <translation id="528468243742722775">סיום</translation>
 <translation id="5286194356314741248">הסריקה מתבצעת</translation>
+<translation id="528641622273682395">החלפת מצב של בדיקת המיקרופון</translation>
 <translation id="5297423144044956168">לא נמצאו מכשירים ניידים</translation>
 <translation id="5297704307811127955">כבויה</translation>
 <translation id="5300589172476337783">הצגה</translation>
@@ -1276,6 +1281,7 @@
 <translation id="536019650977002321">אין הרשאה מהאדמין להקליט אודיו. צריך לפנות לאדמין לקבלת מידע נוסף.</translation>
 <translation id="5361524080961918551">קובצי הדיבור ב<ph name="LANGUAGE" /> הורדו חלקית</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> מעבר לכרטיסייה הזו</translation>
+<translation id="5363835273551457276">אפשר לבדוק את הצליל של המיקרופון. כדי להפסיק את הפעולה, צריך לסגור את החלונית.</translation>
 <translation id="5364693579536176785">שטח אחסון</translation>
 <translation id="5369573834963677938">התכונה 'שליטה באמצעות תנועות הפנים' תהיה זמינה למשתמשים אחרים במכשיר</translation>
 <translation id="5369717264580061086">תצוגה מקדימה של קובץ באפליקציה 'קבצים'</translation>
@@ -1417,6 +1423,7 @@
 <translation id="5802516411616338943">פתיחת ההגדרות המהירות</translation>
 <translation id="5804651031882187592">‏השבתת ההגדרה 'נעילת כרטיס ה-SIM'</translation>
 <translation id="5805809050170488595">יש ללחוץ כדי להפעיל את <ph name="NETWORK_NAME" /></translation>
+<translation id="5818796501620225415">יש לך אפשרות להוסיף עוד זמן או לסיים את הפעילות במצב הריכוז</translation>
 <translation id="5819918159912280082">‏ה-Chromebook הופעל מחדש באופן בלתי צפוי. רוצה לפתוח את האפליקציות והחלונות הקודמים?</translation>
 <translation id="5823239091726045201">‏Google Tasks באינטרנט</translation>
 <translation id="5825969630400862129">הגדרות של מכשירים מחוברים</translation>
@@ -2131,6 +2138,7 @@
 <translation id="8262312463845990408">הפעלה או השהיה של הקראת הטקסט</translation>
 <translation id="8268302343625273732">‏הצגת כל המטלות ב-Google Classroom</translation>
 <translation id="8277261673056602147">יש להדגיש טקסט במסך</translation>
+<translation id="8282784978194352587">הצלחת!</translation>
 <translation id="8287009018010202411">פרודוקטיביות</translation>
 <translation id="828708037801473432">כבויה</translation>
 <translation id="8297006494302853456">חלש</translation>
@@ -2209,6 +2217,7 @@
 <translation id="8609384513243082612">פתיחת כרטיסייה חדשה</translation>
 <translation id="861045123704058818">האפליקציות מאורגנות באופן זמני לפי קטגוריות</translation>
 <translation id="8612216344243590325">עדיף לשמור קבצים חשובים בתיקייה <ph name="HOLDING_SPACE_TITLE" /> במקום בשולחן העבודה. פשוט גוררים קבצים אל <ph name="HOLDING_SPACE_TITLE" />.</translation>
+<translation id="8612338981637220013">שיחקת אותה!</translation>
 <translation id="8614517853887502247">ההתראות מהאפליקציות <ph name="APP_1_TITLE" /> וכן <ph name="APP_2_TITLE" /> מוסתרות כי מופעלת הגנה על תצוגה</translation>
 <translation id="8615778328722901791">פתיחה של סרגל הכלים</translation>
 <translation id="8619000641825875669">OneDrive</translation>
@@ -2251,6 +2260,7 @@
 <translation id="8742057891287715849"><ph name="NAME" /> · <ph name="SERVICE_PROVIDER" />: ההפעלה מתבצעת…</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
+<translation id="8751299148074971734">כל הכבוד!</translation>
 <translation id="8753368202781196133">השפה הזו לא נתמכת כרגע.</translation>
 <translation id="8755498163081687682">אימות הזהות שלך: על מנת להתחבר אל <ph name="ORIGIN_NAME" /> יש לאמת את זהותך</translation>
 <translation id="875593634123171288">‏צפייה בהגדרות VPN</translation>

@@ -579,6 +579,7 @@ Peržiūrėkite paieškos variklio instrukcijas, kaip ištrinti paieškos istori
 <translation id="3851938967634752633"><ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> ir kitų (dar <ph name="NUMBER_OF_ACCOUNTS" />) slaptažodžiai bus ištrinti. Jūsų paskyros nebus ištrintos.</translation>
 <translation id="3858860766373142691">Pavadinimas</translation>
 <translation id="3861908220442487587">Šis adresas išsaugotas tik šiame įrenginyje. Jei norite jį naudoti kituose įrenginiuose, perkelkite jį į „Google“ paskyrą, <ph name="USER_EMAIL" /></translation>
+<translation id="3868495844258915202">Rodyti visą URL</translation>
 <translation id="3876833929577368454">Paklausti kiekvieną kartą</translation>
 <translation id="3885587018298784481">Prisijungimas prie šeimos grupės</translation>
 <translation id="3888863481921783344">Šie duomenys bus naudojami norint parodyti galimus pakviestuosius į įvykį.</translation>
@@ -866,6 +867,7 @@ Peržiūrėkite paieškos variklio instrukcijas, kaip ištrinti paieškos istori
 <translation id="5210365745912300556">Uždaryti skirtuką</translation>
 <translation id="5211488077761630279">Leisti „<ph name="SITE_NAME" />“ naudoti leidimą „<ph name="PERMISSION" />“?</translation>
 <translation id="5217245356412073535">Galite pakeisti numatytąjį svetainės rodinį į stalinį kompiuterį skiltyje „Nustatymai“ &gt; „Turinio nustatymai“</translation>
+<translation id="5217329997012062137">Kai naudojate „Google Lens“, puslapio ekrano kopija siunčiama „Google“.</translation>
 <translation id="5220945116117011963">Kalendoriaus įvykių kūrimas pagal datas</translation>
 <translation id="5222676887888702881">Atsijungti</translation>
 <translation id="5228579091201413441">Įgalinti sinchronizavimą</translation>
@@ -1641,6 +1643,7 @@ Svetainės gali naudoti slapukus, kad sužinotų apie naršymo veiklą skirtingo
 <translation id="8712534545803964353">Rasti puslapyje…</translation>
 <translation id="8712637175834984815">Supratau</translation>
 <translation id="8722229818691036192">Šiame įrenginyje naudojamos paskyros</translation>
+<translation id="8722649775263832315">Palieskite arba pasirinkite, jei norite ieškoti naudodami „Google Lens“</translation>
 <translation id="8725066075913043281">Bandyti dar kartą</translation>
 <translation id="8728922029615312208">Uždaryti viską</translation>
 <translation id="8730621377337864115">Atlikta</translation>

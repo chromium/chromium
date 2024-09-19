@@ -1597,6 +1597,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="211803431539496924">Kas kinnitada pikendatud turvavärskendused?</translation>
 <translation id="2118594521750010466">Paranda kohe</translation>
 <translation id="2119461801241504254">Google'i ohutu sirvimine on sisse lülitatud ning kaitseb teid ohtlike saitide ja allalaadimiste eest</translation>
+<translation id="2119602978828978573">Toetatavad reaalajas subtiitrite keeled</translation>
 <translation id="2120297377148151361">Tegevused ja interaktsioonid</translation>
 <translation id="2120639962942052471">Blokeeriti <ph name="PERMISSION" /></translation>
 <translation id="2121055421682309734">{COUNT,plural, =0{Küpsisefailid on blokeeritud}=1{Küpsisefailid on blokeeritud; 1 erand}other{Küpsisefailid on blokeeritud; {COUNT} erandit}}</translation>
@@ -2667,6 +2668,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="2864601841139725659">Profiilipildi määramine</translation>
 <translation id="2865057607286263192">Vajutage klaviatuuri klahve pikalt, et näha rõhu- ja erimärke. See lülitab tähestikuklahvide puhul klahvikorduse välja. Saadaval ainult inglise keele (USA) jaoks.</translation>
 <translation id="2865919525181940183">Ekraanipilt programmidest, mis on praegu ekraanil kuvatud</translation>
+<translation id="286643536820867504">Loob toetatavates keeltes subtiitrid automaatselt. Heli ei lahku teie seadmest.</translation>
 <translation id="286674810810214575">Toiteallikate kontrollimine …</translation>
 <translation id="2867768963760577682">Ava kinnitatud vahelehel</translation>
 <translation id="2868746137289129307">See laiendus on aegunud ja ettevõtte reeglitega keelatud. Kui uuem versioon muutub kättesaadavaks, siis võidakse see automaatselt lubada.</translation>
@@ -3288,6 +3290,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="333863344734218290">Hoiatab teid ebaturvalistest avalikest ja privaatsetest saitidest</translation>
 <translation id="3340620525920140773">Allalaadimine on lõpule viidud: <ph name="FILE_NAME" />.</translation>
 <translation id="3340978935015468852">seaded</translation>
+<translation id="3341091511696469129">Chrome saab luua ja tõlkida siin kuvatavates keeltes subtiitreid</translation>
 <translation id="3341699307020049241">Vale PIN-kood. Teil on veel <ph name="RETRIES" /> katset.</translation>
 <translation id="3341703758641437857">Luba juurdepääs failide URL-idele</translation>
 <translation id="334171495789408663">Toemärk on kopeeritud</translation>
@@ -5867,6 +5870,7 @@ Väljasuumimiseks kasutage klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamin
 <translation id="5214639857958972833">Järjehoidja „<ph name="BOOKMARK_TITLE" />” on loodud.</translation>
 <translation id="5215450412607891876">Lülitage sisse pikendatud turvavärskendused</translation>
 <translation id="5215502535566372932">Valige riik</translation>
+<translation id="5216674789212441076">Tõlgib reaalajas subtiitrid automaatselt. Subtiitrid saadetakse tõlkimiseks Google’ile.</translation>
 <translation id="5220011581825921581">otsing + ülesnool</translation>
 <translation id="5221516927483787768">Saiti <ph name="HOST_NAME" /> ei saa üle kanda</translation>
 <translation id="5222403284441421673">Ebaturvaline allalaadimine blokeeriti</translation>
@@ -7316,6 +7320,7 @@ Load, mille olete veebisaitidele ja rakendustele juba andnud, võivad kehtida ka
 <translation id="628726841779494414">Hallake oma printereid printeri seadetes</translation>
 <translation id="6287828400772161253">Android-telefon (<ph name="HOST_DEVICE_NAME" />)</translation>
 <translation id="6290613030083731160">Mitte ükski saadaolev seade ei jaga läheduses. <ph name="LINK_BEGIN" />Lisateave<ph name="LINK_END" /></translation>
+<translation id="6291580570300353047">Taastamine ei ole võimalik, kuna salvestusruumi on liiga vähe.</translation>
 <translation id="6291741848715722067">Kinnituskood</translation>
 <translation id="6291953229176937411">&amp;Näita otsijas</translation>
 <translation id="6292699686837272722">Vahelehed kahanevad keskmisele laiusele</translation>
@@ -7959,6 +7964,7 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="6785739405821760313">Kuvatud on salvestatud töölauad. Navigeerimiseks vajutage tabulaatorit.</translation>
 <translation id="6785915470941880363">Tagurpidi kerimine (<ph name="LINK_BEGIN" />lisateave<ph name="LINK_END" />)</translation>
 <translation id="67862343314499040">Violetne</translation>
+<translation id="6786480815699355166">Tõlkida saab ainult toetatavaid reaalajas subtiitrite keeli</translation>
 <translation id="6786747875388722282">Laiendused</translation>
 <translation id="6787097042755590313">Muu vaheleht</translation>
 <translation id="6787531944787756058">kasutajanimi <ph name="USER_EMAIL" /> on salvestatud ainult sellesse seadmesse. Üksikasjade kuvamine</translation>
@@ -10557,6 +10563,7 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8656888282555543604">Braille' logimise lubamine</translation>
 <translation id="8657393004602556571">Kas soovite tagasisidest loobuda?</translation>
 <translation id="8657542881463614516">Lehtede vahel liikumiseks pühkimisliigutuse kasutamine</translation>
+<translation id="865857184419171576">Subtiitrite tõlkekeel</translation>
 <translation id="865936634714975126">Lehe laadimisel tüüpide valimiseks lisage URL-ile päringu parameetrid. Näide: chrome://device-log/?types=Bluetooth,USB</translation>
 <translation id="8659608856364348875">Funktsiooni <ph name="FEATURE_NAME" /> kontaktid</translation>
 <translation id="8659609431223166673">Aken teisaldati allapoole</translation>

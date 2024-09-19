@@ -78,6 +78,7 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="1240638468526743569">Uygulama</translation>
 <translation id="1242198791279543032">Bildirimler yoksayıldı</translation>
 <translation id="1242883863226959074">cihaz</translation>
+<translation id="1245476784081715330">Mükemmel!</translation>
 <translation id="1245644940275736236">Asistan'a git</translation>
 <translation id="124678866338384709">Geçerli sekmeyi kapatır</translation>
 <translation id="1246890715821376239">Desteklenmeyen uygulamalar</translation>
@@ -842,6 +843,7 @@ Cihazınızı güç kaynağına bağlayın.</translation>
 <translation id="3958714870339660776">Tüm Gün</translation>
 <translation id="3962859241508114581">Önceki Parça</translation>
 <translation id="3963124517343721543">Önceki pencerelerinizi ve sekmelerinizi açarak kaldığınız yerden kolayca devam edin. Ayrıca, sonraki yapacaklarınızla ilgili kişiselleştirilmiş öneriler de görürsünüz.</translation>
+<translation id="396506362088290977">Mikrofonunuzun sesini test edin</translation>
 <translation id="3969043077941541451">Kapalı</translation>
 <translation id="3970324493235864154">Telefonunuzdaki bildirimleri görün</translation>
 <translation id="397105322502079400">Hesaplanıyor...</translation>
@@ -899,6 +901,7 @@ Cihazınızı güç kaynağına bağlayın.</translation>
 <translation id="4156293514828496577">%<ph name="PERCENTAGE" /> pil kaldı (yaklaşık <ph name="TIME_LEFT" />).
 Pil ömrünü uzatmak için bazı özellik sınırlandırıldı.</translation>
 <translation id="4160919062868802509">Birden fazla ses kaynağı algılandı</translation>
+<translation id="416245495747357243">İşlem tamam.</translation>
 <translation id="4165275524535002941">Kablo, ekranları desteklemeyebilir</translation>
 <translation id="4177415338862979658">Ayrıntılara göz atmak için tıklayın</translation>
 <translation id="4177913004758410636">{0,plural, =1{Cihazı bir gün içinde güncelleyin}other{Cihazı # gün içinde güncelleyin}}</translation>
@@ -984,6 +987,7 @@ Pil ömrünü uzatmak için bazı özellik sınırlandırıldı.</translation>
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> özelliği kapalı.</translation>
 <translation id="4417647906073317561">Odaklanma ayarları. İşe koyulmak için zamanlayıcı, görev ve müzik ayarlayın.</translation>
 <translation id="4424159417645388645">Masa 5</translation>
+<translation id="4426817706804363424">Tebrikler!</translation>
 <translation id="4430019312045809116">Ses</translation>
 <translation id="4441283832827406317">Uygulamalar ada göre sıralandı</translation>
 <translation id="4445159312344259901">Kilidi açmak için oturum açın</translation>
@@ -1248,6 +1252,7 @@ Klavye kısayolunu da kullanabilirsiniz. Önce metni vurgulayın, ardından <ph 
 <translation id="5283198616748585639">1 dk ekle</translation>
 <translation id="528468243742722775">Son</translation>
 <translation id="5286194356314741248">Taranıyor</translation>
+<translation id="528641622273682395">Mikrofon testini aç/kapat</translation>
 <translation id="5297423144044956168">Mobil cihaz bulunamadı</translation>
 <translation id="5297704307811127955">Kapalı</translation>
 <translation id="5300589172476337783">Göster</translation>
@@ -1275,6 +1280,7 @@ Bağlı cihaz yok.</translation>
 <translation id="536019650977002321">Yöneticiniz ses yakalamaya izin vermiyor. Daha fazla bilgi için yöneticinizle iletişime geçin.</translation>
 <translation id="5361524080961918551"><ph name="LANGUAGE" /> konuşma dosyaları kısmen indirildi</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> Bu sekmeye gidin</translation>
+<translation id="5363835273551457276">Mikrofonunuzun sesini test edebilirsiniz. Durdurmak için paneli kapatın.</translation>
 <translation id="5364693579536176785">depolama alanı</translation>
 <translation id="5369573834963677938">Yüz kontrolünü cihazın diğer kullanıcıları da kullanabilir</translation>
 <translation id="5369717264580061086">Dosyalar uygulamasında dosyayı önizleyin</translation>
@@ -1415,6 +1421,7 @@ Bağlı cihaz yok.</translation>
 <translation id="5802516411616338943">Hızlı Ayarlar'ı açma</translation>
 <translation id="5804651031882187592">"SIM kilidi" ayarını devre dışı bırakın</translation>
 <translation id="5805809050170488595"><ph name="NETWORK_NAME" /> ağını etkinleştirmek için tıklayın</translation>
+<translation id="5818796501620225415">Süreyi uzatabilir veya odaklanma oturumunu sonlandırabilirsiniz</translation>
 <translation id="5819918159912280082">Chromebook'unuz beklenmedik bir şekilde yeniden başlatıldı. Önceki pencerelerinizi ve uygulamalarınızı açın.</translation>
 <translation id="5823239091726045201">Web'deki Google görevleri</translation>
 <translation id="5825969630400862129">Bağlı cihaz ayarları</translation>
@@ -2125,6 +2132,7 @@ Cihazı kapatmak için cihazın güç düğmesini tekrar basılı tutun.</transl
 <translation id="8262312463845990408">Çal/duraklat</translation>
 <translation id="8268302343625273732">Google Classroom'daki tüm ödevleri göster</translation>
 <translation id="8277261673056602147">Ekrandaki metni vurgula</translation>
+<translation id="8282784978194352587">Başardınız!</translation>
 <translation id="8287009018010202411">Verimlilik</translation>
 <translation id="828708037801473432">Kapalı</translation>
 <translation id="8297006494302853456">Zayıf</translation>
@@ -2202,6 +2210,7 @@ Cihazı kapatmak için cihazın güç düğmesini tekrar basılı tutun.</transl
 <translation id="8609384513243082612">Yeni sekme açar</translation>
 <translation id="861045123704058818">Uygulamalar geçici olarak kategoriye göre düzenlenir</translation>
 <translation id="8612216344243590325">Önemli dosyaları masaüstü yerine <ph name="HOLDING_SPACE_TITLE" /> içinde saklayın. Dosyaları <ph name="HOLDING_SPACE_TITLE" /> hedefine sürüklemeniz yeterlidir.</translation>
+<translation id="8612338981637220013">Çok iyi!</translation>
 <translation id="8614517853887502247">Görüntüleme koruması açık olduğundan <ph name="APP_1_TITLE" /> ve <ph name="APP_2_TITLE" /> bildirimleri gösterilmiyor</translation>
 <translation id="8615778328722901791">Araç çubuğunu aç</translation>
 <translation id="8619000641825875669">OneDrive</translation>
@@ -2244,6 +2253,7 @@ Cihazı kapatmak için cihazın güç düğmesini tekrar basılı tutun.</transl
 <translation id="8742057891287715849"><ph name="NAME" /> · <ph name="SERVICE_PROVIDER" />: Etkinleştiriliyor...</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
+<translation id="8751299148074971734">Aynen devam.</translation>
 <translation id="8753368202781196133">Bu dil şu anda desteklenmiyor.</translation>
 <translation id="8755498163081687682">Kimliğinizi doğrulayın: <ph name="ORIGIN_NAME" />, kimliğinizi doğrulamak istiyor</translation>
 <translation id="875593634123171288">VPN ayarlarını göster</translation>

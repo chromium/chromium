@@ -50,6 +50,7 @@
 <translation id="1219674500290482172">Povezivanje s internetom nije moguće.</translation>
 <translation id="1227113644794103810">Neaktivne kartice</translation>
 <translation id="1231733316453485619">Želite li uključiti sinkronizaciju?</translation>
+<translation id="1253032109800629289">Sakrij opciju Primajte obavijesti o praćenju cijena</translation>
 <translation id="1258491128795710625">Što je novo</translation>
 <translation id="1263231323834454256">Popis za čitanje</translation>
 <translation id="1263433075299269530">Vaša posljednja otvorena kartica</translation>
@@ -395,6 +396,7 @@ Vaša je tražilica <ph name="DSE_NAME" />. Potražite njezine upute da biste sa
 <translation id="2870560284913253234">Web lokacija</translation>
 <translation id="2876369937070532032">Googleu šalje URL-ove nekih stranica koje posjećujete kada je ugrožena vaša sigurnost</translation>
 <translation id="2883151425485251736">Pregled i uređivanje tema koje ste sakrili na računu</translation>
+<translation id="2888631381369839306">Obavijesti o praćenju cijena su uključene</translation>
 <translation id="288902476966286676">Vratiti pošiljatelju</translation>
 <translation id="2894757982205307093">Nova kartica u grupi</translation>
 <translation id="2905479111267140204">Imate višestruko korištene zaporke (<ph name="NUMBER_OF_PASSWORDS" />) koje bi mogle ugroziti vašu sigurnost.</translation>
@@ -878,6 +880,7 @@ Potražite upute za svoju tražilicu da biste saznali kako izbrisati svoju povij
 <translation id="5271265092610673171">{count,plural, =1{Obavezno polje je prazno. Ispunite ga prije spremanja.}one{Neka su obavezna polja prazna. Ispunite ih prije spremanja.}few{Neka su obavezna polja prazna. Ispunite ih prije spremanja.}other{Neka su obavezna polja prazna. Ispunite ih prije spremanja.}}</translation>
 <translation id="5271549068863921519">Spremi zaporku</translation>
 <translation id="5279600392753459966">Blokiraj sve</translation>
+<translation id="5282340693022193851">Da biste primali obavijesti o praćenju cijena, uključite ih u postavkama iOS-a.</translation>
 <translation id="5294624619177114121">Obavijesti na mobilnom uređaju</translation>
 <translation id="5295239312320826323">Ukloniti račun <ph name="USER_EMAIL" />?</translation>
 <translation id="5300589172476337783">Prikaži</translation>

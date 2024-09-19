@@ -50,6 +50,7 @@
 <translation id="1219674500290482172">Tidak dapat menyambung ke Internet.</translation>
 <translation id="1227113644794103810">Tab tidak aktif</translation>
 <translation id="1231733316453485619">Hidupkan penyegerakan?</translation>
+<translation id="1253032109800629289">Sembunyikan "Dapatkan Pemberitahuan Penjejakan Harga"</translation>
 <translation id="1258491128795710625">Perkara Baharu</translation>
 <translation id="1263231323834454256">Senarai bacaan</translation>
 <translation id="1263433075299269530">Tab terbuka anda yang terakhir</translation>
@@ -395,6 +396,7 @@ Enjin carian anda ialah <ph name="DSE_NAME" />. Lihat arahan enjin carian itu un
 <translation id="2870560284913253234">Tapak</translation>
 <translation id="2876369937070532032">Menghantar URL sesetengah halaman yang anda lawati kepada Google, apabila keselamatan anda terancam</translation>
 <translation id="2883151425485251736">Lihat dan edit topik yang anda sembunyikan daripada akaun anda</translation>
+<translation id="2888631381369839306">Pemberitahuan penjejakan harga dihidupkan</translation>
 <translation id="288902476966286676">Kembalikan kepada pengirim</translation>
 <translation id="2894757982205307093">Tab baharu dalam kumpulan</translation>
 <translation id="2905479111267140204">Anda mempunyai <ph name="NUMBER_OF_PASSWORDS" /> kata laluan yang digunakan semula yang boleh mendedahkan keselamatan anda kepada risiko.</translation>
@@ -878,6 +880,7 @@ Lihat arahan enjin carian anda untuk memadamkan sejarah carian anda, jika berken
 <translation id="5271265092610673171">{count,plural, =1{Medan yang diperlukan adalah kosong. Isi medan sebelum menyimpan perubahan.}other{Beberapa medan yang diperlukan adalah kosong. Isi medan sebelum menyimpan perubahan.}}</translation>
 <translation id="5271549068863921519">Simpan kata laluan</translation>
 <translation id="5279600392753459966">Sekat semua</translation>
+<translation id="5282340693022193851">Untuk mendapatkan pemberitahuan penjejakan harga, hidupkan pemberitahuan dalam Tetapan iOS anda.</translation>
 <translation id="5294624619177114121">Pemberitahuan mudah alih</translation>
 <translation id="5295239312320826323">Alih keluar akaun <ph name="USER_EMAIL" />?</translation>
 <translation id="5300589172476337783">Paparkan</translation>

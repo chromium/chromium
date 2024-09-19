@@ -678,6 +678,7 @@
 <translation id="2212735316055980242">Правилото не е намерено</translation>
 <translation id="2213606439339815911">Записите се извличат...</translation>
 <translation id="2213612003795704869">Страницата е отпечатана</translation>
+<translation id="2215368073167343359">Автоматично попълване с Google</translation>
 <translation id="2215539479425228550">Катерене и алпинизъм</translation>
 <translation id="2215727959747642672">Редактиране на файлове</translation>
 <translation id="2215963164070968490">Кучета</translation>
@@ -710,6 +711,7 @@
 <translation id="2262243747453050782">HTTP грешка</translation>
 <translation id="2265192657948645752">Работни места в търговията на дребно</translation>
 <translation id="2265356434276802347">Това правило не трябва да съдържа повече от <ph name="MAX_ITEMS_LIMIT" /> представени записа.</translation>
+<translation id="2266175583972138136">За предимствата на картата важат условия</translation>
 <translation id="2267047181501709434">Самоличността ви се потвърждава...</translation>
 <translation id="2268044343513325586">Прецизиране</translation>
 <translation id="2268966938956566076">Качване след <ph name="MINUTES" /> мин</translation>
@@ -1799,6 +1801,7 @@
 <translation id="4269264543938335308">Бански костюми</translation>
 <translation id="4269599248168651462">Сертификатът на сървъра е издаден за неуникално име.</translation>
 <translation id="4270541775497538019">Стакер 6</translation>
+<translation id="4271652479722040953">Когато в Chrome се добавят разширения, съответните данни за тях се изпращат до трети страни за анализ и може да са видими за администратора ви. Данните включват информация за разширенията, като например име, час на инсталиране, източник на инсталирането, както и активността, свързана с тези разширения (например промяна на раздели, свързване с уебсайтове или достъп до „бисквитки“). Тези данни се събират за разширенията, инсталирани от уеб магазина на Chrome, както и за тези, които не са от магазина.</translation>
 <translation id="4275830172053184480">Рестартиране на устройството ви</translation>
 <translation id="4276974990916607331">Не, благодаря</translation>
 <translation id="4277028893293644418">Повторно задаване на паролата</translation>
@@ -1880,6 +1883,7 @@
 <translation id="4406896451731180161">резултата от търсенето</translation>
 <translation id="4408413947728134509">„Бисквитки“ <ph name="NUM_COOKIES" /></translation>
 <translation id="4412074349188076601">Тази конфигурация е означена като такава с възможност за инсталиране, но не може да се инсталира, тъй като не е предоставен образ за съответната архитектура.</translation>
+<translation id="4414452699610169758">Използвайте Google Мениджър на пароли и функцията на Chrome за автоматичното попълване, за да запазвате и попълвате пароли, начини на плащане и адреси</translation>
 <translation id="4414515549596849729">„бисквитки“ и данни за сайтове</translation>
 <translation id="4415156962929755728">Пластмаса (силно гланцирана)</translation>
 <translation id="4415426530740016218">Адрес за вземане</translation>
@@ -3133,6 +3137,7 @@
 <translation id="6767985426384634228">Да се актуализира ли адресът?</translation>
 <translation id="6770747695101757579">Хартия (памучна)</translation>
 <translation id="677257480647123231">Безопасност на децата в интернет</translation>
+<translation id="6772959465807028761">За да използвате YouTube, продължете с профила си в Google</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6777088782163649345">Използване на YouTube с избраните от родителя ви настройки</translation>
 <translation id="6779348349813025131">Google Мениджър на пароли се нуждае от достъп до Keychain на macOS</translation>
@@ -3384,6 +3389,7 @@
 <translation id="7232352818707016189">Още действия за таблицата за сравняване</translation>
 <translation id="7233592378249864828">Отпечатване на лист за потвърждение</translation>
 <translation id="7234112195906418665">Пътувания и транспорт</translation>
+<translation id="7234585564776614047">Автоматично попълване посредством друга услуга</translation>
 <translation id="7236417832106250253">Завършено: <ph name="PROGRESS_PERCENT" />% | <ph name="ESTIMATED_REMAINING_TIME" /></translation>
 <translation id="7237166092326447040">Подаръци и предмети за специални събития</translation>
 <translation id="7237454422623102448">системните настройки</translation>
@@ -3736,6 +3742,7 @@
 <translation id="7831993212387676366">Какво представлява списъкът за пазаруване?</translation>
 <translation id="7840103971441592723">Функцията за заснемане на екрана стартира</translation>
 <translation id="784137052867620416">Статистика за Пазаруване</translation>
+<translation id="7842611866969435396">Да започваме</translation>
 <translation id="784404208867107517">Групирана история</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Няма}=1{1 приложение (<ph name="EXAMPLE_APP_1" />)}=2{2 приложения (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# приложения (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}}</translation>
 <translation id="785476343534277563">Колежански спортове</translation>
@@ -4045,6 +4052,7 @@
 <translation id="8409413588194360210">приложения за обработване на плащания</translation>
 <translation id="8412145213513410671">Сривове (<ph name="CRASH_COUNT" />)</translation>
 <translation id="8412392972487953978">Трябва да въведете един и същи пропуск два пъти.</translation>
+<translation id="8414322570408428950">Възниква събитие, свързано с разширението</translation>
 <translation id="8416694386774425977">Конфигурацията на мрежата е невалидна и не можа да се импортира.
 Допълнителни подробности:
 <ph name="DEBUG_INFO" /></translation>
@@ -4296,6 +4304,8 @@
 <translation id="8891031436559779793">Ще получите известие при понижение на цената в който и да е сайт.</translation>
 <translation id="8891727572606052622">Невалиден режим на прокси сървъра.</translation>
 <translation id="8894794286471754040">Дългата страна напред</translation>
+<translation id="8895334001368918465">За да използвате друга услуга за автоматично попълване в Chrome, включете я в настройките на Android и тук</translation>
+<translation id="8897221284075091877">За да поискате да видите това съдържание, продължете с профила си в Google</translation>
 <translation id="8897428486789851669">Плуване</translation>
 <translation id="8899807382908246773">Натрапчиви реклами</translation>
 <translation id="8903921497873541725">Увеличаване на мащаба</translation>

@@ -2920,6 +2920,13 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
 
       如果您未设置此政策，<ph name="PRODUCT_NAME" /> 便会加载已安装的所有本地消息传递主机。</translation>
 <translation id="3211426942294667684">浏览器登录设置</translation>
+<translation id="3213872023700948990">此政策针对新的键盘可聚焦滚动条行为提供了一项临时的选择停用机制。
+
+如果此政策已启用或未设置，则默认情况下，没有可聚焦子项的滚动条可通过键盘聚焦。
+
+如果已停用此政策，则默认情况下，滚动条无法通过键盘聚焦。
+
+此政策是一种临时的变通方案，将在 M135 中移除。</translation>
 <translation id="3217774577897351942">我们正在 <ph name="PRODUCT_NAME" /> 中更改 <ph name="OFFSET_PARENT" /> API，以使其符合 <ph name="FIREFOX_PRODUCT_NAME" /> 和 <ph name="SAFARI_PRODUCT_NAME" /> 中发生的变更。此政策可用于恢复旧行为，直到 M120。
 
 新行为可能会导致下述类型的某些网站无法正常运作：仅支持 <ph name="PRODUCT_NAME" />，且将 <ph name="OFFSET_PARENT" />、<ph name="OFFSET_TOP" /> 或 <ph name="OFFSET_LEFT" /> 与 Shadow DOM 配合使用。
@@ -7224,6 +7231,9 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
           要在设备闲置时锁定屏幕，您最好采用以下方式：让系统在进入暂停状态时锁定屏幕，并指示 <ph name="PRODUCT_OS_NAME" />在闲置延迟时间过后进入暂停状态。只有在以下情况下才应使用此政策：屏幕锁定时间应显著早于系统进入暂停状态的时间，或者完全不需要在设备闲置时暂停系统。
 
           指定的政策值应以毫秒为单位，且必须小于闲置延迟时间。</translation>
+<translation id="6496139622896320246">如果此政策设为启用，<ph name="PRODUCT_OS_NAME" /> 会自动在设备级别保存有效的自助服务终端 Wi-Fi 凭据：设备上的任何其他自助服务终端应用或用户都可以使用该有效 Wi-Fi。
+如果此政策未设置或设为停用，自助服务终端的有效 Wi-Fi 凭据将存储在自助服务终端级别：在自助服务终端应用中配置的 Wi-Fi 只能在该自助服务终端应用中使用。
+除非没有其他可用选项（例如 OpenNetworkConfiguration 政策），否则不建议使用此政策。</translation>
 <translation id="6497085755801788141">使用内置证书验证程序</translation>
 <translation id="6499579502664610993">覆盖 Related Website Set。</translation>
 <translation id="6504720469162323184">通过设置此政策，您可以规定用户停止活动多久（毫秒）后系统才自动登录由 <ph name="DEVICE_LOCAL_ACCOUNT_AUTO_LOGIN_ID_POLICY_NAME" /> 政策指定的设备本地账号。

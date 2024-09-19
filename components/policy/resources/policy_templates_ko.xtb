@@ -6890,6 +6890,13 @@ ArcEnabled 및 UnaffiliatedArcAllowed 정책에서 적용하는 제한사항과 
 <translation id="6207607210601267301">원격 액세스 호스트에 PIN을 사용하지 않는 인증을 사용 중지</translation>
 <translation id="6208896993204286313"><ph name="PRODUCT_NAME" /> 정책 정보 보고</translation>
 <translation id="6210259502936598222">OS 및 <ph name="PRODUCT_NAME" /> 버전 정보 보고</translation>
+<translation id="6215023506958127056">외부 확장 프로그램 설치를 제어합니다.
+
+정책을 사용 설정하면 외부 확장 프로그램이 설치되지 않습니다.
+
+정책을 사용 중지하거나 설정하지 않은 상태로 두면 외부 확장 프로그램을 설치할 수 있습니다.
+
+외부 확장 프로그램 및 설치 관련 문서는 다음 페이지에서 확인하세요. https://developer.chrome.com/docs/extensions/how-to/distribute/install-extensions</translation>
 <translation id="6220835555850906733">정책을 사용으로 설정하거나 설정하지 않으면 사용자 기기에서 지원되는 모든 오디오 출력이 허용됩니다.
 
       정책을 사용 안함으로 설정하면 사용자가 로그인했을 때 오디오 출력이 허용되지 않습니다.

@@ -50,6 +50,7 @@
 <translation id="1219674500290482172">Non se puido conectar a Internet.</translation>
 <translation id="1227113644794103810">Pestanas inactivas</translation>
 <translation id="1231733316453485619">Queres activar a sincronización?</translation>
+<translation id="1253032109800629289">Ocultar Obter notificacións de seguimento de prezos</translation>
 <translation id="1258491128795710625">Novidades</translation>
 <translation id="1263231323834454256">Lista de lectura</translation>
 <translation id="1263433075299269530">A túa última pestana aberta</translation>
@@ -80,12 +81,14 @@
 <translation id="1363028406613469049">Número de seguimento</translation>
 <translation id="1364367057792633742">Nova pestana</translation>
 <translation id="1365106417372288489">O teu iPhone restaurouse recentemente. Pode que por iso se cambiase o teu navegador predeterminado.</translation>
+<translation id="1366297852155605523">Compartidos comigo</translation>
 <translation id="136942498637440594">Podes buscar imaxes e o que vexas.</translation>
 <translation id="1377508275003315939">Contrasinais</translation>
 <translation id="1381022135873211423">{count,plural, =1{{position} de {count} enderezo}other{{position} de {count} enderezos}}</translation>
 <translation id="1383876407941801731">Buscar</translation>
 <translation id="138618066238211776">Continuar como <ph name="USER_NAME" /></translation>
 <translation id="138692594145659985">Opcións para gardar unha tarxeta</translation>
+<translation id="1396260204083880024">Sesión iniciada como <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Abrir menú da conta.</translation>
 <translation id="1397144142234474689">Ocultar historial</translation>
 <translation id="1407135791313364759">Abrir todo</translation>
 <translation id="1408847409015257906">Toca Privacidade e seguranza.</translation>
@@ -332,6 +335,7 @@ Tampouco poden utilizalas para ver a túa actividade de navegación en distintos
 <translation id="2551153019974022505">Erro da conta</translation>
 <translation id="2559843230610279254">Grupo de pestanas, <ph name="GROUP_TITLE" />, <ph name="TABS_NUMBER" /> pestanas.</translation>
 <translation id="2577522251608256362">Barrio</translation>
+<translation id="2579713773888829241">Unidades compartidas</translation>
 <translation id="2597486707832946298">Tira o máximo proveito no iPhone do navegador de ordenador que coñeces e tanto che gusta.</translation>
 <translation id="260378315836159338">Na parte superior da pantalla, toca +</translation>
 <translation id="2612676031748830579">Número da tarxeta</translation>
@@ -392,6 +396,7 @@ O teu motor de busca é <ph name="DSE_NAME" />. No caso de que queiras eliminar 
 <translation id="2870560284913253234">Sitio</translation>
 <translation id="2876369937070532032">Enviar a Google os URL das páxinas que visitas cando a túa seguranza corra perigo</translation>
 <translation id="2883151425485251736">Consulta e edita temas que ocultaches na túa conta</translation>
+<translation id="2888631381369839306">Activáronse as notificacións de seguimento de prezos</translation>
 <translation id="288902476966286676">Devolver aos remitente</translation>
 <translation id="2894757982205307093">Nova pestana no grupo</translation>
 <translation id="2905479111267140204">Tes <ph name="NUMBER_OF_PASSWORDS" /> contrasinais reutilizados que poderían poñer en perigo a túa seguranza.</translation>
@@ -527,6 +532,7 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="3591006724568464696">As pestanas recentes non están dispoñibles</translation>
 <translation id="3595252146048399851">Sempre podes escoller na <ph name="BEGIN_LINK" />configuración<ph name="END_LINK" /> o contido que queres sincronizar. Google pode personalizar a Busca e outros servizos en función do teu historial.</translation>
 <translation id="3596414637720633074">Bloquear cookies de terceiros no modo de incógnito</translation>
+<translation id="3602260545951981695">Escolle Protección mellorada</translation>
 <translation id="3606746615845065096">Pechar pestana</translation>
 <translation id="3622175633937495219">Historial de busca (coincidencias atopadas: <ph name="COUNT" />)</translation>
 <translation id="3625008969091706597">Podes pasar o dedo polo bordo para retroceder.</translation>
@@ -573,6 +579,7 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="3851938967634752633">Eliminaranse os contrasinais de <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> e <ph name="NUMBER_OF_ACCOUNTS" /> sitios web máis. Non se eliminarán as túas contas.</translation>
 <translation id="3858860766373142691">Nome</translation>
 <translation id="3861908220442487587">Este enderezo só está gardado neste dispositivo. Para usalo noutros, móveo á túa Conta de Google, <ph name="USER_EMAIL" /></translation>
+<translation id="3868495844258915202">Mostrar o URL completo</translation>
 <translation id="3876833929577368454">Preguntar sempre</translation>
 <translation id="3885587018298784481">Únete a un grupo familiar</translation>
 <translation id="3888863481921783344">Usarase para mostrarche posibles invitados ao teu evento.</translation>
@@ -596,6 +603,7 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="3967327056943561740">Marcadores</translation>
 <translation id="3967822245660637423">Descarga completa</translation>
 <translation id="3982893814825393515">Informar dun problema…</translation>
+<translation id="398604237578616937">Sesión iniciada como <ph name="USER_EMAIL" />. Abrir menú da conta.</translation>
 <translation id="3987993985790029246">Copiar ligazón</translation>
 <translation id="3992684624889376114">Acerca desta páxina</translation>
 <translation id="3994422733891749358">Escolle que notificacións queres recibir</translation>
@@ -666,6 +674,7 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="4304713468139749426">Xestor de contrasinais</translation>
 <translation id="4309403553630140242">Toca dúas veces para obter máis información</translation>
 <translation id="4324735664183300693">Activar notificacións</translation>
+<translation id="4328843285884395590">A miña unidade</translation>
 <translation id="4331177082088332784">Podes xestionalo en BEGIN_LINK Configuración de contido END_LINK</translation>
 <translation id="4333100555184633720">Eliminar datos de navegación</translation>
 <translation id="4334428914252001502">1 artigo non lido.</translation>
@@ -733,6 +742,7 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="4636930964841734540">Información</translation>
 <translation id="4642472735733036929">Detívose o seguimento de prezos</translation>
 <translation id="4645575059429386691">Xestionado por teus pais</translation>
+<translation id="4647758699119474035">Sesión iniciada como <ph name="USER_NAME" />. <ph name="USER_EMAIL" />. Erro na Conta de Google. Abrir menú da conta.</translation>
 <translation id="4650125387981512669">Continuar como <ph name="FIRST_RUN_ACCOUNT_NAME" /></translation>
 <translation id="4652817563047461855">Confirma se os teus contrasinais son seguros, descubre se foron vulnerados e recibe consellos para protexerte en liña. <ph name="BEGIN_LINK" />Máis información<ph name="END_LINK" /></translation>
 <translation id="4658335131052370646">Gardar</translation>
@@ -857,6 +867,7 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="5210365745912300556">Pechar pestana</translation>
 <translation id="5211488077761630279">Queres permitir que "<ph name="SITE_NAME" />" utilice a túa <ph name="PERMISSION" />?</translation>
 <translation id="5217245356412073535">Podes cambiar a vista predeterminada do sitio pola aplicable a ordenadores; tan só tes que acceder a Configuración &gt; Configuración de contido</translation>
+<translation id="5217329997012062137">Cando usas Google Lens, envíase unha captura de pantalla da páxina a Google.</translation>
 <translation id="5220945116117011963">Crea eventos do calendario a partir de datas</translation>
 <translation id="5222676887888702881">Pechar sesión</translation>
 <translation id="5228579091201413441">Activar sincronización</translation>
@@ -869,6 +880,7 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="5271265092610673171">{count,plural, =1{Un campo obrigatorio está en branco. Cúbreo antes de gardar o formulario.}other{Algúns campos obrigatorios están en branco. Cúbreos antes de gardar o formulario.}}</translation>
 <translation id="5271549068863921519">Gardar contrasinal</translation>
 <translation id="5279600392753459966">Bloquear todo</translation>
+<translation id="5282340693022193851">Para recibir notificacións de seguimento de prezos, activa as notificacións na configuración de iOS.</translation>
 <translation id="5294624619177114121">Notificacións para móbil</translation>
 <translation id="5295239312320826323">Queres quitar a conta <ph name="USER_EMAIL" />?</translation>
 <translation id="5300589172476337783">Mostrar</translation>
@@ -915,6 +927,7 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 
 Handoff tamén debe estar activado na sección Xeral da configuración e os teus dispositivos deben utilizar a mesma conta iCloud.</translation>
 <translation id="5551825465462320939">Mantente ao día das noticias, os deportes e moito máis en función dos teus intereses.</translation>
+<translation id="5555008247722361784">Sesión iniciada como <ph name="USER_EMAIL" />. Erro na Conta de Google. Abrir menú da conta.</translation>
 <translation id="5556459405103347317">Volver cargar</translation>
 <translation id="555749644339804659">Comprobando contrasinais…</translation>
 <translation id="5559567453458728487">Converte as unidades de medida que se atopen na Web</translation>
@@ -1261,6 +1274,7 @@ Co modo de incógnito activado, non poden utilizalas para ver a túa actividade 
 <translation id="7026724612456523899">Facer sempre un seguimento dos paquetes</translation>
 <translation id="7029809446516969842">Contrasinais</translation>
 <translation id="7035825883570480307">Queres activar as notificacións?</translation>
+<translation id="7039345315346323556">Recentes</translation>
 <translation id="7055240621761583113">Autocompletar o contrasinal</translation>
 <translation id="7058455400288852416">Ir ao selector de pestanas</translation>
 <translation id="7063811929043357292">A túa conta está xestionada polo teu pai ou pola túa nai.
@@ -1278,6 +1292,7 @@ Co modo de incógnito activado, non poden utilizalas para ver a túa actividade 
 <translation id="713215255510512027"><ph name="FILENAME" /> (<ph name="FILESIZE" />)</translation>
 <translation id="7136892417564438900">A cámara non está dispoñible</translation>
 <translation id="7141960840225504692">Pecharanse as pestanas e eliminaranse os datos de navegación</translation>
+<translation id="714291438898585119">Marcados con estrela</translation>
 <translation id="7146301801400584641">Hai un ficheiro de calendario dispoñible</translation>
 <translation id="7149893636342594995">Últimas 24 horas</translation>
 <translation id="716059570521443369">Buscar texto copiado</translation>
@@ -1332,6 +1347,7 @@ Co modo de incógnito activado, non poden utilizalas para ver a túa actividade 
 <translation id="7435356471928173109">Desactivada polo teu administrador</translation>
 <translation id="7438481509621345350">Agora mostraránseche historias de <ph name="CHANNEL_NAME" /> cando abras unha pestana nova.</translation>
 <translation id="7451023311965289370">{count,plural, =1{Gardouse o marcador en {title}}other{Gardáronse os marcadores en {title}}}</translation>
+<translation id="7451404862887877229">Toca Privacidade e seguranza e, a continuación, Navegación segura</translation>
 <translation id="7454057999980797137">Estado/provin.</translation>
 <translation id="7458706065921255639">Personalización e vinculación</translation>
 <translation id="745899714366929493">Todo o día</translation>
@@ -1410,6 +1426,7 @@ Co modo de incógnito activado, non poden utilizalas para ver a túa actividade 
 <translation id="7788868432173225918">Pechar a vista ampliada</translation>
 <translation id="7790954908631836016">Ocultar Solicitar sitio para ordenadores</translation>
 <translation id="7791543448312431591">Engadir</translation>
+<translation id="7801064017114765401">Ordenadores</translation>
 <translation id="7802239711290932774">Utiliza este contrasinal suxerido:</translation>
 <translation id="780301667611848630">Non, grazas</translation>
 <translation id="7807060072011926525">Ofrecido por Google</translation>
@@ -1593,6 +1610,7 @@ Tamén poden utilizalas para ver a túa actividade de navegación en varios siti
 <translation id="8571213806525832805">Últimas 4 semanas</translation>
 <translation id="8577056989960190117">Autocompletar o ano de caducidade <ph name="YEAR" /></translation>
 <translation id="8588404856427128947">Desactivada</translation>
+<translation id="8590286732816598906">Grupo de pestanas, <ph name="GROUP_TITLE" />, menú.</translation>
 <translation id="8593565399399144771">Podes abrir unha pestana nova aquí.</translation>
 <translation id="8600272508328041907">Cambiar á tradución da páxina completa</translation>
 <translation id="860043288473659153">Nome do titular da tarxeta</translation>
@@ -1625,6 +1643,7 @@ Tamén poden utilizalas para ver a túa actividade de navegación en varios siti
 <translation id="8712534545803964353">Buscar na páxina…</translation>
 <translation id="8712637175834984815">De acordo</translation>
 <translation id="8722229818691036192">Contas neste dispositivo</translation>
+<translation id="8722649775263832315">Toca ou destaca calquera elemento para buscalo con Google Lens</translation>
 <translation id="8725066075913043281">Tentar de novo</translation>
 <translation id="8728922029615312208">Pechar todo</translation>
 <translation id="8730621377337864115">Feito</translation>
@@ -1729,6 +1748,7 @@ Tamén poden utilizalas para ver a túa actividade de navegación en varios siti
 <translation id="9162432979321511934">Activa a opción Autofill Passwords (Autocompletar contrasinais)</translation>
 <translation id="9165320910061267720">Para recibir notificacións de alertas sobre baixadas de prezos, tes que activalas na configuración de iOS.</translation>
 <translation id="9179151630575358778">Oculta este elemento</translation>
+<translation id="918129721713827015">Mostrar as pestanas do grupo</translation>
 <translation id="9183733013282108610">Busca no modo de incógnito</translation>
 <translation id="9186762474139509529">Iniciar rexistro</translation>
 <translation id="9191031968346938109">Engadir a…</translation>

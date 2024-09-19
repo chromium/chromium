@@ -155,6 +155,7 @@
 <translation id="1672499492233627739">خلاصة فيديو كاميرا الويب</translation>
 <translation id="1676557873873341166">تسجيل فيديو</translation>
 <translation id="1684279041537802716">لون التمييز</translation>
+<translation id="1697278726914783200">تسجيل</translation>
 <translation id="1703835215927279855">خطاب</translation>
 <translation id="1706391837335750954">توفُّر برنامج تعيين نظام أسماء النطاقات</translation>
 <translation id="1708602061922134366">‏الأزرق المميّز في Google</translation>
@@ -342,6 +343,7 @@
 <translation id="2560876255701405320">قائمة التسجيلات الصوتية</translation>
 <translation id="2561093647892030937">ليمون</translation>
 <translation id="2570743873672969996">جارٍ تنفيذ اختبار <ph name="TEST_NAME" />...</translation>
+<translation id="2573178735329662769">‏تسجيل كلّ الأصوات على جهاز Chromebook</translation>
 <translation id="2575552334616524665">يمكنك تفعيل هذه الميزة في "الإعدادات" أو في القائمة "<ph name="THREE_DOTS_MENU_ICON" />"</translation>
 <translation id="2576253868710695442">ستستهلك عملية التسجيل ما يصل إلى 2 غيغابايت من مساحة التخزين</translation>
 <translation id="2584547424703650812">منظر بألوان لامعة</translation>
@@ -510,6 +512,7 @@
 <translation id="3588034708467091142">يُرجى التأكّد من اتصالك بالإنترنت وإعادة المحاولة.</translation>
 <translation id="3594280220611906414">‫"<ph name="USER_FRIENDLY_APN_NAME" />" هو اسم سهل الاستخدام لـ "<ph name="APN_NAME" />".</translation>
 <translation id="3595596368722241419">البطارية ممتلئة</translation>
+<translation id="3600063043775287169">‏عندما يكون صوت جهاز Chromebook مفعّلاً، يسجِّل تطبيق "المسجّلة الذكية" كل الأصوات الذي يتم تشغيلها على هذا الجهاز. يُرجى التأكّد من أنّك تريد تسجيل كل الأصوات.</translation>
 <translation id="3600339377155080675">النسخ المطابق لمحتوى الشاشة</translation>
 <translation id="3602290021589620013">معاينة</translation>
 <translation id="3603829704940252505">الصورة الرمزية</translation>
@@ -709,6 +712,7 @@
 <translation id="458794348635939462">تعذَّرت مطابقة جميع الأجهزة المضيفة.</translation>
 <translation id="4593212453765072419">مطلوب مصادقة الخادم الوكيل</translation>
 <translation id="4594021849294327751">إنشاء نص</translation>
+<translation id="4602266091140407479">الميكروفون</translation>
 <translation id="4607282946861182308">يتعذّر إنشاء صور استنادًا إلى الطلب الذي أدخلته. جرِّب طلبًا آخر.</translation>
 <translation id="4609350030397390689">تقليل سطوع لوحة المفاتيح</translation>
 <translation id="4623061655523261501">تمّ إنشاء أسماء التسجيلات بنجاح</translation>
@@ -747,7 +751,7 @@
 <translation id="4809927044794281115">المظهر الفاتح</translation>
 <translation id="4813136279048157860">صوري</translation>
 <translation id="4813345808229079766">اتصال</translation>
-<translation id="4824527342590024245">الطلبات النصية التي يقل عدد كلماتها عن <ph name="MIN_WORD_LENGTH" /> غير متاحة حاليًا</translation>
+<translation id="4824527342590024245">يجب ألا يقل عدد كلمات الطلبات الصوتية عن <ph name="MIN_WORD_LENGTH" /> ليتم تحويلها إلى نص.</translation>
 <translation id="4830894019733815633">أخدود</translation>
 <translation id="4832079907277790330">اختيار مجلّد في تطبيق "الملفات"...</translation>
 <translation id="4835901797422965222">ما مِن شبكات نشِطة.</translation>
@@ -1022,6 +1026,7 @@
 <translation id="6184793017104303157">B4</translation>
 <translation id="6188737759358894319">‏تم إنشاء الخلفية بتاريخ ‎<ph name="DATE" />.</translation>
 <translation id="6189418609903030344">تقلّ قدرة البطارية مع الاستخدام.</translation>
+<translation id="6189987971574353264">تشغيل</translation>
 <translation id="6191293864534840972">خوادم الأسماء غير صالحة.</translation>
 <translation id="6196607555925437199">إعادة إنشاء</translation>
 <translation id="6205145102504628069">منظر انسيابي للسُحب</translation>

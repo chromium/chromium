@@ -292,6 +292,7 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="8860548555286245440">Åpne nettadresser i Chromium i Inkognito</translation>
 <translation id="8866191443434488382">Chromium registrerer sporingsnumre på nettsteder du besøker, og viser pakkeoppdateringer på Ny fane-siden. Pakkesporingsnummeret og navnet på nettstedet sendes til Chromium, slik at Chromium kan levere denne funksjonen og gjøre Shopping-funksjonene bedre for alle. Du kan når som helst oppdatere dette i <ph name="BEGIN_LINK" />innstillingene for pakkesporing<ph name="END_LINK" />.</translation>
 <translation id="8880024619507699923">Organisasjonen din krever at du logger på for å bruke Chromium. <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
+<translation id="8900052431807804054">Få den sterkeste sikkerheten i Chromium</translation>
 <translation id="894437814105052438">Når du logger av, synkroniserer ikke Chromium nye data med Google-kontoen din. Tidligere synkroniserte data blir værende på kontoen.</translation>
 <translation id="8950326149985259075">{THRESHOLD,plural, =1{Dette skjer når Chromium ikke har vært i bruk på {THRESHOLD} minutt}other{Dette skjer når Chromium ikke har vært i bruk på {THRESHOLD} minutter}}</translation>
 <translation id="8963279154877372067">Tillat at Chromium-varsler får varsler om prisavslag</translation>

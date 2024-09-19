@@ -35,6 +35,7 @@
 <translation id="1155154308031262006">প্রম্পট লিখুন</translation>
 <translation id="115705039208660697">আনারস</translation>
 <translation id="1164939766849482256">ডন টু ডার্ক স্ক্রিন সেভার</translation>
+<translation id="1166688493741195933">রেকর্ডিংয়ের নাম জেনারেট করা যায়নি</translation>
 <translation id="1167755866710282443">কী কাস্টমাইজ করার জন্য মেনু খুলুন। সরানোর জন্য মেনু টেনে আনুন।</translation>
 <translation id="1171349345463658120">বালুকাময় উপহ্রদ</translation>
 <translation id="1173894706177603556">পুনঃনামকরণ</translation>
@@ -342,6 +343,7 @@
 <translation id="2560876255701405320">অডিও রেকর্ডিংয়ের তালিকা</translation>
 <translation id="2561093647892030937">লেমন</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> টেস্ট চলছে...</translation>
+<translation id="2573178735329662769">Chromebook-এর সব অডিও রেকর্ড করা হচ্ছে</translation>
 <translation id="2575552334616524665">আপনি সেটিংস বা <ph name="THREE_DOTS_MENU_ICON" /> মেনু থেকে এটি চালু করতে পারবেন</translation>
 <translation id="2576253868710695442">এর জন্য ২জিবি পর্যন্ত স্টোরেজ লাগবে</translation>
 <translation id="2584547424703650812">গ্লোস্পেস</translation>
@@ -494,6 +496,7 @@
 <translation id="3502426834823382181">সব অ্যাপ দেখুন</translation>
 <translation id="3510890413042482857"><ph name="BEGIN_LINK1" />পারফর্ম্যান্স ট্রেস ডেটা<ph name="END_LINK1" /> পাঠান</translation>
 <translation id="3517001332549868749">ChromeOS-এর আপডেট</translation>
+<translation id="3522508178835057262">এখন, <ph name="MAX_WORD_LENGTH" />টির বেশি শব্দের ট্রানস্ক্রিপ্ট ব্যবহার করা যাবে না</translation>
 <translation id="3527036260304016759">প্রিন্ট করা যায়নি - অজানা সমস্যা</translation>
 <translation id="353214771040290298">এডিট করা হয়েছে</translation>
 <translation id="3532980081107202182">প্রায় <ph name="MIN_REMAINING" /> মিনিট সময় লাগবে</translation>
@@ -509,6 +512,7 @@
 <translation id="3588034708467091142">ইন্টারনেটে কানেক্ট আছেন কিনা দেখে নিয়ে আবার চেষ্টা করুন।</translation>
 <translation id="3594280220611906414"><ph name="APN_NAME" />-এর সহজে ব্যবহার করার নাম হল <ph name="USER_FRIENDLY_APN_NAME" /></translation>
 <translation id="3595596368722241419">ব্যাটারি পুরো চার্জ</translation>
+<translation id="3600063043775287169">Chromebook অডিও চালু থাকলে, Recorder এই ডিভাইসে চলা সব অডিও ক্যাপচার করে। সব সাউন্ড আপনি রেকর্ড করতে চান তা নিশ্চিত করুন।</translation>
 <translation id="3600339377155080675">স্ক্রিন শেয়ার করার বোতাম</translation>
 <translation id="3602290021589620013">প্রিভিউ</translation>
 <translation id="3603829704940252505">অবতার</translation>
@@ -711,6 +715,7 @@
 <translation id="4602266091140407479">মাইক</translation>
 <translation id="4607282946861182308">এটির ছবি তৈরি করা যাচ্ছে না। অন্য প্রম্পট ব্যবহার করে দেখুন।</translation>
 <translation id="4609350030397390689">কীবোর্ড উজ্জ্বলতা কমান</translation>
+<translation id="4623061655523261501">রেকর্ডিংয়ের নাম জেনারেট করা হয়েছে</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="TOTAL_PAGE_NUMBER" />টির মধ্যে <ph name="PRINTED_PAGE_NUMBER" /> নম্বর পৃষ্ঠা। প্রিন্ট করা বাতিল করতে এন্টার প্রেস করুন।</translation>
 <translation id="463791356324567266">স্ক্যানিং বাতিল করা হচ্ছে...</translation>
 <translation id="4644611440022666152">চালু করুন এবং ডাউনলোড করুন</translation>
@@ -1043,6 +1048,8 @@
 <translation id="628726841779494414">প্রিন্টারের সেটিংস থেকে আপনার প্রিন্টার ম্যানেজ করুন</translation>
 <translation id="6292095526077353682">চার্জ দেওয়ার সময়, এর জন্য স্ক্রিন সেভার দেখুন</translation>
 <translation id="629550705077076970">কীবোর্ড অনুজ্জ্বল হচ্ছে</translation>
+<translation id="6301193653204230066">'সেফটি রিসেট' ফিচার Chrome ব্রাউজারের এক্সটেনশন বন্ধ করে এবং নেটওয়ার্ক ও অন্যান্য সেটিংস নিরাপদ ডিফল্টে সেট করে।
+          আপনার ট্যাব, ফাইল, কুকি এবং ইতিহাস পরিবর্তন হবে না।</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> পরীক্ষা বাতিল করা হয়েছে</translation>
 <translation id="631063167932043783">এক্সপ্লোর সংক্রান্ত অ্যাপ</translation>
 <translation id="6318437367327684789">সব সময়</translation>
@@ -1052,6 +1059,7 @@
 <translation id="6325525973963619867">ব্যর্থ</translation>
 <translation id="6327262166342360252">নিচের এই টেক্সট ব্যবহার করে এই ওয়ালপেপার AI-এর মাধ্যমে তৈরি করা হয়েছে: "<ph name="PROMPT" />"।</translation>
 <translation id="6331191339300272798">অটোমেটিক ডার্ক থিম</translation>
+<translation id="6335228876613776082">মডেল ডাউনলোড সম্পূর্ণ হয়েছে</translation>
 <translation id="6340526405444716530">নিজের পছন্দ অনুযায়ী বেছে নেওয়া</translation>
 <translation id="6348252528297699679">আপনি 'সেটিংস &gt; গোপনীয়তা ও সুরক্ষা &gt; গোপনীয়তা নিয়ন্ত্রণ &gt; লোকেশন অ্যাক্সেস' বিকল্পে গিয়ে লোকেশন বন্ধ করে দিতে পারবেন। <ph name="LINK_BEGIN" />আরও জানুন<ph name="LINK_END" /></translation>
 <translation id="6348738456043757611">ইউজারনেম এবং পাসওয়ার্ড</translation>
@@ -1213,6 +1221,7 @@
 <translation id="708426984172631313">থেমে গেছে</translation>
 <translation id="7086168019478250425">বায়োলুমিনিসেন্ট বিচ</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
+<translation id="7086916854357021265">রেকর্ডিংয়ের নাম জেনারেট করা হচ্ছে</translation>
 <translation id="7097908713073775559">কালারফুল</translation>
 <translation id="710028965487274708">পাওয়া যায়নি - অনুমোদন পাওয়া যায়নি</translation>
 <translation id="7101959270679078188">প্রসেস আপডেট করা চালিয়ে যেতে <ph name="DEVICE_NAME" /> আনলক করুন</translation>
@@ -1545,6 +1554,7 @@
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Google Photos অ্যালবাম</translation>
 <translation id="8775713578693478175">মোডেম APN</translation>
+<translation id="877735394245039557">মডেল ডাউনলোড হচ্ছে</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">এই নেটওয়ার্কে খুব সম্ভবত ক্যাপটিভ পোর্টাল আছে</translation>
 <translation id="8797082062139985406">Google AI ব্যবহার করে নাম তৈরি করুন</translation>

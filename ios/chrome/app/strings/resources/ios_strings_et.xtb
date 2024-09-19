@@ -577,6 +577,7 @@ Vaadake oma otsingumootori juhiseid otsinguajaloo kustutamise kohta, kui see on 
 <translation id="3851938967634752633">Teenuste <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> ja veel <ph name="NUMBER_OF_ACCOUNTS" /> paroolid kustutatakse. Teie kontosid ei kustutata.</translation>
 <translation id="3858860766373142691">Nimi</translation>
 <translation id="3861908220442487587">See aadress salvestatakse vaid sellesse seadmesse. Kui soovite seda teistes seadmetes kasutada, teisaldage see oma Google'i kontole <ph name="USER_EMAIL" />.</translation>
+<translation id="3868495844258915202">Kuva kogu URL</translation>
 <translation id="3876833929577368454">Küsi iga kord</translation>
 <translation id="3885587018298784481">Liituge peregrupiga</translation>
 <translation id="3888863481921783344">Seda kasutatakse teile nende kontaktide näitamiseks, keda soovite võib-olla sündmusele kutsuda.</translation>
@@ -864,6 +865,7 @@ Vaadake oma otsingumootori juhiseid otsinguajaloo kustutamise kohta, kui see on 
 <translation id="5210365745912300556">Sule vaheleht</translation>
 <translation id="5211488077761630279">Kas anda saidile „<ph name="SITE_NAME" />“ luba kasutada <ph name="PERMISSION" />?</translation>
 <translation id="5217245356412073535">Saidi vaikevaate saate arvutiversiooniks muuta valikutega Seaded &gt; Sisu seaded</translation>
+<translation id="5217329997012062137">Kui kasutate Google Lensi, saadetakse Google'ile lehe ekraanipilt.</translation>
 <translation id="5220945116117011963">Kalendrisündmuste loomine kuupäevade põhjal</translation>
 <translation id="5222676887888702881">Logi välja</translation>
 <translation id="5228579091201413441">Sünkroonimise lubamine</translation>
@@ -1638,6 +1640,7 @@ Saidid saavad küpsisefailide abil eri saitidel teie sirvimistegevust jälgida, 
 <translation id="8712534545803964353">Lehelt otsimine …</translation>
 <translation id="8712637175834984815">Selge</translation>
 <translation id="8722229818691036192">Selles seadmes olevad kontod</translation>
+<translation id="8722649775263832315">Google Lensiga otsimiseks puudutage sisu või tõstke see esile</translation>
 <translation id="8725066075913043281">Proovi uuesti</translation>
 <translation id="8728922029615312208">Sulge kõik</translation>
 <translation id="8730621377337864115">Valmis</translation>

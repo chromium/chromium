@@ -7308,6 +7308,7 @@ Rechten die je al hebt gegeven aan websites en apps, kunnen van toepassing zijn 
 <translation id="628726841779494414">Beheer je printers in de printerinstellingen</translation>
 <translation id="6287828400772161253">Android-telefoon (<ph name="HOST_DEVICE_NAME" />)</translation>
 <translation id="6290613030083731160">Geen beschikbare apparaten die delen in de buurt. <ph name="LINK_BEGIN" />Meer informatie<ph name="LINK_END" /></translation>
+<translation id="6291580570300353047">Herstellen is niet mogelijk vanwege onvoldoende opslagruimte.</translation>
 <translation id="6291741848715722067">Bevestigingscode</translation>
 <translation id="6291953229176937411">&amp;Toon in Finder</translation>
 <translation id="6292699686837272722">Tabbladen krimpen tot een gemiddelde breedte</translation>
@@ -11457,7 +11458,7 @@ Zichtbaar als <ph name="DEVICE_TYPE" />…</translation>
 <translation id="992778845837390402">Linux-back-up wordt momenteel uitgevoerd</translation>
 <translation id="993540765962421562">De installatie wordt uitgevoerd</translation>
 <translation id="994087375490600917">Zijvensters</translation>
-<translation id="994289308992179865">&amp;Herhalen</translation>
+<translation id="994289308992179865">&amp;Loop</translation>
 <translation id="995755448277384931">IBAN toevoegen</translation>
 <translation id="995782501881226248">YouTube</translation>
 <translation id="996250603853062861">Beveiligde verbinding tot stand brengen...</translation>

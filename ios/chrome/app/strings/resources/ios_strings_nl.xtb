@@ -50,6 +50,7 @@
 <translation id="1219674500290482172">Kan geen verbinding maken met internet.</translation>
 <translation id="1227113644794103810">Inactieve tabbladen</translation>
 <translation id="1231733316453485619">Synchronisatie aanzetten?</translation>
+<translation id="1253032109800629289">'Meldingen voor prijzen volgen krijgen' verbergen</translation>
 <translation id="1258491128795710625">Wat is er nieuw</translation>
 <translation id="1263231323834454256">Leeslijst</translation>
 <translation id="1263433075299269530">Je laatst geopende tabblad</translation>
@@ -395,6 +396,7 @@ Je zoekmachine is <ph name="DSE_NAME" />. Bekijk de instructies van de zoekmachi
 <translation id="2870560284913253234">Site</translation>
 <translation id="2876369937070532032">Verzendt URL's van bepaalde pagina's die je bezoekt naar Google wanneer je beveiliging risico loopt</translation>
 <translation id="2883151425485251736">Onderwerpen bekijken en bewerken die je hebt verborgen in je account</translation>
+<translation id="2888631381369839306">Meldingen voor prijzen volgen aangezet</translation>
 <translation id="288902476966286676">Terug naar afzender</translation>
 <translation id="2894757982205307093">Nieuw tabblad in groep</translation>
 <translation id="2905479111267140204">Je hebt <ph name="NUMBER_OF_PASSWORDS" /> hergebruikte wachtwoorden die een beveiligingsrisico kunnen vormen.</translation>
@@ -577,6 +579,7 @@ Bekijk de instructies van je zoekmachine voor het verwijderen van je zoekgeschie
 <translation id="3851938967634752633">Wachtwoorden voor <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> en <ph name="NUMBER_OF_ACCOUNTS" /> andere accounts worden verwijderd. Je accounts zelf worden niet verwijderd.</translation>
 <translation id="3858860766373142691">Naam</translation>
 <translation id="3861908220442487587">Dit adres wordt alleen opgeslagen op dit apparaat. Verplaats het naar je Google-account <ph name="USER_EMAIL" /> om het op je andere apparaten te gebruiken</translation>
+<translation id="3868495844258915202">Volledige URL tonen</translation>
 <translation id="3876833929577368454">Altijd vragen</translation>
 <translation id="3885587018298784481">Lid worden van een gezinsgroep</translation>
 <translation id="3888863481921783344">Dit wordt gebruikt om je mogelijke genodigden voor je evenement te tonen.</translation>
@@ -864,6 +867,7 @@ Bekijk de instructies van je zoekmachine voor het verwijderen van je zoekgeschie
 <translation id="5210365745912300556">Tabblad sluiten</translation>
 <translation id="5211488077761630279">Toestaan dat <ph name="SITE_NAME" /> je <ph name="PERMISSION" /> gebruikt?</translation>
 <translation id="5217245356412073535">Je kunt de standaard siteweergave wijzigen in desktop via Instellingen &gt; Contentinstellingen</translation>
+<translation id="5217329997012062137">Als je Google Lens gebruikt, wordt een screenshot van de pagina naar Google gestuurd.</translation>
 <translation id="5220945116117011963">Agenda-afspraken maken op basis van datums</translation>
 <translation id="5222676887888702881">Uitloggen</translation>
 <translation id="5228579091201413441">Synchronisatie aanzetten</translation>
@@ -876,6 +880,7 @@ Bekijk de instructies van je zoekmachine voor het verwijderen van je zoekgeschie
 <translation id="5271265092610673171">{count,plural, =1{Een verplicht veld is leeg. Vul het in voordat je opslaat.}other{Sommige verplichte velden zijn leeg. Vul ze in voordat je opslaat.}}</translation>
 <translation id="5271549068863921519">Wachtwoord opslaan</translation>
 <translation id="5279600392753459966">Alle blokkeren</translation>
+<translation id="5282340693022193851">Als je meldingen voor prijzen volgen wilt krijgen, zet je meldingen aan in de iOS-instellingen.</translation>
 <translation id="5294624619177114121">Mobiele meldingen</translation>
 <translation id="5295239312320826323">Account <ph name="USER_EMAIL" /> verwijderen?</translation>
 <translation id="5300589172476337783">Tonen</translation>
@@ -1638,6 +1643,7 @@ Sites mogen cookies gebruiken om je browse-activiteit op verschillende sites te 
 <translation id="8712534545803964353">Zoeken op pagina…</translation>
 <translation id="8712637175834984815">Begrepen</translation>
 <translation id="8722229818691036192">Accounts op dit apparaat</translation>
+<translation id="8722649775263832315">Tik of markeer om te zoeken met Google Lens</translation>
 <translation id="8725066075913043281">Opnieuw proberen</translation>
 <translation id="8728922029615312208">Alles sluiten</translation>
 <translation id="8730621377337864115">Klaar</translation>

@@ -106,6 +106,7 @@
 <translation id="1413446866325418126">Захоўвайце даныя ва Уліковым запісе Google</translation>
 <translation id="1414981605391750300">Ідзе падключэнне да Google. Пачакайце…</translation>
 <translation id="1416550906796893042">Версія праграмы</translation>
+<translation id="1419753403124156396">Перазапусціць Chrome?</translation>
 <translation id="1428770807407000502">Выключыць сінхранізацыю?</translation>
 <translation id="1430915738399379752">Друк</translation>
 <translation id="1435593198351412143">Адкрываць PDF аўтаматычна</translation>
@@ -229,6 +230,7 @@
 <translation id="2067805253194386918">тэкст</translation>
 <translation id="2079545284768500474">Адрабіць</translation>
 <translation id="2082238445998314030">Вынік <ph name="RESULT_NUMBER" /> з <ph name="TOTAL_RESULTS" /></translation>
+<translation id="2088833076121753253">Каб завяршыць наладжванне аўтазапаўнення, перазапусціце Chrome. Вашы ўкладкі аўтаматычна адкрыюцца зноў.</translation>
 <translation id="2091863218454846791">Выбрана кампактнае адлюстраванне</translation>
 <translation id="2093731487903423814">апошнія 15 хвілін</translation>
 <translation id="2096012225669085171">Сінхранізацыя і персаналізацыя на ўсіх прыладах</translation>
@@ -666,6 +668,7 @@
 <translation id="4216511743389425832">Агучыць гэту старонку</translation>
 <translation id="4225725533026049334">Вы падпісаны</translation>
 <translation id="4225895483398857530">Кнопка-ярлык на панэлі інструментаў</translation>
+<translation id="4232376164796433044">Паролі і аўтазапаўненне</translation>
 <translation id="4242533952199664413">Адкрыць налады</translation>
 <translation id="4248098802131000011">Захоўвайце паролі ў бяспечным месцы, каб прадухіліць іх раскрыццё ў выпадку ўцечкі даных або іншых праблем з бяспекай</translation>
 <translation id="424864128008805179">Выйсці з Chrome?</translation>
@@ -748,6 +751,7 @@
 <translation id="4609429330876432068">Вашы спісы захаваных пароляў для Chrome і версіі "<ph name="CHROME_CHANNEL" />" былі аб’яднаны. Вы і далей можаце выкарыстоўваць аўтазапаўненне для ўсіх захаваных пароляў у абедзвюх праграмах.</translation>
 <translation id="4616150815774728855">Адкрыць <ph name="WEBAPK_NAME" /></translation>
 <translation id="4619564267100705184">Пацвердзіць маю асобу</translation>
+<translation id="4620032614425803188">Службы аўтазапаўнення</translation>
 <translation id="4624065194742029982">Chrome у рэжыме інкогніта</translation>
 <translation id="4634124774493850572">Выкарыстаць пароль</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{Адзін раскрыты пароль}one{# раскрыты пароль}few{# раскрытыя паролі}many{# раскрытых пароляў}other{# раскрытага пароля}}</translation>
@@ -900,6 +904,7 @@
 <translation id="5264813352784073502">апошнія 24 гадзіны</translation>
 <translation id="5267572070504076962">Каб абараніцца ад небяспечных сайтаў, уключыце Бяспечны прагляд</translation>
 <translation id="5271967389191913893">Прылада не можа адкрыць змесціва для спампоўвання.</translation>
+<translation id="5273031377282080577">Гэтай наладай кіруе адміністратар.</translation>
 <translation id="5292796745632149097">Адпраўка на прыладу</translation>
 <translation id="5301876394151419436">Вы ўвайшлі як <ph name="EMAIL" />. Вы можаце ў любы час спыніць сінхранізацыю ў наладах. Google можа персаналізаваць Пошук і іншыя сэрвісы на аснове вашай гісторыі прагляду сайтаў.</translation>
 <translation id="5304593522240415983">Гэта поле не можа быць пустым</translation>
@@ -1234,6 +1239,7 @@
 <translation id="6775840696761158817">Пры ўводзе тэксту ў адрасным радку або ў полі пошуку вы будзеце бачыць прапановы вашай стандартнай пошукавай сістэмы. У рэжыме інкогніта гэта функцыя не працуе.</translation>
 <translation id="6785476624617658922">Дадатковыя ўмовы выкарыстання Chrome і Chrome OS</translation>
 <translation id="6795633245022906657">Хуткае адкрыццё новай укладкі. Каб змяніць функцыю гэтай кнопкі, перайдзіце ў Налады.</translation>
+<translation id="679956319013005046">Каб задаць пераважную службу для аўтазапаўнення, спачатку дадайце гэту службу ў <ph name="BEGIN_LINK" />Налады Android<ph name="END_LINK" />.</translation>
 <translation id="6802555630140434547">Акно будзе закрыта</translation>
 <translation id="6803791793483522764">Праверка апавяшчэнняў</translation>
 <translation id="6811034713472274749">Старонка гатовая да прагляду</translation>
@@ -1465,6 +1471,7 @@
 <translation id="7707922173985738739">Выкарыстоўваць мабільную перадачу даных</translation>
 <translation id="7709918231054955894">Праглядайце ўсе свае ўкладкі</translation>
 <translation id="7733878270780732638">Недастаткова месца на прыладзе.</translation>
+<translation id="774876555279732384">Кіраваць службамі аўтазапаўнення таксама можна ў <ph name="BEGIN_LINK" />Наладах Android<ph name="END_LINK" />.</translation>
 <translation id="7759809451544302770">Неабавязкова</translation>
 <translation id="7762668264895820836">SD-карта <ph name="SD_CARD_NUMBER" /></translation>
 <translation id="7764225426217299476">Дадаць адрас</translation>

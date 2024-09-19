@@ -35,6 +35,7 @@
 <translation id="1155154308031262006">Εισαγάγετε μια οδηγία</translation>
 <translation id="115705039208660697">ανανάδες</translation>
 <translation id="1164939766849482256">Προστασία οθόνης Από την αυγή μέχρι να νυχτώσει</translation>
+<translation id="1166688493741195933">Η δημιουργία ονομάτων εγγραφών απέτυχε</translation>
 <translation id="1167755866710282443">Ανοίξτε το μενού για να προσαρμόσετε τα πλήκτρα. Σύρετε το μενού για μετακίνηση.</translation>
 <translation id="1171349345463658120">αμμώδης λιμνοθάλασσα</translation>
 <translation id="1173894706177603556">Μετονομασία</translation>
@@ -342,6 +343,7 @@
 <translation id="2560876255701405320">Λίστα εγγραφών ήχου</translation>
 <translation id="2561093647892030937">λεμόνια</translation>
 <translation id="2570743873672969996">Εκτέλεση δοκιμής <ph name="TEST_NAME" />…</translation>
+<translation id="2573178735329662769">Εγγραφή όλου του ήχου του Chromebook</translation>
 <translation id="2575552334616524665">Μπορείτε να ενεργοποιήσετε αυτή τη λειτουργία στις Ρυθμίσεις ή στο μενού <ph name="THREE_DOTS_MENU_ICON" /></translation>
 <translation id="2576253868710695442">Για να γίνει αυτό απαιτούνται έως και 2 GB αποθηκευτικού χώρου</translation>
 <translation id="2584547424703650812">Λάμψεις</translation>
@@ -494,6 +496,7 @@
 <translation id="3502426834823382181">προβολή όλων των εφαρμογών</translation>
 <translation id="3510890413042482857">Αποστολή <ph name="BEGIN_LINK1" />δεδομένων εντοπισμού απόδοσης<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">Ενημέρωση ChromeOS</translation>
+<translation id="3522508178835057262">Προς το παρόν, δεν υποστηρίζεται μεταγραφή με περισσότερες από <ph name="MAX_WORD_LENGTH" /> λέξεις</translation>
 <translation id="3527036260304016759">Σφάλμα - Άγνωστο σφάλμα</translation>
 <translation id="353214771040290298">Ολοκλήρωση επεξεργασίας</translation>
 <translation id="3532980081107202182">Απομένουν περίπου <ph name="MIN_REMAINING" /> λεπτά</translation>
@@ -509,6 +512,7 @@
 <translation id="3588034708467091142">Βεβαιωθείτε ότι είστε συνδεδεμένοι στο διαδίκτυο και δοκιμάστε ξανά.</translation>
 <translation id="3594280220611906414">Το <ph name="USER_FRIENDLY_APN_NAME" /> είναι το φιλικό προς τον χρήστη όνομα για την εφαρμογή <ph name="APN_NAME" />.</translation>
 <translation id="3595596368722241419">Μπαταρία πλήρης</translation>
+<translation id="3600063043775287169">Όταν ο ήχος του Chromebook είναι ενεργοποιημένος, η Εγγραφή καταγράφει όλο τον ήχο που αναπαράγεται σε αυτή τη συσκευή. Βεβαιωθείτε ότι θέλετε να εγγράψετε όλους τους ήχους.</translation>
 <translation id="3600339377155080675">Κατοπτρισμός οθόνης</translation>
 <translation id="3602290021589620013">Προεπισκόπηση</translation>
 <translation id="3603829704940252505">Avatar</translation>
@@ -711,6 +715,7 @@
 <translation id="4602266091140407479">Μικρόφωνο</translation>
 <translation id="4607282946861182308">Δεν είναι δυνατή η δημιουργία εικόνων αυτού του στοιχείου. Δοκιμάστε άλλη οδηγία.</translation>
 <translation id="4609350030397390689">Μείωση φωτεινότητας πληκτρολογίου</translation>
+<translation id="4623061655523261501">Τα ονόματα εγγραφών δημιουργήθηκαν με επιτυχία</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> από <ph name="TOTAL_PAGE_NUMBER" />. Πατήστε enter, για να ακυρώσετε την εργασία εκτύπωσης.</translation>
 <translation id="463791356324567266">Ακύρωση σάρωσης…</translation>
 <translation id="4644611440022666152">Ενεργοποίηση και λήψη</translation>
@@ -1043,6 +1048,8 @@
 <translation id="628726841779494414">Διαχείριση των εκτυπωτών σας στις ρυθμίσεις εκτυπωτών</translation>
 <translation id="6292095526077353682">Κατά τη φόρτιση, να εμφανίζεται η προστασία οθόνης</translation>
 <translation id="629550705077076970">μείωση φωτεινότητας πληκτρολογίου</translation>
+<translation id="6301193653204230066">Η Επαναφορά ασφαλείας απενεργοποιεί τις επεκτάσεις του προγράμματος περιήγησης Chrome και επαναφέρει τις ρυθμίσεις δικτύου και άλλες ρυθμίσεις στις ασφαλείς προεπιλογές.
+          Οι καρτέλες, τα αρχεία, τα cookie και το ιστορικό σας δεν θα αλλάξουν.</translation>
 <translation id="6302401976930124515">Η δοκιμή <ph name="TEST_NAME" /> ακυρώθηκε</translation>
 <translation id="631063167932043783">Εφαρμογή Εξερεύνηση</translation>
 <translation id="6318437367327684789">για πάντα</translation>
@@ -1052,6 +1059,7 @@
 <translation id="6325525973963619867">Απέτυχε</translation>
 <translation id="6327262166342360252">Αυτή η ταπετσαρία δημιουργήθηκε με AI με τη χρήση του παρακάτω κειμένου: "<ph name="PROMPT" />."</translation>
 <translation id="6331191339300272798">Αυτόματο σκούρο θέμα</translation>
+<translation id="6335228876613776082">Η λήψη του μοντέλου ολοκληρώθηκε</translation>
 <translation id="6340526405444716530">Εξατομίκευση</translation>
 <translation id="6348252528297699679">Μπορείτε να απενεργοποιήσετε την τοποθεσία στην ενότητα Ρυθμίσεις &gt; Απόρρητο και ασφάλεια &gt; Στοιχεία ελέγχου απορρήτου &gt; Πρόσβαση τοποθεσίας. <ph name="LINK_BEGIN" />Μάθετε περισσότερα<ph name="LINK_END" /></translation>
 <translation id="6348738456043757611">Όνομα χρήστη και κωδικός πρόσβασης</translation>
@@ -1213,6 +1221,7 @@
 <translation id="708426984172631313">ΔΙΑΚΟΠΗΚΕ</translation>
 <translation id="7086168019478250425">βιοφωσφορίζουσα παραλία</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
+<translation id="7086916854357021265">Δημιουργία ονομάτων εγγραφών</translation>
 <translation id="7097908713073775559">πολύχρωμους</translation>
 <translation id="710028965487274708">Αποτυχία - Ο έλεγχος ταυτότητας απέτυχε</translation>
 <translation id="7101959270679078188">Ξεκλειδώστε τη συσκευή <ph name="DEVICE_NAME" /> για να συνεχίσετε τη διαδικασία ενημέρωσης</translation>
@@ -1545,6 +1554,7 @@
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Λεύκωμα Φωτογραφιών Google</translation>
 <translation id="8775713578693478175">APN μόντεμ</translation>
+<translation id="877735394245039557">Λήψη μοντέλου σε εξέλιξη</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">Αυτό το δίκτυο μπορεί να έχει πύλη υποδοχής</translation>
 <translation id="8797082062139985406">Δημιουργία ονόματος με χρήση του Google AI</translation>

@@ -1607,6 +1607,7 @@
 <translation id="211803431539496924">ਕੀ ਵਿਸਤ੍ਰਿਤ ਸੁਰੱਖਿਆ ਅੱਪਡੇਟਾਂ ਦੀ ਤਸਦੀਕ ਕਰਨੀ ਹੈ?</translation>
 <translation id="2118594521750010466">ਹੁਣੇ ਠੀਕ ਕਰੋ</translation>
 <translation id="2119461801241504254">ਸੁਰੱਖਿਅਤ ਬ੍ਰਾਊਜ਼ਿੰਗ ਚਾਲੂ ਹੈ ਅਤੇ ਤੁਹਾਨੂੰ ਨੁਕਸਾਨਦੇਹ ਸਾਈਟਾਂ ਅਤੇ ਡਾਊਨਲੋਡਾਂ ਤੋਂ ਸੁਰੱਖਿਅਤ ਰੱਖ ਰਹੀ ਹੈ</translation>
+<translation id="2119602978828978573">ਲਾਈਵ ਸੁਰਖੀਆਂ ਲਈ ਸਮਰਥਿਤ ਭਾਸ਼ਾਵਾਂ</translation>
 <translation id="2120297377148151361">ਸਰਗਰਮੀ ਅਤੇ ਅੰਤਰਕਿਰਿਆਵਾਂ</translation>
 <translation id="2120639962942052471">ਬਲਾਕ ਕੀਤੀ ਗਈ <ph name="PERMISSION" /></translation>
 <translation id="2121055421682309734">{COUNT,plural, =0{ਕੁਕੀਜ਼ ਬਲਾਕ ਕੀਤੀਆਂ ਗਈਆਂ ਹਨ}=1{ਕੁਕੀਜ਼ ਬਲਾਕ ਕੀਤੀਆਂ ਗਈਆਂ ਹਨ, 1 ਅਪਵਾਦ}other{ਕੁਕੀਜ਼ ਬਲਾਕ ਕੀਤੀਆਂ ਗਈਆਂ ਹਨ, {COUNT} ਅਪਵਾਦ}}</translation>
@@ -2679,6 +2680,7 @@
 <translation id="2864601841139725659">ਆਪਣੇ ਪ੍ਰੋਫਾਈਲ ਤਸਵੀਰ ਦੀ ਸੈਟਿੰਗ ਕਰੋ</translation>
 <translation id="2865057607286263192">ਐਕਸੈਂਟ ਚਿੰਨ੍ਹ ਅਤੇ ਖਾਸ ਅੱਖਰ-ਚਿੰਨ੍ਹ ਦੇਖਣ ਲਈ ਕੀ-ਬੋਰਡ ਕੁੰਜੀਆਂ ਨੂੰ ਦਬਾਈ ਰੱਖੋ। ਇਸ ਨਾਲ ਵਰਨਾਂ ਵਾਲੀਆਂ ਕੁੰਜੀਆਂ ਲਈ ਕੁੰਜੀ ਦਬਾਉਣ ਨੂੰ ਦੁਹਰਾਉਣ ਦੀ ਪ੍ਰਕਿਰਿਆ ਬੰਦ ਹੋ ਜਾਵੇਗੀ। ਸਿਰਫ਼ ਅੰਗਰੇਜ਼ੀ (ਯੂ.ਐੱਸ.) ਲਈ ਉਪਲਬਧ ਹੈ।</translation>
 <translation id="2865919525181940183">ਉਹਨਾਂ ਪ੍ਰੋਗਰਾਮਾਂ ਦਾ ਸਕ੍ਰੀਨਸ਼ਾਟ ਜੋ ਫਿਲਹਾਲ ਸਕ੍ਰੀਨ 'ਤੇ ਮੌਜੂਦ ਹਨ</translation>
+<translation id="286643536820867504">ਸਮਰਥਿਤ ਭਾਸ਼ਾਵਾਂ ਲਈ ਆਪਣੇ ਆਪ ਸੁਰਖੀਆਂ ਬਣਦੀਆਂ ਹਨ। ਆਡੀਓ ਕਦੇ ਵੀ ਤੁਹਾਡੇ ਡੀਵਾਈਸ ਤੋਂ ਬਾਹਰ ਨਹੀਂ ਜਾਵੇਗੀ।</translation>
 <translation id="286674810810214575">ਪਾਵਰ ਸਰੋਤਾਂ ਦੀ ਜਾਂਚ ਕੀਤੀ ਜਾ ਰਹੀ ਹੈ...</translation>
 <translation id="2867768963760577682">ਪਿੰਨ ਕੀਤੀ ਟੈਬ ਦੇ ਤੌਰ ਤੇ ਖੋਲ੍ਹੋ</translation>
 <translation id="2868746137289129307">ਇਹ ਐਕਸਟੈਂਸ਼ਨ ਪੁਰਾਣੀ ਹੈ ਅਤੇ ਐਂਟਰਪ੍ਰਾਈਜ ਨੀਤੀ ਵੱਲੋਂ ਬੰਦ ਕੀਤੀ ਗਈ ਹੈ। ਇਹ ਉਦੋਂ ਸਵੈਚਲਿਤ ਤੌਰ 'ਤੇ ਚਾਲੂ ਹੋ ਸਕਦੀ ਹੈ, ਜਦੋਂ ਕੋਈ ਨਵਾਂ ਵਰਜਨ ਉਪਲਬਧ ਹੁੰਦਾ ਹੈ।</translation>
@@ -3299,6 +3301,7 @@
 <translation id="333863344734218290">ਤੁਹਾਨੂੰ ਅਸੁਰੱਖਿਅਤ ਜਨਤਕ ਅਤੇ ਨਿੱਜੀ ਸਾਈਟਾਂ ਲਈ ਚਿਤਾਵਨੀ ਦਿੱਤੀ ਜਾਂਦੀ ਹੈ</translation>
 <translation id="3340620525920140773">ਡਾਊਨਲੋਡ ਪੂਰਾ ਹੋਇਆ: <ph name="FILE_NAME" />।</translation>
 <translation id="3340978935015468852">ਸੈਟਿੰਗਾਂ</translation>
+<translation id="3341091511696469129">Chrome ਇੱਥੇ ਦਿਖਾਈਆਂ ਗਈਆਂ ਭਾਸ਼ਾਵਾਂ ਲਈ ਸੁਰਖੀਆਂ ਬਣਾ ਸਕਦਾ ਹੈ ਅਤੇ ਉਨ੍ਹਾਂ ਦਾ ਅਨੁਵਾਦ ਕਰ ਸਕਦਾ ਹੈ</translation>
 <translation id="3341699307020049241">ਗਲਤ ਪਿੰਨ। ਤੁਹਾਡੇ ਕੋਲ <ph name="RETRIES" /> ਕੋਸ਼ਿਸ਼ਾਂ ਬਾਕੀ ਹਨ।</translation>
 <translation id="3341703758641437857">ਫਾਈਲ URL ਤੱਕ ਪਹੁੰਚ ਦੀ ਆਗਿਆ ਦਿਓ</translation>
 <translation id="334171495789408663">ਟੋਕਨ ਕਾਪੀ ਕੀਤਾ ਗਿਆ</translation>
@@ -5877,6 +5880,7 @@
 <translation id="5214639857958972833">'<ph name="BOOKMARK_TITLE" />' ਬੁੱਕਮਾਰਕ ਬਣਾਇਆ ਗਿਆ।</translation>
 <translation id="5215450412607891876">ਵਿਸਤ੍ਰਿਤ ਸੁਰੱਖਿਆ ਅੱਪਡੇਟ ਚਾਲੂ ਕਰੋ</translation>
 <translation id="5215502535566372932">ਦੇਸ਼ ਚੁਣੋ</translation>
+<translation id="5216674789212441076">ਲਾਈਵ ਸੁਰਖੀਆਂ ਦਾ ਅਨੁਵਾਦ ਆਪਣੇ ਆਪ ਹੁੰਦਾ ਹੈ। ਅਨੁਵਾਦ ਲਈ ਸੁਰਖੀਆਂ Google ਨੂੰ ਭੇਜੀਆਂ ਜਾਂਦੀਆਂ ਹਨ।</translation>
 <translation id="5220011581825921581">ਖੋਜ + ਉੱਪਰ ਤੀਰ</translation>
 <translation id="5221516927483787768"><ph name="HOST_NAME" /> ਕਾਸਟ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਿਆ।</translation>
 <translation id="5222403284441421673">ਅਸੁਰੱਖਿਅਤ ਡਾਊਨਲੋਡ ਨੂੰ ਬਲਾਕ ਕੀਤਾ ਗਿਆ</translation>
@@ -7326,6 +7330,7 @@
 <translation id="628726841779494414">ਪ੍ਰਿੰਟਰ ਸੈਟਿੰਗਾਂ ਵਿੱਚ ਆਪਣੇ ਪ੍ਰਿੰਟਰਾਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
 <translation id="6287828400772161253">Android ਫ਼ੋਨ (<ph name="HOST_DEVICE_NAME" />)</translation>
 <translation id="6290613030083731160">ਕੋਈ ਨਜ਼ਦੀਕੀ ਸਾਂਝਾਕਰਨ ਡੀਵਾਈਸ ਉਪਲਬਧ ਨਹੀਂ ਹਨ। <ph name="LINK_BEGIN" />ਹੋਰ ਜਾਣੋ<ph name="LINK_END" /></translation>
+<translation id="6291580570300353047">ਸਟੋਰੇਜ ਜਗ੍ਹਾ ਦੀ ਘਾਟ ਕਾਰਨ ਮੁੜ-ਬਹਾਲ ਨਹੀਂ ਕੀਤਾ ਜਾ ਸਕਦਾ।</translation>
 <translation id="6291741848715722067">ਤਸਦੀਕੀ ਕੋਡ</translation>
 <translation id="6291953229176937411">&amp;ਫਾਈਂਡਰ ਵਿੱਚ ਦਿਖਾਓ</translation>
 <translation id="6292699686837272722">ਟੈਬਾਂ ਦੀ ਚੌੜਾਈ ਸੁੰਗੜ ਕੇ ਦਰਮਿਆਨੀ ਹੋ ਜਾਂਦੀ ਹੈ</translation>
@@ -7972,6 +7977,7 @@
 <translation id="6785739405821760313">ਰੱਖਿਅਤ ਕੀਤੇ ਡੈਸਕ ਦੇਖੇ ਜਾ ਰਹੇ ਹਨ। ਨੈਵੀਗੇਟ ਕਰਨ ਲਈ Tab ਦਬਾਓ।</translation>
 <translation id="6785915470941880363">ਉਲਟ ਸਕ੍ਰੋਲਿੰਗ <ph name="LINK_BEGIN" />ਹੋਰ ਜਾਣੋ<ph name="LINK_END" /></translation>
 <translation id="67862343314499040">ਬੈਂਗਣੀ</translation>
+<translation id="6786480815699355166">ਸਿਰਫ਼ ਲਾਈਵ ਸੁਰਖੀਆਂ ਲਈ ਸਮਰਥਿਤ ਭਾਸ਼ਾਵਾਂ ਦਾ ਅਨੁਵਾਦ ਕੀਤਾ ਜਾ ਸਕਦਾ ਹੈ</translation>
 <translation id="6786747875388722282">ਐਕਸਟੈਂਸ਼ਨਾਂ</translation>
 <translation id="6787097042755590313">ਹੋਰ ਟੈਬ</translation>
 <translation id="6787531944787756058">ਵਰਤੋਂਕਾਰ ਨਾਮ <ph name="USER_EMAIL" /> ਸਿਰਫ਼ ਇਸ ਡੀਵਾਈਸ 'ਤੇ ਰੱਖਿਅਤ ਕੀਤਾ ਗਿਆ ਹੈ। ਵੇਰਵੇ ਦੇਖੋ</translation>
@@ -10567,6 +10573,7 @@
 <translation id="8656888282555543604">ਬ੍ਰੇਲ ਲੌਗਿੰਗ ਨੂੰ ਚਾਲੂ ਕਰੋ</translation>
 <translation id="8657393004602556571">ਕੀ ਤੁਸੀਂ ਵਿਚਾਰ ਨੂੰ ਬਰਖਾਸਤ ਕਰਨਾ ਚਾਹੁੰਦੇ ਹੋ?</translation>
 <translation id="8657542881463614516">ਪੰਨਿਆਂ ਵਿਚਕਾਰ ਨੈਵੀਗੇਟ ਕਰਨ ਲਈ ਸਵਾਈਪ ਇਸ਼ਾਰਾ ਵਰਤੋ</translation>
+<translation id="865857184419171576">ਸੁਰਖੀਆਂ ਦਾ ਇਸ ਭਾਸ਼ਾ ਵਿੱਚ ਅਨੁਵਾਦ ਕਰੋ</translation>
 <translation id="865936634714975126">ਪੰਨਾ ਲੋਡ ਹੋਣ 'ਤੇ ਕਿਸਮ ਦੀ ਚੋਣ ਕਰਨ ਲਈ URL ਵਿੱਚ ਪੁੱਛਗਿੱਛ ਸੰਬੰਧੀ ਪੈਰਾਮੀਟਰ ਸ਼ਾਮਲ ਕਰੋ। ਉਦਾਹਰਨ: chrome://device-log/?types=Bluetooth,USB</translation>
 <translation id="8659608856364348875"><ph name="FEATURE_NAME" /> ਸੰਪਰਕ</translation>
 <translation id="8659609431223166673">ਵਿੰਡੋ ਨੂੰ ਹੇਠਾਂ ਵੱਲ ਲਿਜਾਇਆ ਗਿਆ</translation>

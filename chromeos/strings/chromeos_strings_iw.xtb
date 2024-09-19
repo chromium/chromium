@@ -35,6 +35,7 @@
 <translation id="1155154308031262006">כאן מקלידים הנחיה</translation>
 <translation id="115705039208660697">אננסים</translation>
 <translation id="1164939766849482256">שומר המסך: מעלות השחר עד לרדת החושך</translation>
+<translation id="1166688493741195933">יצירת השמות להקלטות נכשלה</translation>
 <translation id="1167755866710282443">פתיחת התפריט להתאמה אישית של המפתחות. יש לגרור את התפריט כדי להזיז אותו.</translation>
 <translation id="1171349345463658120">לגונה חולית</translation>
 <translation id="1173894706177603556">שינוי שם</translation>
@@ -495,6 +496,7 @@
 <translation id="3502426834823382181">הצגת כל האפליקציות</translation>
 <translation id="3510890413042482857">שליחת <ph name="BEGIN_LINK1" />נתוני מעקב אחר ביצועים<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">‏עדכון של ChromeOS</translation>
+<translation id="3522508178835057262">בשלב הזה אין תמיכה בתמליל שכולל יותר מ-<ph name="MAX_WORD_LENGTH" /> מילים</translation>
 <translation id="3527036260304016759">נכשלה – שגיאה לא ידועה</translation>
 <translation id="353214771040290298">העריכה הסתיימה</translation>
 <translation id="3532980081107202182">נותרו <ph name="MIN_REMAINING" /> דקות בערך</translation>
@@ -713,6 +715,7 @@
 <translation id="4602266091140407479">מיקרופון</translation>
 <translation id="4607282946861182308">לא ניתן ליצור תמונות של מה שביקשת. אפשר לנסות הנחיה אחרת.</translation>
 <translation id="4609350030397390689">הפחתת הבהירות של המקלדת</translation>
+<translation id="4623061655523261501">שמות ההקלטות נוצרו בהצלחה</translation>
 <translation id="4627232916386272576">‏<ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> מתוך <ph name="TOTAL_PAGE_NUMBER" />. ניתן להקיש על Enter כדי לבטל את משימת ההדפסה.</translation>
 <translation id="463791356324567266">הסריקה מתבטלת...</translation>
 <translation id="4644611440022666152">הפעלה והורדה</translation>
@@ -1045,6 +1048,8 @@
 <translation id="628726841779494414">ניתן לנהל את המדפסות בהגדרות המדפסת</translation>
 <translation id="6292095526077353682">בזמן הטעינה יוצג שומר מסך של</translation>
 <translation id="629550705077076970">עמעום התאורה במקלדת</translation>
+<translation id="6301193653204230066">‏איפוס הגדרות האבטחה משבית את התוספים של דפדפן Chrome ומאפס את הרשת והגדרות אחרות לברירות מחדל בטוחות.
+          הכרטיסיות, הקבצים, קובצי ה-Cookie וההיסטוריה לא ישתנו.</translation>
 <translation id="6302401976930124515">בדיקת ה<ph name="TEST_NAME" /> בוטלה</translation>
 <translation id="631063167932043783">‏האפליקציה 'מה חדש ב-Chromebook'</translation>
 <translation id="6318437367327684789">ללא הפסקה</translation>
@@ -1054,6 +1059,7 @@
 <translation id="6325525973963619867">נכשל</translation>
 <translation id="6327262166342360252">‏הטפט הזה נוצר על ידי AI לפי הטקסט הבא: "<ph name="PROMPT" />".</translation>
 <translation id="6331191339300272798">עיצוב כהה אוטומטי</translation>
+<translation id="6335228876613776082">הורדת המודל הסתיימה</translation>
 <translation id="6340526405444716530">התאמה אישית</translation>
 <translation id="6348252528297699679">אפשר להשבית את שיתוף המיקום ב'הגדרות' &gt; 'פרטיות ואבטחה' &gt; 'אמצעי בקרה על פרטיות' &gt; 'גישה למיקום'. <ph name="LINK_BEGIN" />מידע נוסף<ph name="LINK_END" /></translation>
 <translation id="6348738456043757611">שם משתמש וסיסמה</translation>
@@ -1215,6 +1221,7 @@
 <translation id="708426984172631313">הופסקה</translation>
 <translation id="7086168019478250425">חוף עם אוֹרוּת ביולוגית</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
+<translation id="7086916854357021265">המערכת יוצרת שמות להקלטות</translation>
 <translation id="7097908713073775559">צבעוני</translation>
 <translation id="710028965487274708">נכשל – ההרשאה נכשלה</translation>
 <translation id="7101959270679078188">כדי להמשיך בתהליך העדכון, צריך לבטל את הנעילה של <ph name="DEVICE_NAME" /></translation>
@@ -1547,6 +1554,7 @@
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">‏אלבום של Google Photos</translation>
 <translation id="8775713578693478175">‏ה-APN של המודם</translation>
+<translation id="877735394245039557">מתבצעת הורדה של המודל</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">יכול להיות שברשת הזאת יש פורטל שבוי</translation>
 <translation id="8797082062139985406">‏יצירת שם באמצעות AI מבית Google</translation>

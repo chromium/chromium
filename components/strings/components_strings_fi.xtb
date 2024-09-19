@@ -678,6 +678,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="2212735316055980242">Käytäntöä ei löydy</translation>
 <translation id="2213606439339815911">Noudetaan merkintöjä…</translation>
 <translation id="2213612003795704869">Sivu on tulostettu</translation>
+<translation id="2215368073167343359">Googlen automaattinen täyttö</translation>
 <translation id="2215539479425228550">Kiipeily ja vuorikiipeily</translation>
 <translation id="2215727959747642672">Tiedostojen muokkaus</translation>
 <translation id="2215963164070968490">Koirat</translation>
@@ -710,6 +711,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="2262243747453050782">HTTP-virhe</translation>
 <translation id="2265192657948645752">Vähittäiskaupan työpaikat</translation>
 <translation id="2265356434276802347">Käytännössä voi olla korkeintaan <ph name="MAX_ITEMS_LIMIT" /> suositeltua hakupalvelua.</translation>
+<translation id="2266175583972138136">Kortin etuja koskevat ehdot</translation>
 <translation id="2267047181501709434">Henkilöllisyyttäsi vahvistetaan…</translation>
 <translation id="2268044343513325586">Tarkenna</translation>
 <translation id="2268966938956566076">Lataa <ph name="MINUTES" /> minuutin kuluttua</translation>
@@ -1800,6 +1802,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="4269264543938335308">Uimapuvut</translation>
 <translation id="4269599248168651462">Palvelimen varmenne myönnetään ei-yksilölliselle nimelle.</translation>
 <translation id="4270541775497538019">Pinoaja 6</translation>
+<translation id="4271652479722040953">Kun laajennuksia lisätään Chromeen, olennaisia tietoja näistä laajennuksista lähetetään kolmansille osapuolille analysoitavaksi, ja ne voivat näkyä järjestelmänvalvojalle. Data sisältää laajennuksia koskevia tietoja, kuten nimen, asennusajan ja asennuslähteen sekä laajennuksiin liittyvän toiminnan (kuten välilehtien vaihtamisen, verkkosivustojen kontaktoinnin tai evästeiden käytön). Dataa kerätään sekä Chrome Web Storesta että sen ulkopuolelta asennetuista laajennuksista.</translation>
 <translation id="4275830172053184480">Käynnistä laite uudelleen</translation>
 <translation id="4276974990916607331">Ei kiitos</translation>
 <translation id="4277028893293644418">Pyydä uusi salasana</translation>
@@ -1881,6 +1884,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="4406896451731180161">hakutulokset</translation>
 <translation id="4408413947728134509">Evästeet <ph name="NUM_COOKIES" /></translation>
 <translation id="4412074349188076601">Tämä kokoonpano on merkitty asennettavaksi, mutta tätä arkkitehtuuria varten ei ole lisätty näköistiedostoa, joten sitä ei voi asentaa.</translation>
+<translation id="4414452699610169758">Tallenna ja täytä salasanoja, maksutapoja ja osoitteita Google Salasanojen ja Chromen automaattisen täytön avulla</translation>
 <translation id="4414515549596849729">evästeet ja sivustodata</translation>
 <translation id="4415156962929755728">Muovi (erittäin kiiltävä)</translation>
 <translation id="4415426530740016218">Nouto-osoite</translation>
@@ -3385,6 +3389,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="7232352818707016189">Lisää toimintoja vertailutaulukkoon</translation>
 <translation id="7233592378249864828">Tulosta vahvistussivu</translation>
 <translation id="7234112195906418665">Matkailu ja liikkuminen</translation>
+<translation id="7234585564776614047">Automaattinen täyttö toisen palvelun avulla</translation>
 <translation id="7236417832106250253"><ph name="PROGRESS_PERCENT" /> % valmiina | <ph name="ESTIMATED_REMAINING_TIME" /></translation>
 <translation id="7237166092326447040">Lahjatavarat</translation>
 <translation id="7237454422623102448">Järjestelmän asetukset</translation>
@@ -4047,6 +4052,7 @@ Lisätietoja:
 <translation id="8409413588194360210">maksujen käsittelijät</translation>
 <translation id="8412145213513410671">Kaatumiset (<ph name="CRASH_COUNT" />)</translation>
 <translation id="8412392972487953978">Kirjoita sama tunnuslause kahdesti.</translation>
+<translation id="8414322570408428950">Laajennustapahtuma tapahtuu</translation>
 <translation id="8416694386774425977">Verkkoasetukset ovat virheelliset eikä niitä voi tuoda.
 Lisätietoja:
 <ph name="DEBUG_INFO" /></translation>
@@ -4299,6 +4305,7 @@ Lisätietoja:
 <translation id="8891031436559779793">Saat ilmoituksen, jos hinta laskee jollakin sivustolla.</translation>
 <translation id="8891727572606052622">Virheellinen välityspalvelimen tila.</translation>
 <translation id="8894794286471754040">Pitkä reuna ensin</translation>
+<translation id="8895334001368918465">Jos haluat käyttää toista automaattisen täytön palvelua Chromessa, laita se päälle Android-asetuksista ja täältä</translation>
 <translation id="8897428486789851669">Uinti</translation>
 <translation id="8899807382908246773">Häiritsevät mainokset</translation>
 <translation id="8903921497873541725">Lähennä</translation>

@@ -446,6 +446,7 @@
 <translation id="1771254328977666895">Перегляньте історію цін</translation>
 <translation id="1777422078676229054">Фотопапір (архівний)</translation>
 <translation id="1778646502362731194">JIS B0</translation>
+<translation id="1785118555253503473">Установити вебдодатки?</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />; натисніть Tab, а потім – Enter, щоб керувати своєю інформацією, конфіденційністю й безпекою в обліковому записі Google</translation>
 <translation id="1793631236004319016">Востаннє використано <ph name="NUM_HOURS_MINUTES_SECONDS" /> тому</translation>
@@ -677,6 +678,7 @@
 <translation id="2212735316055980242">Правило не знайдено</translation>
 <translation id="2213606439339815911">Отримання записів…</translation>
 <translation id="2213612003795704869">Сторінку надруковано</translation>
+<translation id="2215368073167343359">Автозаповнення від Google</translation>
 <translation id="2215539479425228550">Скелелазіння й альпінізм</translation>
 <translation id="2215727959747642672">Редагування файлів</translation>
 <translation id="2215963164070968490">Собаки</translation>
@@ -709,6 +711,7 @@
 <translation id="2262243747453050782">Помилка HTTP</translation>
 <translation id="2265192657948645752">Вакансії в галузі роздрібної торгівлі</translation>
 <translation id="2265356434276802347">Максимальна кількість пов’язаних записів у цьому правилі: <ph name="MAX_ITEMS_LIMIT" />.</translation>
+<translation id="2266175583972138136">Застосовуються умови використання переваг картки</translation>
 <translation id="2267047181501709434">Підтвердження вашої особи…</translation>
 <translation id="2268044343513325586">Уточнити</translation>
 <translation id="2268966938956566076">Завантажити через <ph name="MINUTES" /> хв</translation>
@@ -1163,6 +1166,7 @@
 <translation id="3157931365184549694">Відновити</translation>
 <translation id="3158539265159265653">Диск</translation>
 <translation id="3162559335345991374">Можливо, щоб під’єднатися до цієї мережі Wi-Fi, потрібно відвідати її сторінку входу.</translation>
+<translation id="316638481603975524">Може просити дозвіл на встановлення вебдодатків</translation>
 <translation id="3168744840365648658">Радіотехнічне обладнання</translation>
 <translation id="3168938241115725594">Класичні автомобілі</translation>
 <translation id="3169472444629675720">Рекомендації</translation>
@@ -1797,6 +1801,7 @@
 <translation id="4269264543938335308">Одяг для плавання</translation>
 <translation id="4269599248168651462">Сертифікат сервера видається на неунікальне ім’я.</translation>
 <translation id="4270541775497538019">Накопичувач 6</translation>
+<translation id="4271652479722040953">Коли ви додаєте розширення в Chrome, дані про них надсилаються стороннім сервісам для аналізу, і ваш адміністратор може їх бачити. До таких даних належать назви розширень, час і джерело встановлення, а також відомості про пов’язані з ними дії (наприклад, зміна вкладок, звернення до вебсайтів або доступ до файлів cookie). Ці дані збираються для розширень, установлених із Вебмагазину Chrome і інших джерел.</translation>
 <translation id="4275830172053184480">Перезапустіть пристрій</translation>
 <translation id="4276974990916607331">Ні, дякую</translation>
 <translation id="4277028893293644418">Скинути пароль</translation>
@@ -1878,6 +1883,7 @@
 <translation id="4406896451731180161">результати пошуку</translation>
 <translation id="4408413947728134509">Файли cookie: <ph name="NUM_COOKIES" /></translation>
 <translation id="4412074349188076601">Цю конфігурацію позначено як встановлювану, однак оскільки для цієї архітектури не надано образ, її не можна встановити.</translation>
+<translation id="4414452699610169758">Зберігайте й заповнюйте паролі, способи оплати та адреси за допомогою Google Менеджера паролів і автозаповнення в Chrome</translation>
 <translation id="4414515549596849729">файли cookie та дані із сайтів</translation>
 <translation id="4415156962929755728">Пластик (високоглянцевий)</translation>
 <translation id="4415426530740016218">Адреса отримання</translation>
@@ -2322,6 +2328,7 @@
 <translation id="5273658854610202413">Застереження: це правило не об'єднано, як указано в PolicyDictionaryMultipleSourceMergeList, оскільки воно не є частиною правил щодо словників, які можна об'єднувати.</translation>
 <translation id="5278778426231952189">Завантажити зараз</translation>
 <translation id="5279286380302340275">Керувати завантаженнями</translation>
+<translation id="5280963125494874678">вебдодатки</translation>
 <translation id="5283044957620376778">B1</translation>
 <translation id="5284295735376057059">Властивості документа</translation>
 <translation id="528468243742722775">Завершити</translation>
@@ -2824,6 +2831,7 @@
 <translation id="6221311046884916259">Зберегти дані картки у вашому обліковому записі Google?</translation>
 <translation id="6221892641068781024">Спрощений перегляд</translation>
 <translation id="6222527803348563979">Ділова поліграфія</translation>
+<translation id="62231116988543150">Установлювати вебдодатки</translation>
 <translation id="6224281071334553713">Ювелірні вироби й коштовності</translation>
 <translation id="6226163402662242066"><ph name="MANAGE_CHROME_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />; натисніть Tab, а потім – Enter, щоб персоналізувати інструменти спеціальних можливостей у налаштуваннях Chrome</translation>
 <translation id="6228346913624365233">Транспортні засоби класу люкс</translation>
@@ -3087,6 +3095,7 @@
 <translation id="6694681292321232194"><ph name="FIND_MY_PHONE_FOCUSED_FRIENDLY_MATCH_TEXT" />; натисніть Tab, а потім – Enter, щоб відкрити розділ "Знайти пристрій" в обліковому записі Google.</translation>
 <translation id="6695428916538794739">Бойовики й пригодницькі фільми</translation>
 <translation id="6696424331653607346">Туристичні посібники й розповіді про подорожі</translation>
+<translation id="6696575039575740785">Заборонено встановлювати вебдодатки</translation>
 <translation id="6698097747703777657">Не отримали код? <ph name="BEGIN_LINK" />Отримати новий<ph name="END_LINK" /></translation>
 <translation id="6698381487523150993">Створено:</translation>
 <translation id="67007264085648978">Повзунок часу</translation>
@@ -3128,6 +3137,7 @@
 <translation id="6767985426384634228">Оновити адресу?</translation>
 <translation id="6770747695101757579">Папір (бавовняний)</translation>
 <translation id="677257480647123231">Безпека дітей в Інтернеті</translation>
+<translation id="6772959465807028761">Щоб користуватися YouTube, увійди в обліковий запис Google</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6777088782163649345">Відкрий YouTube із налаштуваннями батьківського контролю</translation>
 <translation id="6779348349813025131">Google Менеджеру паролів потрібен доступ до додатка Ключар у MacOS</translation>
@@ -3200,6 +3210,7 @@
 <translation id="6915804003454593391">Користувач:</translation>
 <translation id="6916193791494646625">Укажіть причину завантаження (обов’язково)</translation>
 <translation id="6917795328362592458">Введений пароль розкрито через порушення безпеки даних. Щоб захистити ваші облікові записи, Менеджер паролів радить перевірити збережені паролі.</translation>
+<translation id="6921197121276419421">Дозволено встановлювати вебдодатки</translation>
 <translation id="6924013822850225188">Виберіть, чи показувати переваги картки під час оформлення замовлення (застосовуються умови банку)</translation>
 <translation id="6925267999184670015">B+ (Північна Америка)</translation>
 <translation id="6926216138694948720">Боді-арт</translation>
@@ -3378,6 +3389,7 @@
 <translation id="7232352818707016189">Інші дії для опції "Порівняльна таблиця"</translation>
 <translation id="7233592378249864828">Друкувати аркуш підтвердження</translation>
 <translation id="7234112195906418665">Подорожі й транспорт</translation>
+<translation id="7234585564776614047">Автозаповнення за допомогою іншого сервісу</translation>
 <translation id="7236417832106250253">Виконано <ph name="PROGRESS_PERCENT" />% | <ph name="ESTIMATED_REMAINING_TIME" /></translation>
 <translation id="7237166092326447040">Подарунки й атрибути особливих подій</translation>
 <translation id="7237454422623102448">Налаштування системи</translation>
@@ -3697,6 +3709,7 @@
 <translation id="7761701407923456692">Сертифікат сервера не відповідає URL-адресі.</translation>
 <translation id="7764225426217299476">Додати адресу</translation>
 <translation id="7766518757692125295">З полями</translation>
+<translation id="7766899888934244586">Вебдодатки</translation>
 <translation id="7767278989746220252">Тераси, газони й сади</translation>
 <translation id="776749070095465053">Тканина</translation>
 <translation id="7773005668374414287">Однаковий порядок лицевою стороною вгору</translation>
@@ -3729,6 +3742,7 @@
 <translation id="7831993212387676366">Що таке список покупок?</translation>
 <translation id="7840103971441592723">Запис екрана розпочато</translation>
 <translation id="784137052867620416">Статистика покупок</translation>
+<translation id="7842611866969435396">Почати</translation>
 <translation id="784404208867107517">Історія, упорядкована за групами</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Немає}=1{1 додаток (<ph name="EXAMPLE_APP_1" />)}=2{2 додатки (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}one{# додаток (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}few{# додатки (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}many{# додатків (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}other{# додатка (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" /> <ph name="AND_MORE" />)}}</translation>
 <translation id="785476343534277563">Спорт у коледжі</translation>
@@ -4038,6 +4052,7 @@
 <translation id="8409413588194360210">обробники платежів</translation>
 <translation id="8412145213513410671">Аварійне завершення роботи (<ph name="CRASH_COUNT" />)</translation>
 <translation id="8412392972487953978">Потрібно двічі ввести однакову парольну фразу.</translation>
+<translation id="8414322570408428950">Відбувається подія розширення</translation>
 <translation id="8416694386774425977">Конфігурація мережі недійсна та не може імпортуватися.
 Додаткові відомості:
 <ph name="DEBUG_INFO" /></translation>
@@ -4290,6 +4305,8 @@
 <translation id="8891031436559779793">Якщо на якомусь сайті знизиться ціна, ви отримаєте сповіщення.</translation>
 <translation id="8891727572606052622">Недійсний режим проксі-сервера.</translation>
 <translation id="8894794286471754040">Спершу по довжині</translation>
+<translation id="8895334001368918465">Щоб використовувати інший сервіс автозаповнення в Chrome, увімкніть його в налаштуваннях Android і на цій сторінці</translation>
+<translation id="8897221284075091877">Щоб попросити дозвіл на перегляд цього контенту, увійди в обліковий запис Google</translation>
 <translation id="8897428486789851669">Плавання</translation>
 <translation id="8899807382908246773">Нав’язливі оголошення</translation>
 <translation id="8903921497873541725">Збільшити масштаб</translation>

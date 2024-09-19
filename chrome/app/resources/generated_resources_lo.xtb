@@ -1604,6 +1604,7 @@
 <translation id="211803431539496924">ຢືນຢັນການອັບເດດການຮັກສາຄວາມປອດໄພເພີ່ມເຕີມນີ້ບໍ?</translation>
 <translation id="2118594521750010466">ແກ້ໄຂຕອນນີ້ເລີຍ</translation>
 <translation id="2119461801241504254">Safe Browsing ເປີດຢູ່ ແລະ ກຳລັງປົກປ້ອງທ່ານຈາກເວັບໄຊ ແລະ ການດາວໂຫຼດທີ່ອັນຕະລາຍ</translation>
+<translation id="2119602978828978573">ພາສາຄຳບັນຍາຍສົດທີ່ຮອງຮັບ</translation>
 <translation id="2120297377148151361">ການເຄື່ອນໄຫວ ແລະ ການໂຕ້ຕອບ</translation>
 <translation id="2120639962942052471">ບລັອກ <ph name="PERMISSION" /> ແລ້ວ</translation>
 <translation id="2121055421682309734">{COUNT,plural, =0{ບລັອກຄຸກກີ້ໄວ້}=1{ບລັອກຄຸກກີ້, ຍົກເວັ້ນ 1 ລາຍການ}other{ບລັອກຄຸກກີ້ໄວ້, ຍົກເວັ້ນ {COUNT} ລາຍການ}}</translation>
@@ -2675,6 +2676,7 @@
 <translation id="2864601841139725659">ຕັ້ງຄ່າຮູບໂປຣໄຟລ໌ຂອງທ່ານ</translation>
 <translation id="2865057607286263192">ກົດປຸ່ມແປ້ນພິມຄ້າງໄວ້ເພື່ອເບິ່ງເຄື່ອງໝາຍສຳນຽງ ແລະ ຕົວອັກສອນພິເສດ. ການດຳເນີນການນີ້ຈະປິດການກົດປຸ່ມຊ້ຳສຳລັບປຸ່ມຕົວອັກສອນ. ພ້ອມໃຫ້ນຳໃຊ້ສຳລັບພາສາອັງກິດ (ສະຫະລັດ) ເທົ່ານັ້ນ.</translation>
 <translation id="2865919525181940183">ພາບໜ້າຈໍຂອງໂປຣແກຣມທີ່ປັດຈຸບັນຢູ່ໃນໜ້າຈໍ</translation>
+<translation id="286643536820867504">ສ້າງຄຳບັນຍາຍສຳລັບພາສາທີ່ຮອງຮັບໂດຍອັດຕະໂນມັດ. ໂດຍລະບົບຈະບໍ່ສົ່ງສຽງອອກຈາກອຸປະກອນຂອງທ່ານ.</translation>
 <translation id="286674810810214575">ກຳລັງກວດແຫຼ່ງພະລັງງານ...</translation>
 <translation id="2867768963760577682">ເປີດ​ເປັນ​ແຖບປັກໝຸດແລ້ວ</translation>
 <translation id="2868746137289129307">ສ່ວນ​ຂະ​ຫຍາຍ​ນີ້​ຫຼ້າ​ສະ​ໄໝ ແລະ​ຖືກ​ປິດ​ໃຊ້​ງານ​ຕາມ​ນະ​ໂຍ​ບາຍ​ວິ​ສາ​ຫະ​ກິດ​ແລ້ວ. ມັນ​ອາດ​ຈະ​ຖືກ​ເປີດ​ໃຊ້​ງານ​ອັດ​ຕະ​ໂນ​ມັດ ເມື່ອ​ມີ​ເວີ​ຊັນ​ໃໝ່​ກວ່າ​ໃຫ້.</translation>
@@ -3296,6 +3298,7 @@
 <translation id="333863344734218290">ເຕືອນທ່ານຫາກພົບເວັບໄຊສາທາລະນະ ແລະ ເວັບໄຊສ່ວນຕົວທີ່ບໍ່ປອດໄພ</translation>
 <translation id="3340620525920140773">ດາວໂຫຼດສຳເລັດແລ້ວ: <ph name="FILE_NAME" />.</translation>
 <translation id="3340978935015468852">ການຕັ້ງຄ່າ</translation>
+<translation id="3341091511696469129">Chrome ສາມາດສ້າງ ແລະ ແປຄຳບັນຍາຍສຳລັບພາສາທີ່ສະແດງບ່ອນນີ້ໄດ້</translation>
 <translation id="3341699307020049241">PIN ບໍ່ຖືກຕ້ອງ. ທ່ານຍັງເຫຼືອຄວາມພະຍາຍາມ <ph name="RETRIES" /> ຄັ້ງ.</translation>
 <translation id="3341703758641437857">ອະນຸຍາດການເຂົ້າຫາ URLs ໄຟລ໌</translation>
 <translation id="334171495789408663">ສຳເນົາໂທເຄນແລ້ວ</translation>
@@ -5875,6 +5878,7 @@
 <translation id="5214639857958972833">ສ້າງບຸກມາກ '<ph name="BOOKMARK_TITLE" />' ແລ້ວ.</translation>
 <translation id="5215450412607891876">ເປີດການອັບເດດການຮັກສາຄວາມປອດໄພເພີ່ມເຕີມ</translation>
 <translation id="5215502535566372932">ເລືອກປະເທດ</translation>
+<translation id="5216674789212441076">ແປຄຳບັນຍາຍສົດໂດຍອັດຕະໂນມັດ. ລະບົບຈະສົ່ງຄຳບັນຍາຍໄປຫາ Google ເພື່ອແປພາສາ.</translation>
 <translation id="5220011581825921581">ຊອກຫາ + ລູກສອນຂຶ້ນ</translation>
 <translation id="5221516927483787768">ບໍ່ສາມາດສົ່ງສັນຍານ <ph name="HOST_NAME" /> ໄດ້</translation>
 <translation id="5222403284441421673">ບລັອກການດາວໂຫຼດທີ່ບໍ່ປອດໄພໄວ້ແລ້ວ</translation>
@@ -7323,6 +7327,7 @@
 <translation id="628726841779494414">ຈັດການເຄື່ອງພິມຂອງທ່ານໃນການຕັ້ງຄ່າເຄື່ອງພິມ</translation>
 <translation id="6287828400772161253">ໂທລະສັບ Android (<ph name="HOST_DEVICE_NAME" />)</translation>
 <translation id="6290613030083731160">ບໍ່ມີອຸປະກອນທີ່ກຳລັງແບ່ງປັນຢູ່ໃກ້ຄຽງ. <ph name="LINK_BEGIN" />ສຶກສາເພີ່ມເຕີມ<ph name="LINK_END" /></translation>
+<translation id="6291580570300353047">ບໍ່ສາມາດກູ້ຄືນໄດ້ເນື່ອງຈາກບໍ່ມີພື້ນທີ່ຈັດເກັບຂໍ້ມູນ.</translation>
 <translation id="6291741848715722067">ລະຫັດຢືນຢັນ</translation>
 <translation id="6291953229176937411">ສະແດງຢູ່ໃນຕົວຊອກ​ຫາ</translation>
 <translation id="6292699686837272722">ຫຍໍ້ແຖບເປັນຄວາມກວ້າງຂະໜາດກາງ</translation>
@@ -7966,6 +7971,7 @@
 <translation id="6785739405821760313">ກຳລັງເບິ່ງໂຕະທີ່ບັນທຶກໄວ້. ກົດ tab ເພື່ອນຳທາງ.</translation>
 <translation id="6785915470941880363">ການເລື່ອນແບບກັບດ້ານ <ph name="LINK_BEGIN" />ເບິ່ງຂໍ້ມູນເພີ່ມເຕີມ<ph name="LINK_END" /></translation>
 <translation id="67862343314499040">ສີມ່ວງ</translation>
+<translation id="6786480815699355166">ໂດຍສາມາດແປໄດ້ສະເພາະພາສາຄຳບັນຍາຍສົດທີ່ຮອງຮັບເທົ່ານັ້ນ</translation>
 <translation id="6786747875388722282">ສ່ວນຂະຫຍາຍ</translation>
 <translation id="6787097042755590313">ແຖບອື່ນໆ</translation>
 <translation id="6787531944787756058">ຊື່ຜູ້ໃຊ້ <ph name="USER_EMAIL" /> ຈະຖືກບັນທຶກໄວ້ໃນອຸປະກອນນີ້ເທົ່ານັ້ນ. ເບິ່ງລາຍລະອຽດ</translation>
@@ -10560,6 +10566,7 @@
 <translation id="8656888282555543604">ເປີດນຳໃຊ້ການບັນທຶກອັກສອນນູນ</translation>
 <translation id="8657393004602556571">ທ່ານຕ້ອງການຍົກເລີກຄຳຕິຊົມບໍ?</translation>
 <translation id="8657542881463614516">ໃຊ້ທ່າທາງປັດເພື່ອນຳທາງລະຫວ່າງໜ້າ</translation>
+<translation id="865857184419171576">ແປຄຳບັນຍາຍເປັນ</translation>
 <translation id="865936634714975126">ເພີ່ມພາຣາມິເຕີຄຳຊອກຫາໃນ URL ເພື່ອເລືອກປະເພດເມື່ອໂຫຼດໜ້າເວັບ. ຕົວຢ່າງ: chrome://device-log/?types=Bluetooth,USB</translation>
 <translation id="8659608856364348875">ລາຍຊື່ຜູ້ຕິດຕໍ່ <ph name="FEATURE_NAME" /></translation>
 <translation id="8659609431223166673">ໜ້າຈໍເລື່ອນລົງ</translation>

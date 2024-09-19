@@ -215,6 +215,7 @@
 <translation id="1703117532528082099">用緊嘅視固定咗喺畫面左邊。</translation>
 <translation id="1708345662127501511">桌面：<ph name="DESK_NAME" /></translation>
 <translation id="1709762881904163296">網絡設定</translation>
+<translation id="171610090693716835">個人化「專注模式」播放清單幫你保持專注。3 個月免費體驗 YouTube Premium，暢享零廣告的 YouTube Music 和 YouTube 體驗。</translation>
 <translation id="1719094688023114093">「即時字幕」功能已開啟。</translation>
 <translation id="1720011244392820496">開啟 Wi-Fi Sync</translation>
 <translation id="1720230731642245863">「熱點」已關閉</translation>
@@ -1413,6 +1414,7 @@
 <translation id="5777841717266010279">停止共用畫面？</translation>
 <translation id="5779721926447984944">已固定的檔案</translation>
 <translation id="5785221443435874078">移除此建議</translation>
+<translation id="5787431783058088906">領取優惠</translation>
 <translation id="5788127256798019331">Play 檔案</translation>
 <translation id="5788535737706478207">重新開啟最後關閉的分頁或視窗</translation>
 <translation id="5790085346892983794">成功</translation>
@@ -1643,6 +1645,7 @@
 <translation id="6574587113394758819">檢視保護已開啟，因此系統已隱藏 <ph name="APP_TITLE" /> 的通知</translation>
 <translation id="6574622320167699133">已由手機解鎖。輕按或按一下即可繼續使用。</translation>
 <translation id="6578407462441924264">未命名</translation>
+<translation id="6582012689384648647">如要使用個人化「專注模式」播放清單，請允許存取 YouTube Music</translation>
 <translation id="6582034443359256692">正在計算電池充電量。</translation>
 <translation id="6585808820553845416">這個工作階段將在 <ph name="SESSION_TIME_REMAINING" />後結束。</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />，<ph name="SECONDARY_TEXT" /></translation>
@@ -1881,6 +1884,7 @@
 <translation id="7477793887173910789">控制音樂、影片及其他內容</translation>
 <translation id="7488762544858401571">編輯版本</translation>
 <translation id="7489261257412536105">進入或離開全螢幕</translation>
+<translation id="7490157877815329797">試用 YouTube Music Premium，暢享零廣告音樂和個人化「專注模式」音樂體驗</translation>
 <translation id="7490360161041035804">您可以將重要檔案固定，包括「Google 雲端硬碟」檔案。如要固定項目，請將滑鼠游標移至項目或開啟「檔案」應用程式，並在項目上按一下右鍵。</translation>
 <translation id="7497767806359279797">選擇語言和鍵盤配置</translation>
 <translation id="7507162824403726948">完成身分驗證</translation>
@@ -2156,6 +2160,7 @@
 <translation id="8380784334203145311">晚安，</translation>
 <translation id="8382715499079447151">檢視保護</translation>
 <translation id="8383614331548401927">歡迎回來</translation>
+<translation id="838540623579162843">訂閱 Music Premium</translation>
 <translation id="8388750414311082622">無法移除最後一個桌面。</translation>
 <translation id="8394567579869570560">您的家長已鎖定此裝置</translation>
 <translation id="8401850874595457088">輸入語言選單</translation>

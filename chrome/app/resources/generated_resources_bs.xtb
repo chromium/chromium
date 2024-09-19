@@ -925,7 +925,7 @@ da li    proksi server funkcionira. Ako smatrate da ne trebate koristiti
 <translation id="1642299742557467312">Fajl bi mogao oštetiti uređaj</translation>
 <translation id="1642492862748815878">Povezano je na uređaj <ph name="DEVICE" /> i još <ph name="NUMBER_OF_DEVICES" /> Bluetooth uređaja</translation>
 <translation id="1642494467033190216">Prije nego omogućite ostale funkcije otklanjanja grešaka trebate ukloniti rootfs zaštitu i ponovo pokrenuti uređaj.</translation>
-<translation id="1642895994345928121">Na uređaju nema dovoljno prostora za pohranu za otvaranje ove aplikacije. Oslobodite prostor i pokušajte ponovo.</translation>
+<translation id="1642895994345928121">Na uređaju nema dovoljno pohrane za otvaranje ove aplikacije. Oslobodite prostor i pokušajte ponovo.</translation>
 <translation id="1643072738649235303">X9.62 ECDSA potpis uz SHA-1</translation>
 <translation id="1643921258693943800">Da koristite Dijeljenje u blizini, uključite Bluetooth i WiFi</translation>
 <translation id="1644574205037202324">Historija</translation>
@@ -3226,7 +3226,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="3283148363895519428">Slijedite uputstva na telefonu da nastavite postavljanje. Provjerite je li telefon u blizini i je li Bluetooth uključen.</translation>
 <translation id="3284050785966252943">Pregled metapodataka o automatskom popunjavanju</translation>
 <translation id="3285322247471302225">Nova kartica</translation>
-<translation id="3285465040399788513">Na uređaju nema dovoljno prostora za pohranu da se postavljanje završi. Oslobodite prostor i pokušajte ponovo.</translation>
+<translation id="3285465040399788513">Na uređaju nema dovoljno pohrane za završetak postavljanja. Oslobodite prostor i pokušajte ponovo.</translation>
 <translation id="3285500645985761267">Dozvolite srodnim web lokacijama da vide vašu aktivnost u grupi</translation>
 <translation id="328571385944182268">Sačuvati vaše lozinke?</translation>
 <translation id="3289668031376215426">Automatsko veliko slovo</translation>
@@ -7648,7 +7648,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="6544134392255015460">prekidač za pozadinsko osvjetljenje tastature</translation>
 <translation id="6545665334409411530">Brzina ponavljanja</translation>
 <translation id="6546856949879953071">Detaljne informacije o nadogradnji možete pronaći u zapisnicima koji su sačuvani u Fajlovima &gt; Moji fajlovi &gt; <ph name="LOG_FILE" /></translation>
-<translation id="6547354035488017500">Oslobodite najmanje 512 MB prostora ili će vaš uređaj prestati raditi. Da oslobodite prostor, izbrišite fajlove iz pohrane uređaja.</translation>
+<translation id="6547354035488017500">Oslobodite najmanje 512 MB prostora ili će vaš uređaj prestati raditi. Da oslobodite prostor, izbrišite fajlove iz pohrane na uređaju.</translation>
 <translation id="6547854317475115430"><ph name="BEGIN_PARAGRAPH1" />Googleova usluga lokacije koristi izvore poput WiFi mreže, mobilnih mreža i senzora radi lakše procjene lokacije vašeg uređaja.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Možete isključiti lokaciju Androida na uređaju bilo kada u Postavkama &gt; Aplikacije &gt; Google Play trgovina &gt; Upravljajte postavkama Androida &gt; Sigurnost i lokacija &gt; Lokacija. Također možete isključiti korištenje WiFi-ja, mobilnih mreža i senzora za lokaciju Androida isključivanjem "Googleove preciznosti lokacije" u istom meniju.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="654871471440386944">Uključiti navigaciju kursorom?</translation>
@@ -9309,7 +9309,7 @@ Pritisnite dodijeljeni prekidač ili tipku da uklonite dodjeljivanje.</translati
 <translation id="7750228210027921155">Slika u slici</translation>
 <translation id="7751260505918304024">Prikaži sve</translation>
 <translation id="7752832973194460442">Informacije o Android aplikaciji</translation>
-<translation id="7753735457098489144">Instalacija nije uspjela jer nedostaje prostora za pohranu. Da oslobodite prostor, izbrišite fajlove iz pohrane uređaja.</translation>
+<translation id="7753735457098489144">Instalacija nije uspjela jer nedostaje prostora za pohranu. Da oslobodite prostor, izbrišite fajlove iz pohrane na uređaju.</translation>
 <translation id="7754704193130578113">Prije preuzimanja pitaj gdje sačuvati svaki fajl</translation>
 <translation id="7757592200364144203">Promijenite naziv uređaja</translation>
 <translation id="7757739382819740102">Kontakti u blizini mogu dijeliti s vama. Bit će potrebno odobrenje.</translation>
@@ -10215,7 +10215,7 @@ Fajl ključa: <ph name="KEY_FILE" />
 <translation id="8383266303049437646"><ph name="BEGIN_PARAGRAPH1" />Pokušajte s ovim koracima za rješavanje problema:
     <ph name="BEGIN_LIST" />
     <ph name="LIST_ITEM" />Vodite računa da uređaj sadržava funkcionalnu unutrašnju pohranu kao što je HDD, SSD ili eMMC.
-    <ph name="LIST_ITEM" />Provjerite je li unutrašnja pohrana uređaja veća od 16 GB.
+    <ph name="LIST_ITEM" />Provjerite je li unutrašnja pohrana na uređaju veća od 16 GB.
     <ph name="LIST_ITEM" />Provjerite vezu s unutrašnjom pohranom, ako je moguće fizički pristupiti.
     <ph name="LIST_ITEM" />Vodite računa da koristite certificirani model i provjerite napomene za instaliranje.
     <ph name="END_LIST" />
@@ -11239,7 +11239,7 @@ Odobrenja koja ste već dali web lokacijama i aplikacijama se mogu primjenjivati
 <translation id="9108072915170399168">Trenutna postavka prijenosa podataka je Bez interneta</translation>
 <translation id="9108294543511800041">Sada možete pregledati nedavne fotografije, medijski sadržaj i obavještenja telefona</translation>
 <translation id="9108674852930645435">Istražite šta je novo na uređaju <ph name="DEVICE_TYPE" /></translation>
-<translation id="9109122242323516435">Da oslobodite prostor, izbrišite fajlove iz pohrane uređaja.</translation>
+<translation id="9109122242323516435">Da oslobodite prostor, izbrišite fajlove iz pohrane na uređaju.</translation>
 <translation id="9109283579179481106">Povežite se s mobilnom mrežom</translation>
 <translation id="9110739391922513676">Postavite Microsoft 365 da otvorite fajlove</translation>
 <translation id="9111102763498581341">Otključaj</translation>

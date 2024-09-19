@@ -35,6 +35,7 @@
 <translation id="1155154308031262006">Introduza um comando</translation>
 <translation id="115705039208660697">ananases</translation>
 <translation id="1164939766849482256">Proteção de ecrã Do amanhecer ao anoitecer</translation>
+<translation id="1166688493741195933">Falha ao gerar os nomes das gravações</translation>
 <translation id="1167755866710282443">Abra o menu para personalizar as teclas. Arraste o menu para o mover.</translation>
 <translation id="1171349345463658120">lagoa arenosa</translation>
 <translation id="1173894706177603556">Mudar nome</translation>
@@ -495,6 +496,7 @@
 <translation id="3502426834823382181">ver todas as apps</translation>
 <translation id="3510890413042482857">Enviar <ph name="BEGIN_LINK1" />dados de rastreio do desempenho<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">Atualiz. Chrome OS</translation>
+<translation id="3522508178835057262">De momento, as transcrições com mais de <ph name="MAX_WORD_LENGTH" /> palavras não são suportadas</translation>
 <translation id="3527036260304016759">Falha – Erro desconhecido</translation>
 <translation id="353214771040290298">Edição concluída</translation>
 <translation id="3532980081107202182">Faltam cerca de <ph name="MIN_REMAINING" /> minutos.</translation>
@@ -713,6 +715,7 @@
 <translation id="4602266091140407479">Microfone</translation>
 <translation id="4607282946861182308">Não é possível criar imagens disto. Experimente outro comando.</translation>
 <translation id="4609350030397390689">Diminuir o brilho do teclado</translation>
+<translation id="4623061655523261501">Nomes das gravações gerados com êxito</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> de <ph name="TOTAL_PAGE_NUMBER" />. Prima Enter para cancelar a tarefa de impressão.</translation>
 <translation id="463791356324567266">A cancelar a digitalização…</translation>
 <translation id="4644611440022666152">Ativar e transferir</translation>
@@ -1045,6 +1048,8 @@
 <translation id="628726841779494414">Faça a gestão das suas impressoras nas definições da impressora</translation>
 <translation id="6292095526077353682">Durante o carregamento, mostrar a proteção de ecrã</translation>
 <translation id="629550705077076970">redução da luminosidade do teclado</translation>
+<translation id="6301193653204230066">A reposição de segurança desativa as extensões do navegador Chrome e repõe a rede e outras definições para as predefinições seguras.
+          Os seus separadores, ficheiros, cookies e histórico não são alterados.</translation>
 <translation id="6302401976930124515">O teste <ph name="TEST_NAME" /> foi cancelado.</translation>
 <translation id="631063167932043783">Explorar app</translation>
 <translation id="6318437367327684789">para sempre</translation>
@@ -1054,6 +1059,7 @@
 <translation id="6325525973963619867">Falhou</translation>
 <translation id="6327262166342360252">Esta imagem de fundo foi criada com IA através do seguinte texto: "<ph name="PROMPT" />".</translation>
 <translation id="6331191339300272798">Tema escuro automático</translation>
+<translation id="6335228876613776082">Transferência do modelo concluída</translation>
 <translation id="6340526405444716530">Personalização</translation>
 <translation id="6348252528297699679">Pode desativar a localização em Definições &gt; Privacidade e segurança &gt; Controlos de privacidade &gt; Acesso à localização. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
 <translation id="6348738456043757611">Nome de utilizador e palavra-passe</translation>
@@ -1215,6 +1221,7 @@
 <translation id="708426984172631313">PARADO</translation>
 <translation id="7086168019478250425">praia bioluminescente</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
+<translation id="7086916854357021265">A gerar nomes das gravações</translation>
 <translation id="7097908713073775559">coloridos</translation>
 <translation id="710028965487274708">Falha – A autorização falhou</translation>
 <translation id="7101959270679078188">Desbloqueie o dispositivo <ph name="DEVICE_NAME" /> para continuar o processo de atualização</translation>
@@ -1547,6 +1554,7 @@ Transfira o modelo de transcrição (até 100 MB) para ver estas transcrições.
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Álbum do Google Fotos</translation>
 <translation id="8775713578693478175">APN do modem</translation>
+<translation id="877735394245039557">Transferência do modelo em curso</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">Esta rede pode ter um portal cativo</translation>
 <translation id="8797082062139985406">Crie um nome com a IA da Google</translation>

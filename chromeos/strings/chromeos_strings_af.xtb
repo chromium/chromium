@@ -343,6 +343,7 @@
 <translation id="2560876255701405320">Lys oudio-opnames</translation>
 <translation id="2561093647892030937">suurlemoene</translation>
 <translation id="2570743873672969996">Laat loop tans <ph name="TEST_NAME" />-toets …</translation>
+<translation id="2573178735329662769">Alle Chromebook-oudio word tans opgeneem</translation>
 <translation id="2575552334616524665">Jy kan dit in Instellings of die <ph name="THREE_DOTS_MENU_ICON" />-kieslys aanskakel.</translation>
 <translation id="2576253868710695442">Dit sal tot 2 GB se berging gebruik</translation>
 <translation id="2584547424703650812">Glowscapes</translation>
@@ -511,6 +512,7 @@
 <translation id="3588034708467091142">Maak seker jy is aan die internet gekoppel en probeer weer.</translation>
 <translation id="3594280220611906414"><ph name="USER_FRIENDLY_APN_NAME" /> is die gebruikervriendelike naam vir <ph name="APN_NAME" />.</translation>
 <translation id="3595596368722241419">Battery is vol</translation>
+<translation id="3600063043775287169">Wanneer Chromebook-oudio aan is, vang Klankopnemer alle oudio vas wat op hierdie toestel speel. Maak seker dat jy alle klanke wil opneem.</translation>
 <translation id="3600339377155080675">Skermweerspieëling</translation>
 <translation id="3602290021589620013">Voorskou</translation>
 <translation id="3603829704940252505">Avatar</translation>
@@ -1046,6 +1048,8 @@
 <translation id="628726841779494414">Bestuur jou drukkers in drukkerinstellings</translation>
 <translation id="6292095526077353682">Wys sluimerskerm terwyl die battery laai vir</translation>
 <translation id="629550705077076970">sleutelbord verdowwing</translation>
+<translation id="6301193653204230066">Veiligheidterugstelling skakel Chrome-blaaieruitbreidings af en stel netwerk- en ander instellings terug na veilige verstekke.
+          Jou oortjies, lêers, webkoekies en geskiedenis sal nie verander word nie.</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" />-toets is gekanselleer</translation>
 <translation id="631063167932043783">Verken program</translation>
 <translation id="6318437367327684789">vir altyd</translation>
@@ -1055,6 +1059,7 @@
 <translation id="6325525973963619867">Misluk</translation>
 <translation id="6327262166342360252">Hierdie muurpapier is met AI geskep deur die volgende teks te gebruik: “<ph name="PROMPT" />.”</translation>
 <translation id="6331191339300272798">Outomatiese donkertema</translation>
+<translation id="6335228876613776082">Modelaflaai is voltooi</translation>
 <translation id="6340526405444716530">Personalisering</translation>
 <translation id="6348252528297699679">Jy kan ligging afskakel in Instellings &gt; Privaatheid en sekuriteit &gt; Privaatheidkontroles &gt; Liggingtoegang. <ph name="LINK_BEGIN" />Meer inligting<ph name="LINK_END" /></translation>
 <translation id="6348738456043757611">Gebruikernaam en wagwoord</translation>
@@ -1549,6 +1554,7 @@ Laai die transkripsiemodel (tot 100 MB) af om hierdie transkripsies te kry.</tr
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Google Foto's-album</translation>
 <translation id="8775713578693478175">Modem-APN</translation>
+<translation id="877735394245039557">Modelaflaai is aan die gang</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">Hierdie netwerk het dalk 'n kontroleringsportaal</translation>
 <translation id="8797082062139985406">Skep naam met Google AI</translation>

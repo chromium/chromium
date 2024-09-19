@@ -106,6 +106,7 @@
 <translation id="1413446866325418126">Պահեք տվյալները ձեր Google հաշվում</translation>
 <translation id="1414981605391750300">Միացում Google-ին: Մի փոքր սպասեք…</translation>
 <translation id="1416550906796893042">Ծրագրի տարբերակ</translation>
+<translation id="1419753403124156396">Վերագործարկե՞լ Chrome-ը</translation>
 <translation id="1428770807407000502">Անջատե՞լ համաժամացումը</translation>
 <translation id="1430915738399379752">Տպում</translation>
 <translation id="1435593198351412143">Ավտոմատ բացել PDF ֆայլերը</translation>
@@ -229,6 +230,7 @@
 <translation id="2067805253194386918">տեքստ</translation>
 <translation id="2079545284768500474">Հետարկել</translation>
 <translation id="2082238445998314030"><ph name="RESULT_NUMBER" />-ից <ph name="TOTAL_RESULTS" /> արդյունք</translation>
+<translation id="2088833076121753253">Ինքնալրացման կարգավորումն ավարտելու համար վերագործարկեք Chrome-ը հիմա։ Ձեր ներդիրներն ավտոմատ նորից կբացվեն։</translation>
 <translation id="2091863218454846791">Ցուցադրված է սեղմ տեսքը</translation>
 <translation id="2093731487903423814">վերջին 15 րոպեն</translation>
 <translation id="2096012225669085171">Համաժամացում և անհատականացում բոլոր սարքերում</translation>
@@ -666,6 +668,7 @@
 <translation id="4216511743389425832">Հնչեցնել այս էջը</translation>
 <translation id="4225725533026049334">Հետևում եք</translation>
 <translation id="4225895483398857530">Գործիքագոտու դյուրանցում</translation>
+<translation id="4232376164796433044">Գաղտնաբառեր և ինքնալրացում</translation>
 <translation id="4242533952199664413">Բացել կարգավորումները</translation>
 <translation id="4248098802131000011">Պաշտպանեք ձեր գաղտնաբառերը տվյալների արտահոսքից և անվտանգության հետ կապված այլ խնդիրներից</translation>
 <translation id="424864128008805179">Դուրս գա՞լ Chrome-ից:</translation>
@@ -748,6 +751,7 @@
 <translation id="4609429330876432068">Պահված գաղտնաբառերի ձեր ցանկերը Chrome-ի և <ph name="CHROME_CHANNEL" />-ի համար միավորվել են։ Դուք նախկինի պես կարող եք ինքնալրացնել ձեր բոլոր պահված գաղտնաբառերը երկու հավելվածներում։</translation>
 <translation id="4616150815774728855">Բացել <ph name="WEBAPK_NAME" /> հավելվածը</translation>
 <translation id="4619564267100705184">Հաստատեք ձեր ինքնությունը</translation>
+<translation id="4620032614425803188">Ինքնալրացման ծառայություններ</translation>
 <translation id="4624065194742029982">Chrome ինկոգնիտո</translation>
 <translation id="4634124774493850572">Օգտագործել գաղտնաբառը</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{1 կոտրված գաղտնաբառ}one{# կոտրված գաղտնաբառ}other{# կոտրված գաղտնաբառ}}</translation>
@@ -900,6 +904,7 @@
 <translation id="5264813352784073502">վերջին 24 ժամը</translation>
 <translation id="5267572070504076962">Միացրեք Անվտանգ դիտարկումը՝ վտանգավոր կայքերից պաշտպանվելու համար</translation>
 <translation id="5271967389191913893">Սարքը չի կարող բացել ներբեռնվող բովանդակությունը:</translation>
+<translation id="5273031377282080577">Այս կարգավորումը կառավարվում է ձեր ադմինիստրատորի կողմից։</translation>
 <translation id="5292796745632149097">Ուղարկել</translation>
 <translation id="5301876394151419436">Դուք մուտք եք գործել որպես <ph name="EMAIL" />։ Ցանկացած ժամանակ կարգավորումներում կարող եք կանգնեցնել համաժամացումը։ Google-ը կարող է ձեր պատմության հիման վրա անհատականացնել Որոնումը և այլ ծառայություններ։</translation>
 <translation id="5304593522240415983">Այս դաշտը չի կարող դատարկ լինել</translation>
@@ -1234,6 +1239,7 @@
 <translation id="6775840696761158817">Երբ դուք հպում եք կամ տեքստ եք մուտքագրում հասցեագոտում կամ որոնման դաշտում, դուք կտեսնեք առաջարկներ ձեր կանխադրված որոնողական համակարգից։ Այս գործառույթն անջատված է ինկոգնիտո ռեժիմում։</translation>
 <translation id="6785476624617658922">Chrome-ի և ChromeOS-ի օգտագործման լրացուցիչ պայմաններ</translation>
 <translation id="6795633245022906657">Արագ բացեք նոր ներդիր։ Այս դյուրանցումը փոփոխելու համար անցեք կարգավորումներ։</translation>
+<translation id="679956319013005046">Ինքնալրացման ձեր նախընտրած ծառայությունն օգտագործելու համար ավելացրեք ծառայությունը <ph name="BEGIN_LINK" />Android-ի կարգավորումներում<ph name="END_LINK" />։</translation>
 <translation id="6802555630140434547">Պատուհանը կփակվի</translation>
 <translation id="6803791793483522764">Ծանուցումների դիտում</translation>
 <translation id="6811034713472274749">Էջը պատրաստ է</translation>
@@ -1465,6 +1471,7 @@
 <translation id="7707922173985738739">Օգտագործել բջջային ինտերնետ</translation>
 <translation id="7709918231054955894">Դիտեք ձեր բոլոր ներդիրները</translation>
 <translation id="7733878270780732638">Սարքում բավականաչափ տարածք չկա։</translation>
+<translation id="774876555279732384">Ինքնալրացման ծառայությունները նաև կարելի է կառավարել <ph name="BEGIN_LINK" />Android-ի կարգավորումներում<ph name="END_LINK" />։</translation>
 <translation id="7759809451544302770">Կամընտիր</translation>
 <translation id="7762668264895820836">SD քարտ <ph name="SD_CARD_NUMBER" /></translation>
 <translation id="7764225426217299476">Ավելացնել հասցե</translation>

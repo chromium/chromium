@@ -50,6 +50,7 @@
 <translation id="1219674500290482172">Hindi makakonekta sa Internet.</translation>
 <translation id="1227113644794103810">Mga hindi aktibong tab</translation>
 <translation id="1231733316453485619">I-on ang pag-sync?</translation>
+<translation id="1253032109800629289">I-hide ang "Makatanggap ng Mga Notification sa Pagsubaybay sa Presyo"</translation>
 <translation id="1258491128795710625">Ano'ng Bago</translation>
 <translation id="1263231323834454256">Listahan ng babasahin</translation>
 <translation id="1263433075299269530">Iyong huling nakabukas na tab</translation>
@@ -395,6 +396,7 @@ Hindi magagamit ng mga site ang cookies para makita ang iyong aktibidad sa pag-b
 <translation id="2870560284913253234">Site</translation>
 <translation id="2876369937070532032">Ipadala ang mga URL ng ilang page na binibisita mo sa Google kapag nanganganib ang iyong seguridad</translation>
 <translation id="2883151425485251736">Tingnan at i-edit ang mga paksa na itinago mo mula sa iyong account</translation>
+<translation id="2888631381369839306">Naka-on ang mga notification sa pagsubaybay sa presyo</translation>
 <translation id="288902476966286676">Ibabalik sa sender</translation>
 <translation id="2894757982205307093">Bagong tab sa grupo</translation>
 <translation id="2905479111267140204">Mayroon kang <ph name="NUMBER_OF_PASSWORDS" /> (na) password na ginamit ulit na puwedeng maglagay ng iyong seguridad sa panganib.</translation>
@@ -577,6 +579,7 @@ Tingnan ang mga tagubilin ng iyong search engine para sa pag-delete sa history n
 <translation id="3851938967634752633">Made-delete ang mga password para sa <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" />, at <ph name="NUMBER_OF_ACCOUNTS" /> (na) iba pa. Hindi made-delete ang iyong mga account.</translation>
 <translation id="3858860766373142691">Pangalan</translation>
 <translation id="3861908220442487587">Naka-save lang ang address na ito sa device na ito. Para magamit ito sa iba mo pang device, ilipat ito sa iyong Google Account na <ph name="USER_EMAIL" /></translation>
+<translation id="3868495844258915202">Ipakita ang buong URL</translation>
 <translation id="3876833929577368454">Tanungin ako sa tuwina</translation>
 <translation id="3885587018298784481">Sumali sa grupo ng pamilya</translation>
 <translation id="3888863481921783344">Gagamitin ito para ipakita sa iyo ang mga posibleng inimbitahan sa event mo.</translation>
@@ -864,6 +867,7 @@ Tingnan ang mga tagubilin ng iyong search engine para sa pag-delete sa history n
 <translation id="5210365745912300556">Isara ang tab</translation>
 <translation id="5211488077761630279">Payagan ang "<ph name="SITE_NAME" />" na gamitin ang iyong <ph name="PERMISSION" />?</translation>
 <translation id="5217245356412073535">Puwede mong baguhin ang default na view ng site sa desktop sa Mga Setting &gt; Mga setting ng content</translation>
+<translation id="5217329997012062137">Kapag ginamit mo ang Google Lens, magpapadala ng screenshot ng page sa Google.</translation>
 <translation id="5220945116117011963">Gumawa ng mga event sa kalendaryo mula sa mga petsa</translation>
 <translation id="5222676887888702881">Mag-sign out</translation>
 <translation id="5228579091201413441">I-enable ang pag-sync</translation>
@@ -876,6 +880,7 @@ Tingnan ang mga tagubilin ng iyong search engine para sa pag-delete sa history n
 <translation id="5271265092610673171">{count,plural, =1{Walang laman ang isang nire-require na field. Sagutan ito bago i-save.}one{Walang laman ang ilang nire-require na field. Sagutan ang mga ito bago i-save.}other{Walang laman ang ilang nire-require na field. Sagutan ang mga ito bago i-save.}}</translation>
 <translation id="5271549068863921519">I-save ang password</translation>
 <translation id="5279600392753459966">I-block lahat</translation>
+<translation id="5282340693022193851">Para makatanggap ng mga notification sa pagsubaybay sa presyo, i-on ang mga notification sa iyong Mga Setting ng iOS.</translation>
 <translation id="5294624619177114121">Mga notification sa mobile</translation>
 <translation id="5295239312320826323">Alisin ang account na <ph name="USER_EMAIL" />?</translation>
 <translation id="5300589172476337783">Ipakita</translation>
@@ -1638,6 +1643,7 @@ Puwedeng gumamit ng cookies ang mga site para makita ang iyong aktibidad sa pag-
 <translation id="8712534545803964353">Hanapin sa page…</translation>
 <translation id="8712637175834984815">Nakuha ko</translation>
 <translation id="8722229818691036192">Mga account sa device na ito</translation>
+<translation id="8722649775263832315">Mag-tap o mag-highlight para maghanap ng kahit ano gamit ang Google Lens</translation>
 <translation id="8725066075913043281">Subukan ulit</translation>
 <translation id="8728922029615312208">Isara lahat</translation>
 <translation id="8730621377337864115">Tapos na</translation>

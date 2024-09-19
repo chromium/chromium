@@ -50,6 +50,7 @@
 <translation id="1219674500290482172">No se puede establecer conexión con Internet.</translation>
 <translation id="1227113644794103810">Pestañas inactivas</translation>
 <translation id="1231733316453485619">¿Quieres activar la sincronización?</translation>
+<translation id="1253032109800629289">Ocultar "Recibir notificaciones de seguimiento de precios"</translation>
 <translation id="1258491128795710625">Novedades</translation>
 <translation id="1263231323834454256">Lista de lectura</translation>
 <translation id="1263433075299269530">La última pestaña que abriste</translation>
@@ -395,6 +396,7 @@ Tu motor de búsqueda es <ph name="DSE_NAME" />. Consulta las instrucciones para
 <translation id="2870560284913253234">Sitio</translation>
 <translation id="2876369937070532032">Enviar a Google las URL de algunas páginas que visitas, cuando tu seguridad esté en riesgo</translation>
 <translation id="2883151425485251736">Ver y editar temas que ocultaste en tu cuenta</translation>
+<translation id="2888631381369839306">Se activaron las notificaciones de seguimiento de precios</translation>
 <translation id="288902476966286676">Devolver al remitente</translation>
 <translation id="2894757982205307093">Nueva pestaña en el grupo</translation>
 <translation id="2905479111267140204">Tienes <ph name="NUMBER_OF_PASSWORDS" /> contraseñas reutilizadas que podrían poner en riesgo tu seguridad.</translation>
@@ -878,6 +880,7 @@ Consulta las instrucciones de tu motor de búsqueda para borrar el historial de 
 <translation id="5271265092610673171">{count,plural, =1{Un campo obligatorio está vacío. Llénalo antes de guardar.}other{Algunos campos obligatorios están vacíos. Llénalos antes de guardar.}}</translation>
 <translation id="5271549068863921519">Guardar contraseña</translation>
 <translation id="5279600392753459966">Bloquear todas</translation>
+<translation id="5282340693022193851">Para recibir notificaciones de seguimiento de precios, activa las notificaciones en la configuración de iOS.</translation>
 <translation id="5294624619177114121">Notificaciones móviles</translation>
 <translation id="5295239312320826323">¿Quieres quitar la cuenta <ph name="USER_EMAIL" />?</translation>
 <translation id="5300589172476337783">Mostrar</translation>

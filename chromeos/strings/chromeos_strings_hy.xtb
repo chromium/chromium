@@ -35,6 +35,7 @@
 <translation id="1155154308031262006">Մուտքագրեք հարցում</translation>
 <translation id="115705039208660697">արքայախնձորներ</translation>
 <translation id="1164939766849482256">«Լուսաբացից մայրամուտ» էկրանապահ</translation>
+<translation id="1166688493741195933">Չհաջողվեց ստեղծել ձայնագրությունների անվանումներ</translation>
 <translation id="1167755866710282443">Բացեք ընտրացանկը՝ ստեղները կարգավորելու համար։ Տեղաշարժելու համար քաշեք ընտրացանկը։</translation>
 <translation id="1171349345463658120">ավազե ծովածոց</translation>
 <translation id="1173894706177603556">Վերանվանել</translation>
@@ -342,6 +343,7 @@
 <translation id="2560876255701405320">Ձայնագրությունների ցանկ</translation>
 <translation id="2561093647892030937">կիտրոններ</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" />ը ստուգվում է…</translation>
+<translation id="2573178735329662769">Chromebook-ի բոլոր աուդիո հոսքերի ձայնագրում</translation>
 <translation id="2575552334616524665">Սա կարող եք միացնել Կարգավորումներում կամ <ph name="THREE_DOTS_MENU_ICON" /> ընտրացանկում</translation>
 <translation id="2576253868710695442">Սա կզբաղեցնի մինչև 2 ԳԲ տարածք</translation>
 <translation id="2584547424703650812">Լուսապատկերներ</translation>
@@ -494,6 +496,7 @@
 <translation id="3502426834823382181">դիտել բոլոր հավելվածները</translation>
 <translation id="3510890413042482857">Ուղարկել <ph name="BEGIN_LINK1" />արդյունավետության հետագծման տվյալները<ph name="END_LINK1" /></translation>
 <translation id="3517001332549868749">ChromeOS-ի թարմացում</translation>
+<translation id="3522508178835057262">Ներկայումս <ph name="MAX_WORD_LENGTH" /> բառից երկար գրադարձումը չի աջակցվում</translation>
 <translation id="3527036260304016759">Չհաջողվեց տպել – Անհայտ սխալ</translation>
 <translation id="353214771040290298">Խմբագրումը կատարված է</translation>
 <translation id="3532980081107202182">Մնացել է մոտ <ph name="MIN_REMAINING" /> րոպե</translation>
@@ -509,6 +512,7 @@
 <translation id="3588034708467091142">Համոզվեք, որ միացած եք ինտերնետին, և նորից փորձեք։</translation>
 <translation id="3594280220611906414"><ph name="USER_FRIENDLY_APN_NAME" />-ը <ph name="APN_NAME" />-ի հարմար անվանումն է։</translation>
 <translation id="3595596368722241419">Մարտկոցը լրիվ լիցքավորված է</translation>
+<translation id="3600063043775287169">Երբ Chromebook-ի աուդիոն միացված է, ձայնագրիչը գրանցում է այս սարքում նվագարկվող բոլոր ձայները։ Համոզվեք, որ ուզում եք ձայնագրել բոլոր ձայները։</translation>
 <translation id="3600339377155080675">Էկրանի հայելապատճենում</translation>
 <translation id="3602290021589620013">Նախադիտում</translation>
 <translation id="3603829704940252505">Ավատար</translation>
@@ -711,6 +715,7 @@
 <translation id="4602266091140407479">Խոսափող</translation>
 <translation id="4607282946861182308">Այս հարցումով հնարավոր չէ պատկեր ստեղծել։ Փորձեք այլ հարցում կատարել։</translation>
 <translation id="4609350030397390689">Ստեղնաշարի պայծառության նվազեցում</translation>
+<translation id="4623061655523261501">Ձայնագրությունների անվանումները ստեղծվեցին</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" />/<ph name="TOTAL_PAGE_NUMBER" />։ Հպեք Enter՝ տպումը չեղարկելու համար։</translation>
 <translation id="463791356324567266">Սկանավորումը չեղարկվում է...</translation>
 <translation id="4644611440022666152">Միացնել և ներբեռնել</translation>
@@ -1043,6 +1048,8 @@
 <translation id="628726841779494414">Կառավարեք տպիչները կարգավորումներում</translation>
 <translation id="6292095526077353682">Լիցքավորման ընթացքում ցուցադրել էկրանապահը</translation>
 <translation id="629550705077076970">ստեղնաշարի լուսավորության խամրեցում</translation>
+<translation id="6301193653204230066">Անվտանգ կարգավորումների վերականգնման արդյունքում Chrome դիտարկիչի ընդլայնումները կանջատվեն, իսկ ցանցի և մյուս կարգավորումները կվերականգնվեն ապահով կանխադրված տարբերակով։
+          Ձեր ներդիրները, ֆայլերը, քուքիները և պատմությունը նույնությամբ կպահպանվեն։</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> թեստը չեղարկվել է</translation>
 <translation id="631063167932043783">«Հնարավորություններ» հավելված</translation>
 <translation id="6318437367327684789">ընդմիշտ</translation>
@@ -1052,6 +1059,7 @@
 <translation id="6325525973963619867">Սխալ առաջացավ</translation>
 <translation id="6327262166342360252">Այս պաստառը ստեղծվել է AI-ի միջոցով հետևյալ հարցման հիման վրա՝ «<ph name="PROMPT" />»։</translation>
 <translation id="6331191339300272798">Ավտոմատ մուգ թեմա</translation>
+<translation id="6335228876613776082">Մոդելը ներբեռնվեց</translation>
 <translation id="6340526405444716530">Անհատականացում</translation>
 <translation id="6348252528297699679">Տեղորոշումն անջատելու համար անցեք Կարգավորումներ &gt; Գաղտնիություն և անվտանգություն &gt; Գաղտնիության կարգավորումներ &gt; Տեղորոշման թույլտվություն։ <ph name="LINK_BEGIN" />Իմանալ ավելին<ph name="LINK_END" /></translation>
 <translation id="6348738456043757611">Օգտանուն և գաղտնաբառ</translation>
@@ -1213,6 +1221,7 @@
 <translation id="708426984172631313">ԴԱԴԱՐԵՑՎԱԾ Է</translation>
 <translation id="7086168019478250425">բիոլյումինեսցենտ լողափ</translation>
 <translation id="7086440545492620869"><ph name="VALUE" /> <ph name="DISPLAY_NAME" /></translation>
+<translation id="7086916854357021265">Ձայնագրությունների անվանումների ստեղծում</translation>
 <translation id="7097908713073775559">գունագեղ</translation>
 <translation id="710028965487274708">Սխալ – չհաջողվեց թույլատրել</translation>
 <translation id="7101959270679078188">Թարմացումը շարունակելու համար ապակողպեք <ph name="DEVICE_NAME" /> սարքը</translation>
@@ -1545,6 +1554,7 @@
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Google Լուսանկարների ալբոմ</translation>
 <translation id="8775713578693478175">Մոդեմի APN</translation>
+<translation id="877735394245039557">Մոդելը դեռ ներբեռնվում է</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">Այս ցանցը կարող է մուտքի էջ ունենալ</translation>
 <translation id="8797082062139985406">Ստեղծել անվանում Google AI-ի միջոցով</translation>

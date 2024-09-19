@@ -1048,6 +1048,8 @@
 <translation id="628726841779494414">પ્રિન્ટરના સેટિંગમાં જઈને તમારા પ્રિન્ટર મેનેજ કરો</translation>
 <translation id="6292095526077353682">ચાર્જ કરતી વખતે, આટલા સમય માટે સ્ક્રીન સેવર બતાવો</translation>
 <translation id="629550705077076970">કીબોર્ડ ડિમ કરવું</translation>
+<translation id="6301193653204230066">"સલામતી માટે રીસેટ" Chrome બ્રાઉઝરના એક્સ્ટેન્શન બંધ કરી દે છે અને નેટવર્ક તથા અન્ય સેટિંગને "સલામત" ડિફૉલ્ટ પર રીસેટ કરે છે.
+          તમારા ટૅબ, ફાઇલો, કુકી અને ઇતિહાસ બદલાશે નહીં.</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" />નું પરીક્ષણ રદ કરવામાં આવ્યું</translation>
 <translation id="631063167932043783">Explore ઍપ</translation>
 <translation id="6318437367327684789">કાયમ માટે</translation>
@@ -1057,6 +1059,7 @@
 <translation id="6325525973963619867">નિષ્ફળ થયું</translation>
 <translation id="6327262166342360252">આ વૉલપેપરને AI મારફતે નીચેની ટેક્સ્ટનો ઉપયોગ કરીને બનાવવામાં આવ્યું હતું: "<ph name="PROMPT" />."</translation>
 <translation id="6331191339300272798">ઑટોમૅટિક ઘેરી થીમ</translation>
+<translation id="6335228876613776082">મૉડલ ડાઉનલોડ કરવાની પ્રક્રિયા પૂર્ણ થઈ</translation>
 <translation id="6340526405444716530">મનગમતું બનાવવું</translation>
 <translation id="6348252528297699679">તમે સેટિંગ &gt; પ્રાઇવસી અને સુરક્ષા &gt; પ્રાઇવસીને લગતા નિયંત્રણો &gt; લોકેશન ઍક્સેસમાં જઈને લોકેશન બંધ કરી શકો છો. <ph name="LINK_BEGIN" />વધુ જાણો<ph name="LINK_END" /></translation>
 <translation id="6348738456043757611">વપરાશકર્તાનું નામ અને પાસવર્ડ</translation>
@@ -1551,6 +1554,7 @@
 <translation id="8764414543112028321">WireGuard</translation>
 <translation id="87646919272181953">Google Photos આલ્બમ</translation>
 <translation id="8775713578693478175">મૉડેમ APN</translation>
+<translation id="877735394245039557">મૉડલ ડાઉનલોડ કરવાની પ્રક્રિયા ચાલુ છે</translation>
 <translation id="877985182522063539">A4</translation>
 <translation id="879568662008399081">આ નેટવર્કમાં કૅપ્ટિવ પોર્ટલ હોઈ શકે છે</translation>
 <translation id="8797082062139985406">Google AIનો ઉપયોગ કરીને નામ બનાવો</translation>

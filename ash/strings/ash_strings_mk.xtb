@@ -78,6 +78,7 @@
 <translation id="1240638468526743569">Некоја апликација</translation>
 <translation id="1242198791279543032">Звукот на известувањата е исклучен</translation>
 <translation id="1242883863226959074">уред</translation>
+<translation id="1245476784081715330">Одлично!</translation>
 <translation id="1245644940275736236">Одете на „Помошникот“</translation>
 <translation id="124678866338384709">Затвори ја тековната картичка</translation>
 <translation id="1246890715821376239">Неподдржани апликации</translation>
@@ -843,6 +844,7 @@
 <translation id="3958714870339660776">Цел ден</translation>
 <translation id="3962859241508114581">Претходна песна</translation>
 <translation id="3963124517343721543">Лесно продолжете каде што сте застанале така што ќе ги отворите претходните прозорци и картички. Ќе видите и персонализирани предлози за работи што може да ги направите следно.</translation>
+<translation id="396506362088290977">Тестирајте го звукот на микрофонот</translation>
 <translation id="3969043077941541451">Исклучи</translation>
 <translation id="3970324493235864154">Прегледајте ги известувањата на телефонот</translation>
 <translation id="397105322502079400">Се пресметува…</translation>
@@ -900,6 +902,7 @@
 <translation id="4156293514828496577">Преостануваат уште <ph name="PERCENTAGE" /> % од батеријата (околу <ph name="TIME_LEFT" />).
 Некои од функциите се ограничени за да се продолжи траењето на батеријата.</translation>
 <translation id="4160919062868802509">Откриени се повеќе извори на аудио</translation>
+<translation id="416245495747357243">Крај!</translation>
 <translation id="4165275524535002941">Кабелот не поддржува екрани</translation>
 <translation id="4177415338862979658">Кликнете за да ги погледнете деталите</translation>
 <translation id="4177913004758410636">{0,plural, =1{Ажурирајте го уредот во рок од еден ден}one{Ажурирајте го уредот во рок од # ден}other{Ажурирајте го уредот во рок од # дена}}</translation>
@@ -985,6 +988,7 @@
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> е исклучено.</translation>
 <translation id="4417647906073317561">Поставки за „Режим за концентрација“. Поставете тајмер, задача и музика за да влезете во текот.</translation>
 <translation id="4424159417645388645">Работна површина 5</translation>
+<translation id="4426817706804363424">Одлично!</translation>
 <translation id="4430019312045809116">Гласност</translation>
 <translation id="4441283832827406317">Апликациите се подредени по име</translation>
 <translation id="4445159312344259901">Најавете се за да отклучите</translation>
@@ -1249,6 +1253,7 @@
 <translation id="5283198616748585639">Додај 1 мин.</translation>
 <translation id="528468243742722775">Крај</translation>
 <translation id="5286194356314741248">Скенирање</translation>
+<translation id="528641622273682395">Овозможете/Оневозможете тестирање на микрофонот</translation>
 <translation id="5297423144044956168">Не се најдени мобилни уреди</translation>
 <translation id="5297704307811127955">Исклучено</translation>
 <translation id="5300589172476337783">Прикажи</translation>
@@ -1276,6 +1281,7 @@
 <translation id="536019650977002321">Вашиот администратор не дозволува снимање аудио. Контактирајте со администраторот за повеќе информации.</translation>
 <translation id="5361524080961918551">Говорните датотеки на <ph name="LANGUAGE" /> јазик се делумно преземени</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> Одете на оваа картичка</translation>
+<translation id="5363835273551457276">Може да го тестирате звукот на микрофонот. Затворете ја таблата за да сопрете.</translation>
 <translation id="5364693579536176785">простор за складирање</translation>
 <translation id="5369573834963677938">Контролирањето лице ќе биде достапно за другите корисници на уредот</translation>
 <translation id="5369717264580061086">Прегледајте датотека во апликацијата „Датотеки“</translation>
@@ -1416,6 +1422,7 @@
 <translation id="5802516411616338943">Отворете „Брзи поставки“</translation>
 <translation id="5804651031882187592">Исклучете ја поставката „Заклучи SIM“</translation>
 <translation id="5805809050170488595">Кликнете за активирање на <ph name="NETWORK_NAME" /></translation>
+<translation id="5818796501620225415">Додајте време или заврш. ја сесијата на „Режим за концентрација“</translation>
 <translation id="5819918159912280082">Вашиот Chromebook се рестартираше неочекувано. Отворете ги претходните прозорци и апликации.</translation>
 <translation id="5823239091726045201">Задачи во Google Tasks на интернет</translation>
 <translation id="5825969630400862129">Поставки за поврзани уреди</translation>
@@ -2126,6 +2133,7 @@
 <translation id="8262312463845990408">Вклучете/исклучете ја репродукцијата</translation>
 <translation id="8268302343625273732">Погледнете ги сите задачи во Google Classroom</translation>
 <translation id="8277261673056602147">Нагласете текст на екранот</translation>
+<translation id="8282784978194352587">Браво!</translation>
 <translation id="8287009018010202411">Продуктивност</translation>
 <translation id="828708037801473432">Исклучено</translation>
 <translation id="8297006494302853456">Слаб</translation>
@@ -2203,6 +2211,7 @@
 <translation id="8609384513243082612">Отворете нова картичка</translation>
 <translation id="861045123704058818">Апликациите се привремено организирани во категории</translation>
 <translation id="8612216344243590325">Важните датотеки чувајте ги во <ph name="HOLDING_SPACE_TITLE" /> наместо на работната површина. Само повлечете датотеки во <ph name="HOLDING_SPACE_TITLE" />.</translation>
+<translation id="8612338981637220013">Ви тргна!</translation>
 <translation id="8614517853887502247">Известувањата од <ph name="APP_1_TITLE" /> и <ph name="APP_2_TITLE" /> се скриени бидејќи има вклучено заштита од прикажување</translation>
 <translation id="8615778328722901791">Отворете го алатникот</translation>
 <translation id="8619000641825875669">OneDrive</translation>
@@ -2245,6 +2254,7 @@
 <translation id="8742057891287715849"><ph name="NAME" /> · <ph name="SERVICE_PROVIDER" />: се активира…</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
+<translation id="8751299148074971734">Само напред!</translation>
 <translation id="8753368202781196133">Јазиков не е поддржан во моментов.</translation>
 <translation id="8755498163081687682">Потврдете го вашиот идентитет: <ph name="ORIGIN_NAME" /> сака да потврдите дека сте вие</translation>
 <translation id="875593634123171288">Прикажи ги поставките за VPN</translation>

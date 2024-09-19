@@ -78,6 +78,7 @@
 <translation id="1240638468526743569">Додаток</translation>
 <translation id="1242198791279543032">Сповіщення ігноруються</translation>
 <translation id="1242883863226959074">пристрої</translation>
+<translation id="1245476784081715330">Чудово!</translation>
 <translation id="1245644940275736236">Перейти до Асистента</translation>
 <translation id="124678866338384709">Закрити поточну вкладку</translation>
 <translation id="1246890715821376239">Непідтримувані додатки</translation>
@@ -214,6 +215,7 @@
 <translation id="1703117532528082099">Активне вікно закріплено ліворуч.</translation>
 <translation id="1708345662127501511">Робочий стіл: "<ph name="DESK_NAME" />"</translation>
 <translation id="1709762881904163296">Мережеві налаштування</translation>
+<translation id="171610090693716835">Зберігайте концентрацію уваги завдяки персоналізованим спискам відтворення для зосередження. Отримайте YouTube Music і YouTube без реклами з безкоштовною пробною підпискою YouTube Premium на 3 місяці.</translation>
 <translation id="1719094688023114093">Живі субтитри ввімкнено.</translation>
 <translation id="1720011244392820496">Увімкніть синхронізацію Wi-Fi</translation>
 <translation id="1720230731642245863">Точку доступу вимкнено</translation>
@@ -842,6 +844,7 @@
 <translation id="3958714870339660776">Увесь день</translation>
 <translation id="3962859241508114581">Попередня композиція</translation>
 <translation id="3963124517343721543">Щоб легко продовжити роботу з місця, де ви зупинилися, відкрийте попередні вікна й вкладки. Ви також отримуватимете персоналізовані пропозиції щодо подальших дій.</translation>
+<translation id="396506362088290977">Перевірте звук мікрофона</translation>
 <translation id="3969043077941541451">Вимкнено</translation>
 <translation id="3970324493235864154">Переглядайте сповіщення на телефоні</translation>
 <translation id="397105322502079400">Обчислення...</translation>
@@ -899,6 +902,7 @@
 <translation id="4156293514828496577">Залишилось <ph name="PERCENTAGE" />% заряду акумулятора (приблизно на <ph name="TIME_LEFT" />).
 Роботу деяких функцій обмежено, щоб заощадити заряд.</translation>
 <translation id="4160919062868802509">Виявлено кілька джерел аудіо</translation>
+<translation id="416245495747357243">Готово!</translation>
 <translation id="4165275524535002941">Кабель може не підтримувати дисплеї</translation>
 <translation id="4177415338862979658">Натисніть, щоб переглянути деталі</translation>
 <translation id="4177913004758410636">{0,plural, =1{Оновіть пристрій протягом дня}one{Оновіть пристрій протягом # дня}few{Оновіть пристрій протягом # днів}many{Оновіть пристрій протягом # днів}other{Оновіть пристрій протягом # дня}}</translation>
@@ -984,6 +988,7 @@
 <translation id="4412944820643904175">Функцію "<ph name="FEATURE_NAME" />" вимкнено.</translation>
 <translation id="4417647906073317561">Налаштування режиму концентрації уваги. Установіть таймер, виберіть завдання й музику та пориньте в роботу.</translation>
 <translation id="4424159417645388645">Робочий стіл 5</translation>
+<translation id="4426817706804363424">Так тримати!</translation>
 <translation id="4430019312045809116">Гучність</translation>
 <translation id="4441283832827406317">Додатки відсортовано за назвою</translation>
 <translation id="4445159312344259901">Увійдіть, щоб розблокувати</translation>
@@ -1248,6 +1253,7 @@
 <translation id="5283198616748585639">Додати 1 хв</translation>
 <translation id="528468243742722775">Завершити</translation>
 <translation id="5286194356314741248">Сканування</translation>
+<translation id="528641622273682395">Увімкнути або вимкнути перевірку мікрофона</translation>
 <translation id="5297423144044956168">Мобільних пристроїв не знайдено</translation>
 <translation id="5297704307811127955">Вимкнено</translation>
 <translation id="5300589172476337783">Показати</translation>
@@ -1275,6 +1281,7 @@
 <translation id="536019650977002321">Ваш адміністратор забороняє записувати звук. Щоб дізнатися більше, зверніться до нього.</translation>
 <translation id="5361524080961918551">Файли для розпізнавання мовлення (мова: <ph name="LANGUAGE" />) частково завантажено</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> перейти на цю вкладку</translation>
+<translation id="5363835273551457276">Ви можете перевірити звук мікрофона. Щоб зупинити перевірку, закрийте панель.</translation>
 <translation id="5364693579536176785">обсяг пам’яті</translation>
 <translation id="5369573834963677938">Інші користувачі пристрою зможуть застосовувати функцію визначення обличчя</translation>
 <translation id="5369717264580061086">Переглянути файл у додатку Файли</translation>
@@ -1408,6 +1415,7 @@
 <translation id="5777841717266010279">Скасувати спільний доступ до екрана?</translation>
 <translation id="5779721926447984944">Закріплені файли</translation>
 <translation id="5785221443435874078">Видалити цю пропозицію</translation>
+<translation id="5787431783058088906">Отримати бонус</translation>
 <translation id="5788127256798019331">Файли Play</translation>
 <translation id="5788535737706478207">Знову відкрити останні закриті вкладку або вікно</translation>
 <translation id="5790085346892983794">Готово</translation>
@@ -1415,6 +1423,7 @@
 <translation id="5802516411616338943">Відкрити Швидкі налаштування</translation>
 <translation id="5804651031882187592">Вимкніть налаштування блокування SIM-карти</translation>
 <translation id="5805809050170488595">Натисніть, щоб активувати мережу <ph name="NETWORK_NAME" /></translation>
+<translation id="5818796501620225415">Ви можете додати більше часу або завершити сеанс концентрації</translation>
 <translation id="5819918159912280082">Пристрій Chromebook несподівано перезапустився. Ви можете відкрити попередні вікна й додатки.</translation>
 <translation id="5823239091726045201">Google Завдання у веб-переглядачі</translation>
 <translation id="5825969630400862129">Налаштування підключених пристроїв</translation>
@@ -1638,6 +1647,7 @@
 <translation id="6574587113394758819">Сповіщення з додатка <ph name="APP_TITLE" /> приховано, оскільки ввімкнено безпечний перегляд</translation>
 <translation id="6574622320167699133">Розблоковано телефоном. Натисніть, щоб увійти.</translation>
 <translation id="6578407462441924264">Без назви</translation>
+<translation id="6582012689384648647">Щоб отримувати персоналізовані списки відтворення для зосередження, надайте доступ до YouTube Music</translation>
 <translation id="6582034443359256692">Визначаємо рівень заряду акумулятора.</translation>
 <translation id="6585808820553845416">Сеанс закінчиться через <ph name="SESSION_TIME_REMAINING" />.</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
@@ -1876,6 +1886,7 @@
 <translation id="7477793887173910789">Керуйте музикою, відео й іншим контентом</translation>
 <translation id="7488762544858401571">Відредагований файл</translation>
 <translation id="7489261257412536105">Відкрити на весь екран або вийти з повноекранного режиму</translation>
+<translation id="7490157877815329797">Спробуйте YouTube Music Premium, щоб слухати музику без реклами й отримувати персоналізовані добірки для зосередження</translation>
 <translation id="7490360161041035804">Ви можете закріпити важливі файли, зокрема з Google Диска. Для цього наведіть курсор на об’єкт або відкрийте додаток Файли й натисніть об’єкт правою кнопкою миші.</translation>
 <translation id="7497767806359279797">Вибрати мову та клавіатуру</translation>
 <translation id="7507162824403726948">Завершити підтвердження особи</translation>
@@ -2125,6 +2136,7 @@
 <translation id="8262312463845990408">Увімкнути або вимкнути відтворення</translation>
 <translation id="8268302343625273732">Переглянути всі завдання в Google Класі</translation>
 <translation id="8277261673056602147">Виділити текст на екрані</translation>
+<translation id="8282784978194352587">Вітаємо!</translation>
 <translation id="8287009018010202411">Продуктивність</translation>
 <translation id="828708037801473432">Вимкнено</translation>
 <translation id="8297006494302853456">Слабкий</translation>
@@ -2150,6 +2162,7 @@
 <translation id="8380784334203145311">Доброї ночі!</translation>
 <translation id="8382715499079447151">Безпечний перегляд</translation>
 <translation id="8383614331548401927">З поверненням</translation>
+<translation id="838540623579162843">Придбати Music Premium</translation>
 <translation id="8388750414311082622">Останній робочий стіл не можна видалити.</translation>
 <translation id="8394567579869570560">Батьки заблокували цей пристрій</translation>
 <translation id="8401850874595457088">Меню вибору мови</translation>
@@ -2202,6 +2215,7 @@
 <translation id="8609384513243082612">Відкрити нову вкладку</translation>
 <translation id="861045123704058818">Додатки тимчасово впорядковано за категоріями</translation>
 <translation id="8612216344243590325">Зберігайте важливі файли в сервісі <ph name="HOLDING_SPACE_TITLE" />, а не на комп’ютері. Для цього перетягніть файли сюди: <ph name="HOLDING_SPACE_TITLE" />.</translation>
+<translation id="8612338981637220013">Чудово!</translation>
 <translation id="8614517853887502247">Сповіщення з додатків <ph name="APP_1_TITLE" /> і <ph name="APP_2_TITLE" /> приховано, оскільки ввімкнено безпечний перегляд</translation>
 <translation id="8615778328722901791">Відкрити панель інструментів</translation>
 <translation id="8619000641825875669">OneDrive</translation>
@@ -2244,6 +2258,7 @@
 <translation id="8742057891287715849"><ph name="NAME" /> · <ph name="SERVICE_PROVIDER" />: активація…</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
+<translation id="8751299148074971734">Так тримати!</translation>
 <translation id="8753368202781196133">Ця мова зараз не підтримується.</translation>
 <translation id="8755498163081687682">Потрібне підтвердження: сайт <ph name="ORIGIN_NAME" /> хоче підтвердити вашу особу</translation>
 <translation id="875593634123171288">Показати налаштування VPN</translation>

@@ -446,6 +446,7 @@
 <translation id="1771254328977666895">Погледнете ја историјата на цени</translation>
 <translation id="1777422078676229054">Фотографија (архивска)</translation>
 <translation id="1778646502362731194">JIS B0</translation>
+<translation id="1785118555253503473">Да се инсталираат апликации за прелистувач?</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />, притиснете го копчето Tab, а потоа копчето Enter за да управувате со податоците, приватноста и безбедноста на вашата сметка на Google</translation>
 <translation id="1793631236004319016">Последно користење: пред <ph name="NUM_HOURS_MINUTES_SECONDS" /></translation>
@@ -677,6 +678,7 @@
 <translation id="2212735316055980242">Политиката не е пронајдена</translation>
 <translation id="2213606439339815911">Земање записи...</translation>
 <translation id="2213612003795704869">Страницата е испечатена</translation>
+<translation id="2215368073167343359">Автоматско пополнување со Google</translation>
 <translation id="2215539479425228550">Алпинизам и планинарство</translation>
 <translation id="2215727959747642672">Изменување датотеки</translation>
 <translation id="2215963164070968490">Кучиња</translation>
@@ -709,8 +711,10 @@
 <translation id="2262243747453050782">HTTP грешка</translation>
 <translation id="2265192657948645752">Работни места во малопродажба</translation>
 <translation id="2265356434276802347">Правилово не треба да има повеќе од <ph name="MAX_ITEMS_LIMIT" /> истакнати записи.</translation>
+<translation id="2266175583972138136">Важат „Условите“ за поволностите на картичките</translation>
 <translation id="2267047181501709434">Се потврдува вашиот идентитет…</translation>
 <translation id="2268044343513325586">Подобри</translation>
+<translation id="2268966938956566076">Прикачи по <ph name="MINUTES" /> мин.</translation>
 <translation id="2270484714375784793">Телефонски број</translation>
 <translation id="2276057643614339130">Печатарска основа</translation>
 <translation id="2277103315734023688">Премотај нанапред</translation>
@@ -1110,6 +1114,7 @@
 <translation id="3062655045399308513">Избришете ги податоците од прелистување…</translation>
 <translation id="306573536155379004">Играта започна.</translation>
 <translation id="3067505415088964188">Цената е ниска</translation>
+<translation id="3068118691172921711">Прикачувањето на вашата датотека во <ph name="CLOUD_PROVIDER" /> ќе започне по 1 минута</translation>
 <translation id="3076865167425975822">Оперативни системи</translation>
 <translation id="3080254622891793721">Графика</translation>
 <translation id="3082007635241601060">Дозволете Google да ги користи вашите кошнички за да најде персонализирани попусти кога има</translation>
@@ -1121,6 +1126,7 @@
 <translation id="3099619114405539473">да ги користи достапните камери (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="3102312643185441063">Штедна сметка</translation>
 <translation id="3103188521861412364">Акции и обврзници</translation>
+<translation id="3103535543639438037">Споредувајте слични производи еден до друг</translation>
 <translation id="3105172416063519923">ИД на средство:</translation>
 <translation id="3107591622054137333"><ph name="BEGIN_LINK" />да ја проверите конфигурацијата на безбедниот DNS<ph name="END_LINK" /></translation>
 <translation id="3108943290502734357">Средна фиока</translation>
@@ -1160,6 +1166,7 @@
 <translation id="3157931365184549694">Обнови</translation>
 <translation id="3158539265159265653">Диск</translation>
 <translation id="3162559335345991374">Wi-Fi што го користите може да бара да ја посетите страницата за најавување.</translation>
+<translation id="316638481603975524">Сајтовите може да бараат да инсталираат апликации за прелистувач</translation>
 <translation id="3168744840365648658">Радиоопрема</translation>
 <translation id="3168938241115725594">Класични возила</translation>
 <translation id="3169472444629675720">Откриј</translation>
@@ -1298,6 +1305,7 @@
 <translation id="3407789382767355356">најавување на трети страни</translation>
 <translation id="340924996148642843">„Споредба“ не е достапна во моментов</translation>
 <translation id="3409896703495473338">Управувај со безбедносните поставки</translation>
+<translation id="3411091017011773343">Прикачи по <ph name="HOURS" /> ч.</translation>
 <translation id="3414275587143250384">Дистрибуирани и компјутерски услуги во облак</translation>
 <translation id="3414952576877147120">Големина:</translation>
 <translation id="341513675006332771">Копче за играње на играта „Диносаурус на Chrome“, активирајте го за да ја играте играта „Трчање на диносаурусот“ во Chrome</translation>
@@ -1793,6 +1801,7 @@
 <translation id="4269264543938335308">Костими за капење</translation>
 <translation id="4269599248168651462">Сертификатот за серверот е издаден на неуникатно име.</translation>
 <translation id="4270541775497538019">Фиока за складирање 6</translation>
+<translation id="4271652479722040953">Кога ќе се додадат екстензии во Chrome, релевантни податоци за овие екстензии се испраќаат до трети страни за анализа и може да бидат видливи за администраторот. Податоците опфаќаат информации за екстензиите како што се името, времето на инсталирање, изворот на инсталирање, како и активноста поврзана со овие екстензии (како променување картички, контактирање со веб-сајтови или пристапување до колачиња). Овие податоци се прибираат за екстензии инсталирани од „Веб-продавницата на Chrome“, а и за екстензии што не се инсталирани од продавницата.</translation>
 <translation id="4275830172053184480">Рестартирај го уредот</translation>
 <translation id="4276974990916607331">Не, фала</translation>
 <translation id="4277028893293644418">Ресетирај ја лозинката</translation>
@@ -1874,6 +1883,7 @@
 <translation id="4406896451731180161">резултати од пребарувањето</translation>
 <translation id="4408413947728134509">Колачиња <ph name="NUM_COOKIES" /></translation>
 <translation id="4412074349188076601">Конфигурацијава е означена дека може да се инсталира, но не е дадена слика за архитектурава и затоа не може да се инсталира.</translation>
+<translation id="4414452699610169758">Користете Google Password Manager и автоматско пополнување на Chrome за да зачувувате и да пополнувате лозинки, начини на плаќање и адреси</translation>
 <translation id="4414515549596849729">колачиња и податоци за сајтот</translation>
 <translation id="4415156962929755728">Пластика (висок сјај)</translation>
 <translation id="4415426530740016218">Адреса за подигнување</translation>
@@ -1965,6 +1975,7 @@
 <translation id="4628678854894591460">Понуди за одмор</translation>
 <translation id="4628948037717959914">Фотографија</translation>
 <translation id="4629370161347991046">A4x6</translation>
+<translation id="462989688138616749">Прикачувањето на вашата датотека во <ph name="CLOUD_PROVIDER" /> ќе започне по <ph name="HOURS" /> часа</translation>
 <translation id="4631649115723685955">Со поврат на готовина</translation>
 <translation id="4631881646528206880">Регистрација за виртуелна картичка</translation>
 <translation id="4635278307999235413">Се испраќаат податоци до администраторската конзола</translation>
@@ -2085,6 +2096,7 @@
 <translation id="484988093836683706">Користи отклучување уред</translation>
 <translation id="4850886885716139402">Приказ</translation>
 <translation id="4854853140771946034">Набрзина создајте нова белешка во Google Keep</translation>
+<translation id="4855395119669662878">Администраторот ќе започне да ги прикачува вашите датотеки во <ph name="CLOUD_PROVIDER" /> во <ph name="DATE_TIME" />. Уредот нека остане поврзан додека да заврши прикачувањето на датотеката. Додека трае прикачувањето, ќе може само да читате локални датотеки.</translation>
 <translation id="485902285759009870">Се потврдува кодот…</translation>
 <translation id="4860260582253463350">За да продолжиш на YouTube, мора да потврдиме дека ова си навистина ти. Ќе ги добиеш поставките што ги поставил твојот родител или старател во Family Link.</translation>
 <translation id="4864406669374375262">Низа на верзијата е копирана во привремената меморија</translation>
@@ -2140,6 +2152,7 @@
 <translation id="4933468175699107356">Кликнете со десното копче на кој било формулар за да се пополнат автоматски зачуваните податоци, како вашето име или адреса</translation>
 <translation id="4934780484581617878">Управување со прозорци</translation>
 <translation id="4936134414789135531">Не може да се најде вметнатата <ph name="VALUE_NAME" />.</translation>
+<translation id="4936573216809994970">Прикачувањето на вашата датотека во <ph name="CLOUD_PROVIDER" /> ќе започне по 1 час</translation>
 <translation id="4936675324097895694">Финансии</translation>
 <translation id="4943620199112228840">да ги користи вашите микрофони</translation>
 <translation id="4943872375798546930">Нема резултати</translation>
@@ -2313,7 +2326,9 @@
 <translation id="5269225904387178860">Четири дупки долу</translation>
 <translation id="5271381225185906340">„<ph name="DATA_CONTROLS_ATTRIBUTE" />“ не е поддржан услов за „<ph name="DATA_CONTROLS_RESTRICTION" />“</translation>
 <translation id="5273658854610202413">Предупредување: правилово не беше споено како што е наведено во правилото PolicyDictionaryMultipleSourceMergeList бидејќи не е дел од правилата на речникот што може да се спојат.</translation>
+<translation id="5278778426231952189">Прикачи сега</translation>
 <translation id="5279286380302340275">Управувајте со преземањата</translation>
+<translation id="5280963125494874678">апликации за прелистувач</translation>
 <translation id="5283044957620376778">B1</translation>
 <translation id="5284295735376057059">Својства на документот</translation>
 <translation id="528468243742722775">Крај</translation>
@@ -2816,6 +2831,7 @@
 <translation id="6221311046884916259">Дали сакате да ја зачувате картичкава во вашата сметка на Google?</translation>
 <translation id="6221892641068781024">Поедноставен приказ</translation>
 <translation id="6222527803348563979">Канцелариски материјал</translation>
+<translation id="62231116988543150">да може да инсталира апликации за прелистувач</translation>
 <translation id="6224281071334553713">Скапоцени камења и накит</translation>
 <translation id="6226163402662242066"><ph name="MANAGE_CHROME_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />, притиснете Tab, а потоа Enter за да ги персонализирате алатките за пристапност во поставките за Chrome</translation>
 <translation id="6228346913624365233">Луксузни возила</translation>
@@ -3079,6 +3095,7 @@
 <translation id="6694681292321232194"><ph name="FIND_MY_PHONE_FOCUSED_FRIENDLY_MATCH_TEXT" />, притиснете Tab, а потоа Enter за „Најди го мојот уред“ во сметката на Google</translation>
 <translation id="6695428916538794739">Акциони и авантуристички филмови</translation>
 <translation id="6696424331653607346">Водичи за патување и филмувани патеписи</translation>
+<translation id="6696575039575740785">Инсталирањето апликации за прелистувач не е дозволено</translation>
 <translation id="6698097747703777657">Не го примивте вашиот код? <ph name="BEGIN_LINK" />Побарајте нов код<ph name="END_LINK" /></translation>
 <translation id="6698381487523150993">Создадено:</translation>
 <translation id="67007264085648978">Прелистувач на „Времеплов“</translation>
@@ -3192,6 +3209,7 @@
 <translation id="6915804003454593391">Корисник:</translation>
 <translation id="6916193791494646625">Наведете причина за преземањето (задолжително)</translation>
 <translation id="6917795328362592458">Откриено е дека лозинката која штотуку ја употребивте е меѓу лозинките откриени при упад во податоците. За да ја задржите безбедноста на сметките, Password Manager препорачува да ги проверите зачуваните лозинки.</translation>
+<translation id="6921197121276419421">Инсталирањето апликации за прелистувач е дозволено</translation>
 <translation id="6924013822850225188">Изберете дали да ги гледате поволностите на вашата картичка при плаќање (важат условите на банката)</translation>
 <translation id="6925267999184670015">Северноамерикански B+</translation>
 <translation id="6926216138694948720">Уметност на тело</translation>
@@ -3369,6 +3387,7 @@
 <translation id="7232352818707016189">Повеќе дејства за табелата во „Споредба“</translation>
 <translation id="7233592378249864828">Испечати лист за потврда</translation>
 <translation id="7234112195906418665">Патување и транспорт</translation>
+<translation id="7234585564776614047">Автоматско пополнување со друга услуга</translation>
 <translation id="7236417832106250253">Завршено: <ph name="PROGRESS_PERCENT" /> % | <ph name="ESTIMATED_REMAINING_TIME" /></translation>
 <translation id="7237166092326447040">Подароци и ставки за специјални настани</translation>
 <translation id="7237454422623102448">System Settings</translation>
@@ -3688,6 +3707,7 @@
 <translation id="7761701407923456692">Сертификатот на серверот не се совпаѓа со URL.</translation>
 <translation id="7764225426217299476">Додај адреса</translation>
 <translation id="7766518757692125295">Престилка</translation>
+<translation id="7766899888934244586">Апликации за прелистувач</translation>
 <translation id="7767278989746220252">Поплочен двор, тревник и градина</translation>
 <translation id="776749070095465053">Ткаенина</translation>
 <translation id="7773005668374414287">Ист редослед со лицето нагоре</translation>
@@ -3720,6 +3740,7 @@
 <translation id="7831993212387676366">Што е тоа „Список за купување“?</translation>
 <translation id="7840103971441592723">Започна снимање на екранот</translation>
 <translation id="784137052867620416">Shopping Insights</translation>
+<translation id="7842611866969435396">Одиме</translation>
 <translation id="784404208867107517">Групирана историја</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Ништо}=1{1 апликација (<ph name="EXAMPLE_APP_1" />)}=2{2 апликации (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}one{# апликација (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}other{# апликации (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="785476343534277563">Академски спортови</translation>
@@ -3817,6 +3838,7 @@
 <translation id="8030729864112325446">Стручно и вечерно училиште</translation>
 <translation id="8032546467100845887">Транспарентност</translation>
 <translation id="8035152190676905274">Пенкало</translation>
+<translation id="8035264638816032066">Насловите на картичките и URL-адресите на страниците што ги додавате во табелата се испраќаат до Google</translation>
 <translation id="8037117624646282037">Кој го користел уредот неодамна</translation>
 <translation id="8037357227543935929">Прашај (стандардно)</translation>
 <translation id="803771048473350947">Датотека</translation>
@@ -4028,6 +4050,7 @@
 <translation id="8409413588194360210">ракувачи со плаќања</translation>
 <translation id="8412145213513410671">Падови (<ph name="CRASH_COUNT" />)</translation>
 <translation id="8412392972487953978">Мора да ја внесете истата лозинка двапати.</translation>
+<translation id="8414322570408428950">Се појавува настан на екстензија</translation>
 <translation id="8416694386774425977">Конфигурацијата на мрежата е неважечка и не може да се увезе.
 Дополнителни детали:
 <ph name="DEBUG_INFO" /></translation>
@@ -4117,6 +4140,7 @@
 <translation id="8564466070529550495">Виртуелната картичка не е достапна во моментов. Обидете се повторно подоцна.</translation>
 <translation id="8564985650692024650">Chromium препорачува ресетирање на лозинката за <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> ако повторно сте ја употребиле на други сајтови.</translation>
 <translation id="8570895683659698018">Хобија и слободно време</translation>
+<translation id="8572792595597115856">Важи до <ph name="DATE" /></translation>
 <translation id="8574841453995331336">Фрижидери и замрзнувачи</translation>
 <translation id="8577192028579836704">Сите опции стандардно: <ph name="TYPICAL_PRICE" /></translation>
 <translation id="8577348305244205642">Виртуелната картичка не е достапна</translation>
@@ -4138,6 +4162,7 @@
 <translation id="8617269623452051934">користење на уредот</translation>
 <translation id="861775596732816396">Големина 4</translation>
 <translation id="8620276786115098679">Плик Kaku 7</translation>
+<translation id="8622864575115813231">Се контактира со вашата финансиска институција…</translation>
 <translation id="8623885649813806493">Нема лозинки што се совпаѓаат. Прикажи ги сите зачувани лозинки.</translation>
 <translation id="8624354461147303341">Сакам попусти</translation>
 <translation id="8634957317623797170">54 x 86 mm</translation>
@@ -4277,6 +4302,7 @@
 <translation id="8891031436559779793">Ќе добиете известување ако се намалат цените на кој било сајт.</translation>
 <translation id="8891727572606052622">Неважечки режим на прокси.</translation>
 <translation id="8894794286471754040">Прво долгиот раб</translation>
+<translation id="8895334001368918465">За да користите друга услуга за автоматско пополнување во Chrome, вклучете ја во поставките за Android и овде</translation>
 <translation id="8897428486789851669">Пливање</translation>
 <translation id="8899807382908246773">Нападни реклами</translation>
 <translation id="8903921497873541725">Зумирај</translation>
@@ -4437,6 +4463,7 @@
 <translation id="9192361865877479444">Метал (мат)</translation>
 <translation id="9192947025498305328">Природна убавина</translation>
 <translation id="9199905725844810519">Печатењето е блокирано</translation>
+<translation id="9204089334327209740">Штом ќе заврши прикачувањето, може да ги менувате датотеките во <ph name="CLOUD_PROVIDER" />. Локалниот простор (што ги опфаќа и датотеките во „Корпа“) ќе се отстрани автоматски.</translation>
 <translation id="9205078245616868884">Вашите податоци се шифрирани со лозинката за синхронизирање. Внесете ја за да го започнете синхронизирањето.</translation>
 <translation id="920643408853370361">Патничко осигурување</translation>
 <translation id="9207861905230894330">Не успеа да се додаде напис.</translation>
@@ -4457,6 +4484,7 @@
 <translation id="937804173274050966"><ph name="BEGIN_BOLD" />Кои податоци се користат:<ph name="END_BOLD" /> темите за реклами се базираат на вашата неодамнешна историја на прелистувањето, списокот со сајтовите што сте ги посетиле со Chrome на уредов.</translation>
 <translation id="937885410143139026">Податоците се испратени до администраторската конзола</translation>
 <translation id="939736085109172342">Нова папка</translation>
+<translation id="940524522703752213">Прикачувањето на вашата датотека во <ph name="CLOUD_PROVIDER" /> ќе започне по <ph name="MINUTES" /> минути</translation>
 <translation id="944540589955480312">Користете ги лозинките и криптографските клучеви што се зачувани во вашата сметка на Google</translation>
 <translation id="945646848072568856">Chrome блокира сајтовите да користат колачиња од трети страни за да ве следат додека прелистувате.</translation>
 <translation id="945855313015696284">Проверете ги информациите подолу и избришете ги сите неважечки картички</translation>

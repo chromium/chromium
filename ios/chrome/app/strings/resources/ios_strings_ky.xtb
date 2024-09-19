@@ -577,6 +577,7 @@
 <translation id="3851938967634752633"><ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> жана дагы <ph name="NUMBER_OF_ACCOUNTS" /> вебсайттын сырсөздөрү жок кылынат. Аккаунттарыңыз өчүрүлбөйт.</translation>
 <translation id="3858860766373142691">Аталышы</translation>
 <translation id="3861908220442487587">Бул дарек ушул түзмөктө гана сакталат. Аны башка түзмөктөрдө колдонуу үчүн Google аккаунтуңузга (<ph name="USER_EMAIL" />) жылдырыңыз</translation>
+<translation id="3868495844258915202">Толук URL дарегин көрсөтүү</translation>
 <translation id="3876833929577368454">Ар дайым сурала берсин</translation>
 <translation id="3885587018298784481">Үй-бүлөлүк топко кошулуу</translation>
 <translation id="3888863481921783344">Бул иш-чараңызга чакырыла турган адамдарды көрсөтүү үчүн колдонулат.</translation>
@@ -864,6 +865,7 @@
 <translation id="5210365745912300556">Өтмөктү жабуу</translation>
 <translation id="5211488077761630279">"<ph name="SITE_NAME" />" сайтына <ph name="PERMISSION" /> колдонууга уруксат бересизби?</translation>
 <translation id="5217245356412073535">Жөндөөлөр &gt; Контент жөндөөлөрү бөлүмүнө өтүп, сайттын демейки көрүнүшүн иш тактага өзгөртсөңүз болот</translation>
+<translation id="5217329997012062137">Google Lens'ти колдонгонуңузда, барактын скриншоту Google'га жөнөтүлөт.</translation>
 <translation id="5220945116117011963">Күндөрдүн негизинде жылнаамада иш-чараларды түзүү</translation>
 <translation id="5222676887888702881">Чыгуу</translation>
 <translation id="5228579091201413441">Шайкештирүүнү иштетүү</translation>
@@ -1638,6 +1640,7 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="8712534545803964353">Барактан табуу…</translation>
 <translation id="8712637175834984815">Түшүндүм</translation>
 <translation id="8722229818691036192">Ушул түзмөктөгү аккаунттар</translation>
+<translation id="8722649775263832315">Google Lens аркылуу издөө үчүн объектти таптап же бөлүп көрсөтүңүз</translation>
 <translation id="8725066075913043281">Кайра аракет кылып көрүү</translation>
 <translation id="8728922029615312208">Баарын жабуу</translation>
 <translation id="8730621377337864115">Бүттү</translation>

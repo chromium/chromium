@@ -106,6 +106,7 @@
 <translation id="1413446866325418126">将数据保存到您的 Google 账号中</translation>
 <translation id="1414981605391750300">正在连接到 Google，请稍等片刻…</translation>
 <translation id="1416550906796893042">应用版本</translation>
+<translation id="1419753403124156396">重启 Chrome？</translation>
 <translation id="1428770807407000502">关闭同步功能？</translation>
 <translation id="1430915738399379752">打印</translation>
 <translation id="1435593198351412143">自动打开 PDF 文件</translation>
@@ -229,6 +230,7 @@
 <translation id="2067805253194386918">文本</translation>
 <translation id="2079545284768500474">撤消</translation>
 <translation id="2082238445998314030">第 <ph name="RESULT_NUMBER" /> 条结果，共 <ph name="TOTAL_RESULTS" /> 条</translation>
+<translation id="2088833076121753253">如需完成自动填充设置，请立即重启 Chrome。您的标签页将会自动重新打开。</translation>
 <translation id="2091863218454846791">当前显示的是精简视图</translation>
 <translation id="2093731487903423814">过去 15 分钟</translation>
 <translation id="2096012225669085171">在所有设备上保持同步，获享个性化体验</translation>
@@ -667,6 +669,7 @@
 <translation id="4216511743389425832">读出此网页的内容</translation>
 <translation id="4225725533026049334">已关注</translation>
 <translation id="4225895483398857530">工具栏中的快捷方式</translation>
+<translation id="4232376164796433044">密码和自动填充</translation>
 <translation id="4242533952199664413">打开“设置”</translation>
 <translation id="4248098802131000011">确保您的密码免受数据泄露和其他安全问题的侵害</translation>
 <translation id="424864128008805179">退出 Chrome？</translation>
@@ -750,6 +753,7 @@
 <translation id="4609429330876432068">您在 Chrome 和 <ph name="CHROME_CHANNEL" />中保存的密码的列表已合并。您仍可在这两个应用内自动填充所有已保存的密码。</translation>
 <translation id="4616150815774728855">打开<ph name="WEBAPK_NAME" /></translation>
 <translation id="4619564267100705184">请验证是您本人在操作</translation>
+<translation id="4620032614425803188">自动填充服务</translation>
 <translation id="4624065194742029982">Chrome 无痕模式</translation>
 <translation id="4634124774493850572">使用密码</translation>
 <translation id="4640331037679501949">{NUM_PASSWORDS,plural, =1{有 1 个密码已遭泄露}other{有 # 个密码已遭泄露}}</translation>
@@ -902,6 +906,7 @@
 <translation id="5264813352784073502">过去 24 小时</translation>
 <translation id="5267572070504076962">开启安全浏览功能，防范危险网站</translation>
 <translation id="5271967389191913893">设备无法打开要下载的内容。</translation>
+<translation id="5273031377282080577">此设置由您的管理员管理。</translation>
 <translation id="5292796745632149097">发送到</translation>
 <translation id="5301876394151419436">您目前登录的账号是 <ph name="EMAIL" />。您可以随时在“设置”中停止同步。Google 可能会根据您的历史记录在 Google 搜索及其他服务中为您提供个性化的体验。</translation>
 <translation id="5304593522240415983">此字段不能为空</translation>
@@ -1236,6 +1241,7 @@
 <translation id="6775840696761158817">当您在地址栏或搜索框中点按或输入字词时，系统会通过默认搜索引擎为您提供相关建议。在无痕模式下，此设置处于关闭状态。</translation>
 <translation id="6785476624617658922">Chrome 和 Chrome 操作系统附加服务条款</translation>
 <translation id="6795633245022906657">快速打开一个新标签页。若要修改该快捷方式，请前往“设置”部分。</translation>
+<translation id="679956319013005046">如需设置首选的自动填充服务，请先在 <ph name="BEGIN_LINK" />Android 设置<ph name="END_LINK" />中添加该服务。</translation>
 <translation id="6802555630140434547">系统将会关闭此窗口</translation>
 <translation id="6803791793483522764">查看通知</translation>
 <translation id="6811034713472274749">页面已可供查看</translation>
@@ -1465,6 +1471,7 @@
 <translation id="7707922173985738739">使用移动数据</translation>
 <translation id="7709918231054955894">同步显示您的所有标签页</translation>
 <translation id="7733878270780732638">设备上的存储空间不足。</translation>
+<translation id="774876555279732384">您也可以在 <ph name="BEGIN_LINK" />Android 设置<ph name="END_LINK" />中管理自动填充服务。</translation>
 <translation id="7759809451544302770">可选</translation>
 <translation id="7762668264895820836">SD 卡 <ph name="SD_CARD_NUMBER" /></translation>
 <translation id="7764225426217299476">添加地址</translation>

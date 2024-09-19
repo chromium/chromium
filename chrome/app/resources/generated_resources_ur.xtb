@@ -1597,6 +1597,7 @@
 <translation id="211803431539496924">توسیعی سیکیورٹی اپ ڈیٹس کی تصدیق کریں؟</translation>
 <translation id="2118594521750010466">ابھی درست کریں</translation>
 <translation id="2119461801241504254">محفوظ براؤزنگ آن ہے اور نقصان دہ سائٹس اور ڈاؤن لوڈز سے آپ کی حفاظت کر رہی ہے</translation>
+<translation id="2119602978828978573">لائیو کیپشن کی تعاون یافتہ زبانیں</translation>
 <translation id="2120297377148151361">سرگرمی اور تعاملات</translation>
 <translation id="2120639962942052471"><ph name="PERMISSION" /> کو مسدود کر دیا گیا</translation>
 <translation id="2121055421682309734">{COUNT,plural, =0{کوکیز مسدود ہیں}=1{سوائے 1 کے، کوکیز مسدود ہیں}other{سوائے {COUNT} کے، کوکیز مسدود ہیں}}</translation>
@@ -2665,6 +2666,7 @@
 <translation id="2864601841139725659">اپنے پروفائل کی تصویر سیٹ کریں</translation>
 <translation id="2865057607286263192">‏لہجے کے نشانات اور مخصوص حروف دیکھنے کے لیے کی بورڈ کی کلیدوں کو چھوئیں اور دبائے رکھیں۔ یہ حروف تہجی کی کلیدوں کے لیے بٹن کو دبا کر رکھیں کو بند کر دیتا ہے۔ صرف انگریزی (US) کے لیے دستیاب ہے۔</translation>
 <translation id="2865919525181940183">ان پروگرامز کا اسکرین شاٹ جو فی الحال اسکرین پر موجود ہے</translation>
+<translation id="286643536820867504">تعاون زبانوں کیلئے خودکار طور پر کیپشنز تخلیق کرتی ہے۔ آڈیو کبھی بھی آپ کے آلے سے باہر نہیں جاتی ہے۔</translation>
 <translation id="286674810810214575">پاور کے ذارائع چیک کیے جا رہے ہیں...</translation>
 <translation id="2867768963760577682">پن کردہ ٹیب کے بطور کھولیں</translation>
 <translation id="2868746137289129307">یہ ایکسٹینشن پرانا ہے اور انٹرپرائز پالیسی کی جانب سے غیر فعال کر دیا گیا ہے۔ ایک نیا ورژن دستیاب ہو جانے پر یہ خود بخود فعال ہو سکتا ہے۔</translation>
@@ -3284,6 +3286,7 @@
 <translation id="333863344734218290">آپ کو غیر محفوظ عوامی اور نجی سائٹس کے لیے وارننگ حاصل ہوتی ہے</translation>
 <translation id="3340620525920140773">ڈاؤن لوڈ مکمل ہو گیا: <ph name="FILE_NAME" />۔</translation>
 <translation id="3340978935015468852">ترتیبات</translation>
+<translation id="3341091511696469129">‏‫Chrome یہاں دکھائی گئی زبانوں کیلئے کیپشنز تخلیق اور ان کا ترجمہ کر سکتا ہے</translation>
 <translation id="3341699307020049241">‏غلط PIN۔ آپ کے پاس <ph name="RETRIES" /> کوششیں باقی ہیں۔</translation>
 <translation id="3341703758641437857">‏فائل URLs تک رسائی کی اجازت دیں</translation>
 <translation id="334171495789408663">ٹوکن کاپی ہو گیا</translation>
@@ -5862,6 +5865,7 @@
 <translation id="5214639857958972833">'<ph name="BOOKMARK_TITLE" />' بُک مارک بنایا گیا۔</translation>
 <translation id="5215450412607891876">توسیعی سیکیورٹی اپ ڈیٹس کو آن کریں</translation>
 <translation id="5215502535566372932">ملک منتخب کریں</translation>
+<translation id="5216674789212441076">‏لائیو کیپشنز کا خودکار طور پر ترجمہ کرتی ہے۔ ترجمے کیلئے کیپشنز کو Google کو بھیجا جاتا ہے۔</translation>
 <translation id="5220011581825921581">‏search + اوپر تیر کا نشان</translation>
 <translation id="5221516927483787768"><ph name="HOST_NAME" /> کاسٹ کرنے سے قاصر</translation>
 <translation id="5222403284441421673">غیر محفوظ ڈاؤن لوڈ مسدود ہو گیا</translation>
@@ -7952,6 +7956,7 @@
 <translation id="6785739405821760313">محفوظ کردہ ڈیسکس دیکھی جا رہی ہیں۔ نیویگیٹ کرنے کے لیے ٹیب دبائیں۔</translation>
 <translation id="6785915470941880363">سکرولنگ کو الٹائیں <ph name="LINK_BEGIN" />مزید جانیں<ph name="LINK_END" /></translation>
 <translation id="67862343314499040">وائلیٹ</translation>
+<translation id="6786480815699355166">لائیو کیپشن کی صرف تعاون یافتہ زبانوں کا ترجمہ کیا جا سکتا ہے</translation>
 <translation id="6786747875388722282">توسیعات</translation>
 <translation id="6787097042755590313">دیگر ٹیب</translation>
 <translation id="6787531944787756058">صارف نام <ph name="USER_EMAIL" /> صرف اس آلے پر محفوظ ہے۔ تفصیلات دیکھیں</translation>
@@ -10548,6 +10553,7 @@
 <translation id="8656888282555543604">بریل لاگنگ کو فعال کریں</translation>
 <translation id="8657393004602556571">کیا آپ تاثرات کو مسترد کرنا چاہتے ہیں؟</translation>
 <translation id="8657542881463614516">صفحات کے درمیان نیویگیٹ کرنے کے لیے سوائپ کے اشارے کا استعمال کریں</translation>
+<translation id="865857184419171576">کیپشنز کا اس زبان میں ترجمہ کریں</translation>
 <translation id="865936634714975126">‏صفحہ کی لوڈنگ پر اقسام منتخب کرنے کے لیے URL میں استفسار پیرامیٹر شامل کریں۔ مثال: chrome://device-log/?types=Bluetooth,USB</translation>
 <translation id="8659608856364348875"><ph name="FEATURE_NAME" /> رابطے</translation>
 <translation id="8659609431223166673">ونڈو نیچے کی طرف چلی گئی</translation>

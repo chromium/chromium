@@ -1597,6 +1597,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="211803431539496924">Confirmer les mises à jour de sécurité étendues?</translation>
 <translation id="2118594521750010466">Corriger maintenant</translation>
 <translation id="2119461801241504254">La navigation sécurisée est activée et vous protège contre les sites et les téléchargements nuisibles</translation>
+<translation id="2119602978828978573">Langues prises en charge par les Sous-titres instantanés</translation>
 <translation id="2120297377148151361">Activité et interactions</translation>
 <translation id="2120639962942052471">Bloqué <ph name="PERMISSION" /></translation>
 <translation id="2121055421682309734">{COUNT,plural, =0{Les témoins sont bloqués}=1{Les témoins sont bloqués, avec 1 exception}one{Les témoins sont bloqués, avec {COUNT} exception}other{Les témoins sont bloqués, avec {COUNT} exceptions}}</translation>
@@ -2666,6 +2667,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="2864601841139725659">Définir votre photo de profil</translation>
 <translation id="2865057607286263192">Maintenez le doigt sur les touches du clavier pour voir les accents et les caractères spéciaux. Cela désactive l'appui répété sur les touches alphabétiques. Uniquement disponible pour l'anglais (États-Unis).</translation>
 <translation id="2865919525181940183">Capture d'écran des programmes qui sont présentement à l'écran</translation>
+<translation id="286643536820867504">Crée automatiquement des sous-titres pour les langues prises en charge. Les données audio ne quittent jamais votre appareil.</translation>
 <translation id="286674810810214575">Vérification des sources d'alimentation en cours…</translation>
 <translation id="2867768963760577682">Ouvrir dans un onglet épinglé</translation>
 <translation id="2868746137289129307">Cette extension est obsolète et désactivée par la politique de l'entreprise. Il est possible qu’elle s’active automatiquement lorsqu’une nouvelle version sera disponible.</translation>
@@ -3287,6 +3289,7 @@ l'<ph name="BEGIN_LINK" />
 <translation id="333863344734218290">Vous avertit des sites publics et privés non sécurisés</translation>
 <translation id="3340620525920140773">Téléchargement terminé : <ph name="FILE_NAME" />.</translation>
 <translation id="3340978935015468852">paramètres</translation>
+<translation id="3341091511696469129">Chrome peut créer et traduire des sous-titres pour les langues affichées ici</translation>
 <translation id="3341699307020049241">NIP incorrect. Il vous reste <ph name="RETRIES" /> tentatives.</translation>
 <translation id="3341703758641437857">Autoriser l'accès aux URL de fichier</translation>
 <translation id="334171495789408663">Jeton copié</translation>
@@ -5865,6 +5868,7 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="5214639857958972833">Favori <ph name="BOOKMARK_TITLE" /> créé.</translation>
 <translation id="5215450412607891876">Activer les mises à jour de sécurité étendues</translation>
 <translation id="5215502535566372932">Sélectionnez un pays</translation>
+<translation id="5216674789212441076">Traduit automatiquement les sous-titres instantanés. Les sous-titres sont envoyés à Google pour être traduits.</translation>
 <translation id="5220011581825921581">rechercher+flèche vers le haut</translation>
 <translation id="5221516927483787768">Impossible de diffuser <ph name="HOST_NAME" /></translation>
 <translation id="5222403284441421673">Téléchargement non sécurisé bloqué</translation>
@@ -7958,6 +7962,7 @@ Vous avez # autres mots de passe compromis. Le gestionnaire de mots de passe de
 <translation id="6785739405821760313">Affichage des bureaux enregistrés. Appuyez sur l'onglet pour naviguer.</translation>
 <translation id="6785915470941880363">Défilement inversé <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
 <translation id="67862343314499040">Violet</translation>
+<translation id="6786480815699355166">Seules les langues prises en charge par les Sous-titres instantanés peuvent être traduites</translation>
 <translation id="6786747875388722282">Extensions</translation>
 <translation id="6787097042755590313">Autre onglet</translation>
 <translation id="6787531944787756058">Le nom d'utilisateur <ph name="USER_EMAIL" /> est enregistré uniquement sur cet appareil. Afficher les détails</translation>
@@ -10554,6 +10559,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8656888282555543604">Activer la journalisation en braille</translation>
 <translation id="8657393004602556571">Voulez-vous supprimer les commentaires?</translation>
 <translation id="8657542881463614516">Utiliser un geste de balayage pour passer d'une page à l'autre</translation>
+<translation id="865857184419171576">Traduisez les sous-titres en</translation>
 <translation id="865936634714975126">Ajoutez un paramètre de requête dans l'URL pour sélectionner les types lors du chargement de la page. Exemple : chrome://device-log/?types=Bluetooth,USB</translation>
 <translation id="8659608856364348875">Contacts pour le <ph name="FEATURE_NAME" /></translation>
 <translation id="8659609431223166673">Fenêtre déplacée vers le bas</translation>

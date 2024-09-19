@@ -50,6 +50,7 @@
 <translation id="1219674500290482172">Der kunne ikke oprettes forbindelse til internettet.</translation>
 <translation id="1227113644794103810">Inaktive faner</translation>
 <translation id="1231733316453485619">Vil du aktivere synkronisering?</translation>
+<translation id="1253032109800629289">Skjul "Få notifikationer om prissporing"</translation>
 <translation id="1258491128795710625">Nyheder</translation>
 <translation id="1263231323834454256">Læseliste</translation>
 <translation id="1263433075299269530">Din seneste åbne fane</translation>
@@ -395,6 +396,7 @@ Din standardsøgemaskine er <ph name="DSE_NAME" />. I vejledningen til søgemask
 <translation id="2870560284913253234">Website</translation>
 <translation id="2876369937070532032">Sender webadresser på nogle sider, som du besøger, til Google, når din sikkerhed er truet</translation>
 <translation id="2883151425485251736">Se og rediger de emner, du har skjult på din konto</translation>
+<translation id="2888631381369839306">Notifikationer om prissporing er aktiveret</translation>
 <translation id="288902476966286676">Returneres til afsender</translation>
 <translation id="2894757982205307093">Ny fane i gruppe</translation>
 <translation id="2905479111267140204">Du har <ph name="NUMBER_OF_PASSWORDS" /> genbrugte adgangskoder, hvilket kan udgøre en sikkerhedsrisiko.</translation>
@@ -876,6 +878,7 @@ Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis de
 <translation id="5271265092610673171">{count,plural, =1{Et obligatorisk felt er tomt. Udfyld det, inden du gemmer.}one{Et obligatorisk felt er tomt. Udfyld det, inden du gemmer.}other{Nogle obligatoriske felter er tomme. Udfyld dem, inden du gemmer.}}</translation>
 <translation id="5271549068863921519">Gem adgangskode</translation>
 <translation id="5279600392753459966">Bloker alle</translation>
+<translation id="5282340693022193851">Du kan få notifikationer om prissporing ved at aktivere notifikationer i iOS-indstillingerne.</translation>
 <translation id="5294624619177114121">Mobilnotifikationer</translation>
 <translation id="5295239312320826323">Vil du fjerne kontoen <ph name="USER_EMAIL" />?</translation>
 <translation id="5300589172476337783">Vis</translation>

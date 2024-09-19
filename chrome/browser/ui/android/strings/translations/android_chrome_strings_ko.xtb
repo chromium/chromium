@@ -596,6 +596,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="3823019343150397277">IBAN</translation>
 <translation id="38243391581572867">이 계정에서는 렌즈를 사용할 수 없습니다.</translation>
 <translation id="3830886834687455630">비밀번호를 확인하려면 Google Play 서비스를 업데이트하세요.</translation>
+<translation id="3843603704176567761">이 기기에서 비밀번호가 곧 작동하지 않을 수 있습니다. 비밀번호를 계속 사용하려면 Google Play 서비스를 업데이트하세요.</translation>
 <translation id="3845098929839618392">시크릿 탭에서 열기</translation>
 <translation id="3847319713229060696">모든 웹 사용자를 위한 보안 개선에 참여</translation>
 <translation id="3856096718352044181">유효한 제공업체인지 확인하거나 나중에 다시 시도하세요.</translation>
@@ -677,6 +678,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="4257230861809842349">Google 비밀번호 관리자에서 비밀번호를 삭제하시겠습니까?</translation>
 <translation id="426652736638196239">이 IBAN은 이 기기에만 저장됩니다.</translation>
 <translation id="4269820728363426813">링크 주소 복사</translation>
+<translation id="4270730597186910506">제품을 추적하거나 추적을 해제합니다.</translation>
 <translation id="4277529130885813215">다른 기기 사용</translation>
 <translation id="4282440837784183472"><ph name="MANAGED_DOMAIN" /> 조직에서 내가 로그인한 계정과 Chrome이 사용되는 방식을 관리합니다. 관리자는 특정 기능을 설정하거나 제한할 수 있습니다</translation>
 <translation id="4285846616383034558">쿠키, 캐시, 기타 사이트 데이터</translation>

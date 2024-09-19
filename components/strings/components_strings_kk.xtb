@@ -446,6 +446,7 @@
 <translation id="1771254328977666895">Баға тарихын көру</translation>
 <translation id="1777422078676229054">Фотосурет (мұрағат)</translation>
 <translation id="1778646502362731194">JIS B0</translation>
+<translation id="1785118555253503473">Веб-қолданбаларды орнату керек пе?</translation>
 <translation id="1791429645902722292">Google Smart Lock</translation>
 <translation id="1791820510173628507"><ph name="MANAGE_GOOGLE_ACCOUNT_FOCUSED_FRIENDLY_MATCH_TEXT" />, Google аккаунтыңыздағы ақпаратты, құпиялықты және қауіпсіздікті басқару үшін Tab, содан кейін Enter пернесін басыңыз.</translation>
 <translation id="1793631236004319016">Соңғы рет <ph name="NUM_HOURS_MINUTES_SECONDS" /> бұрын пайдаланылған</translation>
@@ -1165,6 +1166,7 @@
 <translation id="3157931365184549694">Қалпына келтіру</translation>
 <translation id="3158539265159265653">Диск</translation>
 <translation id="3162559335345991374">Сіз пайдаланып жатқан Wi-Fi өзінің кіру бетіне өтуіңізді қажет етуі мүмкін.</translation>
+<translation id="316638481603975524">Веб-қолданбаларды орнатуға рұқсат сұрауы мүмкін</translation>
 <translation id="3168744840365648658">Радиожабдық</translation>
 <translation id="3168938241115725594">Классикалық көліктер</translation>
 <translation id="3169472444629675720">Discover</translation>
@@ -2325,6 +2327,7 @@
 <translation id="5273658854610202413">Ескерту: бұл саясат PolicyDictionaryMultipleSourceMergeList саясатында көрсетілгендей біріктірілмеген, себебі ол біріктіруге болатын сөздік саясаттарының бөлігі емес.</translation>
 <translation id="5278778426231952189">Қазір жүктеп салу</translation>
 <translation id="5279286380302340275">Жүктеп алынғандарды басқару</translation>
+<translation id="5280963125494874678">веб-қолданбалар</translation>
 <translation id="5283044957620376778">B1</translation>
 <translation id="5284295735376057059">Құжаттың сипаттары</translation>
 <translation id="528468243742722775">Соңы</translation>
@@ -2827,6 +2830,7 @@
 <translation id="6221311046884916259">Бұл картаны Google аккаунтыңызға сақтағыңыз келе ме?</translation>
 <translation id="6221892641068781024">Қарапайым көрініс</translation>
 <translation id="6222527803348563979">Кеңсе заттары</translation>
+<translation id="62231116988543150">Веб-қолданбаларды орнату мүмкіндігі</translation>
 <translation id="6224281071334553713">Асыл тастар және зергерлік бұйымдар</translation>
 <translation id="6226163402662242066"><ph name="MANAGE_CHROME_ACCESSIBILITY_FOCUSED_FRIENDLY_MATCH_TEXT" />. Chrome параметрлерінен арнайы мүмкіндіктер құралдарын жекелендіру үшін Tab, сосын Enter пернесін басыңыз.</translation>
 <translation id="6228346913624365233">Люкс көліктер</translation>
@@ -3090,6 +3094,7 @@
 <translation id="6694681292321232194"><ph name="FIND_MY_PHONE_FOCUSED_FRIENDLY_MATCH_TEXT" />. Google аккаунтында құрылғыңызды табу үшін Tab, сосын Enter пернесін басыңыз.</translation>
 <translation id="6695428916538794739">Экшн және шытырман оқиғалы фильмдер</translation>
 <translation id="6696424331653607346">Саяхат гидтері мен каталогтері</translation>
+<translation id="6696575039575740785">Веб-қолданбаларды орнатуға рұқсат берілмеді.</translation>
 <translation id="6698097747703777657">Код келмеді ме? <ph name="BEGIN_LINK" />Жаңа код алыңыз<ph name="END_LINK" /></translation>
 <translation id="6698381487523150993">Жасалған кезі:</translation>
 <translation id="67007264085648978">Уақыт сырғытпасы</translation>
@@ -3131,6 +3136,7 @@
 <translation id="6767985426384634228">Мекенжайды жаңарту керек пе?</translation>
 <translation id="6770747695101757579">Қағаз (мақта)</translation>
 <translation id="677257480647123231">Баланың интернеттегі қауіпсіздігі</translation>
+<translation id="6772959465807028761">YouTube-ті әрі қарай пайдалану үшін Google аккаунтыңызға кіріңіз.</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6777088782163649345">YouTube-ті ата-анаңыз таңдаған параметрлермен пайдаланыңыз</translation>
 <translation id="6779348349813025131">Google Password Manager қызметіне MacOS кілттер тізбегін пайдалануға рұқсат қажет</translation>
@@ -3203,6 +3209,7 @@
 <translation id="6915804003454593391">Пайдаланушы:</translation>
 <translation id="6916193791494646625">Жүктеп алу себебін көрсетіңіз (міндетті)</translation>
 <translation id="6917795328362592458">Сіз жаңа ғана қолданған құпия сөз деректердің қолды болуы салдарынан жария етілді. Аккаунттарыңызды қорғау үшін Password Manager сақталған құпия сөздеріңізді тексеруді ұсынады.</translation>
+<translation id="6921197121276419421">Веб-қолданбаларды орнатуға рұқсат берілді.</translation>
 <translation id="6924013822850225188">Карта бонустары төлем жасалатын кезде көрсетілетін-көрсетілмейтінін таңдаңыз (банк шарттары қолданылады).</translation>
 <translation id="6925267999184670015">Солтүстік Америка B+</translation>
 <translation id="6926216138694948720">Денені безендіру өнері</translation>
@@ -3700,6 +3707,7 @@
 <translation id="7761701407923456692">Сервер сертификаты URL мекенжайына сәйкес келмейді.</translation>
 <translation id="7764225426217299476">Мекенжай қосу</translation>
 <translation id="7766518757692125295">Шеті</translation>
+<translation id="7766899888934244586">Веб-қолданбалар</translation>
 <translation id="7767278989746220252">Ішкі аула, көгал және бақша</translation>
 <translation id="776749070095465053">Мата</translation>
 <translation id="7773005668374414287">Бірдей ретпен беткі жағында</translation>
@@ -3732,6 +3740,7 @@
 <translation id="7831993212387676366">Сатып алу тізімі деген не?</translation>
 <translation id="7840103971441592723">Экранды түсіру басталды</translation>
 <translation id="784137052867620416">Сауда-саттық статистикасы</translation>
+<translation id="7842611866969435396">Бастау</translation>
 <translation id="784404208867107517">Топтастырылған тарих</translation>
 <translation id="7844689747373518809">{COUNT,plural, =0{Жоқ}=1{1 қолданба (<ph name="EXAMPLE_APP_1" />)}=2{2 қолданба (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />)}other{# қолданба (<ph name="EXAMPLE_APP_1" />, <ph name="EXAMPLE_APP_2" />, <ph name="AND_MORE" />)}}</translation>
 <translation id="785476343534277563">Студенттік спорт</translation>
@@ -4294,6 +4303,7 @@
 <translation id="8891727572606052622">Жарамсыз прокси режимі.</translation>
 <translation id="8894794286471754040">Алдымен ұзын шеті</translation>
 <translation id="8895334001368918465">Chrome браузерінде басқа автотолтыру қызметін пайдалану үшін оны Android параметрлерінде және осы жерден қосыңыз</translation>
+<translation id="8897221284075091877">Бұл контентті көруге рұқсат сұрау үшін Google аккаунтыңызды әрі қарай пайдалана беріңіз.</translation>
 <translation id="8897428486789851669">Жүзу</translation>
 <translation id="8899807382908246773">Мазалайтын жарнамалар</translation>
 <translation id="8903921497873541725">Үлкейту</translation>

@@ -292,6 +292,7 @@
 <translation id="8860548555286245440">在 Chromium 中以無痕模式開啟網址</translation>
 <translation id="8866191443434488382">造訪網站時，Chromium 會在網站上偵測是否有追蹤號碼，並在新分頁顯示包裹配送動態。為提供這項功能，系統會將包裹追蹤號碼和網站名稱傳送給 Chromium。這些資料也會用於改善購物功能，造福所有使用者。你隨時可以前往<ph name="BEGIN_LINK" />包裹追蹤設定<ph name="END_LINK" />進行更新。</translation>
 <translation id="8880024619507699923">根據貴機構的政策規定，你必須先登入才能使用 Chromium。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
+<translation id="8900052431807804054">取得 Chromium 最強大的安全防護機制</translation>
 <translation id="894437814105052438">登出帳戶後，Chromium 就不會將任何新資料同步到你的 Google 帳戶。不過，先前已同步處理的資料仍會保存在帳戶中。</translation>
 <translation id="8950326149985259075">{THRESHOLD,plural, =1{如果 Chromium 閒置 {THRESHOLD} 分鐘，就會執行這些動作}other{如果 Chromium 閒置 {THRESHOLD} 分鐘，就會執行這些動作}}</translation>
 <translation id="8963279154877372067">允許 Chromium 顯示通知才能接收降價快訊</translation>

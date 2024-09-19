@@ -216,6 +216,7 @@
 <translation id="1703117532528082099">تم إرساء النافذة النشطة على يمين الشاشة.</translation>
 <translation id="1708345662127501511">سطح المكتب: <ph name="DESK_NAME" /></translation>
 <translation id="1709762881904163296">إعدادات الشبكة</translation>
+<translation id="171610090693716835">‏يمكنك إنجاز مهامك مع قوائم تشغيل مخصَّصة تساعدك على التركيز. استمتِع الآن بمحتوى YouTube Music وYouTube بلا إعلانات مع خدمة YouTube Premium لمدة 3 أشهر بدون تكلفة.</translation>
 <translation id="1719094688023114093">ميزة "النسخ النصي التلقائي" مفعَّلة.</translation>
 <translation id="1720011244392820496">‏تفعيل ميزة "مزامنة Wi-Fi"</translation>
 <translation id="1720230731642245863">نقطة الاتصال غير مفعَّلة</translation>
@@ -1416,6 +1417,7 @@
 <translation id="5777841717266010279">هل ترغب في إيقاف مشاركة الشاشة؟</translation>
 <translation id="5779721926447984944">الملفات التي تم تثبيتها</translation>
 <translation id="5785221443435874078">إزالة هذا الاقتراح</translation>
+<translation id="5787431783058088906">الحصول على الميزة</translation>
 <translation id="5788127256798019331">‏ملفات Play</translation>
 <translation id="5788535737706478207">إعادة فتح آخر علامة تبويب أو نافذة تم إغلاقها</translation>
 <translation id="5790085346892983794">تم بنجاح</translation>
@@ -1647,6 +1649,7 @@
 <translation id="6574587113394758819">‏تم حجب إشعار التطبيق <ph name="APP_TITLE" /> بسبب تفعيل ميزة Viewing Protection.</translation>
 <translation id="6574622320167699133">تم فتح قفل الجهاز باستخدام الهاتف. انقر لبدء استخدام الجهاز.</translation>
 <translation id="6578407462441924264">بدون اسم</translation>
+<translation id="6582012689384648647">‏للاستماع إلى قوائم تشغيل مخصَّصة تساعدك على التركيز، يجب السماح بالوصول إلى YouTube Music</translation>
 <translation id="6582034443359256692">جارٍ حساب مستوى شحن البطارية</translation>
 <translation id="6585808820553845416">تنتهي الجلسة في <ph name="SESSION_TIME_REMAINING" />.</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />، <ph name="SECONDARY_TEXT" /></translation>
@@ -1886,6 +1889,7 @@
 <translation id="7477793887173910789">التحكم في الموسيقى والفيديوهات وغير ذلك</translation>
 <translation id="7488762544858401571">النسخة المُعدَّلة</translation>
 <translation id="7489261257412536105">الدخول إلى وضع "ملء الشاشة" أو الخروج منه</translation>
+<translation id="7490157877815329797">‏جرِّب YouTube Music Premium للاستماع إلى الموسيقى بلا إعلانات وموسيقى مخصَّصة تساعدك على التركيز</translation>
 <translation id="7490360161041035804">‏يمكنك تثبيت الملفات المهمة، بما فيها ملفات Google Drive. للتثبيت، مرِّر مؤشر الماوس فوق أحد الملفات أو افتح تطبيق "الملفات" وانقر بزر الماوس الأيمن على أحد الملفات.</translation>
 <translation id="7497767806359279797">اختيار اللغة ولوحة المفاتيح</translation>
 <translation id="7507162824403726948">إكمال عملية إثبات هويتك</translation>
@@ -2161,6 +2165,7 @@
 <translation id="8380784334203145311">ليلة سعيدة،</translation>
 <translation id="8382715499079447151">Viewing Protection</translation>
 <translation id="8383614331548401927">الملخّص الترحيبي</translation>
+<translation id="838540623579162843">‏الاشتراك في Music Premium</translation>
 <translation id="8388750414311082622">تتعذّر إزالة سطح المكتب الأخير.</translation>
 <translation id="8394567579869570560">قفّل أحد الوالدين هذا الجهاز</translation>
 <translation id="8401850874595457088">إدخال قائمة اللغة</translation>

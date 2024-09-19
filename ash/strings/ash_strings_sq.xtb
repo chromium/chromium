@@ -78,6 +78,7 @@ Ja disa gjëra që mund të provosh për të filluar.</translation>
 <translation id="1240638468526743569">Një aplikacion</translation>
 <translation id="1242198791279543032">Njoftimet janë vendosur në heshtje</translation>
 <translation id="1242883863226959074">pajisja</translation>
+<translation id="1245476784081715330">Punë e shkëlqyer!</translation>
 <translation id="1245644940275736236">Shko tek "Asistenti"</translation>
 <translation id="124678866338384709">Mbyll skedën aktuale</translation>
 <translation id="1246890715821376239">Aplikacionet e pambështetura</translation>
@@ -842,6 +843,7 @@ Lidhe pajisjen me një burim të energjisë elektrike.</translation>
 <translation id="3958714870339660776">Gjithë ditën</translation>
 <translation id="3962859241508114581">Kënga e mëparshme</translation>
 <translation id="3963124517343721543">Vazhdo me lehtësi aty ku e ke lënë duke hapur dritaret dhe skedat e tua të mëparshme. Do të shikosh gjithashtu sugjerime të personalizuara për gjërat për t'u bërë më pas.</translation>
+<translation id="396506362088290977">Testo tingullin e mikrofonit</translation>
 <translation id="3969043077941541451">Joaktive</translation>
 <translation id="3970324493235864154">Shiko njoftimet e telefonit tënd</translation>
 <translation id="397105322502079400">Po llogarit...</translation>
@@ -899,6 +901,7 @@ Lidhe pajisjen me një burim të energjisë elektrike.</translation>
 <translation id="4156293514828496577">Bateria e mbetur: <ph name="PERCENTAGE" />% (rreth <ph name="TIME_LEFT" />).
 Disa veçori janë kufizuar për të rritur kohëzgjatjen e baterisë.</translation>
 <translation id="4160919062868802509">U zbuluan disa burime të audios</translation>
+<translation id="416245495747357243">U krye!</translation>
 <translation id="4165275524535002941">Kablloja nuk mund të mbështetë ekranet</translation>
 <translation id="4177415338862979658">Kliko për të kontrolluar për detaje</translation>
 <translation id="4177913004758410636">{0,plural, =1{Përditëso pajisjen brenda një dite}other{Përditëso pajisjen brenda # ditësh}}</translation>
@@ -984,6 +987,7 @@ Disa veçori janë kufizuar për të rritur kohëzgjatjen e baterisë.</translat
 <translation id="4412944820643904175"><ph name="FEATURE_NAME" /> është joaktive.</translation>
 <translation id="4417647906073317561">Cilësimet e "Fokusit". Cakto një kohëmatës, detyrë dhe muzikë për t'u bërë pjesë e rrjedhës.</translation>
 <translation id="4424159417645388645">Tavolina e punës 5</translation>
+<translation id="4426817706804363424">Të lumtë!</translation>
 <translation id="4430019312045809116">Volumi</translation>
 <translation id="4441283832827406317">Aplikacionet janë renditur sipas emrit</translation>
 <translation id="4445159312344259901">Identifikohu për ta shkyçur</translation>
@@ -1248,6 +1252,7 @@ Gjithashtu, mund të përdorësh shkurtoren e tastierës. Fillimisht thekso teks
 <translation id="5283198616748585639">Shto 1 minutë</translation>
 <translation id="528468243742722775">Fundi</translation>
 <translation id="5286194356314741248">Po skanon</translation>
+<translation id="528641622273682395">Aktivizo/çaktivizo testimin e mikrofonit</translation>
 <translation id="5297423144044956168">Nuk u gjet asnjë pajisje celulare</translation>
 <translation id="5297704307811127955">Joaktiv</translation>
 <translation id="5300589172476337783">Shfaq</translation>
@@ -1275,6 +1280,7 @@ Nuk ka pajisje të lidhura.</translation>
 <translation id="536019650977002321">Administratori yt nuk e lejon regjistrimin e audios. Kontakto me administratorin për më shumë informacion.</translation>
 <translation id="5361524080961918551">Skedarët e ligjërimit në <ph name="LANGUAGE" /> janë shkarkuar pjesërisht</translation>
 <translation id="5363163447017455357"><ph name="DELIMITER" /> Shko te kjo skedë</translation>
+<translation id="5363835273551457276">Mund të testosh tingullin e mikrofonit. Mbyll panelin për ta ndaluar.</translation>
 <translation id="5364693579536176785">hapësira ruajtëse</translation>
 <translation id="5369573834963677938">Kontrolli me anë të fytyrës do të ofrohet për përdoruesit e tjerë në pajisje</translation>
 <translation id="5369717264580061086">Shiko paraprakisht skedarët në aplikacionin "Skedarët"</translation>
@@ -1415,6 +1421,7 @@ Nuk ka pajisje të lidhura.</translation>
 <translation id="5802516411616338943">Hap "Cilësimet e shpejta"</translation>
 <translation id="5804651031882187592">Çaktivizo cilësimin "Kyç kartën SIM"</translation>
 <translation id="5805809050170488595">Kliko për të aktivizuar <ph name="NETWORK_NAME" /></translation>
+<translation id="5818796501620225415">Mund të shtosh kohë ose mund ta përfundosh seancën e fokusit</translation>
 <translation id="5819918159912280082">Pajisja jote Chromebook është rinisur papritur. Hap dritaret dhe aplikacionet e tua të mëparshme.</translation>
 <translation id="5823239091726045201">Google Tasks në ueb</translation>
 <translation id="5825969630400862129">Cilësimet e pajisjeve të lidhura</translation>
@@ -2125,6 +2132,7 @@ Për ta fikur pajisjen, shtyp dhe mbaj shtypur përsëri butonin e energjisë n�
 <translation id="8262312463845990408">Aktivizo/çaktivizo luajtjen</translation>
 <translation id="8268302343625273732">Shiko të gjitha detyrat te "Klasa e Google"</translation>
 <translation id="8277261673056602147">Thekso tekstin në ekranin tënd</translation>
+<translation id="8282784978194352587">Ia dole!</translation>
 <translation id="8287009018010202411">Produktivitet</translation>
 <translation id="828708037801473432">Joaktiv</translation>
 <translation id="8297006494302853456">I dobët</translation>
@@ -2202,6 +2210,7 @@ Për ta fikur pajisjen, shtyp dhe mbaj shtypur përsëri butonin e energjisë n�
 <translation id="8609384513243082612">Hap skedë të re</translation>
 <translation id="861045123704058818">Aplikacionet janë organizuar përkohësisht sipas kategorisë</translation>
 <translation id="8612216344243590325">Mbaji skedarët e rëndësishëm te "<ph name="HOLDING_SPACE_TITLE" />" në vend që t'i mbash në desktop. Thjesht zvarriti skedarët te "<ph name="HOLDING_SPACE_TITLE" />".</translation>
+<translation id="8612338981637220013">Vazhdo kështu!</translation>
 <translation id="8614517853887502247">Njoftimet e <ph name="APP_1_TITLE" /> dhe <ph name="APP_2_TITLE" /> janë fshehur sepse është aktivizuar mbrojtja e shikimit</translation>
 <translation id="8615778328722901791">Hap shiritin e veglave</translation>
 <translation id="8619000641825875669">OneDrive</translation>
@@ -2244,6 +2253,7 @@ Për ta fikur pajisjen, shtyp dhe mbaj shtypur përsëri butonin e energjisë n�
 <translation id="8742057891287715849"><ph name="NAME" /> · <ph name="SERVICE_PROVIDER" />: Po aktivizohet...</translation>
 <translation id="8747464587821437069"><ph name="CAMERA_AND_MICROPHONE_ACCESS_STATUS" />,
         <ph name="SCREEN_SHARE_STATUS" /></translation>
+<translation id="8751299148074971734">Vazhdo kështu!</translation>
 <translation id="8753368202781196133">Kjo gjuhë nuk mbështetet në këtë moment.</translation>
 <translation id="8755498163081687682">Verifiko identitetin tënd: <ph name="ORIGIN_NAME" /> dëshiron të konfirmojë që je ti</translation>
 <translation id="875593634123171288">Shfaq cilësimet e VPN</translation>

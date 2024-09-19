@@ -554,6 +554,7 @@
 <translation id="1401216725754314428">નવા ટૅબમાં સંબંધિત સાઇટ વિશે વધુ જાણો</translation>
 <translation id="1402426911829176748">તમારા ડિવાઇસ સાથે કનેક્ટ કરી રહ્યાં છીએ</translation>
 <translation id="1403222014593521787">પ્રૉક્સી સાથે કનેક્ટ કરી શકાયું નથી</translation>
+<translation id="1405336513195181336">આમાં બુકમાર્ક, એક્સ્ટેન્શન અને સાઇટનો તમારો બ્રાઉઝિંગ ઇતિહાસ શામેલ છે.</translation>
 <translation id="1405779994569073824">ક્રૅશ થયું</translation>
 <translation id="1406500794671479665">ચકાસી રહ્યું છે...</translation>
 <translation id="1407069428457324124">ઘેરી થીમ</translation>
@@ -2499,6 +2500,7 @@
 <translation id="2749881179542288782">જોડણી સાથે વ્યાકરણ તપાસો</translation>
 <translation id="2750020734439919571">Chrome ઍપના વધુ સેટિંગ અને પરવાનગીઓ</translation>
 <translation id="2750602041558385535">ચકાસણી વિનાના ડાઉનલોડને બ્લૉક કરવામાં આવ્યા</translation>
+<translation id="2751883373055093745"><ph name="WEBSITE" /> તમારી સિક્યુરિટી કીનો ID નંબર જાણવા માગે છે. તમે કઈ સિક્યુરિટી કીનો ઉપયોગ કરો છો, તેની સાઇટને બરાબર જાણ થશે.</translation>
 <translation id="275213133112113418">તમારું કાર્ડ સાચવવામાં આવ્યું</translation>
 <translation id="2753623023919742414">શોધવા માટે ક્લિક કરો</translation>
 <translation id="2754226775788136540"><ph name="PRIMARY_EMAIL" />માં સાચવેલા ઝડપી જોડાણવાળા ડિવાઇસ શોધી રહ્યાં છીએ</translation>
@@ -3730,6 +3732,7 @@
 <translation id="3665589677786828986">Chromeને જાણ થઈ છે કે તમારા કેટલાક સેટિંગ બીજા પ્રોગ્રામ દ્વારા દૂષિત કરવામાં આવેલા અને તેમને તેમના મૂળ ડિફૉલ્ટ પર રીસેટ કર્યા છે.</translation>
 <translation id="3665919494326051362">વર્તમાન વર્ઝન <ph name="CURRENT_VERSION" /> છે</translation>
 <translation id="3666196264870170605">Intel વાઇ-ફાઇ NICs ડીબગ ડમ્પ</translation>
+<translation id="3666529246018937077">તમારો હાલનો બ્રાઉઝિંગ ડેટા જૂની પ્રોફાઇલમાં જ રહેશે. તમારી ઑફિસની પ્રોફાઇલમાં અગાઉનો કોઈપણ બ્રાઉઝિંગ ડેટા હશે નહીં.</translation>
 <translation id="3666971425390608309">ડાઉનલોડ થોભાવ્યું: <ph name="FILE_NAME" />.</translation>
 <translation id="3670113805793654926">કોઈ પણ વિક્રેતા પાસે ઉપલબ્ધ ડિવાઇસની શ્રેણી</translation>
 <translation id="3670229581627177274">Bluetooth ચાલુ કરો</translation>
@@ -4471,6 +4474,7 @@
 <translation id="4181841719683918333">ભાષાઓ</translation>
 <translation id="4182339886482390129">Safe Browsingમાં વધારેલી સુરક્ષા તમને જોખમી વેબસાઇટ, ડાઉનલોડ અને એક્સ્ટેન્શન સામે વધુ સુરક્ષા આપે છે</translation>
 <translation id="4184803915913850597">HID ડિવાઇસ (<ph name="VENDOR_ID" />:<ph name="PRODUCT_ID" />)</translation>
+<translation id="418527077671811642"><ph name="WEBSITE" /> તમારી સિક્યુરિટી કીની બનાવટ અને મૉડલ જાણશે</translation>
 <translation id="4186749321808907788"><ph name="QUERY_NAME" /> - <ph name="DEFAULT_SEARCH_ENGINE_NAME" /> શોધ</translation>
 <translation id="4187424053537113647"><ph name="APP_NAME" />ને સેટઅપ કરી રહ્યાં છીએ...</translation>
 <translation id="4190446002599583608">AI દ્વારા સંચાલિત ઇતિહાસમાં શોધ સુવિધા</translation>
@@ -4598,6 +4602,7 @@
 <translation id="4278779213160967034">આ પ્રક્રિયામાં થોડો સમય લાગી શકે છે. ફાઇલ ડાઉનલોડ કરી રહ્યાં છીએ.</translation>
 <translation id="4279129444466079448">તમે આ ડિવાઇસ પર વધુમાં વધુ <ph name="PROFILE_LIMIT" /> ઇ-સિમ પ્રોફાઇલ ઇન્સ્ટૉલ કરી શકો છો. અન્ય કોઈ પ્રોફાઇલ ઉમેરવા માટે, પહેલાં હાલની પ્રોફાઇલ કાઢી નાખો.</translation>
 <translation id="4280325816108262082">ડિવાઇસ જ્યારે બંધ કરવામાં આવે અથવા ઉપયોગમાં ન હોય, ત્યારે તે ઑટોમૅટિક રીતે ડિસ્કનેક્ટ થઈ જશે</translation>
+<translation id="4281412694055934031">સાઇટ તમારા ડિવાઇસ પર વેબ ઍપ ઇન્સ્ટૉલ કરવા માટે કહી શકે છે</translation>
 <translation id="4281789858103154731">બનાવો</translation>
 <translation id="4281844954008187215">સેવાની શરતો</translation>
 <translation id="4281849573951338030">પેન બટન કસ્ટમાઇઝ કરો</translation>
@@ -4805,6 +4810,7 @@
 <translation id="4426857487270413362">ઇન્સ્ટૉલર ફાઇલો ડાઉનલોડ કરી શકતા નથી. કૃપા કરીને તમારું ઇન્ટરનેટ કનેક્શન ચેક કરો અને ચેક કરો કે તમારી પાસે પર્યાપ્ત ખાલી ડિસ્ક સ્પેસ હોય અને ફરી પ્રયાસ કરો. ભૂલનો કોડ <ph name="ERROR" /> છે.</translation>
 <translation id="4427111270137140798"><ph name="COUNT" /> વાર ભાળ મળી</translation>
 <translation id="4427365070557649936">કન્ફર્મેશન કોડ ચકાસી રહ્યાં છીએ...</translation>
+<translation id="4428579202668721841">વર્તમાન બ્રાઉઝિંગ ડેટાને તમારી ઑફિસની પ્રોફાઇલથી અલગ રાખીએ?</translation>
 <translation id="4429163740524851942">વાસ્તવિક કીબોર્ડનું લેઆઉટ</translation>
 <translation id="4430019312045809116">વૉલ્યૂમ</translation>
 <translation id="443031431654216610">માત્ર સંખ્યાવાચક અંકનો ઉપયોગ કરો</translation>
@@ -5444,8 +5450,10 @@
 <translation id="490031510406860025">આ સાઇટ પર મંજૂરી આપી નથી</translation>
 <translation id="490051679772058907"><ph name="REFRESH_RATE" /> Hz - ઇન્ટરલેસ કરેલો</translation>
 <translation id="4900652253009739885">“પસંદ કરો”ના એકમાત્ર સોંપણી કરવામાં આવેલા સ્વિચને કાઢી નાખી શકાતું નથી. <ph name="RESPONSE" /> માટે કોઈપણ કી દબાવો.</translation>
+<translation id="4900908761825556116">સાઇટને તમારા ડિવાઇસ પર વેબ ઍપ ઇન્સ્ટૉલ કરવાની મંજૂરી આપશો નહીં</translation>
 <translation id="4901154724271753917">તાજેતરમાં બંધ કરવામાં આવેલી સૂચિ મોટી કરો</translation>
 <translation id="4901309472892185668"><ph name="EXPERIMENT_NAME" /> પ્રયોગ માટે, પ્રયોગનું સ્ટેટસ પસંદ કરો.</translation>
+<translation id="4902675024946078396">ના, તેને તમારી ઑફિસની પ્રોફાઇલમાં ખસેડો</translation>
 <translation id="49027928311173603">સર્વરમાંથી ડાઉનલોડ કરેલી પૉલિસી અમાન્ય છે: <ph name="VALIDATION_ERROR" />.</translation>
 <translation id="4903967893652864401">આ બૅકગ્રાઉન્ડની પ્રવૃત્તિ અને સ્મૂધ સ્ક્રોલિંગ જેવી વિઝ્યુઅલ ઇફેક્ટને મર્યાદિત કરીને બૅટરી પાવર વધારે છે.</translation>
 <translation id="4906490889887219338">નેટવર્ક ફાઇલ શેર સેટઅપ કરો અથવા મેનેજ કરો. <ph name="LINK_BEGIN" />વધુ જાણો<ph name="LINK_END" /></translation>
@@ -7480,6 +7488,7 @@ USB ડિવાઇસ</translation>
 <translation id="6434104957329207050">પૉઇન્ટ સ્કૅન કરવાની ઝડપ</translation>
 <translation id="6434309073475700221">કાઢી નાખો</translation>
 <translation id="6434325376267409267">તમે <ph name="APP_NAME" />નો ઉપયોગ કરો તે પહેલાં તમારા ડિવાઇસને અપડેટ કરવાની જરૂર છે.</translation>
+<translation id="6434690603850475457">હા, તેને અલગ રાખો (સુઝાવ આપવામાં આવે છે)</translation>
 <translation id="6434755719322447931">અસ્તવ્યસ્ત</translation>
 <translation id="6435339218366409950">આ કૅપ્શનનો અનુવાદ જે ભાષામાં કરવા ઇચ્છતા હો, તે પસંદ કરો</translation>
 <translation id="6436164536244065364">વેબ સ્ટોરમાં જુઓ</translation>
@@ -8385,6 +8394,7 @@ USB ડિવાઇસ</translation>
 <translation id="708060913198414444">ઑડિઓ સરનામું કૉ&amp;પિ કરો</translation>
 <translation id="7082568314107259011"><ph name="NETWORK_NAME" />ને તમારા ઍડમિનિસ્ટ્રેટર દ્વારા મેનેજ કરવામાં આવે છે</translation>
 <translation id="7082850163410901674">Mac સિસ્ટમના સેટિંગમાં નોટિફિકેશન બંધ કરવામાં આવ્યા છે</translation>
+<translation id="7083729794572207131">સાઇટ પર તમારા અનુભવને બહેતર બનાવવા માટે સાઇટ સામાન્ય રીતે વેબ ઍપ ઇન્સ્ટૉલ કરવાનું કહે છે</translation>
 <translation id="7083774521940805477">Chromebook માટે Steam (બીટા) તમારી Chromebook પર ઉપલબ્ધ નથી.</translation>
 <translation id="708550780726587276">(કન્ફિગ્યુરેશન થયું નથી)</translation>
 <translation id="7086377898680121060">તેજસ્વીતા વધારો</translation>
@@ -10485,6 +10495,7 @@ USB ડિવાઇસ</translation>
 <translation id="8617601976406256334"><ph name="SITE_NAME" /> માટે સાઇટનો ડેટા તેમજ પરવાનગીઓ ડિલીટ કરીએ?</translation>
 <translation id="8617748779076050570">સુરક્ષિત કનેક્શન ID: <ph name="CONNECTION_ID" /></translation>
 <translation id="8619000641825875669">OneDrive</translation>
+<translation id="8619369551122276044">તમારા ડિવાઇસ પર વેબ ઍપ ઇન્સ્ટૉલ કરવાની મંજૂરી નથી</translation>
 <translation id="8619803522055190423">ડ્રૉપ શૅડો</translation>
 <translation id="8619892228487928601"><ph name="CERTIFICATE_NAME" />: <ph name="ERROR" /></translation>
 <translation id="8620206585293032550">નિષ્ક્રિય ટૅબનો દેખાવ</translation>
@@ -11369,6 +11380,7 @@ USB ડિવાઇસ</translation>
 <translation id="93393615658292258">ફક્ત પાસવર્ડ</translation>
 <translation id="934244546219308557">આ ગ્રૂપને નામ આપો</translation>
 <translation id="93480724622239549">ખામી અથવા ભૂલ</translation>
+<translation id="9354763467503131">તમારા ડિવાઇસ પર વેબ ઍપ ઇન્સ્ટૉલ કરવા માટે કહેવાની મંજૂરી છે</translation>
 <translation id="936646668635477464">કૅમેરા અને માઇક્રોફોન</translation>
 <translation id="936801553271523408">સિસ્ટમ ડાયગ્નોસ્ટિક ડેટા</translation>
 <translation id="93766956588638423">એક્સ્ટેન્શન સુધારો</translation>
