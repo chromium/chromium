@@ -28,6 +28,7 @@
 #include "chrome/browser/ash/borealis/borealis_app_launcher.h"
 #include "chrome/browser/ash/borealis/borealis_features.h"
 #include "chrome/browser/ash/borealis/borealis_service.h"
+#include "chrome/browser/ash/borealis/borealis_service_factory.h"
 #include "chrome/browser/ash/borealis/borealis_util.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_util.h"
 #include "chrome/browser/ash/crostini/crostini_features.h"
@@ -76,9 +77,11 @@ void Launch(vm_tools::apps::VmType vm_type,
       break;
 
     case VmType::BOREALIS:
-      borealis::BorealisService::GetForProfile(profile)->AppLauncher().Launch(
-          app_id, {url.spec()}, borealis::BorealisLaunchSource::kAppUrlHandler,
-          base::DoNothing());
+      borealis::BorealisServiceFactory::GetForProfile(profile)
+          ->AppLauncher()
+          .Launch(app_id, {url.spec()},
+                  borealis::BorealisLaunchSource::kAppUrlHandler,
+                  base::DoNothing());
       break;
 
     default:
@@ -569,9 +572,10 @@ GuestOsRegistryService::GetEnabledApps() const {
       crostini::CrostiniFeatures::Get()->IsEnabled(profile_);
   bool plugin_vm_enabled =
       plugin_vm::PluginVmFeatures::Get()->IsEnabled(profile_);
-  bool borealis_enabled = borealis::BorealisService::GetForProfile(profile_)
-                              ->Features()
-                              .IsEnabled();
+  bool borealis_enabled =
+      borealis::BorealisServiceFactory::GetForProfile(profile_)
+          ->Features()
+          .IsEnabled();
   if (!crostini_enabled && !plugin_vm_enabled && !borealis_enabled) {
     return {};
   }

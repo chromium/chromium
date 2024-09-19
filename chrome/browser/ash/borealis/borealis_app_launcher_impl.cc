@@ -10,6 +10,7 @@
 #include "chrome/browser/ash/borealis/borealis_context_manager.h"
 #include "chrome/browser/ash/borealis/borealis_features.h"
 #include "chrome/browser/ash/borealis/borealis_service.h"
+#include "chrome/browser/ash/borealis/borealis_service_factory.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/views/borealis/borealis_launch_error_dialog.h"
@@ -32,7 +33,7 @@ void BorealisAppLauncherImpl::Launch(std::string app_id,
                                      const std::vector<std::string>& args,
                                      BorealisLaunchSource source,
                                      OnLaunchedCallback callback) {
-  if (!borealis::BorealisService::GetForProfile(profile_)
+  if (!borealis::BorealisServiceFactory::GetForProfile(profile_)
            ->Features()
            .IsEnabled()) {
     ash::BorealisInstallerDialog::Show(profile_);
@@ -40,14 +41,15 @@ void BorealisAppLauncherImpl::Launch(std::string app_id,
     std::move(callback).Run(LaunchResult::kSuccess);
     return;
   }
-  if (!borealis::BorealisService::GetForProfile(profile_)
+  if (!borealis::BorealisServiceFactory::GetForProfile(profile_)
            ->ContextManager()
            .IsRunning()) {
     borealis::ShowBorealisSplashScreenView(profile_);
   }
   RecordBorealisLaunchSourceHistogram(source);
-  BorealisService::GetForProfile(profile_)->ContextManager().StartBorealis(
-      base::BindOnce(
+  BorealisServiceFactory::GetForProfile(profile_)
+      ->ContextManager()
+      .StartBorealis(base::BindOnce(
           [](Profile* profile, std::string app_id,
              const std::vector<std::string>& args,
              BorealisAppLauncherImpl::OnLaunchedCallback callback,

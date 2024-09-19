@@ -20,6 +20,7 @@
 #include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/borealis/borealis_service.h"
+#include "chrome/browser/ash/borealis/borealis_service_factory.h"
 #include "chrome/browser/ash/borealis/borealis_window_manager.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/crostini/crostini_features.h"
@@ -699,7 +700,7 @@ ash::ShelfID AppServiceAppWindowShelfController::GetShelfId(
   std::string shelf_app_id;
   if (ash::borealis::IsBorealisWindow(window)) {
     for (Profile* profile : profile_list_) {
-      shelf_app_id = borealis::BorealisService::GetForProfile(profile)
+      shelf_app_id = borealis::BorealisServiceFactory::GetForProfile(profile)
                          ->WindowManager()
                          .GetShelfAppId(window);
       if (!shelf_app_id.empty()) {

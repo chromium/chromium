@@ -17,6 +17,7 @@
 #include "chrome/browser/ash/borealis/borealis_metrics.h"
 #include "chrome/browser/ash/borealis/borealis_prefs.h"
 #include "chrome/browser/ash/borealis/borealis_service.h"
+#include "chrome/browser/ash/borealis/borealis_service_factory.h"
 #include "chrome/browser/ash/borealis/borealis_types.mojom.h"
 #include "chrome/browser/ash/borealis/borealis_util.h"
 #include "chrome/browser/ash/borealis/testing/apps.h"
@@ -71,7 +72,7 @@ class BorealisInstallerTest : public testing::Test,
 
  protected:
   BorealisInstaller* installer() {
-    return &BorealisService::GetForProfile(&profile_)->Installer();
+    return &BorealisServiceFactory::GetForProfile(&profile_)->Installer();
   }
 
   void SetUp() override {
@@ -104,8 +105,9 @@ class BorealisInstallerTest : public testing::Test,
     CreateFakeMainApp(&profile_);
 
     ASSERT_FALSE(BorealisDlcInstalled());
-    ASSERT_FALSE(
-        BorealisService::GetForProfile(&profile_)->Features().IsEnabled());
+    ASSERT_FALSE(BorealisServiceFactory::GetForProfile(&profile_)
+                     ->Features()
+                     .IsEnabled());
   }
 
   void StartAndRunToCompletion() {
@@ -148,7 +150,7 @@ TEST_F(BorealisInstallerTest, BorealisNotAllowed) {
 
   EXPECT_FALSE(BorealisDlcInstalled());
   EXPECT_FALSE(
-      BorealisService::GetForProfile(&profile_)->Features().IsEnabled());
+      BorealisServiceFactory::GetForProfile(&profile_)->Features().IsEnabled());
 }
 
 TEST_F(BorealisInstallerTest, DeviceOfflineInstallationFails) {
@@ -162,7 +164,7 @@ TEST_F(BorealisInstallerTest, DeviceOfflineInstallationFails) {
 
   EXPECT_FALSE(BorealisDlcInstalled());
   EXPECT_FALSE(
-      BorealisService::GetForProfile(&profile_)->Features().IsEnabled());
+      BorealisServiceFactory::GetForProfile(&profile_)->Features().IsEnabled());
 }
 
 TEST_F(BorealisInstallerTest, SucessfulInstallation) {
@@ -170,7 +172,7 @@ TEST_F(BorealisInstallerTest, SucessfulInstallation) {
 
   EXPECT_TRUE(BorealisDlcInstalled());
   EXPECT_TRUE(
-      BorealisService::GetForProfile(&profile_)->Features().IsEnabled());
+      BorealisServiceFactory::GetForProfile(&profile_)->Features().IsEnabled());
 }
 
 TEST_F(BorealisInstallerTest, InstallationObserver) {
@@ -221,14 +223,14 @@ TEST_F(BorealisInstallerTest, CancelledThenSuccessfulInstallation) {
 
   EXPECT_FALSE(BorealisDlcInstalled());
   EXPECT_FALSE(
-      BorealisService::GetForProfile(&profile_)->Features().IsEnabled());
+      BorealisServiceFactory::GetForProfile(&profile_)->Features().IsEnabled());
 
   installer()->Start();
   task_environment_.RunUntilIdle();
 
   EXPECT_TRUE(BorealisDlcInstalled());
   EXPECT_TRUE(
-      BorealisService::GetForProfile(&profile_)->Features().IsEnabled());
+      BorealisServiceFactory::GetForProfile(&profile_)->Features().IsEnabled());
 }
 
 TEST_F(BorealisInstallerTest, SucessfulInstallationRecordMetrics) {
@@ -321,8 +323,9 @@ class BorealisUninstallerTest : public BorealisInstallerTest {
 
     // Install borealis.
     StartAndRunToCompletion();
-    ASSERT_TRUE(
-        BorealisService::GetForProfile(&profile_)->Features().IsEnabled());
+    ASSERT_TRUE(BorealisServiceFactory::GetForProfile(&profile_)
+                    ->Features()
+                    .IsEnabled());
   }
 };
 
@@ -405,12 +408,13 @@ TEST_F(BorealisUninstallerTest, UninstallationRemovesAllNecessaryPieces) {
   task_environment_.RunUntilIdle();
 
   // Borealis is not running.
-  EXPECT_FALSE(
-      BorealisService::GetForProfile(&profile_)->ContextManager().IsRunning());
+  EXPECT_FALSE(BorealisServiceFactory::GetForProfile(&profile_)
+                   ->ContextManager()
+                   .IsRunning());
 
   // Borealis is not enabled.
   EXPECT_FALSE(
-      BorealisService::GetForProfile(&profile_)->Features().IsEnabled());
+      BorealisServiceFactory::GetForProfile(&profile_)->Features().IsEnabled());
 
   // Borealis has no installed apps.
   EXPECT_EQ(guest_os::GuestOsRegistryServiceFactory::GetForProfile(&profile_)

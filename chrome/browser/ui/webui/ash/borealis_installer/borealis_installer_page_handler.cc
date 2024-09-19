@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/webui/ash/borealis_installer/borealis_installer_page_handler.h"
+
 #include "ash/webui/settings/public/constants/routes.mojom.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -15,6 +16,7 @@
 #include "chrome/browser/ash/borealis/borealis_installer.h"
 #include "chrome/browser/ash/borealis/borealis_metrics.h"
 #include "chrome/browser/ash/borealis/borealis_service.h"
+#include "chrome/browser/ash/borealis/borealis_service_factory.h"
 #include "chrome/browser/ash/borealis/borealis_types.mojom.h"
 #include "chrome/browser/ash/borealis/borealis_util.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -67,7 +69,7 @@ BorealisInstallerPageHandler::~BorealisInstallerPageHandler() = default;
 void BorealisInstallerPageHandler::Install() {
   install_start_time_ = base::Time::Now();
   borealis::BorealisInstaller& installer =
-      borealis::BorealisService::GetForProfile(profile_)->Installer();
+      borealis::BorealisServiceFactory::GetForProfile(profile_)->Installer();
   if (observation_.IsObserving()) {
     observation_.Reset();
   }
@@ -76,7 +78,7 @@ void BorealisInstallerPageHandler::Install() {
 }
 
 void BorealisInstallerPageHandler::ShutDown() {
-  borealis::BorealisService::GetForProfile(profile_)
+  borealis::BorealisServiceFactory::GetForProfile(profile_)
       ->ContextManager()
       .ShutDownBorealis(
           base::BindOnce([](borealis::BorealisShutdownResult result) {
@@ -89,7 +91,9 @@ void BorealisInstallerPageHandler::ShutDown() {
 }
 
 void BorealisInstallerPageHandler::CancelInstall() {
-  borealis::BorealisService::GetForProfile(profile_)->Installer().Cancel();
+  borealis::BorealisServiceFactory::GetForProfile(profile_)
+      ->Installer()
+      .Cancel();
 }
 
 void BorealisInstallerPageHandler::Launch() {
@@ -98,16 +102,20 @@ void BorealisInstallerPageHandler::Launch() {
   // post-install we know borealis wasn't running previously.
   borealis::ShowBorealisSplashScreenView(profile_);
   // Launch button has been clicked.
-  borealis::BorealisService::GetForProfile(profile_)->AppLauncher().Launch(
-      borealis::kClientAppId,
-      borealis::BorealisLaunchSource::kPostInstallLaunch,
-      base::BindOnce([](borealis::BorealisAppLauncher::LaunchResult result) {
-        if (result == borealis::BorealisAppLauncher::LaunchResult::kSuccess) {
-          return;
-        }
-        LOG(ERROR) << "Failed to launch borealis after install: code="
-                   << static_cast<int>(result);
-      }));
+  borealis::BorealisServiceFactory::GetForProfile(profile_)
+      ->AppLauncher()
+      .Launch(borealis::kClientAppId,
+              borealis::BorealisLaunchSource::kPostInstallLaunch,
+              base::BindOnce(
+                  [](borealis::BorealisAppLauncher::LaunchResult result) {
+                    if (result ==
+                        borealis::BorealisAppLauncher::LaunchResult::kSuccess) {
+                      return;
+                    }
+                    LOG(ERROR)
+                        << "Failed to launch borealis after install: code="
+                        << static_cast<int>(result);
+                  }));
 }
 
 void BorealisInstallerPageHandler::OnPageClosed() {

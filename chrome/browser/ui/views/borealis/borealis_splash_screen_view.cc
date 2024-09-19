@@ -14,6 +14,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/borealis/borealis_metrics.h"
 #include "chrome/browser/ash/borealis/borealis_service.h"
+#include "chrome/browser/ash/borealis/borealis_service_factory.h"
 #include "chrome/browser/ash/borealis/borealis_util.h"
 #include "chrome/browser/ash/borealis/borealis_window_manager.h"
 #include "chrome/browser/ui/browser_dialogs.h"
@@ -76,7 +77,7 @@ void BorealisSplashScreenView::Show(Profile* profile) {
 BorealisSplashScreenView::BorealisSplashScreenView(Profile* profile)
     : start_tick_(base::TimeTicks::Now()), weak_factory_(this) {
   profile_ = profile;
-  borealis::BorealisService::GetForProfile(profile_)
+  borealis::BorealisServiceFactory::GetForProfile(profile_)
       ->WindowManager()
       .AddObserver(this);
 
@@ -147,13 +148,14 @@ void BorealisSplashScreenView::OnSessionStarted() {
 void BorealisSplashScreenView::OnWindowManagerDeleted(
     borealis::BorealisWindowManager* window_manager) {
   DCHECK(window_manager ==
-         &borealis::BorealisService::GetForProfile(profile_)->WindowManager());
+         &borealis::BorealisServiceFactory::GetForProfile(profile_)
+              ->WindowManager());
   window_manager->RemoveObserver(this);
 }
 
 BorealisSplashScreenView::~BorealisSplashScreenView() {
   if (profile_) {
-    borealis::BorealisService::GetForProfile(profile_)
+    borealis::BorealisServiceFactory::GetForProfile(profile_)
         ->WindowManager()
         .RemoveObserver(this);
   }

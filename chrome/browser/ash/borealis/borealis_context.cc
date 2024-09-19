@@ -19,6 +19,7 @@
 #include "chrome/browser/ash/borealis/borealis_metrics.h"
 #include "chrome/browser/ash/borealis/borealis_power_controller.h"
 #include "chrome/browser/ash/borealis/borealis_service.h"
+#include "chrome/browser/ash/borealis/borealis_service_factory.h"
 #include "chrome/browser/ash/borealis/borealis_shutdown_monitor.h"
 #include "chrome/browser/ash/borealis/borealis_window_manager.h"
 #include "chrome/browser/ash/guest_os/guest_os_stability_monitor.h"
@@ -54,14 +55,15 @@ class BorealisLifetimeObserver
   explicit BorealisLifetimeObserver(BorealisContext* context)
       : context_(context), observation_(this), weak_factory_(this) {
     observation_.Observe(
-        &BorealisService::GetForProfile(context_->profile())->WindowManager());
+        &BorealisServiceFactory::GetForProfile(context_->profile())
+             ->WindowManager());
   }
 
   // BorealisWindowManager::AppWindowLifetimeObserver overrides.
   void OnSessionStarted() override {
     if (!context_->launch_options().auto_shutdown)
       return;
-    BorealisService::GetForProfile(context_->profile())
+    BorealisServiceFactory::GetForProfile(context_->profile())
         ->ShutdownMonitor()
         .CancelDelayedShutdown();
   }
@@ -69,7 +71,7 @@ class BorealisLifetimeObserver
   void OnSessionFinished() override {
     if (!context_->launch_options().auto_shutdown)
       return;
-    BorealisService::GetForProfile(context_->profile())
+    BorealisServiceFactory::GetForProfile(context_->profile())
         ->ShutdownMonitor()
         .ShutdownWithDelay();
   }

@@ -18,6 +18,7 @@
 #include "chrome/browser/apps/almanac_api_client/device_info_manager_factory.h"
 #include "chrome/browser/ash/borealis/borealis_features.h"
 #include "chrome/browser/ash/borealis/borealis_service.h"
+#include "chrome/browser/ash/borealis/borealis_service_factory.h"
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/crosapi/web_app_service_ash.h"
@@ -68,7 +69,7 @@ void DeviceInfoCallback(
     return;
   }
   auto* borealis_service =
-      borealis::BorealisService::GetForProfile(profile.get());
+      borealis::BorealisServiceFactory::GetForProfile(profile.get());
   if (!borealis_service) {
     BorealisFeaturesCallback(
         std::move(callback), device_info,

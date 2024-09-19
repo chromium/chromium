@@ -51,7 +51,6 @@ static_library("borealis") {
     "borealis_prefs.h",
     "borealis_security_delegate.cc",
     "borealis_security_delegate.h",
-    "borealis_service.cc",
     "borealis_service.h",
     "borealis_service_factory.cc",
     "borealis_service_factory.h",

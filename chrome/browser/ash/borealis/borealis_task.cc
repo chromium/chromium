@@ -26,6 +26,7 @@
 #include "chrome/browser/ash/borealis/borealis_features.h"
 #include "chrome/browser/ash/borealis/borealis_launch_options.h"
 #include "chrome/browser/ash/borealis/borealis_service.h"
+#include "chrome/browser/ash/borealis/borealis_service_factory.h"
 #include "chrome/browser/ash/borealis/borealis_util.h"
 #include "chrome/browser/ash/guest_os/guest_os_session_tracker.h"
 #include "chrome/browser/ash/guest_os/public/guest_os_service.h"
@@ -64,7 +65,7 @@ CheckAllowed::CheckAllowed() : BorealisTask("CheckAllowed") {}
 CheckAllowed::~CheckAllowed() = default;
 
 void CheckAllowed::RunInternal(BorealisContext* context) {
-  BorealisService::GetForProfile(context->profile())
+  BorealisServiceFactory::GetForProfile(context->profile())
       ->Features()
       .IsAllowed(base::BindOnce(&CheckAllowed::OnAllowednessChecked,
                                 weak_factory_.GetWeakPtr(), context));
@@ -86,7 +87,7 @@ GetLaunchOptions::GetLaunchOptions() : BorealisTask("GetLaunchOptions") {}
 GetLaunchOptions::~GetLaunchOptions() = default;
 
 void GetLaunchOptions::RunInternal(BorealisContext* context) {
-  BorealisService::GetForProfile(context->profile())
+  BorealisServiceFactory::GetForProfile(context->profile())
       ->LaunchOptions()
       .Build(base::BindOnce(&GetLaunchOptions::HandleOptions,
                             weak_factory_.GetWeakPtr(), context));

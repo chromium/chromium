@@ -10,6 +10,7 @@
 #include "chrome/browser/ash/borealis/borealis_context.h"
 #include "chrome/browser/ash/borealis/borealis_context_manager.h"
 #include "chrome/browser/ash/borealis/borealis_service.h"
+#include "chrome/browser/ash/borealis/borealis_service_factory.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_launcher.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_service.h"
 #include "chrome/browser/ash/crostini/crostini_manager.h"
@@ -37,7 +38,7 @@ ResponseType Success(std::string vm_name, std::string container_name) {
 }
 
 void LaunchBorealis(Profile* profile, LaunchCallback callback) {
-  borealis::BorealisService::GetForProfile(profile)
+  borealis::BorealisServiceFactory::GetForProfile(profile)
       ->ContextManager()
       .StartBorealis(base::BindOnce(
           [](LaunchCallback callback,

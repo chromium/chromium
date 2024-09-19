@@ -20,6 +20,7 @@
 #include "base/values.h"
 #include "chrome/browser/ash/borealis/borealis_features.h"
 #include "chrome/browser/ash/borealis/borealis_service.h"
+#include "chrome/browser/ash/borealis/borealis_service_factory.h"
 #include "chrome/browser/ash/crostini/crostini_features.h"
 #include "chrome/browser/ash/crostini/crostini_pref_names.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
@@ -412,7 +413,7 @@ void AppsSizeCalculator::OnGetAndroidAppsSize(
 
 void AppsSizeCalculator::UpdateBorealisAppsSize() {
   borealis::BorealisService* borealis_service =
-      borealis::BorealisService::GetForProfile(profile_);
+      borealis::BorealisServiceFactory::GetForProfile(profile_);
   if (!borealis_service || !borealis_service->Features().IsEnabled()) {
     has_borealis_apps_size_ = true;
     return;
@@ -506,7 +507,7 @@ void CrostiniSizeCalculator::OnGetCrostiniSize(
 
   // If Borealis is installed then we need to subtract its size from Crostini
   // in order for it to not be double counted.
-  if (borealis::BorealisService::GetForProfile(profile_)
+  if (borealis::BorealisServiceFactory::GetForProfile(profile_)
           ->Features()
           .IsEnabled()) {
     auto image = base::ranges::find(response->images(), "borealis",

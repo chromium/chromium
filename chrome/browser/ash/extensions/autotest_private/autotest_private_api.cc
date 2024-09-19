@@ -99,6 +99,7 @@
 #include "chrome/browser/ash/assistant/assistant_util.h"
 #include "chrome/browser/ash/borealis/borealis_installer.h"
 #include "chrome/browser/ash/borealis/borealis_service.h"
+#include "chrome/browser/ash/borealis/borealis_service_factory.h"
 #include "chrome/browser/ash/borealis/borealis_types.mojom.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_installer.h"
 #include "chrome/browser/ash/bruschetta/bruschetta_service.h"
@@ -2842,15 +2843,16 @@ class AutotestPrivateInstallBorealisFunction::InstallationObserver
       : observation_(this),
         completion_callback_(std::move(completion_callback)) {
     observation_.Observe(
-        &borealis::BorealisService::GetForProfile(profile)->Installer());
+        &borealis::BorealisServiceFactory::GetForProfile(profile)->Installer());
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(
-                       [](Profile* profile) {
-                         borealis::BorealisService::GetForProfile(profile)
-                             ->Installer()
-                             .Start();
-                       },
-                       profile));
+        FROM_HERE,
+        base::BindOnce(
+            [](Profile* profile) {
+              borealis::BorealisServiceFactory::GetForProfile(profile)
+                  ->Installer()
+                  .Start();
+            },
+            profile));
   }
 
   void OnProgressUpdated(double fraction_complete) override {}
