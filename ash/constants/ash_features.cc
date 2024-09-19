@@ -1665,11 +1665,6 @@ BASE_FEATURE(kImeSystemEmojiPickerClipboard,
              "SystemEmojiPickerClipboard",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enable or disable system emoji picker extension
-BASE_FEATURE(kImeSystemEmojiPickerExtension,
-             "SystemEmojiPickerExtension",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enable or disable system emoji picker GIF support
 BASE_FEATURE(kImeSystemEmojiPickerGIFSupport,
              "SystemEmojiPickerGIFSupport",

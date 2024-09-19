@@ -4140,9 +4140,6 @@ extern const char kLacrosProfileBackwardMigrationDescription[];
 extern const char kHindiInscriptLayoutName[];
 extern const char kHindiInscriptLayoutDescription[];
 
-extern const char kImeSystemEmojiPickerExtensionName[];
-extern const char kImeSystemEmojiPickerExtensionDescription[];
-
 extern const char kImeSystemEmojiPickerGIFSupportName[];
 extern const char kImeSystemEmojiPickerGIFSupportDescription[];
 
