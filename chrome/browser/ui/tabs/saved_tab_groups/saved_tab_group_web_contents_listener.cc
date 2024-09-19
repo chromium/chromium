@@ -57,17 +57,6 @@ bool IsUserTriggeredMainFrameNavigation(
   return true;
 }
 
-// Returns whether URL is in a redirect chain.
-bool IsURLInRedirectChain(const GURL& url,
-                          const std::vector<GURL>& redirect_chain) {
-  for (const auto& redirect_url : redirect_chain) {
-    if (redirect_url.GetWithoutRef().spec() == url.GetWithoutRef().spec()) {
-      return true;
-    }
-  }
-  return false;
-}
-
 }  // namespace
 
 void SavedTabGroupWebContentsListener::OnTabDiscarded(
@@ -107,7 +96,7 @@ void SavedTabGroupWebContentsListener::NavigateToUrl(const GURL& url) {
 
   // If the URL is inside current tab URL's redirect chain, there is no need to
   // navigate as the navigation will end up with the current tab URL.
-  if (IsURLInRedirectChain(url, saved_tab->redirect_url_chain())) {
+  if (saved_tab->IsURLInRedirectChain(url)) {
     return;
   }
 
@@ -181,11 +170,10 @@ void SavedTabGroupWebContentsListener::UpdateTabRedirectChain(
   }
 
   std::optional<SavedTabGroup> group = saved_group();
-
   SavedTabGroupTabBuilder tab_builder;
   tab_builder.SetRedirectURLChain(navigation_handle->GetRedirectChain());
   service_->UpdateTab(group->local_group_id().value(), saved_tab_group_tab_id_,
-                      std::move(tab_builder));
+                      tab_builder);
 }
 
 const SavedTabGroup SavedTabGroupWebContentsListener::saved_group() {

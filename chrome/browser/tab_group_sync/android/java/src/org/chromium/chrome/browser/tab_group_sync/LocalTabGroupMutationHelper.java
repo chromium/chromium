@@ -280,6 +280,10 @@ public class LocalTabGroupMutationHelper {
             return;
         }
 
+        if (TabGroupSyncUtils.isUrlInTabRedirectChain(tab, url)) {
+            return;
+        }
+
         boolean isCurrentTab =
                 getTabModel().getCurrentTabSupplier().get() != null
                         && getTabModel().getCurrentTabSupplier().get().getId() == tab.getId();

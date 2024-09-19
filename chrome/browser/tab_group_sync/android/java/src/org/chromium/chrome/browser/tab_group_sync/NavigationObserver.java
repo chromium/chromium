@@ -53,11 +53,13 @@ public class NavigationObserver extends TabModelSelectorTabObserver {
     @Override
     public void onDidFinishNavigationInPrimaryMainFrame(
             Tab tab, NavigationHandle navigationHandle) {
-        if (!mEnableObservers) return;
-
         if (tab.isIncognito() || tab.getTabGroupId() == null) {
             return;
         }
+
+        TabGroupSyncUtils.updateTabRedirectChain(tab, navigationHandle);
+
+        if (!mEnableObservers) return;
 
         if (!navigationHandle.isSaveableNavigation()) {
             return;

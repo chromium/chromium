@@ -122,6 +122,9 @@ class SavedTabGroupTab {
   // Returns true iff syncable data fields in `this` and `other` are equivalent.
   bool IsSyncEquivalent(const SavedTabGroupTab& other) const;
 
+  // Check whether a URL is in the `redirect_url_chain_`.
+  bool IsURLInRedirectChain(const GURL& url) const;
+
  private:
   // The ID used to represent the tab in sync.
   base::Uuid saved_tab_guid_;
