@@ -20642,17 +20642,41 @@ be describing additional metrics about the same event.
     <summary>
       Whether any familiarity heuristics would trigger on the site.
     </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.country"/>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
   <metric name="OnHighConfidenceAllowlist" enum="Boolean">
     <summary>
       Whether the site is on the safe browsing high confidence allowlist.
     </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.country"/>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
   <metric name="SiteEngagementScore">
     <summary>
       Site engagement score in the range [0, 100], rounded down to a multiple of
       10 to limit granularity.
     </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.country"/>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
   <metric name="SiteFamiliarityHistoryHeuristic"
       enum="SiteFamiliarityHistoryHeuristicName">
@@ -20661,6 +20685,14 @@ be describing additional metrics about the same event.
       would trigger on the site. If no navigation-history heuristic matches then
       the value NO_HEURISTIC_MATCH is recorded.
     </summary>
+    <aggregation>
+      <history>
+        <index fields="profile.country"/>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
 </event>
 
