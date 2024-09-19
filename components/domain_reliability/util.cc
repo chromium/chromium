@@ -88,10 +88,11 @@ bool GetDomainReliabilityBeaconStatus(
     int http_response_code,
     std::string* beacon_status_out) {
   if (net_error == net::OK) {
-    if (http_response_code >= 400 && http_response_code < 600)
+    if (http_response_code >= 400 && http_response_code < 600) {
       *beacon_status_out = "http.error";
-    else
+    } else {
       *beacon_status_out = "ok";
+    }
     return true;
   }
 
