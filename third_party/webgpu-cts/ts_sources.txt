@@ -717,6 +717,7 @@ src/webgpu/shader/execution/shader_io/compute_builtins.spec.ts
 src/webgpu/shader/execution/shader_io/fragment_builtins.spec.ts
 src/webgpu/shader/execution/shader_io/shared_structs.spec.ts
 src/webgpu/shader/execution/shader_io/user_io.spec.ts
+src/webgpu/shader/execution/shader_io/vertex_builtins.spec.ts
 src/webgpu/shader/execution/shader_io/workgroup_size.spec.ts
 src/webgpu/shader/execution/statement/compound.spec.ts
 src/webgpu/shader/execution/statement/discard.spec.ts
