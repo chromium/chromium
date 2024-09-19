@@ -23,6 +23,7 @@
 #include "ui/base/clipboard/clipboard_buffer.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/gfx/geometry/insets.h"
@@ -191,4 +192,8 @@ void OfferNotificationBubbleViews::OnPromoCodeSeeDetailsClicked() {
           /*is_renderer_initiated=*/false),
       /*navigation_handle_callback=*/{});
 }
+
+BEGIN_METADATA(OfferNotificationBubbleViews)
+END_METADATA
+
 }  // namespace autofill

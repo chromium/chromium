@@ -4029,6 +4029,7 @@ static_library("ui") {
       "views/autofill/autofill_bubble_utils.h",
       "views/autofill/autofill_field_promo_view_impl.cc",
       "views/autofill/autofill_field_promo_view_impl.h",
+      "views/autofill/autofill_location_bar_bubble.cc",
       "views/autofill/autofill_location_bar_bubble.h",
       "views/autofill/autofill_prediction_improvements/save_autofill_prediction_improvements_bubble_view.cc",
       "views/autofill/autofill_prediction_improvements/save_autofill_prediction_improvements_bubble_view.h",

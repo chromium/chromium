@@ -7,6 +7,7 @@
 
 #include "chrome/browser/ui/autofill/autofill_bubble_base.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_bubble_delegate_view.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 
 namespace autofill {
 
@@ -15,6 +16,7 @@ namespace autofill {
 // to `BubbleDialogDelegate` safe.
 class AutofillLocationBarBubble : public AutofillBubbleBase,
                                   public LocationBarBubbleDelegateView {
+  METADATA_HEADER(AutofillLocationBarBubble, LocationBarBubbleDelegateView)
   using LocationBarBubbleDelegateView::LocationBarBubbleDelegateView;
 };
 

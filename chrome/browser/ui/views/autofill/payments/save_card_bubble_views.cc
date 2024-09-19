@@ -20,6 +20,7 @@
 #include "components/grit/components_scaled_resources.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/color_palette.h"
@@ -277,5 +278,8 @@ void SaveCardBubbleViews::Init() {
           : views::DialogContentType::kControl));
   AddChildView(CreateMainContentView());
 }
+
+BEGIN_METADATA(SaveCardBubbleViews)
+END_METADATA
 
 }  // namespace autofill

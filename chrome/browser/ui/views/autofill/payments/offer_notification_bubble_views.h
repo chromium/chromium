@@ -12,6 +12,7 @@
 #include "chrome/browser/ui/views/autofill/autofill_location_bar_bubble.h"
 #include "chrome/browser/ui/views/controls/page_switcher_view.h"
 #include "ui/base/interaction/element_tracker.h"
+#include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/styled_label.h"
 
 namespace content {
@@ -27,15 +28,16 @@ DECLARE_ELEMENT_IDENTIFIER_VALUE(kOfferNotificationBubbleElementId);
 // offers, for which "Pay with [card] at checkout" is shown, or merchant promo
 // code offers, which shows the code the user should apply at checkout.
 class OfferNotificationBubbleViews : public AutofillLocationBarBubble {
+  METADATA_HEADER(OfferNotificationBubbleViews, AutofillLocationBarBubble)
  public:
   // Bubble will be anchored to |anchor_view|.
   OfferNotificationBubbleViews(views::View* anchor_view,
                                content::WebContents* web_contents,
                                OfferNotificationBubbleController* controller);
-  ~OfferNotificationBubbleViews() override;
   OfferNotificationBubbleViews(const OfferNotificationBubbleViews&) = delete;
   OfferNotificationBubbleViews& operator=(const OfferNotificationBubbleViews&) =
       delete;
+  ~OfferNotificationBubbleViews() override;
 
  private:
   // TODO(crbug.com/40947801) : Remove these friended test and convert the test

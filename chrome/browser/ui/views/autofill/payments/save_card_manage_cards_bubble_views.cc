@@ -14,6 +14,7 @@
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/label.h"
@@ -48,5 +49,8 @@ SaveCardManageCardsBubbleViews::CreateMainContentView() {
 }
 
 SaveCardManageCardsBubbleViews::~SaveCardManageCardsBubbleViews() = default;
+
+BEGIN_METADATA(SaveCardManageCardsBubbleViews)
+END_METADATA
 
 }  // namespace autofill
