@@ -27,7 +27,7 @@ class MODULES_EXPORT PushMessageData final : public ScriptWrappable {
   static PushMessageData* Create(
       const V8UnionArrayBufferOrArrayBufferViewOrUSVString* data);
 
-  PushMessageData(const char* data, unsigned bytes_size);
+  explicit PushMessageData(base::span<const uint8_t> data);
   ~PushMessageData() override;
 
   DOMArrayBuffer* arrayBuffer() const;
@@ -37,7 +37,7 @@ class MODULES_EXPORT PushMessageData final : public ScriptWrappable {
   String text() const;
 
  private:
-  Vector<char> data_;
+  Vector<uint8_t> data_;
 };
 
 }  // namespace blink

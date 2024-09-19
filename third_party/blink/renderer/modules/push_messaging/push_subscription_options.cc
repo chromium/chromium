@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "third_party/blink/renderer/modules/push_messaging/push_subscription_options.h"
 
 #include "base/numerics/safe_conversions.h"
@@ -27,22 +22,19 @@ const int kMaxApplicationServerKeyLength = 255;
 Vector<uint8_t> BufferSourceToVector(
     const V8UnionBufferSourceOrString* application_server_key,
     ExceptionState& exception_state) {
-  char* input;
-  size_t length;
+  base::span<const char> input;
   Vector<char> decoded_application_server_key;
   Vector<uint8_t> result;
 
   // Convert the input array into a string of bytes.
   switch (application_server_key->GetContentType()) {
     case V8UnionBufferSourceOrString::ContentType::kArrayBuffer:
-      input = static_cast<char*>(
-          application_server_key->GetAsArrayBuffer()->Data());
-      length = application_server_key->GetAsArrayBuffer()->ByteLength();
+      input = base::as_chars(
+          application_server_key->GetAsArrayBuffer()->ByteSpan());
       break;
     case V8UnionBufferSourceOrString::ContentType::kArrayBufferView:
-      input = static_cast<char*>(
-          application_server_key->GetAsArrayBufferView()->BaseAddress());
-      length = application_server_key->GetAsArrayBufferView()->byteLength();
+      input = base::as_chars(
+          application_server_key->GetAsArrayBufferView()->ByteSpan());
       break;
     case V8UnionBufferSourceOrString::ContentType::kString:
       if (!Base64UnpaddedURLDecode(application_server_key->GetAsString(),
@@ -53,22 +45,21 @@ Vector<uint8_t> BufferSourceToVector(
             "without padding.");
         return result;
       }
-      input = reinterpret_cast<char*>(decoded_application_server_key.data());
-      length = decoded_application_server_key.size();
+      input = base::span(decoded_application_server_key);
       break;
   }
 
   // Check the validity of the sender info. It must either be a 65-byte
   // uncompressed VAPID key, which has the byte 0x04 as the first byte or a
   // numeric sender ID.
-  const bool is_vapid = length == 65 && *input == 0x04;
+  const bool is_vapid = input.size() == 65 && input[0] == 0x04;
   const bool is_sender_id =
-      length > 0 && length < kMaxApplicationServerKeyLength &&
-      (std::find_if_not(input, input + length, &WTF::IsASCIIDigit<char>) ==
-       input + length);
+      input.size() > 0 && input.size() < kMaxApplicationServerKeyLength &&
+      (base::ranges::find_if_not(input, WTF::IsASCIIDigit<char>) ==
+       input.end());
 
   if (is_vapid || is_sender_id) {
-    result.Append(input, static_cast<wtf_size_t>(length));
+    result.AppendSpan(base::as_bytes(input));
   } else {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidAccessError,
