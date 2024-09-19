@@ -451,6 +451,12 @@ class CONTENT_EXPORT FedCmMetrics {
   // page load, to when the first Button Mode API is called afterwards, if any.
   void RecordTimeBetweenUserInfoAndButtonModeAPI(base::TimeDelta duration);
 
+  // Records the number of accounts matching a given filter, when the FedCM call
+  // involved filtering out accounts with that filter. Filter must be one of
+  // "LoginHint", "DomainHint", and "AccountLabel".
+  void RecordNumMatchingAccounts(size_t accounts_remaining,
+                                 const std::string& filter_type);
+
   int session_id() { return session_id_; }
 
  private:

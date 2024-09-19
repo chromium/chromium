@@ -455,6 +455,22 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
 
   bool IsNewlyLoggedIn(const IdentityRequestAccount& account);
 
+  // Returns whether there are accounts remaining after applying the account
+  // label filter.
+  bool FilterAccountsWithLabel(
+      const std::string& label,
+      std::vector<IdentityRequestAccountPtr>& accounts);
+  // Returns whether there are accounts remaining after applying the login hint
+  // filter.
+  bool FilterAccountsWithLoginHint(
+      const std::string& login_hint,
+      std::vector<IdentityRequestAccountPtr>& accounts);
+  // Returns whether there are accounts remaining after applying the domain hint
+  // filter.
+  bool FilterAccountsWithDomainHint(
+      const std::string& domain_hint,
+      std::vector<IdentityRequestAccountPtr>& accounts);
+
   RpMode GetRpMode() const { return rp_mode_; }
 
   std::unique_ptr<IdpNetworkRequestManager> network_manager_;

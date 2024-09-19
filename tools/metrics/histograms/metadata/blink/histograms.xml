@@ -1151,7 +1151,7 @@ chromium-metrics-reviews@google.com.
   <owner>cbiesinger@chromium.org</owner>
   <owner>web-identity-eng@google.com</owner>
   <summary>
-    Records the number of accounts the match an account label. Records at the
+    Records the number of accounts that match an account label. Records at the
     time the accounts received by the FedCM API are filtered.
   </summary>
 </histogram>
@@ -1449,7 +1449,7 @@ chromium-metrics-reviews@google.com.
   <owner>npm@chromium.org</owner>
   <owner>web-identity-eng@google.com</owner>
   <summary>
-    Records the number of accounts the match a domain hint. Records at the time
+    Records the number of accounts that match a domain hint. Records at the time
     the accounts received by the FedCM API are filtered.
   </summary>
 </histogram>
@@ -1621,7 +1621,7 @@ chromium-metrics-reviews@google.com.
   <owner>npm@chromium.org</owner>
   <owner>web-identity-eng@google.com</owner>
   <summary>
-    Records the number of accounts the match a login hint. Records at the time
+    Records the number of accounts that match a login hint. Records at the time
     the accounts received by the FedCM API are filtered.
   </summary>
 </histogram>

@@ -377,108 +377,6 @@ std::string FormatOriginForDisplay(const url::Origin& origin) {
   return webid::FormatUrlForDisplay(origin.GetURL());
 }
 
-FedCmMetrics::NumAccounts ComputeNumMatchingAccounts(
-    size_t accounts_remaining) {
-  if (accounts_remaining == 0u) {
-    return FedCmMetrics::NumAccounts::kZero;
-  }
-  if (accounts_remaining == 1u) {
-    return FedCmMetrics::NumAccounts::kOne;
-  }
-  return FedCmMetrics::NumAccounts::kMultiple;
-}
-
-// Returns whether there are accounts remaining after applying the account label
-// filter.
-bool FilterAccountsWithLabel(const std::string& label,
-                             std::vector<IdentityRequestAccountPtr>& accounts) {
-  if (label.empty()) {
-    return true;
-  }
-
-  // Filter out all accounts whose labels do not match the requested label.
-  // Note that it is technically possible for us to end up with more than one
-  // account afterwards, in which case the multiple account chooser would be
-  // shown.
-  size_t accounts_remaining = 0u;
-  for (auto& account : accounts) {
-    if (!base::Contains(account->labels, label)) {
-      account->is_filtered_out = true;
-    } else {
-      ++accounts_remaining;
-    }
-  }
-  FedCmMetrics::NumAccounts num_matching =
-      ComputeNumMatchingAccounts(accounts_remaining);
-  base::UmaHistogramEnumeration("Blink.FedCm.AccountLabel.NumMatchingAccounts",
-                                num_matching);
-  return accounts_remaining > 0u;
-}
-
-// Returns whether there are accounts remaining after applying the login hint
-// filter.
-bool FilterAccountsWithLoginHint(
-    const std::string& login_hint,
-    std::vector<IdentityRequestAccountPtr>& accounts) {
-  if (login_hint.empty()) {
-    return true;
-  }
-
-  // Filter out all accounts whose ID and whose email do not match the login
-  // hint. Note that it is technically possible for us to end up with more than
-  // one account afterwards, in which case the multiple account chooser would be
-  // shown.
-  size_t accounts_remaining = 0u;
-  for (auto& account : accounts) {
-    if (account->is_filtered_out) {
-      continue;
-    }
-    if (!base::Contains(account->login_hints, login_hint)) {
-      account->is_filtered_out = true;
-    } else {
-      ++accounts_remaining;
-    }
-  }
-
-  FedCmMetrics::NumAccounts num_matching =
-      ComputeNumMatchingAccounts(accounts_remaining);
-  base::UmaHistogramEnumeration("Blink.FedCm.LoginHint.NumMatchingAccounts",
-                                num_matching);
-  return accounts_remaining > 0u;
-}
-
-// Returns whether there are accounts remaining after applying the domain hint
-// filter.
-bool FilterAccountsWithDomainHint(
-    const std::string& domain_hint,
-    std::vector<IdentityRequestAccountPtr>& accounts) {
-  if (domain_hint.empty()) {
-    return true;
-  }
-
-  size_t accounts_remaining = 0u;
-  for (auto& account : accounts) {
-    if (account->is_filtered_out) {
-      continue;
-    }
-    if (domain_hint == FederatedAuthRequestImpl::kWildcardDomainHint) {
-      if (account->domain_hints.empty()) {
-        account->is_filtered_out = true;
-        continue;
-      }
-    } else if (!base::Contains(account->domain_hints, domain_hint)) {
-      account->is_filtered_out = true;
-      continue;
-    }
-    ++accounts_remaining;
-  }
-  FedCmMetrics::NumAccounts num_matching =
-      ComputeNumMatchingAccounts(accounts_remaining);
-  base::UmaHistogramEnumeration("Blink.FedCm.DomainHint.NumMatchingAccounts",
-                                num_matching);
-  return accounts_remaining > 0u;
-}
-
 std::string GetTopFrameOriginForDisplay(const url::Origin& top_frame_origin) {
   return FormatOriginForDisplay(top_frame_origin);
 }
@@ -3452,6 +3350,82 @@ bool FederatedAuthRequestImpl::IsNewlyLoggedIn(
     return false;
   }
   return !account_ids_before_login_.contains(account.id);
+}
+
+bool FederatedAuthRequestImpl::FilterAccountsWithLabel(
+    const std::string& label,
+    std::vector<IdentityRequestAccountPtr>& accounts) {
+  if (label.empty()) {
+    return true;
+  }
+
+  // Filter out all accounts whose labels do not match the requested label.
+  // Note that it is technically possible for us to end up with more than one
+  // account afterwards, in which case the multiple account chooser would be
+  // shown.
+  size_t accounts_remaining = 0u;
+  for (auto& account : accounts) {
+    if (!base::Contains(account->labels, label)) {
+      account->is_filtered_out = true;
+    } else {
+      ++accounts_remaining;
+    }
+  }
+  fedcm_metrics_->RecordNumMatchingAccounts(accounts_remaining, "AccountLabel");
+  return accounts_remaining > 0u;
+}
+
+bool FederatedAuthRequestImpl::FilterAccountsWithLoginHint(
+    const std::string& login_hint,
+    std::vector<IdentityRequestAccountPtr>& accounts) {
+  if (login_hint.empty()) {
+    return true;
+  }
+
+  // Filter out all accounts whose ID and whose email do not match the login
+  // hint. Note that it is technically possible for us to end up with more than
+  // one account afterwards, in which case the multiple account chooser would be
+  // shown.
+  size_t accounts_remaining = 0u;
+  for (auto& account : accounts) {
+    if (account->is_filtered_out) {
+      continue;
+    }
+    if (!base::Contains(account->login_hints, login_hint)) {
+      account->is_filtered_out = true;
+    } else {
+      ++accounts_remaining;
+    }
+  }
+  fedcm_metrics_->RecordNumMatchingAccounts(accounts_remaining, "LoginHint");
+  return accounts_remaining > 0u;
+}
+
+bool FederatedAuthRequestImpl::FilterAccountsWithDomainHint(
+    const std::string& domain_hint,
+    std::vector<IdentityRequestAccountPtr>& accounts) {
+  if (domain_hint.empty()) {
+    return true;
+  }
+
+  size_t accounts_remaining = 0u;
+  for (auto& account : accounts) {
+    if (account->is_filtered_out) {
+      continue;
+    }
+    if (domain_hint == FederatedAuthRequestImpl::kWildcardDomainHint) {
+      if (account->domain_hints.empty()) {
+        account->is_filtered_out = true;
+        continue;
+      }
+    } else if (!base::Contains(account->domain_hints, domain_hint)) {
+      account->is_filtered_out = true;
+      continue;
+    }
+    ++accounts_remaining;
+  }
+  fedcm_metrics_->RecordNumMatchingAccounts(accounts_remaining, "DomainHint");
+  return accounts_remaining > 0u;
 }
 
 }  // namespace content

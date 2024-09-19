@@ -5252,6 +5252,10 @@ TEST_F(FederatedAuthRequestImplTest, AccountLabelMultipleAccountsNoMatch) {
       FedCmMetrics::NumAccounts::kZero, 1);
   histogram_tester_.ExpectUniqueSample("Blink.FedCm.AccountsSize.Raw", 3, 1);
   histogram_tester_.ExpectTotalCount("Blink.FedCm.AccountsSize.ReadyToShow", 0);
+  ExpectUkmValueInEntry("AccountLabel.NumMatchingAccounts",
+                        FedCmEntry::kEntryName, 0);
+  ExpectNoUKMPresence("DomainHint.NumMatchingAccounts");
+  ExpectNoUKMPresence("LoginHint.NumMatchingAccounts");
 }
 
 TEST_F(FederatedAuthRequestImplTest, AccountLabelMultipleAccountsOneMatch) {
@@ -5272,6 +5276,10 @@ TEST_F(FederatedAuthRequestImplTest, AccountLabelMultipleAccountsOneMatch) {
   histogram_tester_.ExpectUniqueSample(
       "Blink.FedCm.AccountLabel.NumMatchingAccounts",
       FedCmMetrics::NumAccounts::kOne, 1);
+  ExpectUkmValueInEntry("AccountLabel.NumMatchingAccounts",
+                        FedCmEntry::kEntryName, 1);
+  ExpectNoUKMPresence("DomainHint.NumMatchingAccounts");
+  ExpectNoUKMPresence("LoginHint.NumMatchingAccounts");
 }
 
 TEST_F(FederatedAuthRequestImplTest, LoginHintSingleAccountIdMatch) {
@@ -5288,6 +5296,10 @@ TEST_F(FederatedAuthRequestImplTest, LoginHintSingleAccountIdMatch) {
   histogram_tester_.ExpectUniqueSample(
       "Blink.FedCm.LoginHint.NumMatchingAccounts",
       FedCmMetrics::NumAccounts::kOne, 1);
+  ExpectUkmValueInEntry("LoginHint.NumMatchingAccounts", FedCmEntry::kEntryName,
+                        1);
+  ExpectNoUKMPresence("AccountLabel.NumMatchingAccounts");
+  ExpectNoUKMPresence("DomainHint.NumMatchingAccounts");
 }
 
 TEST_F(FederatedAuthRequestImplTest, LoginHintSingleAccountEmailMatch) {
@@ -5304,6 +5316,10 @@ TEST_F(FederatedAuthRequestImplTest, LoginHintSingleAccountEmailMatch) {
   histogram_tester_.ExpectUniqueSample(
       "Blink.FedCm.LoginHint.NumMatchingAccounts",
       FedCmMetrics::NumAccounts::kOne, 1);
+  ExpectUkmValueInEntry("LoginHint.NumMatchingAccounts", FedCmEntry::kEntryName,
+                        1);
+  ExpectNoUKMPresence("AccountLabel.NumMatchingAccounts");
+  ExpectNoUKMPresence("DomainHint.NumMatchingAccounts");
 }
 
 TEST_F(FederatedAuthRequestImplTest, LoginHintSingleAccountNoMatch) {
@@ -5325,6 +5341,10 @@ TEST_F(FederatedAuthRequestImplTest, LoginHintSingleAccountNoMatch) {
   histogram_tester_.ExpectUniqueSample(
       "Blink.FedCm.LoginHint.NumMatchingAccounts",
       FedCmMetrics::NumAccounts::kZero, 1);
+  ExpectUkmValueInEntry("LoginHint.NumMatchingAccounts", FedCmEntry::kEntryName,
+                        0);
+  ExpectNoUKMPresence("AccountLabel.NumMatchingAccounts");
+  ExpectNoUKMPresence("DomainHint.NumMatchingAccounts");
 }
 
 TEST_F(FederatedAuthRequestImplTest, LoginHintFirstAccountMatch) {
@@ -5343,6 +5363,10 @@ TEST_F(FederatedAuthRequestImplTest, LoginHintFirstAccountMatch) {
   histogram_tester_.ExpectUniqueSample(
       "Blink.FedCm.LoginHint.NumMatchingAccounts",
       FedCmMetrics::NumAccounts::kOne, 1);
+  ExpectUkmValueInEntry("LoginHint.NumMatchingAccounts", FedCmEntry::kEntryName,
+                        1);
+  ExpectNoUKMPresence("AccountLabel.NumMatchingAccounts");
+  ExpectNoUKMPresence("DomainHint.NumMatchingAccounts");
 }
 
 TEST_F(FederatedAuthRequestImplTest, LoginHintLastAccountMatch) {
@@ -5363,6 +5387,10 @@ TEST_F(FederatedAuthRequestImplTest, LoginHintLastAccountMatch) {
   histogram_tester_.ExpectUniqueSample("Blink.FedCm.AccountsSize.Raw", 3, 1);
   histogram_tester_.ExpectUniqueSample("Blink.FedCm.AccountsSize.ReadyToShow",
                                        1, 1);
+  ExpectUkmValueInEntry("LoginHint.NumMatchingAccounts", FedCmEntry::kEntryName,
+                        1);
+  ExpectNoUKMPresence("AccountLabel.NumMatchingAccounts");
+  ExpectNoUKMPresence("DomainHint.NumMatchingAccounts");
 }
 
 TEST_F(FederatedAuthRequestImplTest, LoginHintMultipleAccountsNoMatch) {
@@ -5385,6 +5413,10 @@ TEST_F(FederatedAuthRequestImplTest, LoginHintMultipleAccountsNoMatch) {
   histogram_tester_.ExpectUniqueSample(
       "Blink.FedCm.LoginHint.NumMatchingAccounts",
       FedCmMetrics::NumAccounts::kZero, 1);
+  ExpectUkmValueInEntry("LoginHint.NumMatchingAccounts", FedCmEntry::kEntryName,
+                        0);
+  ExpectNoUKMPresence("AccountLabel.NumMatchingAccounts");
+  ExpectNoUKMPresence("DomainHint.NumMatchingAccounts");
   histogram_tester_.ExpectUniqueSample("Blink.FedCm.AccountsSize.Raw", 3, 1);
   histogram_tester_.ExpectTotalCount("Blink.FedCm.AccountsSize.ReadyToShow", 0);
 }
@@ -5405,6 +5437,10 @@ TEST_F(FederatedAuthRequestImplTest, DomainHintSingleAccountMatch) {
   histogram_tester_.ExpectUniqueSample(
       "Blink.FedCm.DomainHint.NumMatchingAccounts",
       FedCmMetrics::NumAccounts::kOne, 1);
+  ExpectUkmValueInEntry("DomainHint.NumMatchingAccounts",
+                        FedCmEntry::kEntryName, 1);
+  ExpectNoUKMPresence("AccountLabel.NumMatchingAccounts");
+  ExpectNoUKMPresence("LoginHint.NumMatchingAccounts");
 }
 
 TEST_F(FederatedAuthRequestImplTest, DomainHintSingleAccountStarMatch) {
@@ -5423,6 +5459,10 @@ TEST_F(FederatedAuthRequestImplTest, DomainHintSingleAccountStarMatch) {
   histogram_tester_.ExpectUniqueSample(
       "Blink.FedCm.DomainHint.NumMatchingAccounts",
       FedCmMetrics::NumAccounts::kOne, 1);
+  ExpectUkmValueInEntry("DomainHint.NumMatchingAccounts",
+                        FedCmEntry::kEntryName, 1);
+  ExpectNoUKMPresence("AccountLabel.NumMatchingAccounts");
+  ExpectNoUKMPresence("LoginHint.NumMatchingAccounts");
 }
 
 TEST_F(FederatedAuthRequestImplTest, DomainHintSingleAccountStarNoMatch) {
@@ -5445,6 +5485,10 @@ TEST_F(FederatedAuthRequestImplTest, DomainHintSingleAccountStarNoMatch) {
   histogram_tester_.ExpectUniqueSample(
       "Blink.FedCm.DomainHint.NumMatchingAccounts",
       FedCmMetrics::NumAccounts::kZero, 1);
+  ExpectUkmValueInEntry("DomainHint.NumMatchingAccounts",
+                        FedCmEntry::kEntryName, 0);
+  ExpectNoUKMPresence("AccountLabel.NumMatchingAccounts");
+  ExpectNoUKMPresence("LoginHint.NumMatchingAccounts");
 }
 
 TEST_F(FederatedAuthRequestImplTest, DomainHintSingleAccountNoMatch) {
@@ -5467,6 +5511,10 @@ TEST_F(FederatedAuthRequestImplTest, DomainHintSingleAccountNoMatch) {
   histogram_tester_.ExpectUniqueSample(
       "Blink.FedCm.DomainHint.NumMatchingAccounts",
       FedCmMetrics::NumAccounts::kZero, 1);
+  ExpectUkmValueInEntry("DomainHint.NumMatchingAccounts",
+                        FedCmEntry::kEntryName, 0);
+  ExpectNoUKMPresence("AccountLabel.NumMatchingAccounts");
+  ExpectNoUKMPresence("LoginHint.NumMatchingAccounts");
   histogram_tester_.ExpectUniqueSample("Blink.FedCm.AccountsSize.Raw", 1, 1);
   histogram_tester_.ExpectTotalCount("Blink.FedCm.AccountsSize.ReadyToShow", 0);
 }
@@ -5487,6 +5535,10 @@ TEST_F(FederatedAuthRequestImplTest, DomainHintNoMatch) {
   histogram_tester_.ExpectUniqueSample(
       "Blink.FedCm.DomainHint.NumMatchingAccounts",
       FedCmMetrics::NumAccounts::kZero, 1);
+  ExpectUkmValueInEntry("DomainHint.NumMatchingAccounts",
+                        FedCmEntry::kEntryName, 0);
+  ExpectNoUKMPresence("AccountLabel.NumMatchingAccounts");
+  ExpectNoUKMPresence("LoginHint.NumMatchingAccounts");
 }
 
 TEST_F(FederatedAuthRequestImplTest, DomainHintMultipleAccountsSingleMatch) {
@@ -5504,6 +5556,10 @@ TEST_F(FederatedAuthRequestImplTest, DomainHintMultipleAccountsSingleMatch) {
   histogram_tester_.ExpectUniqueSample(
       "Blink.FedCm.DomainHint.NumMatchingAccounts",
       FedCmMetrics::NumAccounts::kOne, 1);
+  ExpectUkmValueInEntry("DomainHint.NumMatchingAccounts",
+                        FedCmEntry::kEntryName, 1);
+  ExpectNoUKMPresence("AccountLabel.NumMatchingAccounts");
+  ExpectNoUKMPresence("LoginHint.NumMatchingAccounts");
   histogram_tester_.ExpectUniqueSample("Blink.FedCm.AccountsSize.Raw", 3, 1);
   histogram_tester_.ExpectUniqueSample("Blink.FedCm.AccountsSize.ReadyToShow",
                                        1, 1);
@@ -5526,6 +5582,10 @@ TEST_F(FederatedAuthRequestImplTest,
   histogram_tester_.ExpectUniqueSample(
       "Blink.FedCm.DomainHint.NumMatchingAccounts",
       FedCmMetrics::NumAccounts::kMultiple, 1);
+  ExpectUkmValueInEntry("DomainHint.NumMatchingAccounts",
+                        FedCmEntry::kEntryName, 2);
+  ExpectNoUKMPresence("AccountLabel.NumMatchingAccounts");
+  ExpectNoUKMPresence("LoginHint.NumMatchingAccounts");
   histogram_tester_.ExpectUniqueSample("Blink.FedCm.AccountsSize.Raw", 3, 1);
   histogram_tester_.ExpectUniqueSample("Blink.FedCm.AccountsSize.ReadyToShow",
                                        2, 1);
@@ -5548,6 +5608,10 @@ TEST_F(FederatedAuthRequestImplTest, DomainHintMultipleAccountsStar) {
   histogram_tester_.ExpectUniqueSample(
       "Blink.FedCm.DomainHint.NumMatchingAccounts",
       FedCmMetrics::NumAccounts::kMultiple, 1);
+  ExpectUkmValueInEntry("DomainHint.NumMatchingAccounts",
+                        FedCmEntry::kEntryName, 2);
+  ExpectNoUKMPresence("AccountLabel.NumMatchingAccounts");
+  ExpectNoUKMPresence("LoginHint.NumMatchingAccounts");
 }
 
 TEST_F(FederatedAuthRequestImplTest, DomainHintMultipleAccountsNoMatch) {
@@ -5570,6 +5634,10 @@ TEST_F(FederatedAuthRequestImplTest, DomainHintMultipleAccountsNoMatch) {
   histogram_tester_.ExpectUniqueSample(
       "Blink.FedCm.DomainHint.NumMatchingAccounts",
       FedCmMetrics::NumAccounts::kZero, 1);
+  ExpectUkmValueInEntry("DomainHint.NumMatchingAccounts",
+                        FedCmEntry::kEntryName, 0);
+  ExpectNoUKMPresence("AccountLabel.NumMatchingAccounts");
+  ExpectNoUKMPresence("LoginHint.NumMatchingAccounts");
 }
 
 TEST_F(FederatedAuthRequestImplTest, PictureFetch) {

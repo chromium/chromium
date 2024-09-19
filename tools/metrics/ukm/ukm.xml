@@ -3766,6 +3766,12 @@ be describing additional metrics about the same event.
   <summary>
     Records performance metrics for FedCM(Federated Credential Management) API.
   </summary>
+  <metric name="AccountLabel.NumMatchingAccounts" enum="FedCmNumAccounts">
+    <summary>
+      Records the number of accounts that match an account label. Records at the
+      time the accounts received by the FedCM API are filtered.
+    </summary>
+  </metric>
   <metric name="AccountsDialogShown" enum="BooleanHit">
     <summary>
       Records a 1 each time an accounts dialog is shown.
@@ -3837,6 +3843,12 @@ be describing additional metrics about the same event.
       of the main frame.
     </summary>
   </metric>
+  <metric name="DomainHint.NumMatchingAccounts" enum="FedCmNumAccounts">
+    <summary>
+      Records the number of accounts that match a domain hint. Records at the
+      time the accounts received by the FedCM API are filtered.
+    </summary>
+  </metric>
   <metric name="Error.ErrorDialogResult" enum="FedCmErrorDialogResult">
     <summary>
       Records the outcome of the error dialog. Recorded at most once per API
@@ -3860,6 +3872,12 @@ be describing additional metrics about the same event.
       Records the session ID associated to the FedCM call for which this event
       is recording metrics. Each FedCM call gets a random integer session id,
       which helps group UKM events by the session id.
+    </summary>
+  </metric>
+  <metric name="LoginHint.NumMatchingAccounts" enum="FedCmNumAccounts">
+    <summary>
+      Records the number of accounts that match a login hint. Records at the
+      time the accounts received by the FedCM API are filtered.
     </summary>
   </metric>
   <metric name="MismatchDialogShown" enum="BooleanHit">

@@ -33,6 +33,17 @@ FedCmRequesterFrameType ComputeRequesterFrameType(const RenderFrameHost& rfh,
              : FedCmRequesterFrameType::kCrossSiteIframe;
 }
 
+FedCmMetrics::NumAccounts ComputeNumMatchingAccounts(
+    size_t accounts_remaining) {
+  if (accounts_remaining == 0u) {
+    return FedCmMetrics::NumAccounts::kZero;
+  }
+  if (accounts_remaining == 1u) {
+    return FedCmMetrics::NumAccounts::kOne;
+  }
+  return FedCmMetrics::NumAccounts::kMultiple;
+}
+
 }  // namespace
 
 FedCmMetrics::FedCmMetrics(ukm::SourceId page_source_id)
@@ -693,6 +704,30 @@ void FedCmMetrics::RecordTimeBetweenUserInfoAndButtonModeAPI(
 
   base::UmaHistogramMediumTimes("Blink.FedCm.Timing.GetUserInfoToButtonMode",
                                 duration);
+}
+
+void FedCmMetrics::RecordNumMatchingAccounts(size_t accounts_remaining,
+                                             const std::string& filter_type) {
+  FedCmMetrics::NumAccounts num_matching =
+      ComputeNumMatchingAccounts(accounts_remaining);
+  base::UmaHistogramEnumeration(
+      "Blink.FedCm." + filter_type + ".NumMatchingAccounts", num_matching);
+
+  ukm::builders::Blink_FedCm fedcm_builder(page_source_id_);
+  if (filter_type == "LoginHint") {
+    fedcm_builder.SetLoginHint_NumMatchingAccounts(
+        static_cast<int>(num_matching));
+  } else if (filter_type == "AccountLabel") {
+    fedcm_builder.SetAccountLabel_NumMatchingAccounts(
+        static_cast<int>(num_matching));
+  } else if (filter_type == "DomainHint") {
+    fedcm_builder.SetDomainHint_NumMatchingAccounts(
+        static_cast<int>(num_matching));
+  } else {
+    NOTREACHED();
+  }
+  fedcm_builder.SetFedCmSessionID(session_id_);
+  fedcm_builder.Record(ukm::UkmRecorder::Get());
 }
 
 ukm::SourceId FedCmMetrics::GetOrCreateProviderSourceId(const GURL& provider) {
