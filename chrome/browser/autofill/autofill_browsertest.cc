@@ -69,7 +69,6 @@
 #include "third_party/blink/public/common/switches.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_mode.h"
-#include "ui/events/keycodes/keyboard_code_conversion.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 
 namespace autofill {
@@ -105,18 +104,10 @@ class AutofillTest : public InProcessBrowserTest {
       return forms_seen_waiter_.Wait(min_num_awaited_calls);
     }
 
-    [[nodiscard]] AssertionResult WaitForTextFieldChange(
-        int min_num_awaited_calls) {
-      return text_field_change_waiter_.Wait(min_num_awaited_calls);
-    }
-
    private:
     TestAutofillManagerWaiter forms_seen_waiter_{
         *this,
         {AutofillManagerEvent::kFormsSeen}};
-    TestAutofillManagerWaiter text_field_change_waiter_{
-        *this,
-        {AutofillManagerEvent::kTextFieldDidChange}};
   };
 
   AutofillTest() {}
@@ -158,23 +149,14 @@ class AutofillTest : public InProcessBrowserTest {
 
   typedef std::map<std::string, std::string> FormMap;
 
-  void EnterValues(const FormMap& data) {
-    for (const auto& [id, value] : data) {
-      ASSERT_TRUE(content::ExecJs(
-          web_contents(),
-          base::StringPrintf("document.getElementById('%s').focus();",
-                             id.c_str())));
-      for (const char c : value) {
-        ui::DomKey key = ui::DomKey::FromCharacter(c);
-        ui::KeyboardCode key_code = ui::NonPrintableDomKeyToKeyboardCode(key);
-        ui::DomCode code = ui::UsLayoutKeyboardCodeToDomCode(key_code);
-        content::SimulateKeyPress(web_contents(), key, code, key_code, false,
-                                  false, false, false);
-        ASSERT_TRUE(
-            autofill_manager_injector_[web_contents()]->WaitForTextFieldChange(
-                1));
-      }
+  // Helper function to obtain the Javascript required to update a form.
+  std::string GetJSToFillForm(const FormMap& data) {
+    std::string js;
+    for (const auto& entry : data) {
+      js += "document.getElementById('" + entry.first + "').value = '" +
+            entry.second + "';";
     }
+    return js;
   }
 
   // Navigate to the form, input values into the fields, and submit the form.
@@ -201,8 +183,8 @@ class AutofillTest : public InProcessBrowserTest {
         .set_auto_accept_address_imports(true);
     TestAutofillManagerSingleEventWaiter submission_waiter(
         *autofill_manager(), &AutofillManager::Observer::OnFormSubmitted);
-    EnterValues(data);
-    ASSERT_TRUE(content::ExecJs(web_contents(), submit_js));
+    ASSERT_TRUE(
+        content::ExecJs(web_contents(), GetJSToFillForm(data) + submit_js));
     if (simulate_click) {
       // Simulate a mouse click to submit the form because form submissions not
       // triggered by user gestures are ignored.
