@@ -29,7 +29,7 @@ import tarfile
 import tempfile
 import threading
 import traceback
-import urllib.request, urllib.parse, urllib.error
+import urllib.request, urllib.parse
 from distutils.version import LooseVersion as BaseLooseVersion
 from xml.etree import ElementTree
 import zipfile
@@ -93,7 +93,7 @@ DONE_MESSAGE_GOOD_MAX = ('You are probably looking for a change made after %s ('
 
 VERSION_INFO_URL = ('https://chromiumdash.appspot.com/fetch_version?version=%s')
 
-MILESTONES_URL = ('https://chromiumdash.appspot.com/fetch_milestones')
+MILESTONES_URL = ('https://chromiumdash.appspot.com/fetch_milestones?mstone=%s')
 
 CREDENTIAL_ERROR_MESSAGE = ('You are attempting to access protected data with '
                             'no configured credentials')
@@ -1834,12 +1834,14 @@ def GetChromiumRevision(url, default=999999999):
 
 def FetchJsonFromURL(url):
   """Returns JSON data from the given URL"""
-  url = urllib.request.urlopen(url)
   # Allow retry for 3 times for unexpected network error
   for i in range(3):
-    if url.getcode() == 200:
-      data = json.loads(url.read())
-      return data
+    try:
+      return json.loads(urllib.request.urlopen(url).read())
+    except urllib.request.HTTPError as e:
+      print(f'urlopen {url} HTTPError: {e}')
+    except json.JSONDecodeError as e:
+      print(f'urlopen {url} JSON decode error: {e}')
   return None
 
 def GetGitHashFromSVNRevision(svn_revision):
@@ -1865,6 +1867,16 @@ def GetRevisionFromVersion(version):
   """Returns Base Commit Position from a version number"""
   chromiumdash_url = VERSION_INFO_URL % str(version)
   data = FetchJsonFromURL(chromiumdash_url)
+  if not data:
+    # Not every tag is released as a version for users. Some "versions" from the
+    # release builder might not exist in the VERSION_INFO_URL API. With the
+    # `MaybeSwitchBuildType` functionality, users might get such unreleased
+    # versions and try to use them with the -o flag, resulting in a 404 error.
+    # Meanwhile, this method retrieves the `chromium_main_branch_position`,
+    # which should be the same for all 127.0.6533.* versions, so we can get the
+    # branch position from 127.0.6533.0 instead.
+    chromiumdash_url = VERSION_INFO_URL % re.sub(r'\d+$', '0', str(version))
+    data = FetchJsonFromURL(chromiumdash_url)
   if data and 'chromium_main_branch_position' in data:
     return data['chromium_main_branch_position']
   print('Something went wrong. The data we got from chromiumdash:\n%s' % data)
@@ -1873,7 +1885,7 @@ def GetRevisionFromVersion(version):
 
 def GetRevisionFromMilestone(milestone):
   """Get revision (e.g. 782793) from milestone such as 85."""
-  response = urllib.request.urlopen(MILESTONES_URL)
+  response = urllib.request.urlopen(MILESTONES_URL % milestone)
   milestones = json.loads(response.read())
   for m in milestones:
     if m['milestone'] == milestone:
@@ -2367,7 +2379,7 @@ def MaybeSwitchBuildType(opts, good, bad):
         "You could try to get a more precise culprit range with the continuous "
         "official build (-o) using the following command:")
   command_line = GenerateCommandLine(new_opts)
-  print(" ".join(command_line))
+  print(shlex.join(command_line))
   return command_line
 
 

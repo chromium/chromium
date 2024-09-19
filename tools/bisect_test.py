@@ -11,6 +11,7 @@ import subprocess
 import sys
 import tempfile
 import unittest
+import urllib.request
 from unittest.mock import (ANY, Mock, MagicMock, mock_open, patch, call,
                            PropertyMock)
 
@@ -1363,6 +1364,23 @@ class MethodTest(BisectTestCase):
     opts = bisect_builds.ParseCommandLine(
         ['-a', 'linux64', '-g', '1', '--', 'args1', 'args2 3', '-b', '2'])
     self.assertEqual(opts.args, ['args1', 'args2 3', '-b', '2'])
+
+  @patch("urllib.request.urlopen",
+         side_effect=[
+             urllib.request.HTTPError('url', 404, 'Not Found', None, None),
+             urllib.request.HTTPError('url', 404, 'Not Found', None, None),
+             io.StringIO("NOT_A_JSON"),
+             io.StringIO('{"chromium_main_branch_position": 123}'),
+         ])
+  def test_GetRevisionFromVersion(self, mock_urlopen):
+    self.assertEqual(123,
+                     bisect_builds.GetRevisionFromVersion('127.0.6533.134'))
+    mock_urlopen.assert_has_calls([
+        call('https://chromiumdash.appspot.com/fetch_version'
+             '?version=127.0.6533.134'),
+        call('https://chromiumdash.appspot.com/fetch_version'
+             '?version=127.0.6533.0'),
+    ])
 
 
 if __name__ == '__main__':
