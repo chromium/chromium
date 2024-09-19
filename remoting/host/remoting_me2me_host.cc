@@ -1514,7 +1514,7 @@ void HostProcess::ApplyUsernamePolicy() {
     for (const std::string& owner_email : host_owner_emails_) {
       auto [owner_username, _] = *base::SplitStringOnce(owner_email, '@');
       if (base::EqualsCaseInsensitiveASCII(username, owner_username)) {
-        LOG(WARNING) << owner_email << " matches the local username";
+        LOG(INFO) << owner_email << " matches the local username";
         allowed_emails.emplace(owner_email);
       } else {
         LOG(WARNING) << owner_email << " does not match the local username";
