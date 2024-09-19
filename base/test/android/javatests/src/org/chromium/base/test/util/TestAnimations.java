@@ -18,7 +18,6 @@ import org.chromium.base.JavaUtils;
 import org.chromium.base.Log;
 
 import java.io.IOException;
-import java.lang.annotation.Annotation;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -48,18 +47,6 @@ public class TestAnimations {
                 testClass.getAnnotation(EnableAnimations.class) != null
                         || (testMethod != null
                                 && testMethod.getAnnotation(EnableAnimations.class) != null);
-        // TODO(agrieve): Delete legacy annotation.
-        if (!enable && testMethod != null) {
-            try {
-                Class<Annotation> legacyAnnotation =
-                        (Class<Annotation>)
-                                Class.forName("org.chromium.ui.test.util.EnsureAnimationsOn");
-                enable = testMethod.getAnnotation(legacyAnnotation) != null;
-            } catch (ClassNotFoundException e) {
-                // Class not included.
-            }
-        }
-
         setEnabled(enable);
     }
 
