@@ -726,6 +726,28 @@ targets.legacy_matrix_compound_suite(
 )
 
 targets.legacy_matrix_compound_suite(
+    name = "gpu_fyi_chromeos_brya_telemetry_tests",
+    basic_suites = {
+        "gpu_noop_sleep_telemetry_test": targets.legacy_matrix_config(
+            variants = [
+                "CROS_BRYA_RELEASE_LKGM",
+            ],
+        ),
+    },
+)
+
+targets.legacy_matrix_compound_suite(
+    name = "gpu_fyi_chromeos_corsola_telemetry_tests",
+    basic_suites = {
+        "gpu_noop_sleep_telemetry_test": targets.legacy_matrix_config(
+            variants = [
+                "CROS_CORSOLA_RELEASE_LKGM",
+            ],
+        ),
+    },
+)
+
+targets.legacy_matrix_compound_suite(
     name = "gpu_fyi_chromeos_release_gtests_volteer_skylab",
     basic_suites = {
         # gpu_angle_unit_gtests and gpu_desktop_specific_gtests should also be
@@ -797,6 +819,17 @@ targets.legacy_matrix_compound_suite(
         "gpu_webgl2_conformance_gles_passthrough_telemetry_tests": targets.legacy_matrix_config(
             variants = [
                 "CROS_VOLTEER_PUBLIC_RELEASE_ASH_LKGM",
+            ],
+        ),
+    },
+)
+
+targets.legacy_matrix_compound_suite(
+    name = "gpu_fyi_chromeos_skyrim_telemetry_tests",
+    basic_suites = {
+        "gpu_noop_sleep_telemetry_test": targets.legacy_matrix_config(
+            variants = [
+                "CROS_SKYRIM_RELEASE_LKGM",
             ],
         ),
     },

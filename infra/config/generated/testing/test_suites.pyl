@@ -7102,6 +7102,22 @@
       },
     },
 
+    'gpu_fyi_chromeos_brya_telemetry_tests': {
+      'gpu_noop_sleep_telemetry_test': {
+        'variants': [
+          'CROS_BRYA_RELEASE_LKGM',
+        ],
+      },
+    },
+
+    'gpu_fyi_chromeos_corsola_telemetry_tests': {
+      'gpu_noop_sleep_telemetry_test': {
+        'variants': [
+          'CROS_CORSOLA_RELEASE_LKGM',
+        ],
+      },
+    },
+
     'gpu_fyi_chromeos_release_gtests_volteer_skylab': {
       'gpu_common_gtests_passthrough': {
         'variants': [
@@ -7162,6 +7178,14 @@
       'gpu_webgl_conformance_gles_passthrough_telemetry_tests': {
         'variants': [
           'CROS_VOLTEER_PUBLIC_RELEASE_ASH_LKGM',
+        ],
+      },
+    },
+
+    'gpu_fyi_chromeos_skyrim_telemetry_tests': {
+      'gpu_noop_sleep_telemetry_test': {
+        'variants': [
+          'CROS_SKYRIM_RELEASE_LKGM',
         ],
       },
     },

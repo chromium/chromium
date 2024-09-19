@@ -10,6 +10,20 @@
       'amd_radeon_rx_5500_xt',
     ],
   },
+  'CROS_BRYA_RELEASE_LKGM': {
+    'identifier': 'BRYA_RELEASE_LKGM',
+    'skylab': {
+      'cros_board': 'brya',
+      'use_lkgm': True,
+    },
+  },
+  'CROS_CORSOLA_RELEASE_LKGM': {
+    'identifier': 'CORSOLA_RELEASE_LKGM',
+    'skylab': {
+      'cros_board': 'corsola',
+      'use_lkgm': True,
+    },
+  },
   'CROS_JACUZZI_RELEASE_LKGM': {
     'identifier': 'JACUZZI_RELEASE_LKGM',
     'skylab': {
@@ -29,6 +43,13 @@
   'CROS_RELEASE_LKGM': {
     'identifier': 'RELEASE_LKGM',
     'skylab': {
+      'use_lkgm': True,
+    },
+  },
+  'CROS_SKYRIM_RELEASE_LKGM': {
+    'identifier': 'SKYRIM_RELEASE_LKGM',
+    'skylab': {
+      'cros_board': 'skyrim',
       'use_lkgm': True,
     },
   },

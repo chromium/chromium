@@ -353,6 +353,57 @@
         },
         'skip_merge_script': True,
       },
+      'gpu-fyi-chromeos-brya-chrome': {
+        'additional_compile_targets': [
+          'chromiumos_preflight',
+          'nacl_helper',
+        ],
+        'browser_config': 'cros-chrome',
+        'os_type': 'chromeos',
+        'skip_merge_script': True,
+        'use_swarming': False,
+        'mixins': [
+          'limited_capacity_bot',
+          'long_skylab_timeout',
+        ],
+        'test_suites': {
+          'skylab_gpu_telemetry_tests': 'gpu_fyi_chromeos_brya_telemetry_tests',
+        },
+      },
+      'gpu-fyi-chromeos-corsola-chrome': {
+        'additional_compile_targets': [
+          'chromiumos_preflight',
+          'nacl_helper',
+        ],
+        'browser_config': 'cros-chrome',
+        'os_type': 'chromeos',
+        'skip_merge_script': True,
+        'use_swarming': False,
+        'mixins': [
+          'limited_capacity_bot',
+          'long_skylab_timeout',
+        ],
+        'test_suites': {
+          'skylab_gpu_telemetry_tests': 'gpu_fyi_chromeos_corsola_telemetry_tests',
+        },
+      },
+      'gpu-fyi-chromeos-skyrim-chrome': {
+        'additional_compile_targets': [
+          'chromiumos_preflight',
+          'nacl_helper',
+        ],
+        'browser_config': 'cros-chrome',
+        'os_type': 'chromeos',
+        'skip_merge_script': True,
+        'use_swarming': False,
+        'mixins': [
+          'limited_capacity_bot',
+          'long_skylab_timeout',
+        ],
+        'test_suites': {
+          'skylab_gpu_telemetry_tests': 'gpu_fyi_chromeos_skyrim_telemetry_tests',
+        },
+      },
     }
   },
   {
