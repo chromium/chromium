@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/android/webapk/test/fake_webapk_database_factory.h"
+#include "chrome/browser/android/webapk/test/fake_data_type_store_service.h"
 
 #include <memory>
 
@@ -15,11 +15,11 @@
 #include "url/gurl.h"
 
 namespace webapk {
-FakeWebApkDatabaseFactory::FakeWebApkDatabaseFactory() = default;
+FakeDataTypeStoreService::FakeDataTypeStoreService() = default;
 
-FakeWebApkDatabaseFactory::~FakeWebApkDatabaseFactory() = default;
+FakeDataTypeStoreService::~FakeDataTypeStoreService() = default;
 
-syncer::DataTypeStore* FakeWebApkDatabaseFactory::GetStore() {
+syncer::DataTypeStore* FakeDataTypeStoreService::GetStore() {
   // Lazily instantiate to avoid performing blocking operations in tests that
   // never use WebApks at all.
   if (!store_) {
@@ -28,11 +28,28 @@ syncer::DataTypeStore* FakeWebApkDatabaseFactory::GetStore() {
   return store_.get();
 }
 
-syncer::OnceDataTypeStoreFactory FakeWebApkDatabaseFactory::GetStoreFactory() {
+const base::FilePath& FakeDataTypeStoreService::GetSyncDataPath() const {
+  // Constructing an empty path on-the-fly doesn't work here because the method
+  // must return a reference. Instead return a reference to the empty member.
+  return sync_data_path_;
+}
+
+syncer::RepeatingDataTypeStoreFactory
+FakeDataTypeStoreService::GetStoreFactory() {
   return syncer::DataTypeStoreTestUtil::FactoryForForwardingStore(GetStore());
 }
 
-Registry FakeWebApkDatabaseFactory::ReadRegistry() {
+syncer::RepeatingDataTypeStoreFactory
+FakeDataTypeStoreService::GetStoreFactoryForAccountStorage() {
+  return syncer::RepeatingDataTypeStoreFactory();
+}
+
+scoped_refptr<base::SequencedTaskRunner>
+FakeDataTypeStoreService::GetBackendTaskRunner() {
+  return nullptr;
+}
+
+Registry FakeDataTypeStoreService::ReadRegistry() {
   Registry registry;
   base::RunLoop run_loop;
 
@@ -57,7 +74,7 @@ Registry FakeWebApkDatabaseFactory::ReadRegistry() {
   return registry;
 }
 
-void FakeWebApkDatabaseFactory::WriteProtos(
+void FakeDataTypeStoreService::WriteProtos(
     const std::vector<const WebApkProto*>& protos) {
   base::RunLoop run_loop;
 
@@ -84,7 +101,7 @@ void FakeWebApkDatabaseFactory::WriteProtos(
   run_loop.Run();
 }
 
-void FakeWebApkDatabaseFactory::WriteRegistry(const Registry& registry) {
+void FakeDataTypeStoreService::WriteRegistry(const Registry& registry) {
   std::vector<const WebApkProto*> protos;
   for (const Registry::value_type& kv : registry) {
     const WebApkProto* webapk = kv.second.get();

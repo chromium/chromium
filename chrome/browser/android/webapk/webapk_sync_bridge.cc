@@ -16,7 +16,6 @@
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
 #include "chrome/browser/android/webapk/webapk_database.h"
-#include "chrome/browser/android/webapk/webapk_database_factory.h"
 #include "chrome/browser/android/webapk/webapk_helpers.h"
 #include "chrome/browser/android/webapk/webapk_registry_update.h"
 #include "chrome/browser/android/webapk/webapk_restore_task.h"
@@ -27,6 +26,7 @@
 #include "components/sync/base/report_unrecoverable_error.h"
 #include "components/sync/model/client_tag_based_data_type_processor.h"
 #include "components/sync/model/data_type_store.h"
+#include "components/sync/model/data_type_store_service.h"
 #include "components/sync/model/metadata_batch.h"
 #include "components/sync/model/metadata_change_list.h"
 #include "components/sync/model/mutable_data_batch.h"
@@ -165,10 +165,10 @@ bool IsLegacyAppId(webapps::AppId app_id) {
 }  // anonymous namespace
 
 WebApkSyncBridge::WebApkSyncBridge(
-    AbstractWebApkDatabaseFactory* database_factory,
+    syncer::DataTypeStoreService* data_type_store_service,
     base::OnceClosure on_initialized)
     : WebApkSyncBridge(
-          database_factory,
+          data_type_store_service,
           std::move(on_initialized),
           std::make_unique<syncer::ClientTagBasedDataTypeProcessor>(
               syncer::WEB_APKS,
@@ -178,14 +178,14 @@ WebApkSyncBridge::WebApkSyncBridge(
           std::make_unique<WebApkSpecificsFetcher>()) {}
 
 WebApkSyncBridge::WebApkSyncBridge(
-    AbstractWebApkDatabaseFactory* database_factory,
+    syncer::DataTypeStoreService* data_type_store_service,
     base::OnceClosure on_initialized,
     std::unique_ptr<syncer::DataTypeLocalChangeProcessor> change_processor,
     std::unique_ptr<base::Clock> clock,
     std::unique_ptr<AbstractWebApkSpecificsFetcher> specifics_fetcher)
     : syncer::DataTypeSyncBridge(std::move(change_processor)),
       database_(
-          database_factory,
+          data_type_store_service,
           base::BindRepeating(&WebApkSyncBridge::ReportErrorToChangeProcessor,
                               base::Unretained(this))),
       clock_(std::move(clock)),

@@ -2788,8 +2788,6 @@ static_library("browser") {
       "android/webapk/pwa_restore_bottom_sheet_mediator.h",
       "android/webapk/webapk_database.cc",
       "android/webapk/webapk_database.h",
-      "android/webapk/webapk_database_factory.cc",
-      "android/webapk/webapk_database_factory.h",
       "android/webapk/webapk_install_service.cc",
       "android/webapk/webapk_install_service.h",
       "android/webapk/webapk_install_service_factory.cc",

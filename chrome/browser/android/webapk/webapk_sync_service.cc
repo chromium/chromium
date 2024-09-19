@@ -15,6 +15,7 @@
 #include "chrome/browser/android/webapk/webapk_sync_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/sync/data_type_store_service_factory.h"
 #include "components/sync/base/features.h"
 #include "ui/gfx/android/java_bitmap.h"
 
@@ -53,9 +54,8 @@ void OnGotAppsInfo(const JavaRef<jobject>& java_callback,
 }  // anonymous namespace
 
 WebApkSyncService::WebApkSyncService(Profile* profile) {
-  database_factory_ = std::make_unique<WebApkDatabaseFactory>(profile);
-  sync_bridge_ = std::make_unique<WebApkSyncBridge>(database_factory_.get(),
-                                                    base::DoNothing());
+  sync_bridge_ = std::make_unique<WebApkSyncBridge>(
+      DataTypeStoreServiceFactory::GetForProfile(profile), base::DoNothing());
   restore_manager_ = std::make_unique<WebApkRestoreManager>(profile);
 }
 

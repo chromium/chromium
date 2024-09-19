@@ -7,7 +7,6 @@
 
 #include "base/time/clock.h"
 #include "chrome/browser/android/webapk/pwa_restore_bottom_sheet_mediator.h"
-#include "chrome/browser/android/webapk/webapk_database_factory.h"
 #include "chrome/browser/android/webapk/webapk_restore_manager.h"
 #include "chrome/browser/android/webapk/webapk_sync_bridge.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -46,7 +45,6 @@ class WebApkSyncService : public KeyedService {
   WebApkRestoreManager* GetWebApkRestoreManager() const;
 
  private:
-  std::unique_ptr<AbstractWebApkDatabaseFactory> database_factory_;
   std::unique_ptr<WebApkSyncBridge> sync_bridge_;
   std::unique_ptr<WebApkRestoreManager> restore_manager_;
 };
