@@ -7233,6 +7233,9 @@ TEST_F(BrowserAutofillManagerTest, ShowPredictionImprovementsSuggestions) {
       .WillByDefault(Return(&delegate));
   ON_CALL(delegate, ShouldProvidePredictionImprovements)
       .WillByDefault(Return(true));
+  EXPECT_CALL(delegate, HasDataStored)
+      .WillOnce(RunOnceCallback<0>(
+          AutofillPredictionImprovementsDelegate::HasData(true)));
   EXPECT_CALL(delegate, MaybeUpdateSuggestions)
       .WillOnce([](std::vector<Suggestion>& address_suggestions,
                    const FormFieldData& field,

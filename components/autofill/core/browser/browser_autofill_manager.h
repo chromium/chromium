@@ -29,6 +29,7 @@
 #include "components/autofill/core/browser/autofill_external_delegate.h"
 #include "components/autofill/core/browser/autofill_manager.h"
 #include "components/autofill/core/browser/autofill_plus_address_delegate.h"
+#include "components/autofill/core/browser/autofill_prediction_improvements_delegate.h"
 #include "components/autofill/core/browser/autofill_trigger_details.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/filling_product.h"
@@ -628,6 +629,25 @@ class BrowserAutofillManager : public AutofillManager {
       AutofillSuggestionTriggerSource trigger_source,
       SuggestionsContext& context,
       OnGenerateSuggestionsCallback callback);
+
+  // This method
+  // 1) is an event handler called when the
+  // `AutofillPredictionImprovementsDelegate` is checking user annotations for
+  // readiness.
+  // 2) continues Autofill's regular flow by calling
+  // `GenerateSuggestionsAndMaybeShowUI()` if user annotations isn't ready or
+  // `AutofillPredictionImprovementsDelegate` doesn't exist.
+  //
+  // To be clear, only one branch for showing suggestions in the UI will be
+  // followed eventually: either the one for Autofill or the one for prediction
+  // improvements (the latter might also show Autofill suggestions).
+  void GenerateSuggestionsAndMaybeShowAutofillOrPredictionImprovementsUI(
+      const FormData& form,
+      const FormFieldData& field,
+      AutofillSuggestionTriggerSource trigger_source,
+      SuggestionsContext& context,
+      OnGenerateSuggestionsCallback callback,
+      AutofillPredictionImprovementsDelegate::HasData has_data);
 
   // Receives the lists of plus address and single field form fill suggestions
   // and combines them. It gives priority to the plus address suggestions,
