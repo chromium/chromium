@@ -1073,18 +1073,6 @@ BASE_FEATURE(kResolutionBasedDecoderPriority,
              "ResolutionBasedDecoderPriority",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Forces use of hardware (platform) video decoders in
-// `media::DecoderSelector`.
-BASE_FEATURE(kForceHardwareVideoDecoders,
-             "ForceHardwareVideoDecoders",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Forces use of hardware (platform) audio decoders in
-// `media::DecoderSelector`.
-BASE_FEATURE(kForceHardwareAudioDecoders,
-             "ForceHardwareAudioDecoders",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables low-delay video rendering in media pipeline on "live" stream.
 BASE_FEATURE(kLowDelayVideoRenderingOnLiveStream,
              "low-delay-video-rendering-on-live-stream",

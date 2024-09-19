@@ -76,20 +76,10 @@ DecoderPriority UnifiedDecoderPriority(const VideoDecoderConfig& config,
   }
 }
 
-template <typename ConfigT, typename DecoderT>
-DecoderPriority SkipNonPlatformDecoders(const ConfigT& config,
-                                        const DecoderT& decoder) {
-  return decoder.IsPlatformDecoder() ? DecoderPriority::kNormal
-                                     : DecoderPriority::kSkipped;
-}
-
 void SetDefaultDecoderPriorityCB(
     VideoDecoderSelector::DecoderPriorityCB* out,
     const DecoderStreamTraits<DemuxerStream::VIDEO>* traits) {
-  if (base::FeatureList::IsEnabled(kForceHardwareVideoDecoders)) {
-    *out = base::BindRepeating(
-        SkipNonPlatformDecoders<VideoDecoderConfig, VideoDecoder>);
-  } else if (traits->GetPreferNonPlatformDecoders()) {
+  if (traits->GetPreferNonPlatformDecoders()) {
     *out = base::BindRepeating(PreferNonPlatformDecoders);
   } else {
     *out = base::BindRepeating(UnifiedDecoderPriority);
@@ -99,14 +89,9 @@ void SetDefaultDecoderPriorityCB(
 void SetDefaultDecoderPriorityCB(
     AudioDecoderSelector::DecoderPriorityCB* out,
     const DecoderStreamTraits<DemuxerStream::AUDIO>*) {
-  if (base::FeatureList::IsEnabled(kForceHardwareAudioDecoders)) {
-    *out = base::BindRepeating(
-        SkipNonPlatformDecoders<AudioDecoderConfig, AudioDecoder>);
-  } else {
-    // Platform audio decoders are not currently prioritized or deprioritized
-    *out = base::BindRepeating(
-        NormalDecoderPriority<AudioDecoderConfig, AudioDecoder>);
-  }
+  // Platform audio decoders are not currently prioritized or deprioritized
+  *out = base::BindRepeating(
+      NormalDecoderPriority<AudioDecoderConfig, AudioDecoder>);
 }
 
 }  // namespace
