@@ -39,8 +39,6 @@ import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -54,13 +52,6 @@ import javax.inject.Named;
 /** Handles the Custom Tab specific behaviors of tab persistence. */
 @ActivityScope
 public class CustomTabTabPersistencePolicy implements TabPersistencePolicy {
-
-    /** Threshold where old state files should be deleted (30 days). */
-    protected static final long STATE_EXPIRY_THRESHOLD = 30L * 24 * 60 * 60 * 1000;
-
-    /** Maximum number of state files before we should start deleting old ones. */
-    protected static final int MAXIMUM_STATE_FILES = 30;
-
     private static final String TAG = "tabmodel";
 
     /**
@@ -214,42 +205,6 @@ public class CustomTabTabPersistencePolicy implements TabPersistencePolicy {
     }
 
     /**
-     * Given a list of metadata files, determine which are applicable for deletion based on the
-     * deletion strategy of Custom Tabs.
-     *
-     * @param currentTimeMillis The current time in milliseconds
-     *                          ({@link System#currentTimeMillis()}.
-     * @param allMetadataFiles The complete list of all metadata files to check.
-     * @return The list of metadata files that are applicable for deletion.
-     */
-    protected static List<File> getMetadataFilesForDeletion(
-            long currentTimeMillis, List<File> allMetadataFiles) {
-        Collections.sort(
-                allMetadataFiles,
-                new Comparator<File>() {
-                    @Override
-                    public int compare(File lhs, File rhs) {
-                        long lhsModifiedTime = lhs.lastModified();
-                        long rhsModifiedTime = rhs.lastModified();
-
-                        // Sort such that older files (those with an lower timestamp number) are at
-                        // the end of the sorted listed.
-                        return Long.compare(rhsModifiedTime, lhsModifiedTime);
-                    }
-                });
-
-        List<File> stateFilesApplicableForDeletion = new ArrayList<File>();
-        for (int i = 0; i < allMetadataFiles.size(); i++) {
-            File file = allMetadataFiles.get(i);
-            long fileAge = currentTimeMillis - file.lastModified();
-            if (i >= MAXIMUM_STATE_FILES || fileAge >= STATE_EXPIRY_THRESHOLD) {
-                stateFilesApplicableForDeletion.add(file);
-            }
-        }
-        return stateFilesApplicableForDeletion;
-    }
-
-    /**
      * Get all current Tab IDs used by the specified activity.
      *
      * @param activity The activity whose tab IDs are to be collected from.
@@ -334,7 +289,8 @@ public class CustomTabTabPersistencePolicy implements TabPersistencePolicy {
             mUnreferencedTabIds.removeAll(allReferencedTabIds);
 
             mDeletableMetadataFiles =
-                    getMetadataFilesForDeletion(System.currentTimeMillis(), metadataFiles);
+                    CustomTabFileUtils.getFilesForDeletion(
+                            System.currentTimeMillis(), metadataFiles);
             return null;
         }
 

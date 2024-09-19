@@ -164,6 +164,7 @@ chrome_junit_test_java_sources = [
   "junit/src/org/chromium/chrome/browser/customtabs/CustomTabAppMenuPropertiesDelegateUnitTest.java",
   "junit/src/org/chromium/chrome/browser/customtabs/CustomTabBottomBarDelegateUnitTest.java",
   "junit/src/org/chromium/chrome/browser/customtabs/CustomTabFeatureOverridesManagerUnitTest.java",
+  "junit/src/org/chromium/chrome/browser/customtabs/CustomTabFileUtilsUnitTest.java",
   "junit/src/org/chromium/chrome/browser/customtabs/CustomTabIntentDataProviderTest.java",
   "junit/src/org/chromium/chrome/browser/customtabs/CustomTabNavigationBarControllerTest.java",
   "junit/src/org/chromium/chrome/browser/customtabs/CustomTabNavigationEventObserverUnitTest.java",
