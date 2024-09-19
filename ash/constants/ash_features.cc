@@ -587,13 +587,6 @@ BASE_FEATURE(kDisplayPerformanceMode,
              "DisplayPerformanceMode",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Deprecates Ctrl+Alt+/ as shortcut to open Keyboard shortcuts app, shows
-// a notification if that shortcut is pressed, and replaces that shortcut with
-// Ctrl+Search+S to open the app.
-BASE_FEATURE(kDeprecateOldKeyboardShortcutsAccelerator,
-             "DeprecateOldKeyboardShortcutsAccelerator",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Performance optimization that only renders visible windows in each desk's
 // preview within the desk bar. Should have no user-visible effects except
 // lower latency when opening the desk bar and overview mode.
@@ -3664,11 +3657,6 @@ bool IsCoralFeatureEnabled() {
 
 bool IsCryptauthAttestationSyncingEnabled() {
   return base::FeatureList::IsEnabled(kCryptauthAttestationSyncing);
-}
-
-bool IsDeprecateOldKeyboardShortcutsAcceleratorEnabled() {
-  return base::FeatureList::IsEnabled(
-      kDeprecateOldKeyboardShortcutsAccelerator);
 }
 
 bool IsConsumerAutoUpdateToggleAllowed() {

@@ -2053,15 +2053,6 @@
     "expiry_milestone": 140
   },
   {
-    "name": "deprecate-old-keyboard-shortcuts-accelerator",
-    "owners": [
-      "jimmyxgong@chromium.org",
-      "cambickel@chromium.org",
-      "cros-peripherals@google.com"
-    ],
-    "expiry_milestone": 130
-  },
-  {
     "name": "deprecate-unload",
     "owners": [ "fergal@chromium.org", "bfcache-dev@chromium.org"],
     // The schedule for unload events being fully removed is unknown. We expect

@@ -4739,12 +4739,6 @@ const FeatureEntry kFeatureEntries[] = {
     {"deprecate-alt-click", flag_descriptions::kDeprecateAltClickName,
      flag_descriptions::kDeprecateAltClickDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(features::kDeprecateAltClick)},
-    {"deprecate-old-keyboard-shortcuts-accelerator",
-     flag_descriptions::kDeprecateOldKeyboardShortcutsAcceleratorName,
-     flag_descriptions::kDeprecateOldKeyboardShortcutsAcceleratorDescription,
-     kOsCrOS,
-     FEATURE_VALUE_TYPE(
-         ash::features::kDeprecateOldKeyboardShortcutsAccelerator)},
     {"show-bluetooth-debug-log-toggle",
      flag_descriptions::kShowBluetoothDebugLogToggleName,
      flag_descriptions::kShowBluetoothDebugLogToggleDescription, kOsCrOS,

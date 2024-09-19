@@ -181,8 +181,6 @@ BASE_DECLARE_FEATURE(kCryptohomeRecoveryByDefaultForEnterprise);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kDeferConciergeStartup);
 COMPONENT_EXPORT(ASH_CONSTANTS)
-BASE_DECLARE_FEATURE(kDeprecateOldKeyboardShortcutsAccelerator);
-COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kDeskBarWindowOcclusionOptimization);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kDeskButton);
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kDeskTemplateSync);
@@ -1340,8 +1338,6 @@ COMPONENT_EXPORT(ASH_CONSTANTS) bool IsOobeSkipAssistantEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsOobePersonalizedOnboardingEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsOobeSoftwareUpdateEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsKioskLoginScreenEnabled();
-COMPONENT_EXPORT(ASH_CONSTANTS)
-bool IsDeprecateOldKeyboardShortcutsAcceleratorEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsOobeQuickStartEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsOobeQuickStartOnLoginScreenEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsOobeRemoveShutdownButtonEnabled();
