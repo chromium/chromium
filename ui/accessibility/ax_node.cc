@@ -1003,15 +1003,6 @@ const std::vector<int32_t>& AXNode::GetIntListAttribute(
   return GetComputedNodeData().GetOrComputeAttribute(attribute);
 }
 
-bool AXNode::GetIntListAttribute(ax::mojom::IntListAttribute attribute,
-                                 std::vector<int32_t>* value) const {
-  if (GetComputedNodeData().HasOrCanComputeAttribute(attribute)) {
-    *value = GetComputedNodeData().GetOrComputeAttribute(attribute);
-    return true;
-  }
-  return false;
-}
-
 AXLanguageInfo* AXNode::GetLanguageInfo() const {
   return language_info_.get();
 }

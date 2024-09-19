@@ -409,17 +409,6 @@ const std::vector<int32_t>& AXNodeData::GetIntListAttribute(
   return *empty_vector;
 }
 
-bool AXNodeData::GetIntListAttribute(ax::mojom::IntListAttribute attribute,
-                                     std::vector<int32_t>* value) const {
-  auto iter = FindInVectorOfPairs(attribute, intlist_attributes);
-  if (iter != intlist_attributes.end()) {
-    *value = iter->second;
-    return true;
-  }
-
-  return false;
-}
-
 bool AXNodeData::HasStringListAttribute(
     ax::mojom::StringListAttribute attribute) const {
   auto iter = FindInVectorOfPairs(attribute, stringlist_attributes);
@@ -634,10 +623,10 @@ AXTextAttributes AXNodeData::GetTextAttributes() const {
                     &text_attributes.font_weight);
   GetStringAttribute(ax::mojom::StringAttribute::kFontFamily,
                      &text_attributes.font_family);
-  GetIntListAttribute(ax::mojom::IntListAttribute::kMarkerTypes,
-                      &text_attributes.marker_types);
-  GetIntListAttribute(ax::mojom::IntListAttribute::kHighlightTypes,
-                      &text_attributes.highlight_types);
+  text_attributes.marker_types =
+      GetIntListAttribute(ax::mojom::IntListAttribute::kMarkerTypes);
+  text_attributes.highlight_types =
+      GetIntListAttribute(ax::mojom::IntListAttribute::kHighlightTypes);
 
   return text_attributes;
 }

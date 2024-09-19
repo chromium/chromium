@@ -1522,9 +1522,10 @@ TEST_F(AXTreeSourceAndroidTest, AutoComplete) {
 
   data = GetSerializedNode(editable->id);
   EXPECT_TRUE(data.HasState(ax::mojom::State::kExpanded));
-  std::vector<int32_t> controlled_ids;
-  ASSERT_TRUE(data.GetIntListAttribute(
-      ax::mojom::IntListAttribute::kControlsIds, &controlled_ids));
+  ASSERT_TRUE(
+      data.HasIntListAttribute(ax::mojom::IntListAttribute::kControlsIds));
+  const std::vector<int32_t>& controlled_ids =
+      data.GetIntListAttribute(ax::mojom::IntListAttribute::kControlsIds);
   ASSERT_EQ(1U, controlled_ids.size());
   ASSERT_EQ(popup_window->window_id, controlled_ids[0]);
 

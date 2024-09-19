@@ -514,15 +514,17 @@ AXPlatformNode* AXPlatformNodeDelegate::GetTargetNodeForRelation(
 std::vector<AXPlatformNode*> AXPlatformNodeDelegate::GetTargetNodesForRelation(
     ax::mojom::IntListAttribute attr) {
   DCHECK(IsNodeIdIntListAttribute(attr));
-  std::vector<int32_t> target_ids;
-  if (!GetIntListAttribute(attr, &target_ids))
+  if (!HasIntListAttribute(attr)) {
     return std::vector<AXPlatformNode*>();
+  }
 
   // If we use std::set to eliminate duplicates, the resulting set will be
   // sorted by the id and we will lose the original order which may be of
   // interest to ATs. The number of ids should be small.
 
   std::vector<AXPlatformNode*> nodes;
+  const std::vector<int32_t>& target_ids = GetIntListAttribute(attr);
+
   for (int32_t target_id : target_ids) {
     AXPlatformNode* target = GetFromNodeID(target_id);
     if (IsValidRelationTarget(target) && !base::Contains(nodes, target)) {
@@ -778,9 +780,11 @@ const std::vector<int32_t>& AXPlatformNodeDelegate::GetIntListAttribute(
 bool AXPlatformNodeDelegate::GetIntListAttribute(
     ax::mojom::IntListAttribute attribute,
     std::vector<int32_t>* value) const {
-  if (node_)
-    return node_->GetIntListAttribute(attribute, value);
-  return GetData().GetIntListAttribute(attribute, value);
+  bool found = HasIntListAttribute(attribute);
+  if (found) {
+    *value = GetIntListAttribute(attribute);
+  }
+  return found;
 }
 
 bool AXPlatformNodeDelegate::HasStringListAttribute(

@@ -1127,11 +1127,12 @@ TEST_F(AccessibilityNodeInfoDataWrapperTest, CustomActions) {
   AddCustomAction(&node, 300, "This is label");
 
   ui::AXNodeData data = CallSerialize(wrapper);
-  std::vector<int> result_ids;
   std::vector<std::string> result_labels;
   EXPECT_TRUE(data.HasAction(ax::mojom::Action::kCustomAction));
-  EXPECT_TRUE(data.GetIntListAttribute(
-      ax::mojom::IntListAttribute::kCustomActionIds, &result_ids));
+  EXPECT_TRUE(
+      data.HasIntListAttribute(ax::mojom::IntListAttribute::kCustomActionIds));
+  const std::vector<int>& result_ids =
+      data.GetIntListAttribute(ax::mojom::IntListAttribute::kCustomActionIds);
   EXPECT_EQ(std::vector<int>({300}), result_ids);
   EXPECT_TRUE(data.GetStringListAttribute(
       ax::mojom::StringListAttribute::kCustomActionDescriptions,

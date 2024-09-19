@@ -567,8 +567,7 @@ void AccessibilityTreeFormatterBlink::AddProperties(
        ++attr_index) {
     auto attr = static_cast<ax::mojom::IntListAttribute>(attr_index);
     if (node.HasIntListAttribute(attr)) {
-      std::vector<int32_t> values;
-      node.GetIntListAttribute(attr, &values);
+      const std::vector<int32_t>& values = node.GetIntListAttribute(attr);
       base::Value::List value_list;
       for (auto value : values) {
         if (ui::IsNodeIdIntListAttribute(attr)) {
