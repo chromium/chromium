@@ -54,10 +54,18 @@ bool CacheStorageIndex::SetCacheSize(const std::string& cache_name,
                                      int64_t size) {
   if (has_doomed_cache_)
     DCHECK_NE(cache_name, doomed_cache_metadata_.name);
+
   auto it = cache_metadata_map_.find(cache_name);
-  CHECK(it != cache_metadata_map_.end(), base::NotFatalUntil::M130);
-  if (it->second->size == size)
+  if (it == cache_metadata_map_.end()) {
+    // This can happen during initialization. The cache should be added to the
+    // map soon and the size will be set correctly at that point.
     return false;
+  }
+
+  if (it->second->size == size) {
+    return false;
+  }
+
   it->second->size = size;
   storage_size_ = CacheStorage::kSizeUnknown;
   return true;
@@ -84,9 +92,16 @@ bool CacheStorageIndex::SetCachePadding(const std::string& cache_name,
   DCHECK(!has_doomed_cache_ || cache_name != doomed_cache_metadata_.name)
       << "Setting padding of doomed cache: \"" << cache_name << '"';
   auto it = cache_metadata_map_.find(cache_name);
-  CHECK(it != cache_metadata_map_.end(), base::NotFatalUntil::M130);
-  if (it->second->padding == padding)
+  if (it == cache_metadata_map_.end()) {
+    // This can happen during initialization. The cache should be added to the
+    // map soon and the padding will be set correctly at that point.
     return false;
+  }
+
+  if (it->second->padding == padding) {
+    return false;
+  }
+
   it->second->padding = padding;
   storage_padding_ = CacheStorage::kSizeUnknown;
   return true;
