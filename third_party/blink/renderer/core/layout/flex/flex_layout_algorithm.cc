@@ -960,7 +960,8 @@ const LayoutResult* FlexLayoutAlgorithm::LayoutInternal() {
       total_intrinsic_block_size_, container_builder_.InlineSize());
 
   if (!IsBreakInside(GetBreakToken())) {
-    ApplyFinalAlignmentAndReversals(&flex_line_outputs);
+    ApplyFinalAlignment(&flex_line_outputs);
+    ApplyReversals(&flex_line_outputs);
     LayoutResult::EStatus status = GiveItemsFinalPositionAndSize(
         &flex_line_outputs, &row_break_between_outputs);
     if (status != LayoutResult::kSuccess) {
@@ -1177,7 +1178,7 @@ void FlexLayoutAlgorithm::CalculateTotalIntrinsicBlockSize(
       total_intrinsic_block_size_ + BorderScrollbarPadding().block_end);
 }
 
-void FlexLayoutAlgorithm::ApplyFinalAlignmentAndReversals(
+void FlexLayoutAlgorithm::ApplyFinalAlignment(
     HeapVector<NGFlexLine>* flex_line_outputs) {
   auto& line_contexts = algorithm_.FlexLines();
   const LayoutUnit cross_axis_start_edge =
@@ -1206,6 +1207,12 @@ void FlexLayoutAlgorithm::ApplyFinalAlignmentAndReversals(
     // to do that after AlignChildren sets an initial cross axis position.
     algorithm_.FlipForWrapReverse(cross_axis_start_edge,
                                   final_content_cross_size, flex_line_outputs);
+  }
+}
+
+void FlexLayoutAlgorithm::ApplyReversals(
+    HeapVector<NGFlexLine>* flex_line_outputs) {
+  if (Style().FlexWrap() == EFlexWrap::kWrapReverse) {
     flex_line_outputs->Reverse();
   }
 
@@ -1279,21 +1286,7 @@ LayoutResult::EStatus FlexLayoutAlgorithm::GiveItemsFinalPositionAndSize(
     Vector<EBreakBetween>* row_break_between_outputs) {
   DCHECK(!IsBreakInside(GetBreakToken()));
 
-  const auto& style = Style();
-  const WritingDirectionMode writing_direction =
-      GetConstraintSpace().GetWritingDirection();
-  const StyleContentAlignmentData justify_content =
-      FlexibleBoxAlgorithm::ResolvedJustifyContent(style);
-  const bool is_reverse = style.ResolvedIsReverseFlexDirection();
-
-  // -webkit-box has a weird quirk - an RTL box will overflow as if it was LTR.
-  const ContentPosition safe_justify_position =
-      style.IsDeprecatedWebkitBox() && !is_column_ &&
-              style.Direction() == TextDirection::kRtl
-          ? ContentPosition::kEnd
-          : ContentPosition::kStart;
-
-  bool should_propagate_row_break_values =
+  const bool should_propagate_row_break_values =
       GetConstraintSpace().ShouldPropagateChildBreakValues();
   if (should_propagate_row_break_values) {
     DCHECK(row_break_between_outputs);
@@ -1310,6 +1303,25 @@ LayoutResult::EStatus FlexLayoutAlgorithm::GiveItemsFinalPositionAndSize(
           Vector<EBreakBetween>(2, EBreakBetween::kAuto);
     }
   }
+
+  // Nothing to do if we don't have any flex-lines.
+  if (flex_line_outputs->empty()) {
+    return LayoutResult::kSuccess;
+  }
+
+  const auto& style = Style();
+  const WritingDirectionMode writing_direction =
+      GetConstraintSpace().GetWritingDirection();
+  const StyleContentAlignmentData justify_content =
+      FlexibleBoxAlgorithm::ResolvedJustifyContent(style);
+  const bool is_reverse = style.ResolvedIsReverseFlexDirection();
+
+  // -webkit-box has a weird quirk - an RTL box will overflow as if it was LTR.
+  const ContentPosition safe_justify_position =
+      style.IsDeprecatedWebkitBox() && !is_column_ &&
+              style.Direction() == TextDirection::kRtl
+          ? ContentPosition::kEnd
+          : ContentPosition::kStart;
 
   BaselineAccumulator baseline_accumulator(style);
   LayoutResult::EStatus status = LayoutResult::kSuccess;
