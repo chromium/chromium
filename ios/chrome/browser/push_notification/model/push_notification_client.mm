@@ -61,8 +61,8 @@ void PushNotificationClient::OnSceneActiveForegroundBrowserReady() {
   }
 
   if (urls_delayed_for_loading_.size()) {
-    for (const GURL& url : urls_delayed_for_loading_) {
-      LoadUrlInNewTab(url, browser);
+    for (auto& url : urls_delayed_for_loading_) {
+      LoadUrlInNewTab(url.first, browser, std::move(url.second));
     }
     urls_delayed_for_loading_.clear();
   }
@@ -91,20 +91,29 @@ Browser* PushNotificationClient::GetSceneLevelForegroundActiveBrowser() {
 }
 
 void PushNotificationClient::LoadUrlInNewTab(const GURL& url) {
+  LoadUrlInNewTab(url, base::DoNothing());
+}
+
+void PushNotificationClient::LoadUrlInNewTab(
+    const GURL& url,
+    base::OnceCallback<void(Browser*)> callback) {
   Browser* browser = GetSceneLevelForegroundActiveBrowser();
   if (!browser) {
-    urls_delayed_for_loading_.push_back(url);
+    urls_delayed_for_loading_.emplace_back(url, std::move(callback));
     return;
   }
 
-  LoadUrlInNewTab(url, browser);
+  LoadUrlInNewTab(url, browser, std::move(callback));
 }
 
-void PushNotificationClient::LoadUrlInNewTab(const GURL& url,
-                                             Browser* browser) {
+void PushNotificationClient::LoadUrlInNewTab(
+    const GURL& url,
+    Browser* browser,
+    base::OnceCallback<void(Browser*)> callback) {
   id<ApplicationCommands> handler =
       static_cast<id<ApplicationCommands>>(browser->GetCommandDispatcher());
   [handler openURLInNewTab:[OpenNewTabCommand commandWithURLFromChrome:url]];
+  std::move(callback).Run(browser);
 }
 
 void PushNotificationClient::LoadFeedbackWithPayloadAndClientId(

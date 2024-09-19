@@ -228,7 +228,8 @@ class CommercePushNotificationClientTest : public PlatformTest {
         action_identifier, user_info, std::move(completion));
   }
 
-  std::vector<GURL>& GetUrlsDelayedForLoading() {
+  std::vector<std::pair<GURL, base::OnceCallback<void(Browser*)>>>&
+  GetUrlsDelayedForLoading() {
     return commerce_push_notification_client_.urls_delayed_for_loading_;
   }
 
