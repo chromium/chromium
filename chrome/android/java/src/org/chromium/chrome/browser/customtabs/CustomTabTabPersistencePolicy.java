@@ -194,7 +194,7 @@ public class CustomTabTabPersistencePolicy implements TabPersistencePolicy {
     /** Triggers an async deletion of the tab state metadata file. */
     public void deleteMetadataStateFileAsync() {
         assert mTaskRunner != null;
-        mTaskRunner.postTask(
+        mTaskRunner.execute(
                 () -> {
                     File stateDir = getOrCreateStateDirectory();
                     File metadataFile = new File(stateDir, getMetadataFileName());

@@ -425,7 +425,7 @@ public abstract class AsyncTask<Result> {
     @MainThread
     public final AsyncTask<Result> executeOnTaskRunner(TaskRunner taskRunner) {
         executionPreamble();
-        taskRunner.postTask(mFuture);
+        taskRunner.execute(mFuture);
         return this;
     }
 

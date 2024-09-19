@@ -118,7 +118,7 @@ public class TabPersistentStoreUnitTest {
         // Flush pending PersistentStore tasks.
         final AtomicBoolean flushed = new AtomicBoolean(false);
         if (mPersistentStore != null) {
-            mPersistentStore.getTaskRunnerForTests().postTask(() -> flushed.set(true));
+            mPersistentStore.getTaskRunnerForTests().execute(() -> flushed.set(true));
             CriteriaHelper.pollUiThreadForJUnit(() -> flushed.get());
         }
     }

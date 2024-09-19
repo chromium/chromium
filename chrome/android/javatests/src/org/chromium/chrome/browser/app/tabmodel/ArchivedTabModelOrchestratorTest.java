@@ -62,7 +62,7 @@ public class ArchivedTabModelOrchestratorTest {
         public final List<Pair<Runnable, Long>> mDelayedTasks = new ArrayList<>();
 
         @Override
-        public void postTask(Runnable task) {
+        public void execute(Runnable task) {
             assert false;
         }
 

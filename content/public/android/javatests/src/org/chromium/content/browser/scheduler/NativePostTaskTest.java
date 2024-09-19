@@ -248,7 +248,7 @@ public class NativePostTaskTest {
 
         // Post a task that reposts itself until nativeSchedulerStarted is set to true.  This tests
         // that tasks posted before the native library is loaded still run afterwards.
-        taskQueue.postTask(
+        taskQueue.execute(
                 new Runnable() {
                     @Override
                     public void run() {
@@ -259,7 +259,7 @@ public class NativePostTaskTest {
                                 lock.notify();
                             }
                         } else {
-                            taskQueue.postTask(this);
+                            taskQueue.execute(this);
                         }
                     }
                 });

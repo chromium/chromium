@@ -145,7 +145,7 @@ public class AndroidFontLookupImpl implements AndroidFontLookup {
         Executor executor = ExecutorFactory.getExecutorForCurrentThread(core);
 
         // Post synchronous font request to background worker thread.
-        mTaskRunner.postTask(
+        mTaskRunner.execute(
                 () -> {
                     final ReadOnlyFile result = fetchFontInBackground(fontUniqueName, core);
                     RecordHistogram.recordTimesHistogram(
@@ -163,7 +163,7 @@ public class AndroidFontLookupImpl implements AndroidFontLookup {
         Executor executor = ExecutorFactory.getExecutorForCurrentThread(core);
 
         // Post synchronous font request to background worker thread.
-        mTaskRunner.postTask(
+        mTaskRunner.execute(
                 () -> {
                     HashMap<String, ReadOnlyFile> result = new HashMap<>();
                     // Make a copy of mExpectedFonts because it may be modified.

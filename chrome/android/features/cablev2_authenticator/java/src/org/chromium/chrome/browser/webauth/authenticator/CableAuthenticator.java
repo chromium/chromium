@@ -155,7 +155,7 @@ class CableAuthenticator implements AuthenticationContextProvider {
                 origin,
                 origin,
                 (status, response) -> {
-                    mTaskRunner.postTask(
+                    mTaskRunner.execute(
                             () ->
                                     CableAuthenticatorJni.get()
                                             .onAuthenticatorAttestationResponse(
@@ -168,7 +168,7 @@ class CableAuthenticator implements AuthenticationContextProvider {
                     final boolean isInvalidStateError =
                             status == AuthenticatorStatus.CREDENTIAL_EXCLUDED;
 
-                    mTaskRunner.postTask(
+                    mTaskRunner.execute(
                             () ->
                                     CableAuthenticatorJni.get()
                                             .onAuthenticatorAttestationResponse(
@@ -202,7 +202,7 @@ class CableAuthenticator implements AuthenticationContextProvider {
                     ByteBuffer buffer = response.serialize();
                     byte[] serialized = new byte[buffer.remaining()];
                     buffer.get(serialized);
-                    mTaskRunner.postTask(
+                    mTaskRunner.execute(
                             () ->
                                     CableAuthenticatorJni.get()
                                             .onAuthenticatorAssertionResponse(
@@ -210,7 +210,7 @@ class CableAuthenticator implements AuthenticationContextProvider {
                     mUi.onAuthenticatorResult(Result.SIGN_OK);
                 },
                 (status) -> {
-                    mTaskRunner.postTask(
+                    mTaskRunner.execute(
                             () ->
                                     CableAuthenticatorJni.get()
                                             .onAuthenticatorAssertionResponse(
@@ -368,7 +368,7 @@ class CableAuthenticator implements AuthenticationContextProvider {
 
     private void onAuthenticatorAttestationResponse(
             int ctapStatus, byte[] attestationObject, boolean prfEnabled) {
-        mTaskRunner.postTask(
+        mTaskRunner.execute(
                 () ->
                         CableAuthenticatorJni.get()
                                 .onAuthenticatorAttestationResponse(
@@ -376,7 +376,7 @@ class CableAuthenticator implements AuthenticationContextProvider {
     }
 
     private void onAuthenticatorAssertionResponse(int ctapStatus, byte[] responseBytes) {
-        mTaskRunner.postTask(
+        mTaskRunner.execute(
                 () ->
                         CableAuthenticatorJni.get()
                                 .onAuthenticatorAssertionResponse(ctapStatus, responseBytes));

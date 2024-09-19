@@ -486,7 +486,7 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
                     ACCESSIBILITY_MANAGE_BROADCAST_RECEIVER_ON_BACKGROUND)) {
                 // To prevent having empty languageTag until this background task runs.
                 mSystemLanguageTag = Locale.getDefault().toLanguageTag();
-                sSequencedTaskRunner.postTask(this::registerLocaleChangeReceiver);
+                sSequencedTaskRunner.execute(this::registerLocaleChangeReceiver);
             } else {
                 registerLocaleChangeReceiver();
             }
@@ -670,7 +670,7 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
                 if (mIsBroadcastReceiverRegistered) {
                     if (ContentFeatureMap.isEnabled(
                             ACCESSIBILITY_MANAGE_BROADCAST_RECEIVER_ON_BACKGROUND)) {
-                        sSequencedTaskRunner.postTask(
+                        sSequencedTaskRunner.execute(
                                 () ->
                                         ContextUtils.getApplicationContext()
                                                 .unregisterReceiver(mBroadcastReceiver));
@@ -714,7 +714,7 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
                     ACCESSIBILITY_MANAGE_BROADCAST_RECEIVER_ON_BACKGROUND)) {
                 // To prevent having empty languageTag until this background task runs.
                 mSystemLanguageTag = Locale.getDefault().toLanguageTag();
-                sSequencedTaskRunner.postTask(this::registerLocaleChangeReceiver);
+                sSequencedTaskRunner.execute(this::registerLocaleChangeReceiver);
             } else {
                 registerLocaleChangeReceiver();
             }

@@ -73,13 +73,10 @@ public class TrackExitReasonsOfInterest {
     private static Supplier<Integer> sAppStateSupplier;
     private static @AppState int sLastStateWritten;
 
-    /**
-     *
-     * Posts the exit reason tracker work in task runner queue.
-     */
+    /** Posts the exit reason tracker work in task runner queue. */
     public static void init(Supplier<Integer> stateSupplier) {
         sAppStateSupplier = stateSupplier;
-        sSequencedTaskRunner.postTask(
+        sSequencedTaskRunner.execute(
                 () -> {
                     run();
                 });
@@ -223,7 +220,7 @@ public class TrackExitReasonsOfInterest {
     @VisibleForTesting
     public static void writeLastWebViewState(final Callback<Boolean> callbackResult) {
         int pid = sPid != 0 ? sPid : Process.myPid();
-        sSequencedTaskRunner.postTask(
+        sSequencedTaskRunner.execute(
                 () -> {
                     @AppState int currentState = sAppStateSupplier.get();
                     if (sLastStateWritten != currentState) {

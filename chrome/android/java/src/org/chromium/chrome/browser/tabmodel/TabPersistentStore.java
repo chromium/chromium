@@ -915,7 +915,7 @@ public class TabPersistentStore {
     public void clearState() {
         mPersistencePolicy.cancelCleanupInProgress();
 
-        mSequencedTaskRunner.postTask(
+        mSequencedTaskRunner.execute(
                 new Runnable() {
                     @Override
                     public void run() {
