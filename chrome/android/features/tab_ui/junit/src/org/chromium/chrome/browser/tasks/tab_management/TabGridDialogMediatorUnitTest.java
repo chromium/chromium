@@ -1113,7 +1113,7 @@ public class TabGridDialogMediatorUnitTest {
 
     @Test
     @EnableFeatures(ChromeFeatureList.TAB_GROUP_PARITY_ANDROID)
-    public void showDialog_FromGTS_setSelectedColor() {
+    public void showDialog_FromGts_setSelectedColor() {
         // Mock that tab1 and tab2 are in a group.
         List<Tab> tabGroup = new ArrayList<>(Arrays.asList(mTab1, mTab2));
         createTabGroup(tabGroup, TAB1_ID, TAB_GROUP_ID);
@@ -1132,7 +1132,7 @@ public class TabGridDialogMediatorUnitTest {
 
     @Test
     @EnableFeatures(ChromeFeatureList.TAB_GROUP_PARITY_ANDROID)
-    public void showDialog_FromGTS() {
+    public void showDialog_FromGts() {
         // Mock that the dialog is hidden and animation source view, header title and scrim click
         // runnable are all null.
         mModel.set(TabGridDialogProperties.IS_DIALOG_VISIBLE, false);
@@ -1171,7 +1171,7 @@ public class TabGridDialogMediatorUnitTest {
         ChromeFeatureList.TAB_GROUP_PARITY_ANDROID,
         ChromeFeatureList.FORCE_LIST_TAB_SWITCHER
     })
-    public void showDialog_FromListGTS() {
+    public void showDialog_FromListGts() {
         // Mock that the dialog is hidden and animation source view, header title and scrim click
         // runnable are all null.
         mModel.set(TabGridDialogProperties.IS_DIALOG_VISIBLE, false);
@@ -1211,7 +1211,7 @@ public class TabGridDialogMediatorUnitTest {
     }
 
     @Test
-    public void showDialog_FromGTS_WithStoredTitle() {
+    public void showDialog_FromGts_WithStoredTitle() {
         // Mock that the dialog is hidden and animation source view, header title and scrim click
         // runnable are all null.
         mModel.set(TabGridDialogProperties.IS_DIALOG_VISIBLE, false);
