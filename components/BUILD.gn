@@ -847,6 +847,7 @@ test("components_unittests") {
 
   if (is_win || is_mac || is_linux || is_chromeos) {
     deps += [
+      "//components/metrics/dwa:unit_tests",
       "//components/metrics/structured:unit_tests",
       "//components/metrics/structured/mojom:unit_tests",
       "//components/user_notes/browser:unit_tests",
