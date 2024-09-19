@@ -13,10 +13,6 @@
 #include "net/base/net_export.h"
 #include "net/base/schemeful_site.h"
 
-namespace url {
-class Origin;
-}
-
 namespace network::mojom {
 class NonEmptyNetworkIsolationKeyDataView;
 }
@@ -51,12 +47,6 @@ class NET_EXPORT NetworkIsolationKey {
       SchemefulSite&& top_frame_site,
       SchemefulSite&& frame_site,
       std::optional<base::UnguessableToken>&& nonce = std::nullopt);
-
-  // Legacy constructor.
-  // TODO(crbug.com/40729378):  Remove this in favor of above
-  // constructor.
-  NetworkIsolationKey(const url::Origin& top_frame_origin,
-                      const url::Origin& frame_origin);
 
   // Construct an empty key.
   NetworkIsolationKey();

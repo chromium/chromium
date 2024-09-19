@@ -26,6 +26,7 @@
 #include "content/test/content_browser_test_utils_internal.h"
 #include "net/base/features.h"
 #include "net/base/network_isolation_key.h"
+#include "net/base/schemeful_site.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/default_handlers.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -283,7 +284,8 @@ class SplitCacheContentBrowserTest : public ContentBrowserTest {
     }
 
     if (!top_frame_origin.opaque() && !frame_origin.opaque()) {
-      EXPECT_EQ(net::NetworkIsolationKey(top_frame_origin, frame_origin),
+      EXPECT_EQ(net::NetworkIsolationKey(net::SchemefulSite(top_frame_origin),
+                                         net::SchemefulSite(frame_origin)),
                 frame_host->GetNetworkIsolationKey());
     } else {
       EXPECT_TRUE(frame_host->GetNetworkIsolationKey().IsTransient());

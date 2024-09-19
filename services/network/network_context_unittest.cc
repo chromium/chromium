@@ -82,6 +82,7 @@
 #include "net/base/proxy_chain.h"
 #include "net/base/proxy_server.h"
 #include "net/base/proxy_string_util.h"
+#include "net/base/schemeful_site.h"
 #include "net/base/test_completion_callback.h"
 #include "net/cert/cert_verify_result.h"
 #include "net/cert/mock_cert_verifier.h"
@@ -2107,7 +2108,7 @@ TEST_F(NetworkContextTest, NotifyExternalCacheHit) {
       GURL("http://www.wikipedia.com/"),
       GURL("http://localhost:1234/"),
   };
-  const url::Origin kOrigin = url::Origin::Create(GURL("http://a.com"));
+  const net::SchemefulSite kSite = net::SchemefulSite(GURL("http://a.com"));
   constexpr base::Time kNow1 = base::Time::UnixEpoch() + base::Hours(18);
   constexpr base::Time kNow2 = base::Time::UnixEpoch() + base::Hours(11);
 
@@ -2143,7 +2144,8 @@ TEST_F(NetworkContextTest, NotifyExternalCacheHit) {
           &clock);
 
       clock.SetNow(kNow1);
-      net::NetworkIsolationKey isolation_key(kOrigin, kOrigin);
+
+      net::NetworkIsolationKey isolation_key(kSite, kSite);
       net::HttpRequestInfo request_info;
       request_info.url = url;
       request_info.network_isolation_key = isolation_key;
@@ -7541,7 +7543,7 @@ TEST_F(NetworkContextTest, AddHttpAuthCacheEntryWithNetworkIsolationKey) {
   net::SchemefulSite site = net::SchemefulSite(GURL("http://example.test/"));
   url::SchemeHostPort scheme_host_port =
       origin.GetTupleOrPrecursorTupleIfOpaque();
-  net::NetworkIsolationKey network_isolation_key(origin, origin);
+  net::NetworkIsolationKey network_isolation_key(site, site);
   net::NetworkAnonymizationKey network_anonymization_key =
       net::NetworkAnonymizationKey::CreateFromNetworkIsolationKey(
           network_isolation_key);
@@ -8086,8 +8088,8 @@ TEST_P(NetworkContextSplitCacheTest,
   feature_list.InitAndEnableFeature(
       net::features::kSplitCacheByNetworkIsolationKey);
   const GURL kUrl = GURL("http://www.google.com/");
-  const url::Origin kOrigin = url::Origin::Create(GURL("http://a.com"));
-  const net::NetworkIsolationKey kNetworkIsolationKey(kOrigin, kOrigin);
+  const net::SchemefulSite kSite = net::SchemefulSite(GURL("http://a.com"));
+  const net::NetworkIsolationKey kNetworkIsolationKey(kSite, kSite);
   constexpr base::Time kNow1 = base::Time::UnixEpoch() + base::Hours(18);
   constexpr base::Time kNow2 = base::Time::UnixEpoch() + base::Hours(11);
 

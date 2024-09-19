@@ -2842,16 +2842,17 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
                        NetworkIsolationKeyInitialEmptyDocumentIframe) {
   GURL main_frame_url(embedded_test_server()->GetURL("/title1.html"));
   url::Origin main_frame_origin = url::Origin::Create(main_frame_url);
+  net::SchemefulSite main_frame_site = net::SchemefulSite(main_frame_url);
   net::NetworkIsolationKey expected_main_frame_key =
-      net::NetworkIsolationKey(main_frame_origin, main_frame_origin);
-
+      net::NetworkIsolationKey(main_frame_site, main_frame_site);
   GURL subframe_url_one("about:blank");
   GURL subframe_url_two("about:blank#foo");
   GURL subframe_url_three(
       embedded_test_server()->GetURL("foo.com", "/title2.html"));
   url::Origin subframe_origin_three = url::Origin::Create(subframe_url_three);
   net::NetworkIsolationKey expected_subframe_key_three =
-      net::NetworkIsolationKey(main_frame_origin, subframe_origin_three);
+      net::NetworkIsolationKey(main_frame_site,
+                               net::SchemefulSite(subframe_origin_three));
 
   // Main frame navigation.
   ASSERT_TRUE(NavigateToURL(shell(), main_frame_url));
@@ -2910,16 +2911,18 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
                        NetworkIsolationKeyInitialEmptyDocumentPopup) {
   GURL main_frame_url(embedded_test_server()->GetURL("/title1.html"));
   url::Origin main_frame_origin = url::Origin::Create(main_frame_url);
+  net::SchemefulSite main_frame_site = net::SchemefulSite(main_frame_url);
   net::NetworkIsolationKey expected_main_frame_key =
-      net::NetworkIsolationKey(main_frame_origin, main_frame_origin);
+      net::NetworkIsolationKey(main_frame_site, main_frame_site);
 
   GURL popup_url_one("about:blank");
   GURL popup_url_two("about:blank#foo");
   GURL popup_url_three(
       embedded_test_server()->GetURL("foo.com", "/title2.html"));
   url::Origin popup_origin_three = url::Origin::Create(popup_url_three);
+  net::SchemefulSite pop_site_three = net::SchemefulSite(popup_url_three);
   net::NetworkIsolationKey expected_popup_key_three =
-      net::NetworkIsolationKey(popup_origin_three, popup_origin_three);
+      net::NetworkIsolationKey(pop_site_three, pop_site_three);
 
   // Main frame navigation.
   ASSERT_TRUE(NavigateToURL(shell(), main_frame_url));
@@ -2971,8 +2974,9 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
                        NetworkIsolationKeyNavigateIframeToAboutBlank) {
   GURL main_frame_url(embedded_test_server()->GetURL("/page_with_iframe.html"));
   url::Origin origin = url::Origin::Create(main_frame_url);
+  net::SchemefulSite main_frame_site = net::SchemefulSite(main_frame_url);
   net::NetworkIsolationKey expected_network_isolation_key =
-      net::NetworkIsolationKey(origin, origin);
+      net::NetworkIsolationKey(main_frame_site, main_frame_site);
 
   ASSERT_TRUE(NavigateToURL(shell(), main_frame_url));
   FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
@@ -3026,11 +3030,12 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   url::Origin iframe_origin = url::Origin::Create(cross_site_iframe_url);
 
   url::Origin main_frame_origin = url::Origin::Create(main_frame_url);
+  net::SchemefulSite main_frame_site = net::SchemefulSite(main_frame_url);
 
   net::NetworkIsolationKey expected_iframe_network_isolation_key(
-      main_frame_origin, iframe_origin);
+      main_frame_site, net::SchemefulSite{iframe_origin});
   net::NetworkIsolationKey expected_main_frame_network_isolation_key(
-      main_frame_origin, main_frame_origin);
+      main_frame_site, main_frame_site);
 
   ASSERT_TRUE(NavigateToURL(shell(), main_frame_url));
   FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
@@ -3089,13 +3094,14 @@ IN_PROC_BROWSER_TEST_F(
       url::Origin::Create(innermost_iframe_url);
   url::Origin middle_iframe_origin = url::Origin::Create(middle_iframe_url);
   url::Origin main_frame_origin = url::Origin::Create(main_frame_url);
+  net::SchemefulSite main_frame_site = net::SchemefulSite(main_frame_url);
 
   net::NetworkIsolationKey expected_innermost_iframe_network_isolation_key(
-      main_frame_origin, innermost_iframe_origin);
+      main_frame_site, net::SchemefulSite{innermost_iframe_origin});
   net::NetworkIsolationKey expected_middle_iframe_network_isolation_key(
-      main_frame_origin, middle_iframe_origin);
+      main_frame_site, net::SchemefulSite{middle_iframe_origin});
   net::NetworkIsolationKey expected_main_frame_network_isolation_key(
-      main_frame_origin, main_frame_origin);
+      main_frame_site, main_frame_site);
 
   ASSERT_TRUE(NavigateToURL(shell(), main_frame_url));
   FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
