@@ -223,6 +223,14 @@ void ChromeExtensionsRendererAPIProvider::RequireWebViewModules(
     ScriptContext* context) const {
   DCHECK(context->GetAvailability("webViewInternal").is_available());
   if (context->GetAvailability("chromeWebViewTag").is_available()) {
+    // CHECK that the Chrome WebView and Controlled Frame features aren't both
+    // enabled in the same context. This is here because Controlled Frame
+    // is based on WebView and modifies base classes in order to not ship some
+    // APIs. These modifications could harm a live WebView instance if we
+    // allowed both in a single instance, but these features aren't designed
+    // to be enabled in the same instance. This check confirms that is held.
+    CHECK(!context->GetAvailability("controlledFrameInternal").is_available());
+
     context->module_system()->Require("chromeWebViewElement");
   }
 }
