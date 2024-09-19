@@ -105,6 +105,19 @@ const CGFloat kFakeLocationBarHeightMargin = 2;
   if (self) {
     _useNewBadgeForLensButton = useNewBadgeForLensButton;
     _useNewBadgeForCustomizationMenu = useNewBadgeForCustomizationMenu;
+
+    if (@available(iOS 17, *)) {
+      NSArray<UITrait>* traits = TraitCollectionSetForTraits(@[
+        UITraitHorizontalSizeClass.self,
+        UITraitPreferredContentSizeCategory.self, UITraitUserInterfaceStyle.self
+      ]);
+      __weak __typeof(self) weakSelf = self;
+      UITraitChangeHandler handler = ^(id<UITraitEnvironment> traitEnvironment,
+                                       UITraitCollection* previousCollection) {
+        [weakSelf updateUIOnTraitChange:previousCollection];
+      };
+      [self registerForTraitChanges:traits withHandler:handler];
+    }
   }
   return self;
 }
@@ -115,23 +128,16 @@ const CGFloat kFakeLocationBarHeightMargin = 2;
   return self.headerView.toolBarView;
 }
 
+#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
   [super traitCollectionDidChange:previousTraitCollection];
-  if (self.traitCollection.horizontalSizeClass !=
-          previousTraitCollection.horizontalSizeClass ||
-      previousTraitCollection.preferredContentSizeCategory !=
-          self.traitCollection.preferredContentSizeCategory) {
-    [self updateFakeboxDisplay];
+  if (@available(iOS 17, *)) {
+    return;
   }
-  if (previousTraitCollection.userInterfaceStyle !=
-      self.traitCollection.userInterfaceStyle) {
-    if (base::FeatureList::IsEnabled(kOmniboxColorIcons)) {
-      [self.headerView
-          updateButtonsForUserInterfaceStyle:self.traitCollection
-                                                 .userInterfaceStyle];
-    }
-  }
+
+  [self updateUIOnTraitChange:previousTraitCollection];
 }
+#endif
 
 - (void)willTransitionToTraitCollection:(UITraitCollection*)newCollection
               withTransitionCoordinator:
@@ -891,6 +897,25 @@ const CGFloat kFakeLocationBarHeightMargin = 2;
   // created yet.
   if (self.identityDiscButton) {
     [self updateIdentityDiscState];
+  }
+}
+
+// Updates the fakebox or the header view when UITraits are modified on the
+// device.
+- (void)updateUIOnTraitChange:(UITraitCollection*)previousTraitCollection {
+  if (self.traitCollection.horizontalSizeClass !=
+          previousTraitCollection.horizontalSizeClass ||
+      previousTraitCollection.preferredContentSizeCategory !=
+          self.traitCollection.preferredContentSizeCategory) {
+    [self updateFakeboxDisplay];
+  }
+  if (previousTraitCollection.userInterfaceStyle !=
+      self.traitCollection.userInterfaceStyle) {
+    if (base::FeatureList::IsEnabled(kOmniboxColorIcons)) {
+      [self.headerView
+          updateButtonsForUserInterfaceStyle:self.traitCollection
+                                                 .userInterfaceStyle];
+    }
   }
 }
 
