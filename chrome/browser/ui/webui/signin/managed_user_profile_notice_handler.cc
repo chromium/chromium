@@ -53,6 +53,7 @@
 
 namespace {
 const int kAvatarSize = 100;
+constexpr base::TimeDelta kLongProcessingThreshold = base::Seconds(5);
 
 bool UseMultiscreen() {
 #if BUILDFLAG(IS_CHROMEOS)
@@ -262,6 +263,13 @@ void ManagedUserProfileNoticeHandler::HandleProceed(
   if (process_user_choice_with_confirmation_callback_ &&
       state == ManagedUserProfileNoticeHandler::State::kDisclosure &&
       IsJavascriptAllowed()) {
+    if (type_ == ManagedUserProfileNoticeUI::ScreenType::kEnterpriseOIDC) {
+      processing_timer_.Start(
+          FROM_HERE, kLongProcessingThreshold,
+          base::BindOnce(&ManagedUserProfileNoticeHandler::OnLongProcessingTime,
+                         base::Unretained(this)));
+    }
+
     FireWebUIListener("on-state-changed",
                       ManagedUserProfileNoticeHandler::State::kProcessing);
   }
@@ -296,6 +304,10 @@ void ManagedUserProfileNoticeHandler::HandleCancel(
   if (done_callback) {
     std::move(done_callback).Run();
   }
+}
+
+void ManagedUserProfileNoticeHandler::OnLongProcessingTime() {
+  FireWebUIListener("on-long-processing");
 }
 
 void ManagedUserProfileNoticeHandler::UpdateProfileInfo(
@@ -525,6 +537,10 @@ void ManagedUserProfileNoticeHandler::OnUserChoiceHandled(
     DisallowJavascript();
     std::move(done_callback_).Run();
     return;
+  }
+
+  if (type_ == ManagedUserProfileNoticeUI::ScreenType::kEnterpriseOIDC) {
+    processing_timer_.Stop();
   }
 
   switch (result) {

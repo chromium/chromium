@@ -146,6 +146,10 @@ ManagedUserProfileNoticeUI::ManagedUserProfileNoticeUI(content::WebUI* web_ui)
 
   source->AddLocalizedString("processingSubtitle",
                              IDS_ENTERPRISE_OIDC_WELCOME_PROCESSING_SUBTITLE);
+  source->AddLocalizedString(
+      "longProcessingSubtitle",
+      IDS_ENTERPRISE_OIDC_WELCOME_LONG_PROCESSING_SUBTITLE);
+
   source->AddLocalizedString("successTitle",
                              IDS_ENTERPRISE_OIDC_WELCOME_SUCCESS_TITLE);
   source->AddLocalizedString("successSubtitle",

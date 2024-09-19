@@ -28,7 +28,7 @@ ${this.useUpdatedUi_ ? html`
       ` : ''}
       ${this.showProcessing_ ? html`
         <managed-user-profile-notice-state id="processing"
-            subtitle="$i18n{processingSubtitle}" icon="cr:domain">
+            subtitle="${this.processingSubtitle_}" icon="cr:domain">
               <paper-spinner-lite active class="thick">
               </paper-spinner-lite>
         </managed-user-profile-notice-state>

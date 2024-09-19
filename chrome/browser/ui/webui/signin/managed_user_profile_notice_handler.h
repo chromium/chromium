@@ -13,6 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "base/timer/timer.h"
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
@@ -105,6 +106,8 @@ class ManagedUserProfileNoticeHandler
   void HandleProceed(const base::Value::List& args);
   void HandleCancel(const base::Value::List& args);
 
+  void OnLongProcessingTime();
+
   // Sends an updated profile info (avatar and strings) to the WebUI.
   // `profile_path` is the path of the profile being updated, this function does
   // nothing if the profile path does not match the current profile.
@@ -134,6 +137,8 @@ class ManagedUserProfileNoticeHandler
   base::ScopedObservation<signin::IdentityManager,
                           signin::IdentityManager::Observer>
       observed_account_{this};
+
+  base::OneShotTimer processing_timer_;
 
   raw_ptr<Browser> browser_ = nullptr;
   const ManagedUserProfileNoticeUI::ScreenType type_;
