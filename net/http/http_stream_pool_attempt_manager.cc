@@ -158,18 +158,17 @@ void HttpStreamPool::AttemptManager::StartJob(
   MaybeChangeServiceEndpointRequestPriority();
 
   // Check idle streams. If found, notify the job that an HttpStream is ready.
-  // Use PostTask() since the job doesn't expect this method to finish
-  // synchronously.
   std::unique_ptr<StreamSocket> stream_socket = group_->GetIdleStreamSocket();
   if (stream_socket) {
     CHECK(!group_->force_quic());
     const StreamSocketHandle::SocketReuseType reuse_type =
         GetReuseTypeFromIdleStreamSocket(*stream_socket);
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(&AttemptManager::CreateTextBasedStreamAndNotify,
-                       weak_ptr_factory_.GetWeakPtr(), std::move(stream_socket),
-                       reuse_type, LoadTimingInfo::ConnectTiming()));
+    // It's important to create an HttpBasicStream synchronously because we
+    // already took the ownership of the idle stream socket. If we don't create
+    // an HttpBasicStream here, another call of this method might exceed the
+    // per-group limit.
+    CreateTextBasedStreamAndNotify(std::move(stream_socket), reuse_type,
+                                   LoadTimingInfo::ConnectTiming());
     return;
   }
 
@@ -1033,15 +1032,17 @@ void HttpStreamPool::AttemptManager::CreateTextBasedStreamAndNotify(
     std::unique_ptr<StreamSocket> stream_socket,
     StreamSocketHandle::SocketReuseType reuse_type,
     LoadTimingInfo::ConnectTiming connect_timing) {
-  CHECK(respect_limits_ == RespectLimits::kIgnore ||
-        group_->ActiveStreamSocketCount() <=
-            pool()->max_stream_sockets_per_group());
-
   NextProto negotiated_protocol = stream_socket->GetNegotiatedProtocol();
   CHECK_NE(negotiated_protocol, NextProto::kProtoHTTP2);
 
   std::unique_ptr<HttpStream> http_stream = group_->CreateTextBasedStream(
       std::move(stream_socket), reuse_type, std::move(connect_timing));
+  CHECK(respect_limits_ == RespectLimits::kIgnore ||
+        group_->ActiveStreamSocketCount() <=
+            pool()->max_stream_sockets_per_group())
+      << "active=" << group_->ActiveStreamSocketCount()
+      << ", limit=" << pool()->max_stream_sockets_per_group();
+
   NotifyStreamReady(std::move(http_stream), negotiated_protocol);
   // `this` may be deleted.
 }

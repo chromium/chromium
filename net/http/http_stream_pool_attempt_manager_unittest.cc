@@ -1475,6 +1475,54 @@ TEST_F(HttpStreamPoolAttemptManagerTest,
   ASSERT_TRUE(request_c->completed());
 }
 
+// Regression test for crbug.com/368164182. Tests that the per-group limit is
+// respected when there is an idle stream socket.
+TEST_F(HttpStreamPoolAttemptManagerTest,
+       ReachedPerGroupLimitWithIdleStreamSocket) {
+  resolver()
+      ->AddFakeRequest()
+      ->add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint())
+      .CompleteStartSynchronously(OK);
+
+  HttpStreamKey stream_key =
+      StreamKeyBuilder().set_destination("http://a.test").Build();
+
+  Group& group = pool().GetOrCreateGroupForTesting(stream_key);
+
+  // Create an active text-based stream and release it to create an idle stream.
+  std::unique_ptr<HttpStream> stream = group.CreateTextBasedStream(
+      std::make_unique<FakeStreamSocket>(),
+      StreamSocketHandle::SocketReuseType::kReusedIdle,
+      LoadTimingInfo::ConnectTiming());
+  stream.reset();
+
+  // Create requests up to the per-group limit + 1. Active stream counts for the
+  // group should not exceed the per-group limit.
+  std::vector<std::unique_ptr<StreamRequester>> requesters;
+  std::vector<std::unique_ptr<SequencedSocketData>> datas;
+  for (size_t i = 0; i < pool().max_stream_sockets_per_group() + 1; ++i) {
+    auto data = std::make_unique<SequencedSocketData>();
+    data->set_connect_data(MockConnect(ASYNC, OK));
+    socket_factory()->AddSocketDataProvider(data.get());
+    datas.emplace_back(std::move(data));
+
+    auto requester = std::make_unique<StreamRequester>(stream_key);
+    StreamRequester* raw_requester = requester.get();
+    requesters.emplace_back(std::move(requester));
+    raw_requester->RequestStream(pool());
+    ASSERT_FALSE(raw_requester->result().has_value());
+    ASSERT_LE(group.ActiveStreamSocketCount(),
+              pool().max_stream_sockets_per_group());
+  }
+
+  for (const auto& requester : requesters) {
+    requester->WaitForResult();
+    EXPECT_THAT(requester->result(), Optional(IsOk()));
+    // Release the stream to unblock other requests.
+    requester->ReleaseStream();
+  }
+}
+
 TEST_F(HttpStreamPoolAttemptManagerTest, RequestStreamIdleStreamSocket) {
   StreamRequester requester;
   Group& group = pool().GetOrCreateGroupForTesting(requester.GetStreamKey());
