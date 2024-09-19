@@ -17282,6 +17282,21 @@
             ]
         }
     ],
+    "PlusAddressAndroidErrorStatesEnabled": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "PlusAddressAndroidErrorStatesEnabled"
+                    ]
+                }
+            ]
+        }
+    ],
     "PlusAddressCreateSuggestion": [
         {
             "platforms": [
