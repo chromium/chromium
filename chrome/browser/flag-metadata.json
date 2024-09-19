@@ -2904,11 +2904,6 @@
     "expiry_milestone": 128
   },
   {
-    "name": "enable-cros-ime-tray-hide-voice-button",
-    "owners": [ "greywang@chromium.org", "essential-inputs-team@google.com" ],
-    "expiry_milestone": 115
-  },
-  {
     "name": "enable-cros-ime-us-english-model-update",
     "owners": [ "curtismcmullan@chromium.org", "essential-inputs-team@google.com" ],
     "expiry_milestone": 120
