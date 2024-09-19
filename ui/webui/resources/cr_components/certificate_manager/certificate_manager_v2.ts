@@ -9,6 +9,7 @@
  */
 
 import './certificate_list_v2.js';
+import './certificate_confirmation_dialog.js';
 import './certificate_info_dialog.js';
 import './certificate_password_dialog.js';
 import './certificate_subpage_v2.js';
@@ -39,9 +40,10 @@ import {loadTimeData} from '//resources/js/load_time_data.js';
 import {PromiseResolver} from '//resources/js/promise_resolver.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import type {CertificateConfirmationDialogElement} from './certificate_confirmation_dialog.js';
 import type {CertificateListV2Element} from './certificate_list_v2.js';
 import {getTemplate} from './certificate_manager_v2.html.js';
-import type {ImportResult} from './certificate_manager_v2.mojom-webui.js';
+import type {ActionResult} from './certificate_manager_v2.mojom-webui.js';
 import {CertificateSource} from './certificate_manager_v2.mojom-webui.js';
 import type {CertificatePasswordDialogElement} from './certificate_password_dialog.js';
 import type {CertificateSubpageV2Element, SubpageCertificateList} from './certificate_subpage_v2.js';
@@ -53,6 +55,10 @@ import {Page, RouteObserverMixin, Router} from './navigation_v2.js';
 
 interface PasswordResult {
   password: string|null;
+}
+
+interface ConfirmationResult {
+  confirmed: boolean;
 }
 
 const CertificateManagerV2ElementBase =
@@ -161,6 +167,9 @@ export class CertificateManagerV2Element extends
       infoDialogTitle_: String,
       infoDialogMessage_: String,
       showPasswordDialog_: Boolean,
+      confirmationDialogTitle_: String,
+      confirmationDialogMessage_: String,
+      showConfirmationDialog_: Boolean,
 
       showSearch_: {
         type: Boolean,
@@ -188,6 +197,11 @@ export class CertificateManagerV2Element extends
   private infoDialogMessage_: string;
   private showPasswordDialog_: boolean = false;
   private passwordEntryResolver_: PromiseResolver<PasswordResult>|null = null;
+  private showConfirmationDialog_: boolean = false;
+  private confirmationDialogTitle_: string;
+  private confirmationDialogMessage_: string;
+  private confirmationDialogResolver_: PromiseResolver<ConfirmationResult>|
+      null = null;
   private enterpriseSubpageLists_: SubpageCertificateList[];
   private platformSubpageLists_: SubpageCertificateList[];
   private clientPlatformSubpageLists_: SubpageCertificateList[];
@@ -196,7 +210,9 @@ export class CertificateManagerV2Element extends
   // </if>
   // <if expr="chromeos_ash">
   // TODO(crbug.com/40928765): Import should also be disabled in kiosk mode or
-  // when disabled by policy.
+  // when disabled by policy (if there is any policy that applies to client
+  // certs). (And these conditions should be re-checked by the import handler
+  // in C++ code rather than trusting the webui.)
   // TODO(crbug.com/40928765): This controls both "import" and "import and
   // bind". If we implement client cert import on Linux too we should make a
   // separate bool for each so that "import and bind" is only enabled on
@@ -209,6 +225,8 @@ export class CertificateManagerV2Element extends
     const proxy = CertificatesV2BrowserProxy.getInstance();
     proxy.callbackRouter.askForImportPassword.addListener(
         this.onAskForImportPassword_.bind(this));
+    proxy.callbackRouter.askForConfirmation.addListener(
+        this.onAskForConfirmation_.bind(this));
   }
 
   private onAskForImportPassword_(): Promise<PasswordResult> {
@@ -227,6 +245,29 @@ export class CertificateManagerV2Element extends
     this.passwordEntryResolver_.resolve({password: passwordDialog.value()});
     this.passwordEntryResolver_ = null;
     this.showPasswordDialog_ = false;
+  }
+
+  private onAskForConfirmation_(title: string, message: string):
+      Promise<ConfirmationResult> {
+    this.confirmationDialogTitle_ = title;
+    this.confirmationDialogMessage_ = message;
+    this.showConfirmationDialog_ = true;
+    assert(this.confirmationDialogResolver_ === null);
+    this.confirmationDialogResolver_ =
+        new PromiseResolver<ConfirmationResult>();
+    return this.confirmationDialogResolver_.promise;
+  }
+
+  private onConfirmationDialogClose_() {
+    const confirmationDialog =
+        this.shadowRoot!.querySelector<CertificateConfirmationDialogElement>(
+            '#confirmationDialog');
+    assert(confirmationDialog);
+    assert(this.confirmationDialogResolver_);
+    this.confirmationDialogResolver_.resolve(
+        {confirmed: confirmationDialog.wasConfirmed()});
+    this.confirmationDialogResolver_ = null;
+    this.showConfirmationDialog_ = false;
   }
 
   private onHashCopied_() {
@@ -326,7 +367,7 @@ export class CertificateManagerV2Element extends
     Router.getInstance().navigateTo(Page.PLATFORM_CLIENT_CERTS);
   }
 
-  private onImportResult_(e: CustomEvent<ImportResult|null>) {
+  private onImportResult_(e: CustomEvent<ActionResult|null>) {
     const result = e.detail;
     if (result === null) {
       return;
@@ -334,6 +375,19 @@ export class CertificateManagerV2Element extends
     if (result.error !== undefined) {
       // TODO(crbug.com/40928765): localize
       this.infoDialogTitle_ = 'import result';
+      this.infoDialogMessage_ = result.error;
+      this.showInfoDialog_ = true;
+    }
+  }
+
+  private onDeleteResult_(e: CustomEvent<ActionResult|null>) {
+    const result = e.detail;
+    if (result === null) {
+      return;
+    }
+    if (result.error !== undefined) {
+      // TODO(crbug.com/40928765): localize
+      this.infoDialogTitle_ = 'delete result';
       this.infoDialogMessage_ = result.error;
       this.showInfoDialog_ = true;
     }

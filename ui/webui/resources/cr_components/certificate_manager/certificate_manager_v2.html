@@ -168,6 +168,7 @@
         on-hash-copied="onHashCopied_"
         navigate-back-target="[[pageEnum_.CLIENT_CERTS]]"
         on-import-result="onImportResult_"
+        on-delete-result="onDeleteResult_"
         subpage-title="[[i18n('certificateManagerV2ClientCertsFromPlatform')]]"
         subpage-cert-lists="[[clientPlatformSubpageLists_]]">
     </certificate-subpage-v2>
@@ -187,4 +188,11 @@
   <certificate-password-dialog id="passwordDialog"
       on-close="onPasswordDialogClose_">
   </certificate-password-dialog>
+</template>
+<template is="dom-if" if="[[showConfirmationDialog_]]" restamp>
+  <certificate-confirmation-dialog id="confirmationDialog"
+      dialog-title="[[confirmationDialogTitle_]]"
+      dialog-message="[[confirmationDialogMessage_]]"
+      on-close="onConfirmationDialogClose_">
+  </certificate-confirmation-dialog>
 </template>

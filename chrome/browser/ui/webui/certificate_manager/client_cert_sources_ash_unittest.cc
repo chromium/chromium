@@ -73,12 +73,23 @@ class FakeCertificateManagerPage
     std::move(callback).Run(password_);
   }
 
+  void AskForConfirmation(const std::string& title,
+                          const std::string& message,
+                          AskForConfirmationCallback callback) override {
+    std::move(callback).Run(ask_for_confirmation_result_);
+  }
+
   void set_mocked_import_password(std::optional<std::string> password) {
     password_ = std::move(password);
   }
 
+  void set_mocked_confirmation_result(bool result) {
+    ask_for_confirmation_result_ = result;
+  }
+
  private:
   std::optional<std::string> password_;
+  bool ask_for_confirmation_result_ = false;
   mojo::Receiver<certificate_manager_v2::mojom::CertificateManagerPage>
       receiver_;
 };
@@ -169,7 +180,8 @@ class ClientCertSourceAshUnitTest
 // Test importing from a PKCS #12 file with the combinations of dual-write
 // enabled/disabled, KCER client cert store enabled/disabled, and
 // hardware/software-backed private key.
-TEST_P(ClientCertSourceAshUnitTest, ImportPkcs12AndGetCertificateInfos) {
+TEST_P(ClientCertSourceAshUnitTest,
+       ImportPkcs12AndGetCertificateInfosAndDelete) {
   EXPECT_FALSE(
       profile()->GetPrefs()->GetBoolean(prefs::kNssChapsDualWrittenCertsExist));
 
@@ -203,7 +215,7 @@ TEST_P(ClientCertSourceAshUnitTest, ImportPkcs12AndGetCertificateInfos) {
     factory->SetOpenCallback(
         select_file_dialog_opened_waiter.GetRepeatingCallback());
 
-    base::test::TestFuture<certificate_manager_v2::mojom::ImportResultPtr>
+    base::test::TestFuture<certificate_manager_v2::mojom::ActionResultPtr>
         import_waiter;
     DoImport(import_waiter.GetCallback());
     EXPECT_TRUE(select_file_dialog_opened_waiter.Wait());
@@ -213,7 +225,7 @@ TEST_P(ClientCertSourceAshUnitTest, ImportPkcs12AndGetCertificateInfos) {
     ASSERT_TRUE(fake_file_select_dialog->CallFileSelected(
         net::GetTestCertsDirectory().AppendASCII("client.p12"), "p12"));
 
-    certificate_manager_v2::mojom::ImportResultPtr import_result =
+    certificate_manager_v2::mojom::ActionResultPtr import_result =
         import_waiter.Take();
     ASSERT_TRUE(import_result);
     EXPECT_TRUE(import_result->is_success());
@@ -244,6 +256,37 @@ TEST_P(ClientCertSourceAshUnitTest, ImportPkcs12AndGetCertificateInfos) {
     }
     EXPECT_TRUE(found);
   }
+
+  // Now try deleting the imported certificate and verify that it is no longer
+  // present.
+
+  {
+    fake_page_->set_mocked_confirmation_result(true);
+    base::test::TestFuture<certificate_manager_v2::mojom::ActionResultPtr>
+        delete_waiter;
+    cert_source_->DeleteCertificate(kTestClientCertHashHex,
+                                    delete_waiter.GetCallback());
+
+    certificate_manager_v2::mojom::ActionResultPtr delete_result =
+        delete_waiter.Take();
+    ASSERT_TRUE(delete_result);
+    ASSERT_TRUE(delete_result->is_success());
+  }
+
+  EXPECT_FALSE(SlotContainsCertWithHash(
+      crypto::GetPublicSlotForChromeOSUser(username_hash()).get(),
+      kTestClientCertHashHex));
+
+  {
+    base::test::TestFuture<
+        std::vector<certificate_manager_v2::mojom::SummaryCertInfoPtr>>
+        get_certs_waiter;
+    cert_source_->GetCertificateInfos(get_certs_waiter.GetCallback());
+    const auto& certs = get_certs_waiter.Get();
+    for (const auto& cert : certs) {
+      EXPECT_NE(cert->sha256hash_hex, kTestClientCertHashHex);
+    }
+  }
 }
 
 TEST_P(ClientCertSourceAshUnitTest, ImportPkcs12PasswordWrong) {
@@ -257,7 +300,7 @@ TEST_P(ClientCertSourceAshUnitTest, ImportPkcs12PasswordWrong) {
   factory->SetOpenCallback(
       select_file_dialog_opened_waiter.GetRepeatingCallback());
 
-  base::test::TestFuture<certificate_manager_v2::mojom::ImportResultPtr>
+  base::test::TestFuture<certificate_manager_v2::mojom::ActionResultPtr>
       import_waiter;
   DoImport(import_waiter.GetCallback());
   EXPECT_TRUE(select_file_dialog_opened_waiter.Wait());
@@ -266,7 +309,7 @@ TEST_P(ClientCertSourceAshUnitTest, ImportPkcs12PasswordWrong) {
   ASSERT_TRUE(fake_file_select_dialog->CallFileSelected(
       net::GetTestCertsDirectory().AppendASCII("client.p12"), "p12"));
 
-  certificate_manager_v2::mojom::ImportResultPtr import_result =
+  certificate_manager_v2::mojom::ActionResultPtr import_result =
       import_waiter.Take();
   ASSERT_TRUE(import_result);
   ASSERT_TRUE(import_result->is_error());
@@ -285,7 +328,7 @@ TEST_P(ClientCertSourceAshUnitTest, ImportPkcs12PasswordEntryCancelled) {
   factory->SetOpenCallback(
       select_file_dialog_opened_waiter.GetRepeatingCallback());
 
-  base::test::TestFuture<certificate_manager_v2::mojom::ImportResultPtr>
+  base::test::TestFuture<certificate_manager_v2::mojom::ActionResultPtr>
       import_waiter;
   DoImport(import_waiter.GetCallback());
   EXPECT_TRUE(select_file_dialog_opened_waiter.Wait());
@@ -294,7 +337,7 @@ TEST_P(ClientCertSourceAshUnitTest, ImportPkcs12PasswordEntryCancelled) {
   ASSERT_TRUE(fake_file_select_dialog->CallFileSelected(
       net::GetTestCertsDirectory().AppendASCII("client.p12"), "p12"));
 
-  certificate_manager_v2::mojom::ImportResultPtr import_result =
+  certificate_manager_v2::mojom::ActionResultPtr import_result =
       import_waiter.Take();
   EXPECT_FALSE(import_result);
 }
@@ -307,7 +350,7 @@ TEST_P(ClientCertSourceAshUnitTest, ImportPkcs12FileNotFound) {
   factory->SetOpenCallback(
       select_file_dialog_opened_waiter.GetRepeatingCallback());
 
-  base::test::TestFuture<certificate_manager_v2::mojom::ImportResultPtr>
+  base::test::TestFuture<certificate_manager_v2::mojom::ActionResultPtr>
       import_waiter;
   DoImport(import_waiter.GetCallback());
   EXPECT_TRUE(select_file_dialog_opened_waiter.Wait());
@@ -316,7 +359,7 @@ TEST_P(ClientCertSourceAshUnitTest, ImportPkcs12FileNotFound) {
   ASSERT_TRUE(fake_file_select_dialog->CallFileSelected(
       base::FilePath("non-existant-file-name"), "p12"));
 
-  certificate_manager_v2::mojom::ImportResultPtr import_result =
+  certificate_manager_v2::mojom::ActionResultPtr import_result =
       import_waiter.Take();
   ASSERT_TRUE(import_result);
   ASSERT_TRUE(import_result->is_error());
@@ -331,7 +374,7 @@ TEST_P(ClientCertSourceAshUnitTest, ImportPkcs12FileSelectionCancelled) {
   factory->SetOpenCallback(
       select_file_dialog_opened_waiter.GetRepeatingCallback());
 
-  base::test::TestFuture<certificate_manager_v2::mojom::ImportResultPtr>
+  base::test::TestFuture<certificate_manager_v2::mojom::ActionResultPtr>
       import_waiter;
   DoImport(import_waiter.GetCallback());
   EXPECT_TRUE(select_file_dialog_opened_waiter.Wait());
@@ -339,9 +382,38 @@ TEST_P(ClientCertSourceAshUnitTest, ImportPkcs12FileSelectionCancelled) {
   ASSERT_TRUE(fake_file_select_dialog);
   fake_file_select_dialog->CallFileSelectionCanceled();
 
-  certificate_manager_v2::mojom::ImportResultPtr import_result =
+  certificate_manager_v2::mojom::ActionResultPtr import_result =
       import_waiter.Take();
   EXPECT_FALSE(import_result);
+}
+
+TEST_P(ClientCertSourceAshUnitTest, DeleteCertificateConfirmationCancelled) {
+  fake_page_->set_mocked_confirmation_result(false);
+
+  base::test::TestFuture<certificate_manager_v2::mojom::ActionResultPtr>
+      delete_waiter;
+  cert_source_->DeleteCertificate("fakesha256hash",
+                                  delete_waiter.GetCallback());
+
+  certificate_manager_v2::mojom::ActionResultPtr delete_result =
+      delete_waiter.Take();
+  EXPECT_FALSE(delete_result);
+}
+
+TEST_P(ClientCertSourceAshUnitTest, DeleteCertificateNotFound) {
+  fake_page_->set_mocked_confirmation_result(true);
+
+  base::test::TestFuture<certificate_manager_v2::mojom::ActionResultPtr>
+      delete_waiter;
+  cert_source_->DeleteCertificate(
+      "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+      delete_waiter.GetCallback());
+
+  certificate_manager_v2::mojom::ActionResultPtr delete_result =
+      delete_waiter.Take();
+  ASSERT_TRUE(delete_result);
+  ASSERT_TRUE(delete_result->is_error());
+  EXPECT_EQ(delete_result->get_error(), "cert not found");
 }
 
 INSTANTIATE_TEST_SUITE_P(Foo,

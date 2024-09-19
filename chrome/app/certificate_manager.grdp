@@ -149,6 +149,9 @@
     <message name="IDS_CERTIFICATE_MANAGER_V2_CERT_ENTRY_VIEW_ARIA_LABEL" desc="Text read by screen readers when focusing on the view certficate details button. If the button is activated, it will open up a view certificate dialog. This text will only be announced by screen readers and will not be visible in the UI.">
       View certificate details for <ph name="CERT_NAME">$1<ex>GTS Root R2</ex></ph> in a new dialog
     </message>
+    <message name="IDS_CERTIFICATE_MANAGER_V2_CERT_ENTRY_DELETE_ARIA_LABEL" desc="Text read by screen readers when focusing on the delete certificate button. If the button is activated, it will delete the certificate. This text will only be announced by screen readers and will not be visible in the UI.">
+      Delete certificate <ph name="CERT_NAME">$1<ex>GTS Root R2</ex></ph>
+    </message>
     <message name="IDS_CERTIFICATE_MANAGER_V2_CERT_HASH_COPY_ARIA_LABEL" desc="Text read by screen readers when focusing on the copy certificate hash button. If the button is activated, it will copy the certificate hash to the clipboard. This text will only be announced by screen readers and will not be visible in the UI.">
       Copy certificate hash for <ph name="CERT_NAME">$1<ex>GTS Root R2</ex></ph>
     </message>

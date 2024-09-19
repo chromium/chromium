@@ -11,6 +11,7 @@
 #include "base/functional/callback.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/chrome_select_file_policy.h"
@@ -32,6 +33,7 @@
 
 #if BUILDFLAG(USE_NSS_CERTS)
 #include "chrome/browser/ui/crypto_module_delegate_nss.h"
+#include "net/cert/x509_util_nss.h"
 #include "net/ssl/client_cert_store_nss.h"
 #endif  // BUILDFLAG(USE_NSS_CERTS)
 
@@ -244,15 +246,34 @@ std::unique_ptr<ClientCertStoreLoader> CreateProvisionedClientCertLoader(
 
 void PopulateCertInfosFromCertificateList(
     CertificateManagerPageHandler::GetCertificatesCallback callback,
-    const net::CertificateList& certs) {
+    const net::CertificateList& certs,
+    bool is_deletable) {
   std::vector<certificate_manager_v2::mojom::SummaryCertInfoPtr> out_infos;
   for (const auto& cert : certs) {
     x509_certificate_model::X509CertificateModel model(
         bssl::UpRef(cert->cert_buffer()), "");
     out_infos.push_back(certificate_manager_v2::mojom::SummaryCertInfo::New(
-        model.HashCertSHA256(), model.GetTitle()));
+        model.HashCertSHA256(), model.GetTitle(), is_deletable));
   }
   std::move(callback).Run(std::move(out_infos));
+}
+
+net::X509Certificate* FindCertificateFromCertificateList(
+    std::string_view sha256_hex_hash,
+    const net::CertificateList& certs) {
+  net::SHA256HashValue hash;
+  if (!base::HexStringToSpan(sha256_hex_hash, hash.data)) {
+    return nullptr;
+  }
+
+  for (const auto& cert : certs) {
+    if (net::X509Certificate::CalculateFingerprint256(cert->cert_buffer()) ==
+        hash) {
+      return cert.get();
+    }
+  }
+
+  return nullptr;
 }
 
 void ViewCertificateFromCertificateList(
@@ -263,18 +284,11 @@ void ViewCertificateFromCertificateList(
     return;
   }
 
-  net::SHA256HashValue hash;
-  if (!base::HexStringToSpan(sha256_hex_hash, hash.data)) {
-    return;
-  }
-
-  for (const auto& cert : certs) {
-    if (net::X509Certificate::CalculateFingerprint256(cert->cert_buffer()) ==
-        hash) {
-      ShowCertificateDialog(std::move(web_contents),
-                            bssl::UpRef(cert->cert_buffer()));
-      return;
-    }
+  net::X509Certificate* cert =
+      FindCertificateFromCertificateList(sha256_hex_hash, certs);
+  if (cert) {
+    ShowCertificateDialog(std::move(web_contents),
+                          bssl::UpRef(cert->cert_buffer()));
   }
 }
 
@@ -321,10 +335,32 @@ class ClientCertSource : public CertificateManagerPageHandler::CertSource {
                                      std::move(callback)));
   }
 
+  net::X509Certificate* FindCertificate(
+      std::string_view sha256_hex_hash) const {
+    if (!certs_) {
+      return nullptr;
+    }
+    return FindCertificateFromCertificateList(sha256_hex_hash, *certs_);
+  }
+
  private:
   void ReplyToGetCertificatesCallback(
       CertificateManagerPageHandler::GetCertificatesCallback callback) const {
-    PopulateCertInfosFromCertificateList(std::move(callback), *certs_);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    // TODO(crbug.com/40928765): Double check if there are any conditions where
+    // this would be false. It doesn't seem like there are any - the user NSS
+    // slots should always be opened in readwrite mode, and the enterprise
+    // policy restricting cert management doesn't apply to client certs. There
+    // might be cases like kiosk mode, but in that case the user shouldn't have
+    // been able to import in the first place? (If there are cases, it should
+    // be double checked in the import callback too, not just assuming the data
+    // from the webui is reliable.)
+    const bool is_deletable = true;
+#else
+    const bool is_deletable = false;
+#endif
+    PopulateCertInfosFromCertificateList(std::move(callback), *certs_,
+                                         is_deletable);
   }
 
   void SaveCertsAndRespond(base::OnceClosure callback,
@@ -372,6 +408,20 @@ class CrosClientCertSource : public ClientCertSource,
       override {
     BeginImportCertificate(/*hardware_backed=*/true, std::move(web_contents),
                            std::move(callback));
+  }
+
+  void DeleteCertificate(
+      const std::string& sha256hash_hex,
+      CertificateManagerPageHandler::DeleteCertificateCallback callback)
+      override {
+    // TODO(crbug.com/40928765): localize
+    (*remote_client_)
+        ->AskForConfirmation(
+            "delete?", "delete client cert?",
+            base::BindOnce(
+                &CrosClientCertSource::GotDeleteCertificateConfirmation,
+                weak_ptr_factory_.GetWeakPtr(), sha256hash_hex,
+                std::move(callback)));
   }
 
   void BeginImportCertificate(
@@ -434,7 +484,7 @@ class CrosClientCertSource : public ClientCertSource,
     if (!file_bytes) {
       // TODO(crbug.com/40928765): localize
       std::move(import_callback_)
-          .Run(certificate_manager_v2::mojom::ImportResult::NewError(
+          .Run(certificate_manager_v2::mojom::ActionResult::NewError(
               "error reading file"));
       return;
     }
@@ -460,7 +510,7 @@ class CrosClientCertSource : public ClientCertSource,
             NssServiceFactory::GetForContext(profile_)
                 ->CreateNSSCertDatabaseGetterForIOThread(),
             base::BindOnce(
-                &CrosClientCertSource::GotNSSCertDatabaseOnIOThread,
+                &CrosClientCertSource::GotNSSCertDatabaseForImportOnIOThread,
                 import_hardware_backed_, std::move(file_bytes), *password,
                 base::BindOnce(&CrosClientCertSource::FinishedNSSImport,
                                weak_ptr_factory_.GetWeakPtr()))));
@@ -482,7 +532,7 @@ class CrosClientCertSource : public ClientCertSource,
     }
   }
 
-  static void GotNSSCertDatabaseOnIOThread(
+  static void GotNSSCertDatabaseForImportOnIOThread(
       bool use_hardware_backed,
       std::vector<uint8_t> file_bytes,
       std::string password,
@@ -580,7 +630,7 @@ class CrosClientCertSource : public ClientCertSource,
       // call the import complete callback once the list has been updated.
       RefreshCachedCertificateList(base::BindOnce(
           std::move(import_callback_),
-          certificate_manager_v2::mojom::ImportResult::NewSuccess(
+          certificate_manager_v2::mojom::ActionResult::NewSuccess(
               certificate_manager_v2::mojom::SuccessResult::kSuccess)));
     } else {
       // TODO(crbug.com/40928765): Localize and provide better error messages.
@@ -588,8 +638,83 @@ class CrosClientCertSource : public ClientCertSource,
       // the user to try again rather than just failing and requiring the user
       // to reselect the file to try again.
       std::move(import_callback_)
-          .Run(certificate_manager_v2::mojom::ImportResult::NewError(
+          .Run(certificate_manager_v2::mojom::ActionResult::NewError(
               "import failed"));
+    }
+  }
+
+  void GotDeleteCertificateConfirmation(
+      const std::string& sha256hash_hex,
+      CertificateManagerPageHandler::DeleteCertificateCallback callback,
+      bool confirmed) {
+    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+    if (!confirmed) {
+      std::move(callback).Run(nullptr);
+      return;
+    }
+
+    scoped_refptr<net::X509Certificate> cert = FindCertificate(sha256hash_hex);
+    if (!cert) {
+      // TODO(crbug.com/40928765): Localize.
+      std::move(callback).Run(
+          certificate_manager_v2::mojom::ActionResult::NewError(
+              "cert not found"));
+      return;
+    }
+
+    content::GetIOThreadTaskRunner({})->PostTask(
+        FROM_HERE,
+        base::BindOnce(
+            &CrosClientCertSource::GetCertDBOnIOThread,
+            NssServiceFactory::GetForContext(profile_)
+                ->CreateNSSCertDatabaseGetterForIOThread(),
+            base::BindOnce(
+                &CrosClientCertSource::GotNSSCertDatabaseForDeleteOnIOThread,
+                cert,
+                base::BindOnce(&CrosClientCertSource::FinishedDelete,
+                               weak_ptr_factory_.GetWeakPtr(),
+                               std::move(callback)))));
+  }
+
+  static void GotNSSCertDatabaseForDeleteOnIOThread(
+      scoped_refptr<net::X509Certificate> cert,
+      base::OnceCallback<void(bool nss_delete_result)> finished_delete_callback,
+      net::NSSCertDatabase* cert_db) {
+    DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
+
+    net::ScopedCERTCertificate nss_cert =
+        net::x509_util::CreateCERTCertificateFromX509Certificate(cert.get());
+
+    if (!nss_cert) {
+      content::GetUIThreadTaskRunner({})->PostTask(
+          FROM_HERE,
+          base::BindOnce(std::move(finished_delete_callback), false));
+      return;
+    }
+
+    cert_db->DeleteCertAndKeyAsync(
+        std::move(nss_cert),
+        base::BindPostTask(content::GetUIThreadTaskRunner({}),
+                           std::move(finished_delete_callback)));
+  }
+
+  void FinishedDelete(
+      CertificateManagerPageHandler::DeleteCertificateCallback callback,
+      bool delete_result) {
+    DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+    if (delete_result) {
+      // Refresh the certificate list to remove the deleted cert, and
+      // call the deletion complete callback once the list has been updated.
+      RefreshCachedCertificateList(base::BindOnce(
+          std::move(callback),
+          certificate_manager_v2::mojom::ActionResult::NewSuccess(
+              certificate_manager_v2::mojom::SuccessResult::kSuccess)));
+    } else {
+      // TODO(crbug.com/40928765): Localize.
+      std::move(callback).Run(
+          certificate_manager_v2::mojom::ActionResult::NewError(
+              "delete failed"));
     }
   }
 
@@ -620,7 +745,8 @@ class ExtensionsClientCertSource
       return;
     }
     if (certs_) {
-      PopulateCertInfosFromCertificateList(std::move(callback), *certs_);
+      PopulateCertInfosFromCertificateList(std::move(callback), *certs_,
+                                           /*is_deletable=*/false);
       return;
     }
 
@@ -648,7 +774,8 @@ class ExtensionsClientCertSource
     for (const auto& identity : cert_identities) {
       certs_->push_back(identity->certificate());
     }
-    PopulateCertInfosFromCertificateList(std::move(callback), *certs_);
+    PopulateCertInfosFromCertificateList(std::move(callback), *certs_,
+                                         /*is_deletable=*/false);
   }
 
   std::unique_ptr<chromeos::CertificateProvider> provider_;

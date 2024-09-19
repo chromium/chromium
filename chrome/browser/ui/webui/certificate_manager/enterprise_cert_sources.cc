@@ -28,7 +28,8 @@ void EnterpriseCertSource::GetCertificateInfos(
     x509_certificate_model::X509CertificateModel model(
         net::x509_util::CreateCryptoBuffer(cert), "");
     cert_infos.push_back(certificate_manager_v2::mojom::SummaryCertInfo::New(
-        model.HashCertSHA256(), model.GetTitle()));
+        model.HashCertSHA256(), model.GetTitle(),
+        /*is_deletable=*/false));
   }
   std::move(callback).Run(std::move(cert_infos));
 }

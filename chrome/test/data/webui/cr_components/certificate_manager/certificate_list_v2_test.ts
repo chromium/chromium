@@ -36,10 +36,12 @@ suite('CertificateListV2Test', () => {
           {
             sha256hashHex: 'deadbeef1',
             displayName: 'cert1',
+            isDeletable: false,
           },
           {
             sha256hashHex: 'deadbeef2',
             displayName: 'cert2',
+            isDeletable: false,
           },
         ],
       };
@@ -71,10 +73,12 @@ suite('CertificateListV2Test', () => {
           {
             sha256hashHex: 'deadbeef1',
             displayName: 'cert1',
+            isDeletable: false,
           },
           {
             sha256hashHex: 'deadbeef2',
             displayName: 'cert2',
+            isDeletable: false,
           },
         ],
       };
@@ -105,10 +109,12 @@ suite('CertificateListV2Test', () => {
           {
             sha256hashHex: 'deadbeef1',
             displayName: 'cert1',
+            isDeletable: false,
           },
           {
             sha256hashHex: 'deadbeef2',
             displayName: 'cert2',
+            isDeletable: false,
           },
         ],
       };
@@ -135,10 +141,12 @@ suite('CertificateListV2Test', () => {
           {
             sha256hashHex: 'deadbeef1',
             displayName: 'cert1',
+            isDeletable: false,
           },
           {
             sha256hashHex: 'deadbeef2',
             displayName: 'cert2',
+            isDeletable: false,
           },
         ],
       };
@@ -183,6 +191,7 @@ suite('CertificateListV2Test', () => {
           {
             sha256hashHex: 'deadbeef1',
             displayName: 'cert1',
+            isDeletable: false,
           },
         ],
       };
@@ -219,6 +228,7 @@ suite('CertificateListV2Test', () => {
           {
             sha256hashHex: 'deadbeef1',
             displayName: 'cert1',
+            isDeletable: false,
           },
         ],
       };
@@ -292,10 +302,12 @@ suite('CertificateListV2Test', () => {
           {
             sha256hashHex: 'deadbeef1',
             displayName: 'cert1',
+            isDeletable: false,
           },
           {
             sha256hashHex: 'deadbeef2',
             displayName: 'cert2',
+            isDeletable: false,
           },
         ],
       };

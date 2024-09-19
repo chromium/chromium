@@ -67,6 +67,8 @@ build_webui("build") {
     ]
     non_web_component_files += [
       "certificates_v2_browser_proxy.ts",
+      "certificate_confirmation_dialog.html.ts",
+      "certificate_confirmation_dialog.ts",
       "certificate_info_dialog.html.ts",
       "certificate_info_dialog.ts",
       "certificate_password_dialog.html.ts",
