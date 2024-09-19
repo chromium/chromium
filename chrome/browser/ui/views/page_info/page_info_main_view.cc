@@ -62,14 +62,6 @@ constexpr int kMinPermissionRowHeight = 40;
 constexpr float kMaxPermissionRowCount = 10.5;
 constexpr int kContainerExtraRightMargin = 2;
 
-// Used to experiment with different icons through a finch parameter.
-enum class AboutThisSiteSeconaryIcon {
-  kNewTabIcon = 0,
-  kArrowIcon = 1,
-  kSidePanelIcon = 2,
-  kNoIcon = 3,
-};
-
 }  // namespace
 
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PageInfoMainView, kCookieButtonElementId);
