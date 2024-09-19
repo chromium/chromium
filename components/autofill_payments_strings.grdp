@@ -701,6 +701,15 @@
   </message>
   <!-- Autofill save IBAN bottom sheet prompt -->
   <if expr="is_android">
+    <message name="IDS_AUTOFILL_SAVE_IBAN_PROMPT_BOTTOM_SHEET_CONTENT_DESCRIPTION" desc="The description of the Autofill save IBAN bottom sheet. 'Swipe down to close.' will automatically be appended." formatter_data="android_java">
+      Save IBAN
+    </message>
+    <message name="IDS_AUTOFILL_SAVE_IBAN_PROMPT_BOTTOM_SHEET_FULL_HEIGHT" desc="The announcement when the Autofill save IBAN bottom sheet is opened." formatter_data="android_java">
+      Save IBAN opened at full height.
+    </message>
+    <message name="IDS_AUTOFILL_SAVE_IBAN_PROMPT_BOTTOM_SHEET_CLOSED" desc="The announcement when the Autofill save IBAN bottom sheet is closed." formatter_data="android_java">
+      Save IBAN closed.
+    </message>
     <if expr="not use_titlecase">
       <message name="IDS_AUTOFILL_SAVE_IBAN_MOBILE_NO_THANKS" desc="The label for cancel button used in Autofill save IBAN bottom sheet on Clank.">
         No thanks
