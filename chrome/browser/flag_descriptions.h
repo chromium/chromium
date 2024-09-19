@@ -1050,6 +1050,8 @@ extern const char kSafeBrowsingLocalListsUseSBv5Description[];
 extern const char kEnableWebHidInWebViewName[];
 extern const char kEnableWebHidInWebViewDescription[];
 
+extern const char kExtensionAiDataCollectionName[];
+extern const char kExtensionAiDataCollectionDescription[];
 extern const char kExtensionsMenuAccessControlName[];
 extern const char kExtensionsMenuAccessControlDescription[];
 extern const char kIPHExtensionsMenuFeatureName[];

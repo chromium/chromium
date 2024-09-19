@@ -1847,6 +1847,12 @@ const char kEnableWebHidInWebViewName[] = "Web HID in WebView";
 const char kEnableWebHidInWebViewDescription[] =
     "Enable WebViews to access Web HID upon embedder's permission.";
 
+const char kExtensionAiDataCollectionName[] =
+    "Enables AI Data collection via extension";
+const char kExtensionAiDataCollectionDescription[] =
+    "Enables an extension API to allow specific extensions to collect data "
+    "from browser process. This data may contain profile specific information "
+    " and may be otherwise unavailable to an extension.";
 const char kExtensionsMenuAccessControlName[] =
     "Extensions Menu Access Control";
 const char kExtensionsMenuAccessControlDescription[] =

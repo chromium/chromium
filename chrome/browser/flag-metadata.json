@@ -4491,6 +4491,10 @@
     "owners": [ "pmolinalopez@chromium.org", "andrescj@chromium.org" ],
     "expiry_milestone": 128
   },
+  {"name": "extension-ai-data-collection",
+  "owners": [ "ryansturm@chromium.org" ],
+  "expiry_milestone": 150
+},
   {
     "name": "extension-manifest-v2-deprecation-disabled",
     "owners": [ "emiliapaz@chromium.org" ],
