@@ -61,6 +61,12 @@ namespace autofill {
 
 namespace {
 
+constexpr FieldTypeSet kCvcFieldTypes = {
+    FieldType::CREDIT_CARD_VERIFICATION_CODE,
+    FieldType::CREDIT_CARD_STANDALONE_VERIFICATION_CODE};
+constexpr FieldTypeGroupSet kCreditCardAndCvcGroups = {
+    FieldTypeGroup::kCreditCard, FieldTypeGroup::kStandaloneCvcField};
+
 Suggestion CreateSeparator() {
   Suggestion suggestion;
   suggestion.type = SuggestionType::kSeparator;
@@ -874,8 +880,8 @@ Suggestion CreateCreditCardSuggestion(
     bool card_linked_offer_available,
     autofill_metrics::CardMetadataLoggingContext& metadata_logging_context) {
   // Manual fallback entries are shown for all non credit card fields.
-  const bool is_manual_fallback =
-      GroupTypeOfFieldType(trigger_field_type) != FieldTypeGroup::kCreditCard;
+  const bool is_manual_fallback = !kCreditCardAndCvcGroups.contains(
+      GroupTypeOfFieldType(trigger_field_type));
 
   Suggestion suggestion;
   suggestion.icon = credit_card.CardIconForAutofillSuggestion();
@@ -998,8 +1004,14 @@ std::vector<Suggestion> GetSuggestionsForCreditCards(
     bool should_show_scan_credit_card,
     bool should_show_cards_from_account,
     CreditCardSuggestionSummary& summary) {
+  if (trigger_field_type == CREDIT_CARD_STANDALONE_VERIFICATION_CODE &&
+      !base::FeatureList::IsEnabled(
+          features::kAutofillEnableCvcStorageAndFillingEnhancement)) {
+    return {};
+  }
   const bool is_trigger_field_a_credit_card_field =
-      GroupTypeOfFieldType(trigger_field_type) == FieldTypeGroup::kCreditCard;
+      kCreditCardAndCvcGroups.contains(
+          GroupTypeOfFieldType(trigger_field_type));
 
   const bool allow_payment_swapping =
       base::FeatureList::IsEnabled(
@@ -1027,9 +1039,6 @@ std::vector<Suggestion> GetSuggestionsForCreditCards(
                                require_non_empty_value_on_trigger_field,
                                /*include_virtual_cards=*/true);
 
-  static constexpr FieldTypeSet kCvcFieldTypes = {
-      FieldType::CREDIT_CARD_VERIFICATION_CODE,
-      FieldType::CREDIT_CARD_STANDALONE_VERIFICATION_CODE};
   if (kCvcFieldTypes.contains(trigger_field_type) &&
       trigger_source !=
           AutofillSuggestionTriggerSource::kManualFallbackPayments &&

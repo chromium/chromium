@@ -2965,6 +2965,10 @@ TEST_P(GetFilteredCardsToSuggestTest, GetFilteredCardsToSuggest) {
             EqualsManagePaymentsMethodsSuggestion(/*with_gpay_logo=*/false)));
     EXPECT_THAT(suggestions,
                 ContainsCreditCardFooterSuggestions(/*with_gpay_logo=*/false));
+  } else if (!IsCvcStorageEnhancementEnabled() &&
+             get_trigger_field_type() ==
+                 FieldType::CREDIT_CARD_STANDALONE_VERIFICATION_CODE) {
+    EXPECT_EQ(suggestions.size(), 0U);
   } else {
     // There are 6 suggestions, 4 for card suggestions, followed by a separator,
     // and followed by "Manage payment methods..." which redirects to the Chrome
@@ -3000,24 +3004,30 @@ TEST_P(GetFilteredCardsToSuggestTest, EmptyFilteringSet) {
       /*should_show_scan_credit_card=*/false,
       /*should_show_cards_from_account=*/false, summary);
 
-  // There are 6 suggestions, 4 for card suggestions, followed by a separator,
-  // and followed by "Manage payment methods..." which redirects to the Chrome
-  // payment methods settings page.
-  EXPECT_THAT(
-      suggestions,
-      UnorderedElementsAre(
-          SuggestionWithGuidPayload(
-              Suggestion::Guid("00000000-0000-0000-0000-000000000001")),
-          SuggestionWithGuidPayload(
-              Suggestion::Guid("00000000-0000-0000-0000-000000000002")),
-          SuggestionWithGuidPayload(
-              Suggestion::Guid("00000000-0000-0000-0000-000000000003")),
-          SuggestionWithGuidPayload(
-              Suggestion::Guid("00000000-0000-0000-0000-000000000004")),
-          EqualsSuggestion(SuggestionType::kSeparator),
-          EqualsManagePaymentsMethodsSuggestion(/*with_gpay_logo=*/false)));
-  EXPECT_THAT(suggestions,
-              ContainsCreditCardFooterSuggestions(/*with_gpay_logo=*/false));
+  if (!IsCvcStorageEnhancementEnabled() &&
+      get_trigger_field_type() ==
+          FieldType::CREDIT_CARD_STANDALONE_VERIFICATION_CODE) {
+    EXPECT_EQ(suggestions.size(), 0U);
+  } else {
+    // There are 6 suggestions, 4 for card suggestions, followed by a separator,
+    // and followed by "Manage payment methods..." which redirects to the Chrome
+    // payment methods settings page.
+    EXPECT_THAT(
+        suggestions,
+        UnorderedElementsAre(
+            SuggestionWithGuidPayload(
+                Suggestion::Guid("00000000-0000-0000-0000-000000000001")),
+            SuggestionWithGuidPayload(
+                Suggestion::Guid("00000000-0000-0000-0000-000000000002")),
+            SuggestionWithGuidPayload(
+                Suggestion::Guid("00000000-0000-0000-0000-000000000003")),
+            SuggestionWithGuidPayload(
+                Suggestion::Guid("00000000-0000-0000-0000-000000000004")),
+            EqualsSuggestion(SuggestionType::kSeparator),
+            EqualsManagePaymentsMethodsSuggestion(/*with_gpay_logo=*/false)));
+    EXPECT_THAT(suggestions,
+                ContainsCreditCardFooterSuggestions(/*with_gpay_logo=*/false));
+  }
 }
 
 // Verify that suggestions are not filtered if triggered field is not CVC.
@@ -3070,6 +3080,10 @@ TEST_P(GetFilteredCardsToSuggestTest, NoMatchCard) {
            FieldType::CREDIT_CARD_STANDALONE_VERIFICATION_CODE)) {
     // There are no suggestions.
     EXPECT_EQ(suggestions.size(), 0U);
+  } else if (!IsCvcStorageEnhancementEnabled() &&
+             get_trigger_field_type() ==
+                 FieldType::CREDIT_CARD_STANDALONE_VERIFICATION_CODE) {
+    EXPECT_EQ(suggestions.size(), 0U);
   } else {
     EXPECT_THAT(
         suggestions,
@@ -3099,20 +3113,25 @@ TEST_P(GetFilteredCardsToSuggestTest, NofilteringForManualFallbacks) {
       AutofillSuggestionTriggerSource::kManualFallbackPayments,
       /*should_show_scan_credit_card=*/false,
       /*should_show_cards_from_account=*/false, summary);
-
-  EXPECT_THAT(
-      suggestions,
-      UnorderedElementsAre(
-          SuggestionWithGuidPayload(
-              Suggestion::Guid("00000000-0000-0000-0000-000000000001")),
-          SuggestionWithGuidPayload(
-              Suggestion::Guid("00000000-0000-0000-0000-000000000002")),
-          SuggestionWithGuidPayload(
-              Suggestion::Guid("00000000-0000-0000-0000-000000000003")),
-          SuggestionWithGuidPayload(
-              Suggestion::Guid("00000000-0000-0000-0000-000000000004")),
-          EqualsSuggestion(SuggestionType::kSeparator),
-          EqualsManagePaymentsMethodsSuggestion(/*with_gpay_logo=*/false)));
+  if (!IsCvcStorageEnhancementEnabled() &&
+      get_trigger_field_type() ==
+          FieldType::CREDIT_CARD_STANDALONE_VERIFICATION_CODE) {
+    EXPECT_EQ(suggestions.size(), 0U);
+  } else {
+    EXPECT_THAT(
+        suggestions,
+        UnorderedElementsAre(
+            SuggestionWithGuidPayload(
+                Suggestion::Guid("00000000-0000-0000-0000-000000000001")),
+            SuggestionWithGuidPayload(
+                Suggestion::Guid("00000000-0000-0000-0000-000000000002")),
+            SuggestionWithGuidPayload(
+                Suggestion::Guid("00000000-0000-0000-0000-000000000003")),
+            SuggestionWithGuidPayload(
+                Suggestion::Guid("00000000-0000-0000-0000-000000000004")),
+            EqualsSuggestion(SuggestionType::kSeparator),
+            EqualsManagePaymentsMethodsSuggestion(/*with_gpay_logo=*/false)));
+  }
 }
 
 TEST_F(
