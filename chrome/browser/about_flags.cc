@@ -3488,13 +3488,16 @@ const FeatureEntry::Choice kCastMirroringTargetPlayoutDelayChoices[] = {
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-const FeatureEntry::FeatureParam kEnableBoundSessionCredentialsWithDice[] = {
-    {"dice-support", "enabled"}};
+const FeatureEntry::FeatureParam
+    kEnableBoundSessionCredentialsWithMultiSessionSupport[] = {
+        {"exclusive-registration-path", ""}};
 
 const FeatureEntry::FeatureVariation
     kEnableBoundSessionCredentialsVariations[] = {
-        {"including DICE profiles", kEnableBoundSessionCredentialsWithDice,
-         std::size(kEnableBoundSessionCredentialsWithDice), nullptr}};
+        {"with multi-session",
+         kEnableBoundSessionCredentialsWithMultiSessionSupport,
+         std::size(kEnableBoundSessionCredentialsWithMultiSessionSupport),
+         nullptr}};
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 
 #if BUILDFLAG(IS_ANDROID)
