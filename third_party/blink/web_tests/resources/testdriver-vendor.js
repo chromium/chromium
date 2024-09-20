@@ -592,6 +592,21 @@
     return internals.clearDevicePostureOverride();
   }
 
+  window.test_driver_internal.create_virtual_pressure_source = function(
+      source_type, metadata) {
+    return internals.createVirtualPressureSource(source_type, metadata);
+  }
+
+  window.test_driver_internal.update_virtual_pressure_source = function(
+      source_type, sample) {
+    return internals.updateVirtualPressureSource(source_type, sample);
+  }
+
+  window.test_driver_internal.remove_virtual_pressure_source = function(
+      source_type) {
+    return internals.removeVirtualPressureSource(source_type);
+  }
+
   // Enable automation so we don't wait for user input on unimplemented APIs
   window.test_driver_internal.in_automation = true;
 
