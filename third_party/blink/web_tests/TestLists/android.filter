@@ -10,7 +10,6 @@
 # Further documentation:
 # https://chromium.googlesource.com/chromium/src/+/main/docs/testing/web_test_expectations.md
 
-external/wpt/pointerevents/
 external/wpt/virtual-keyboard/
 external/wpt/visual-viewport/
 
