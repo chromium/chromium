@@ -517,6 +517,15 @@ const char kAutofillEnableCvcStorageAndFillingEnhancementDescription[] =
     "When enabled, will enhance CVV storage project. Provide better "
     "suggestion, resolve conflict with COF project and add logging.";
 
+const char kAutofillEnableCvcStorageAndFillingStandaloneFormEnhancementName[] =
+    "Enable CVC storage and filling standalone form enhancement for payments "
+    "autofill";
+const char
+    kAutofillEnableCvcStorageAndFillingStandaloneFormEnhancementDescription[] =
+        "When enabled, this will enhance the CVV storage project. The "
+        "enhancement will enable CVV storage suggestions for standalone CVC "
+        "fields.";
+
 const char kAutofillEnableFpanRiskBasedAuthenticationName[] =
     "Enable risk-based authentication for FPAN retrieval";
 const char kAutofillEnableFpanRiskBasedAuthenticationDescription[] =

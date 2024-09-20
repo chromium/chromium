@@ -15912,6 +15912,8 @@ from previous Chrome versions.
   <int value="-1812838429" label="DragWindowToNewDesk:disabled"/>
   <int value="-1812736745" label="OverviewDeskNavigation:enabled"/>
   <int value="-1812579951" label="ContentSuggestionsCategoryRanker:enabled"/>
+  <int value="-1812547164"
+      label="AutofillEnableCvcStorageAndFillingStandaloneFormEnhancement:enabled"/>
   <int value="-1812105527" label="WarmUpCompositor:enabled"/>
   <int value="-1811949013" label="SameSiteByDefaultCookies:disabled"/>
   <int value="-1811394154" label="disable-webrtc-hw-vp8-encoding"/>
@@ -18785,6 +18787,8 @@ from previous Chrome versions.
   <int value="-612860466" label="Projector:disabled"/>
   <int value="-612633819" label="NotificationScrollBar:disabled"/>
   <int value="-612480090" label="FasterLocationReload:enabled"/>
+  <int value="-610617312"
+      label="AutofillEnableCvcStorageAndFillingStandaloneFormEnhancement:disabled"/>
   <int value="-610411643" label="enable-printer-app-search"/>
   <int value="-610319049"
       label="TrustedVaultFrequentDegradedRecoverabilityPolling:disabled"/>

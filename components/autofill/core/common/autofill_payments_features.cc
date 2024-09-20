@@ -91,6 +91,12 @@ BASE_FEATURE(kAutofillEnableCvcStorageAndFillingEnhancement,
              "AutofillEnableCvcStorageAndFillingEnhancement",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, this will enhance the CVV storage project. The enhancement will
+// enable CVV storage suggestions for standalone CVC fields.
+BASE_FEATURE(kAutofillEnableCvcStorageAndFillingStandaloneFormEnhancement,
+             "AutofillEnableCvcStorageAndFillingStandaloneFormEnhancement",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, user's will see network card art images and network icons which
 // are larger, having a white border, and don't have the standard grey overlay
 // applied to them.

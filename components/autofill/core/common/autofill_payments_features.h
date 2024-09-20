@@ -42,6 +42,9 @@ BASE_DECLARE_FEATURE(kAutofillEnableCvcStorageAndFilling);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillEnableCvcStorageAndFillingEnhancement);
 COMPONENT_EXPORT(AUTOFILL)
+BASE_DECLARE_FEATURE(
+    kAutofillEnableCvcStorageAndFillingStandaloneFormEnhancement);
+COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillEnableFpanRiskBasedAuthentication);
 
 #if BUILDFLAG(IS_ANDROID)

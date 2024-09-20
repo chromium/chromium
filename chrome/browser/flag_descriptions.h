@@ -326,6 +326,11 @@ extern const char kAutofillEnableCvcStorageAndFillingDescription[];
 extern const char kAutofillEnableCvcStorageAndFillingEnhancementName[];
 extern const char kAutofillEnableCvcStorageAndFillingEnhancementDescription[];
 
+extern const char
+    kAutofillEnableCvcStorageAndFillingStandaloneFormEnhancementName[];
+extern const char
+    kAutofillEnableCvcStorageAndFillingStandaloneFormEnhancementDescription[];
+
 extern const char kAutofillEnableFpanRiskBasedAuthenticationName[];
 extern const char kAutofillEnableFpanRiskBasedAuthenticationDescription[];
 
