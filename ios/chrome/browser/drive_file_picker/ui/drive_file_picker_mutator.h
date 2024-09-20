@@ -34,7 +34,14 @@
 // Submits the current file selection to the web page.
 - (void)submitFileSelection;
 
-- (void)browseToParent;
+// Called when the user taps the "Back" navigation button.
+- (void)browseBack;
+
+// Informs the mutator as to whether the search bar is currently focused.
+- (void)setSearchBarFocused:(BOOL)focused;
+
+// Sets the search text.
+- (void)setSearchText:(NSString*)searchText;
 
 @end
 

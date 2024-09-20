@@ -95,12 +95,14 @@
 - (void)setSelectedUserIdentityEmail:(NSString*)selectedUserIdentityEmail {
 }
 
-- (void)setCurrentDriveFolderTitle:(NSString*)currentDriveFolderTitle {
+- (void)setTitle:(NSString*)title {
 }
 
 - (void)populateItems:(NSArray<DriveFilePickerItem*>*)driveItems
                append:(BOOL)append
-    nextPageAvailable:(BOOL)nextPageAvailable {
+     showSearchHeader:(BOOL)showSearchHeader
+    nextPageAvailable:(BOOL)nextPageAvailable
+             animated:(BOOL)animated {
   if (append) {
     self.driveItems =
         [self.driveItems arrayByAddingObjectsFromArray:driveItems];
@@ -134,10 +136,16 @@
   self.sortingDirection = direction;
 }
 
-- (void)showInterruptionAlertWithBlock:(ProceduralBlock)block {
+- (void)setSelectedItemIdentifier:(NSString*)selectedIdentifier {
 }
 
-- (void)setSelectedItemIdentifier:(NSString*)selectedIdentifier {
+- (void)setLoadingIndicatorVisible:(BOOL)visible {
+}
+
+- (void)reconfigureItemsWithIdentifiers:(NSArray<NSString*>*)identifiers {
+}
+
+- (void)setSearchBarFocused:(BOOL)focused searchText:(NSString*)searchText {
 }
 
 @end
@@ -308,8 +316,8 @@ TEST_F(DriveFilePickerMediatorTest, SelectSortingCriteria) {
   EXPECT_EQ(DriveItemsSortingOrder::kAscending,
             fake_consumer_.sortingDirection);
   EXPECT_EQ(0U, fake_consumer_.driveItems.count);
-  // Changing either criteria or direction should update consumer and fetch new
-  // items.
+  // Changing either criteria or direction should update consumer and fetch
+  // new items.
   drive_list_->SetListItemsCompletionQuitClosure(
       task_environment_.QuitClosure());
   [mediator_ setSortingCriteria:DriveItemsSortingType::kModificationTime
@@ -319,7 +327,8 @@ TEST_F(DriveFilePickerMediatorTest, SelectSortingCriteria) {
   EXPECT_EQ(DriveItemsSortingOrder::kDescending,
             fake_consumer_.sortingDirection);
   task_environment_.RunUntilQuit();
-  // This test assumes that the fake DriveList object returns items by default.
+  // This test assumes that the fake DriveList object returns items by
+  // default.
   EXPECT_NE(0U, fake_consumer_.driveItems.count);
   fake_consumer_.driveItems = nil;
 }

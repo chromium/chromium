@@ -33,6 +33,9 @@ enum class DriveItemType : NSUInteger {
 // Drive item title.
 @property(nonatomic, readonly) NSString* title;
 
+// Range of the title which should be emphasized.
+@property(nonatomic, assign) NSRange titleRangeToEmphasize;
+
 // Drive item creation date (in case of files it represents the last time the
 // file was modified).
 @property(nonatomic, readonly) NSString* creationDate;

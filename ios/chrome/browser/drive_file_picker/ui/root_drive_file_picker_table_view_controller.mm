@@ -283,7 +283,12 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 
 - (void)populateItems:(NSArray<DriveFilePickerItem*>*)driveItems
                append:(BOOL)append
-    nextPageAvailable:(BOOL)nextPageAvailable {
+     showSearchHeader:(BOOL)showSearchHeader
+    nextPageAvailable:(BOOL)nextPageAvailable
+             animated:(BOOL)animated {
+}
+
+- (void)setLoadingIndicatorVisible:(BOOL)visible {
 }
 
 - (void)setEmailsMenu:(UIMenu*)emailsMenu {
@@ -291,6 +296,9 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 }
 
 - (void)setIcon:(UIImage*)iconImage forItem:(NSString*)itemIdentifier {
+}
+
+- (void)reconfigureItemsWithIdentifiers:(NSArray<NSString*>*)identifiers {
 }
 
 - (void)setDownloadStatus:(DriveFileDownloadStatus)downloadStatus {
@@ -310,6 +318,9 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 }
 
 - (void)setSelectedItemIdentifier:(NSString*)selectedIdentifier {
+}
+
+- (void)setSearchBarFocused:(BOOL)focused searchText:(NSString*)searchText {
 }
 
 @end

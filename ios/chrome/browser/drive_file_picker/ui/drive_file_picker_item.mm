@@ -43,6 +43,7 @@ NSString* const kDriveFilePickerSharedWithMeItemIdentifier =
     _creationDate = creationDate;
     _type = type;
     _enabled = YES;
+    _titleRangeToEmphasize.location = NSNotFound;
   }
   return self;
 }

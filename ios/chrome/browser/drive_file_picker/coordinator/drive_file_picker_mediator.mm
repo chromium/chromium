@@ -10,6 +10,7 @@
 #import "base/files/file_path.h"
 #import "base/files/file_util.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/timer/timer.h"
 #import "components/image_fetcher/core/image_data_fetcher.h"
 #import "ios/chrome/browser/drive/model/drive_file_downloader.h"
 #import "ios/chrome/browser/drive/model/drive_list.h"
@@ -29,6 +30,9 @@
 #import "url/gurl.h"
 
 namespace {
+
+// Delay after which items are fetched if the request is delayed.
+constexpr base::TimeDelta kFetchItemsDelay = base::Seconds(0.5);
 
 // A param to add to the default query to order the drive items as folders
 // first, modification time as the second criteria.
@@ -128,12 +132,12 @@ NSArray<UTType*>* UTTypesAcceptedForEvent(const ChooseFileEvent& event) {
 }
 
 // Returns a copy of `original_query` updated to account for `filter`,
-// `sorting_criteria` and `sorting_direction`.
-// TODO: use this method to handle text search queries.
+// `sorting_criteria`, `sorting_direction`, `search_text` and `page_token`.
 DriveListQuery GetUpdatedQuery(const DriveListQuery& original_query,
                                DriveFilePickerFilter filter,
                                DriveItemsSortingType sorting_criteria,
                                DriveItemsSortingOrder sorting_direction,
+                               NSString* search_text,
                                NSString* page_token) {
   // Update ordering.
   NSString* updated_order_by = original_query.order_by;
@@ -159,9 +163,18 @@ DriveListQuery GetUpdatedQuery(const DriveListQuery& original_query,
         sorting_direction_str = kDescendingQueryOrder;
         break;
     }
-    updated_order_by =
-        [NSString stringWithFormat:@"folder,%@ %@", sorting_criteria_str,
-                                   sorting_direction_str];
+    if (search_text.length == 0) {
+      // If this is not a search query, present folders first.
+      updated_order_by =
+          [NSString stringWithFormat:@"folder,%@ %@", sorting_criteria_str,
+                                     sorting_direction_str];
+    } else {
+      // If this is a search query, respect the selected sorting criteria and
+      // direction but folders do not necessarily appear first.
+      updated_order_by =
+          [NSString stringWithFormat:@"%@ %@", sorting_criteria_str,
+                                     sorting_direction_str];
+    }
   }
 
   // Update extra terms.
@@ -196,8 +209,13 @@ DriveListQuery GetUpdatedQuery(const DriveListQuery& original_query,
   NSString* update_extra_term = [extra_terms componentsJoinedByString:@" and "];
 
   DriveListQuery updated_query = original_query;
+  if (search_text.length != 0) {
+    // Search queries are performed globally, not within a specific folder.
+    updated_query.folder_identifier = nil;
+  }
   updated_query.order_by = updated_order_by;
   updated_query.extra_term = update_extra_term;
+  updated_query.filename_prefix = search_text;
   updated_query.page_token = page_token;
   return updated_query;
 }
@@ -290,6 +308,11 @@ NSURL* GenerateDownloadFileURL(NSString* download_file_name) {
   NSURL* _selectedFileDestinationURL;
   // The selected drive item identifier.
   NSString* _selectedIdentifier;
+  // Identifier of the download for the current selected item.
+  NSString* _selectedIdentifierDownloadID;
+  // If `_selectedIdentifier` is not nil, then this indicates whether it was
+  // selected from search items or not.
+  BOOL _selectedIdentifierIsSearchItem;
   // If this is true, all downloadable files can be selected regardless of type.
   BOOL _ignoreAcceptedTypes;
   // Filter used to only show items matching a certain type.
@@ -300,6 +323,15 @@ NSURL* GenerateDownloadFileURL(NSString* download_file_name) {
   DriveItemsSortingType _sortingCriteria;
   // Sorting direction.
   DriveItemsSortingOrder _sortingDirection;
+  // Whether the search bar is currently focused.
+  BOOL _searchBarFocused;
+  // Search text.
+  NSString* _searchText;
+  // If this is `YES`, then items fetched subsequently will be search items.
+  BOOL _shouldShowSearchItems;
+  // Timer to delay fetching to avoid fetching too frequently if the query
+  // parameters are modified frequently.
+  base::OneShotTimer _fetchTimer;
   // The page token to use to continue the current list/search.
   NSString* _pageToken;
   // Whether this mediator is the root mediator of the file picker, in which
@@ -368,10 +400,11 @@ NSURL* GenerateDownloadFileURL(NSString* download_file_name) {
   _consumer = consumer;
   [_consumer setSelectedUserIdentityEmail:_identity.userEmail];
   [self configureConsumerIdentitiesMenu];
-  [_consumer setCurrentDriveFolderTitle:_title];
+  [_consumer setTitle:_title];
   [_consumer setFilter:_filter];
   [_consumer setAllFilesEnabled:_ignoreAcceptedTypes];
   [_consumer setSortingCriteria:_sortingCriteria direction:_sortingDirection];
+  [_consumer setLoadingIndicatorVisible:YES];
 }
 
 - (void)updateSelectedIdentity:(id<SystemIdentity>)selectedIdentity {
@@ -391,19 +424,22 @@ NSURL* GenerateDownloadFileURL(NSString* download_file_name) {
       FindDriveItemFromIdentifier(_fetchedDriveItems, driveItemIdentifier);
   // If this is a real file, select and download it.
   if (driveItem && !driveItem->is_folder) {
+    // Unfocusing the search bar so the confirmation button can become visible.
+    _searchBarFocused = NO;
+    [self.consumer setSearchBarFocused:NO searchText:_searchText];
     if ([_selectedIdentifier isEqual:driveItemIdentifier]) {
-      // If the file is already selected, do nothing.
+      // If the file is already selected, there is nothing else to do.
       return;
     }
     _selectedIdentifier = driveItemIdentifier;
+    _selectedIdentifierIsSearchItem = _shouldShowSearchItems;
     [self.consumer setSelectedItemIdentifier:driveItemIdentifier];
     [self downloadDriveItem:*driveItem];
     return;
   }
 
   // If the user tries to browse into a folder or collection while an item is
-  // already selected, show an alert to ask for confirmation to clear the
-  // selection.
+  // already selected, clear the selection.
   if (_selectedIdentifier != nil) {
     [self clearSelection];
   }
@@ -473,7 +509,7 @@ NSURL* GenerateDownloadFileURL(NSString* download_file_name) {
 }
 
 - (void)fetchNextPage {
-  [self fetchItemsAppending:YES];
+  [self fetchItemsAppending:YES delayed:NO animated:YES];
 }
 
 - (void)setSortingCriteria:(DriveItemsSortingType)criteria
@@ -485,14 +521,13 @@ NSURL* GenerateDownloadFileURL(NSString* download_file_name) {
   _sortingCriteria = criteria;
   _sortingDirection = direction;
   [self.consumer setSortingCriteria:criteria direction:direction];
-  [self fetchItemsAppending:NO];
+  [self fetchItemsAppending:NO delayed:NO animated:YES];
 }
 
 - (void)fetchIconForDriveItem:(NSString*)itemIdentifier {
   std::optional<DriveItem> driveItem =
       FindDriveItemFromIdentifier(_fetchedDriveItems, itemIdentifier);
   CHECK(driveItem);
-  __weak __typeof(self) weakSelf = self;
 
   // By default drive api provides a 16 resolution icons, replacing 16 by 64 in
   // the icon URLs provide better sized icons e.g.
@@ -502,6 +537,7 @@ NSURL* GenerateDownloadFileURL(NSString* download_file_name) {
       [driveItem->icon_link stringByReplacingOccurrencesOfString:@"16"
                                                       withString:@"64"];
   GURL iconURL = GURL(base::SysNSStringToUTF16(resizedIconLink));
+  __weak __typeof(self) weakSelf = self;
   _imageFetcher->FetchImageData(
       iconURL,
       base::BindOnce(^(const std::string& imageData,
@@ -548,19 +584,87 @@ NSURL* GenerateDownloadFileURL(NSString* download_file_name) {
   }
   _filter = filter;
   [self.consumer setFilter:filter];
-  [self fetchItemsAppending:NO];
+  [self fetchItemsAppending:NO delayed:NO animated:YES];
 }
 
-- (void)browseToParent {
-  [self.delegate browseToParentWithMediator:self];
+- (void)setSearchBarFocused:(BOOL)focused {
+  if (_searchBarFocused == focused) {
+    return;
+  }
+  _searchBarFocused = focused;
+  // If `_searchBarFocused` is set from the mutator interface, either because
+  // the user focused the search bar by tapping on it or defocused it by tapping
+  // "Cancel", then the search items should respectively be shown or hidden.
+  [self setShouldShowSearchItems:focused];
+}
+
+- (void)setSearchText:(NSString*)searchText {
+  if ([searchText isEqualToString:_searchText]) {
+    return;
+  }
+  NSString* previousSearchText = _searchText;
+  _searchText = searchText;
+  if (_searchText.length == 0 || previousSearchText.length == 0) {
+    // When switching from zero-state to non-zero-state search or the other way
+    // around, items are trashed and the loading indicator is presented.
+    _fetchedDriveItems = {};
+    [self.consumer setLoadingIndicatorVisible:YES];
+  }
+  // Fetching new items is delayed when `_searchText` is modified, to ensure
+  // modifying it very frequently does not equally too frequent API calls. This
+  // works because only one pending fetch request is ever allowed at a time.
+  [self fetchItemsAppending:NO delayed:YES animated:YES];
+}
+
+- (void)browseBack {
+  if (_shouldShowSearchItems) {
+    // If tapping "Back" from search items, simply hide search items.
+    [self setShouldShowSearchItems:NO];
+  } else {
+    // If tapping "Back" outside of search, browse back to parent.
+    [self.delegate browseToParentWithMediator:self];
+  }
 }
 
 #pragma mark - Private
+
+- (void)setShouldShowSearchItems:(BOOL)shouldShowSearchItems {
+  if (shouldShowSearchItems == _shouldShowSearchItems) {
+    return;
+  }
+  // When this line is reached, the mediator is switching between two modes:
+  // showing search items and showing non-search items.
+  _shouldShowSearchItems = shouldShowSearchItems;
+  if (_selectedIdentifier != nil && _selectedIdentifierIsSearchItem &&
+      !_shouldShowSearchItems) {
+    // If the selected item was a search item and search items are hidden, clear
+    // the selection.
+    [self clearSelection];
+  }
+  if (!_shouldShowSearchItems) {
+    // If search items are hidden, then ensure the search bar is defocused and
+    // the search text is cleared.
+    _searchBarFocused = NO;
+    [self.consumer setSearchBarFocused:NO searchText:nil];
+    _searchText = nil;
+  }
+  // When switching between search items and non-search items, the list of items
+  // is cleared and the loading indicator is presented.
+  _fetchedDriveItems = {};
+  [self.consumer setLoadingIndicatorVisible:YES];
+  // When showing search items, the title is hidden.
+  [self.consumer setTitle:_shouldShowSearchItems ? nil : _title];
+  [self fetchItemsAppending:NO delayed:YES animated:NO];
+}
 
 // Clears the selected identifier and updates the consumer accordingly.
 - (void)clearSelection {
   [self.consumer setDownloadStatus:DriveFileDownloadStatus::kNotStarted];
   [self.consumer setSelectedItemIdentifier:nil];
+  if (_driveDownloader && _selectedIdentifierDownloadID) {
+    _driveDownloader->CancelDownload(_selectedIdentifierDownloadID);
+  }
+  _selectedIdentifierDownloadID = nil;
   _selectedIdentifier = nil;
 }
 
@@ -570,7 +674,7 @@ NSURL* GenerateDownloadFileURL(NSString* download_file_name) {
   NSURL* fileURL = GenerateDownloadFileURL(driveItem.name);
   CHECK(fileURL);
   __weak __typeof(self) weakSelf = self;
-  _driveDownloader->DownloadFile(
+  _selectedIdentifierDownloadID = _driveDownloader->DownloadFile(
       driveItem, fileURL,
       base::BindRepeating(^(DriveFileDownloadID driveFileDownloadID,
                             const DriveFileDownloadProgress& progress){
@@ -593,40 +697,112 @@ NSURL* GenerateDownloadFileURL(NSString* download_file_name) {
   _selectedFileDestinationURL = fileURL;
 }
 
-- (void)fetchItemsAppending:(BOOL)append {
+// Fetches items according to the original query and the current state of the
+// mediator i.e. selected filters, sorting parameters, search text, focus state
+// of the search bar. If there is already a fetch query pending, a new one
+// replaces it. If `append` is YES, then fetched items are inserted at the end
+// of `_fetchedDriveItems`, otherwise they replace existing items. If `delayed`
+// is YES then the query will be delayed and potentially canceled if a new query
+// is triggered before the end of the delay. If `animated` is YES then the items
+// in the response to that query will be animated into the consumer.
+- (void)fetchItemsAppending:(BOOL)append
+                    delayed:(BOOL)delayed
+                   animated:(BOOL)animated {
+  // If there is already a timer programmed to fetch items, cancel it.
+  _fetchTimer.Stop();
+  // If the fetching needs to be delayed, post it for later and return early.
+  if (delayed) {
+    __weak __typeof(self) weakSelf = self;
+    _fetchTimer.Start(FROM_HERE, kFetchItemsDelay, base::BindOnce(^{
+                        [weakSelf fetchItemsAppending:append
+                                              delayed:NO
+                                             animated:animated];
+                      }));
+    return;
+  }
+
   if (!append) {
+    // If this is a new query, then `_pageToken` can be reset.
     _pageToken = nil;
   }
+
   _driveList = _driveService->CreateList(_identity);
 
-  DriveListQuery updatedQuery = GetUpdatedQuery(
-      _originalQuery, _filter, _sortingCriteria, _sortingDirection, _pageToken);
+  DriveListQuery query;
+  if (_shouldShowSearchItems && _searchText.length == 0) {
+    // Zero-state search is treated separately and does not account for the
+    // original query parameters, filtering and sorting parameters.
+    query.order_by = kRecentOrderBy;
+    query.extra_term = kRecentExtraTerm;
+    query.page_token = _pageToken;
+  } else {
+    query = GetUpdatedQuery(_originalQuery, _filter, _sortingCriteria,
+                            _sortingDirection, _searchText, _pageToken);
+  }
+
   __weak __typeof(self) weakSelf = self;
-  _driveList->ListItems(
-      updatedQuery, base::BindOnce(^(const DriveListResult& result) {
-        [weakSelf handleListItemsResponse:result appendItems:append];
-      }));
+  _driveList->ListItems(query, base::BindOnce(^(const DriveListResult& result) {
+                          [weakSelf handleListItemsResponse:result
+                                                   animated:animated];
+                        }));
 }
 
+// Called as a completion of `_driveList->ListItems(...)`. Either replaces
+// exisiting items with new ones (`append` is NO) or appends new items to
+// existing ones (`append` is YES). If `animated` is YES then new items are
+// animated into the consumer.
 - (void)handleListItemsResponse:(const DriveListResult&)result
-                    appendItems:(BOOL)appendItems {
-  _pageToken = result.next_page_token;
-  if (appendItems) {
+                       animated:(BOOL)animated {
+  [self.consumer setLoadingIndicatorVisible:NO];
+
+  // Remember old item identifiers so they can be reconfigured if they also show
+  // up in `result.items`.
+  NSMutableSet<NSString*>* previousIdentifiers = [NSMutableSet set];
+  for (const DriveItem& item : _fetchedDriveItems) {
+    [previousIdentifiers addObject:item.identifier];
+  }
+
+  BOOL append = _pageToken != nil;
+  if (append) {
+    // If `append`, then this is the next page to insert at the end.
     _fetchedDriveItems.insert(_fetchedDriveItems.end(), result.items.begin(),
                               result.items.end());
   } else {
+    // Otherwise this is a first page so existing items are replaced.
     _fetchedDriveItems = result.items;
   }
+  _pageToken = result.next_page_token;
+
   NSMutableArray<DriveFilePickerItem*>* res = [[NSMutableArray alloc] init];
+  NSMutableArray<NSString*>* itemsToReconfigure = [NSMutableArray array];
   for (const DriveItem& item : result.items) {
+    if ([previousIdentifiers containsObject:item.identifier]) {
+      [itemsToReconfigure addObject:item.identifier];
+    }
     DriveFilePickerItem* filePickerItem = DriveItemToDriveFilePickerItem(item);
     filePickerItem.enabled =
         ItemShouldBeEnabled(item, _acceptedTypes, _ignoreAcceptedTypes);
+    // If the search text is not empty, emphasize the first match of the search
+    // text inside the name of the item.
+    if (_searchText.length != 0) {
+      filePickerItem.titleRangeToEmphasize =
+          [filePickerItem.title rangeOfString:_searchText
+                                      options:NSCaseInsensitiveSearch];
+    }
     [res addObject:filePickerItem];
   }
+  // Showing the "Recent" search header in zero-state search.
+  BOOL showSearchHeader = _shouldShowSearchItems && _searchText.length == 0;
+  // If the next page token is nil, then the consumer does not need to try and
+  // fetch new items when the end of the list is reached.
+  BOOL nextPageAvailable = _pageToken != nil;
   [self.consumer populateItems:res
-                        append:appendItems
-             nextPageAvailable:(_pageToken != nil)];
+                        append:append
+              showSearchHeader:showSearchHeader
+             nextPageAvailable:nextPageAvailable
+                      animated:animated];
+  // If some items were already in the previous list, reconfigure these items.
+  [self.consumer reconfigureItemsWithIdentifiers:itemsToReconfigure];
 }
 
 - (void)identityUpdatedWithSelectedIdentity:

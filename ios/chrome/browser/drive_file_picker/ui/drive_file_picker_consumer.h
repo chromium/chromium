@@ -18,18 +18,32 @@
 // Sets the consumer's selected user identity email.
 - (void)setSelectedUserIdentityEmail:(NSString*)selectedUserIdentityEmail;
 
-// Sets the consumer's title.
-- (void)setCurrentDriveFolderTitle:(NSString*)currentDriveFolderTitle;
+// Sets the title of the consumer in the navigation bar.
+- (void)setTitle:(NSString*)title;
 
+// Sets whether the loading indicator should be visible.
+- (void)setLoadingIndicatorVisible:(BOOL)visible;
+
+// Either replaces presented items with new ones (`append` is NO) or appends new
+// items to presented ones (`append` is YES). If `showSearchHeader` is YES then
+// the list of items should have a heading title "Recent" above it. If
+// `nextPageAvailable` is YES then scrolling to the end of the list of items
+// should fetch the next page. If `animated` is YES then the new items should be
+// animated into the presented ones.
 - (void)populateItems:(NSArray<DriveFilePickerItem*>*)driveItems
                append:(BOOL)append
-    nextPageAvailable:(BOOL)nextPageAvailable;
+     showSearchHeader:(BOOL)showSearchHeader
+    nextPageAvailable:(BOOL)nextPageAvailable
+             animated:(BOOL)animated;
 
 // Sets the consumer's emails menu.
 - (void)setEmailsMenu:(UIMenu*)emailsMenu;
 
 // Sets the icon to `iconImage` for item with identifier `itemIdentifier`.
 - (void)setIcon:(UIImage*)iconImage forItem:(NSString*)itemIdentifier;
+
+// Reconfigures items matching `identifiers`.
+- (void)reconfigureItemsWithIdentifiers:(NSArray<NSString*>*)identifiers;
 
 // Sets the consumer's download status.
 - (void)setDownloadStatus:(DriveFileDownloadStatus)downloadStatus;
@@ -48,6 +62,9 @@
                  direction:(DriveItemsSortingOrder)direction;
 
 - (void)setSelectedItemIdentifier:(NSString*)selectedIdentifier;
+
+// Sets whether the search bar is focused and the text it contains.
+- (void)setSearchBarFocused:(BOOL)focused searchText:(NSString*)searchText;
 
 @end
 

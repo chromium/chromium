@@ -1692,6 +1692,9 @@ See your search engine’s instructions for deleting your search history, if app
       <message name="IDS_IOS_DRIVE_FILE_PICKER_FILTER_ALL_FILES" desc="Title for a button that shows all files regardless of their type. [iOS only]" meaning="Title for a button that shows all files regardless of their type. [iOS only]">
           All Files
       </message>
+      <message name="IDS_IOS_DRIVE_FILE_PICKER_RECENT_TITLE" desc="Title of a section where recent Drive items are presented. [iOS only]" meaning="Title of a section where recent Drive items are presented. [iOS only]">
+          Recent
+      </message>
       <message name="IDS_IOS_DRIVE_SORT_BY_NAME" desc="Title of the context menu entry to sort Drive items by name. [iOS only]">
           Name
       </message>
