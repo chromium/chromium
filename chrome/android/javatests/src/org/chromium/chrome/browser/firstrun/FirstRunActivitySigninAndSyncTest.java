@@ -166,6 +166,7 @@ public class FirstRunActivitySigninAndSyncTest {
         onView(withId(R.id.signin_fre_selected_account)).check(matches(isDisplayed()));
 
         clickButton(R.id.signin_fre_continue_button);
+        waitUntilAnimationStops();
 
         signinStartedWatcher.assertExpected();
         waitUntilCurrentPageIs(SyncConsentFirstRunFragment.class);
@@ -606,6 +607,11 @@ public class FirstRunActivitySigninAndSyncTest {
                         Criteria.checkThat(
                                 mFirstRunActivity.getCurrentFragmentForTesting(),
                                 Matchers.instanceOf(fragmentClass)));
+    }
+
+    private void waitUntilAnimationStops() {
+        CriteriaHelper.pollUiThread(
+                () -> Criteria.checkThat(mFirstRunActivity.isAnimating(), Matchers.is(false)));
     }
 
     private void launchFirstRunActivityAndWaitForNativeInitialization() {
