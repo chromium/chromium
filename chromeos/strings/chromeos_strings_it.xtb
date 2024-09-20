@@ -258,7 +258,6 @@
 <translation id="2148716181193084225">Oggi</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> foto</translation>
 <translation id="2154460308960858308">Cancella la ricerca</translation>
-<translation id="2156072344042480449">I tuoi 2 prompt più recenti. Puoi utilizzare questi prompt solo mentre sei su questa pagina.</translation>
 <translation id="2157660087437850958">selettore di emoji</translation>
 <translation id="2157959690810728433">IN CODA</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />. Riprova</translation>
@@ -1196,16 +1195,6 @@
 <translation id="6975981640379148271">koala</translation>
 <translation id="6977381486153291903">Revisione firmware</translation>
 <translation id="6981982820502123353">Accessibilità</translation>
-<translation id="698242338298293034">Scegli un tema e seleziona le parole sottolineate per personalizzare le tue immagini AI.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Seleziona "Dammi l'ispirazione" per avere più opzioni di immagini AI univoche e diversificate.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Quando crei contenuti con l'AI, ai server di Google AI viene inviata una richiesta di generazione di immagini e miglioramento del prodotto, ai sensi delle <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Norme sulla privacy di Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          L'AI generativa è un esperimento in fase di sviluppo iniziale e attualmente ha una disponibilità limitata.</translation>
 <translation id="6982462588253070448">dune di sabbia</translation>
 <translation id="7005833343836210400">Il dispositivo è offline</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> gestisce questo dispositivo e ha accesso a tutta l'attività utente, tra cui le pagine web visitate, le password e le email.</translation>
@@ -1451,7 +1440,6 @@ Scarica il modello di trascrizione (fino a 100 MB) per ottenere queste trascrizi
 <translation id="8208861521865154048">Vantaggi</translation>
 <translation id="8226628635270268143">Scegli le tue foto e i tuoi album preferiti</translation>
 <translation id="8227119283605456246">Allega file</translation>
-<translation id="8227488649450500937">Prova uno di questi prompt o consulta la <ph name="BEGIN_LINK_PROMPTING_GUIDE" />guida ai prompt<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="8230672074305416752">impossibile eseguire il ping del gateway di rete predefinito</translation>
 <translation id="8236972776513018241">Trascrizione</translation>
 <translation id="8238771987802558562">Scegli un APN</translation>

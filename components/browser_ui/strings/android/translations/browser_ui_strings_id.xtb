@@ -96,6 +96,7 @@
 <translation id="2570922361219980984">Akses lokasi juga dinonaktifkan untuk perangkat ini. Aktifkan di <ph name="BEGIN_LINK" />Setelan Android<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Diperluas - klik untuk menciutkan</translation>
 <translation id="2586657967955657006">Papan klip</translation>
+<translation id="2588271083332682494">Rapikan tab dengan grup tab</translation>
 <translation id="2597457036804169544">Jangan terapkan tema gelap ke situs</translation>
 <translation id="2606760465469169465">Verifikasi otomatis</translation>
 <translation id="2621115761605608342">Izinkan JavaScript untuk situs tertentu.</translation>
@@ -232,6 +233,7 @@
 <translation id="483914009762354899">Sertakan semua situs di domain ini</translation>
 <translation id="4883854917563148705">Setelan yang dikelola tidak dapat direset</translation>
 <translation id="4887024562049524730">Tanyakan sebelum mengizinkan situs untuk menggunakan perangkat dan data virtual reality Anda (direkomendasikan)</translation>
+<translation id="4936863036653376783">Anda akan menemukan grup di bagian grup tab di semua perangkat Anda</translation>
 <translation id="4953688446973710931">JIka diaktifkan, situs dapat meminta untuk otomatis mendownload beberapa file. Jika dinonaktifkan, situs tidak dapat otomatis mendownload beberapa file.</translation>
 <translation id="4962975101802056554">Cabut semua izin untuk perangkat</translation>
 <translation id="497421865427891073">Maju</translation>
@@ -378,6 +380,7 @@
 <translation id="6840760312327750441">Untuk mengelompokkan tab, sentuh lama sebuah tab. Lalu, tarik ke tab lainnya.</translation>
 <translation id="6864395892908308021">Perangkat ini tidak dapat membaca NFC</translation>
 <translation id="6870169401250095575">Sembunyikan kartu Pemeriksaan Keselamatan</translation>
+<translation id="6900883974539674431">Buat grup tab yang otomatis disimpan dan diperbarui di semua perangkat Anda</translation>
 <translation id="6912998170423641340">Blokir situs agar tidak membaca teks dan gambar dari papan klip</translation>
 <translation id="6945221475159498467">Pilih</translation>
 <translation id="6950072572526089586">Situs yang Anda buka dapat menyimpan info tentang hal-hal yang Anda lakukan agar situs tersebut berfungsi seperti yang diharapkan — misalnya, untuk membuat Anda tetap login ke situs atau menyimpan item di keranjang belanja. Situs sering kali menyimpan info ini untuk sementara di perangkat Anda.</translation>

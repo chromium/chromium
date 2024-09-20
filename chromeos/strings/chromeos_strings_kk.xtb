@@ -258,7 +258,6 @@
 <translation id="2148716181193084225">Бүгін</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> фотосурет</translation>
 <translation id="2154460308960858308">Іздеу жолын тазалау</translation>
-<translation id="2156072344042480449">Ең соңғы 2 нұсқауыңыз. Бұл нұсқауларды осы бетте болған кезде ғана пайдалануға болады.</translation>
 <translation id="2157660087437850958">эмоджи таңдағыш</translation>
 <translation id="2157959690810728433">КЕЗЕКТЕ</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Қайталау</translation>
@@ -1196,16 +1195,6 @@
 <translation id="6975981640379148271">коалалар</translation>
 <translation id="6977381486153291903">Микробағдарлама нұсқасы</translation>
 <translation id="6981982820502123353">Арнайы мүмкіндіктер</translation>
-<translation id="698242338298293034">AI суреттерін жекелендіру үшін тақырып таңдап, асты сызылған сөздерді таңдаңыз.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          AI суреттерінің бірегей әрі әртүрлі опцияларын алу үшін "Маған шабыт керек" опциясын таңдаңыз.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          AI көмегімен контент жасаған кезіңізде, суреттер жасау және өнімді жақсарту үшін нұсқау Google AI серверлеріне <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google Құпиялық саясатына<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> сай жіберіледі.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Жасампаз AI — әзірлеу циклінің бастапқы сатысындағы, әзірше тек кейбір пайдаланушыларға ұсынылатын эксперименттік функция.</translation>
 <translation id="6982462588253070448">дөң</translation>
 <translation id="7005833343836210400">Құрылғы офлайн режимде.</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> осы құрылғыны басқарады және пайдаланушының барлық әрекетін (мысалы, кірген веб-сайттары, құпия сөздері және электрондық поштасы) көре алады.</translation>
@@ -1451,7 +1440,6 @@
 <translation id="8208861521865154048">Бонустар</translation>
 <translation id="8226628635270268143">Өзіңізге ұнайтын фотосуреттер мен альбомдарды таңдау</translation>
 <translation id="8227119283605456246">Файл тіркеу</translation>
-<translation id="8227488649450500937">Осы нұсқаулардың бірін қолданып көріңіз немесе <ph name="BEGIN_LINK_PROMPTING_GUIDE" />нұсқау жазу нұсқаулығын<ph name="END_LINK_PROMPTING_GUIDE" /> қараңыз</translation>
 <translation id="8230672074305416752">Әдепкі желі шлюзінің байланысы тексерілмеді.</translation>
 <translation id="8236972776513018241">Транскрипция</translation>
 <translation id="8238771987802558562">APN таңдау</translation>

@@ -2851,7 +2851,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Pindutin ang Tab at pagkatapos ay ang Enter para pamahalaan ang mga file na na-download mo sa Chrome</translation>
 <translation id="6254436959401408446">Hindi sapat ang memory upang mabuksan ang page na ito</translation>
 <translation id="625463612687472648">Ihinto ang pagpapahintulot</translation>
-<translation id="6256360366378574605">{FINANCIAL_ACCOUNT,plural, =1{Kapag bumili ka sa Chrome, tingnan bilang opsyon ang <ph name="FINANCIAL_ACCOUNT_TYPES" />}one{Kapag bumili ka sa Chrome, tingnan bilang mga opsyon ang <ph name="FINANCIAL_ACCOUNT_TYPES" />}other{Kapag bumili ka sa Chrome, tingnan bilang mga opsyon ang <ph name="FINANCIAL_ACCOUNT_TYPES" />}}</translation>
 <translation id="6259156558325130047">&amp;Gawing Muli ang Pagbabago sa Ayos</translation>
 <translation id="6263376278284652872">Mga bookmark ng <ph name="DOMAIN" /></translation>
 <translation id="6264376385120300461">I-download pa rin</translation>
@@ -4078,7 +4077,6 @@ Mga karagdagang detalye:
 <translation id="84561192812921051">Puwedeng remote na gumawa ng mga pagbabago sa profile at browser mo, magsuri ng impormasyon tungkol sa browser sa pamamagitan ng pag-uulat, at gumawa ng iba pang kinakailangang gawain ang iyong administrator. Puwede ring pamahalaan sa labas ng Chrome ang aktibidad sa device na ito.  <ph name="BEGIN_LINK" />Matuto pa<ph name="END_LINK" /></translation>
 <translation id="8457125768502047971">Walang katiyakan</translation>
 <translation id="8458202188076138974">Letter Extra</translation>
-<translation id="8458605637341729751">Sa pamamagitan ng pagpapatuloy, sumasang-ayon ka sa pagkuha ng eksaktong lokasyon ng iyong device at pag-share nito sa may-ari ng account mo para sa mga layunin ng pagpigil sa panloloko. Para i-off ang Pix sa Chrome, pumunta sa iyong <ph name="BEGIN_LINK1" />mga setting ng pagbabayad<ph name="END_LINK1" /></translation>
 <translation id="8460854335417802511">I-on ito</translation>
 <translation id="8461694314515752532">I-encrypt ang naka-sync na data gamit ang iyong sariling passphrase sa pag-sync</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 credit card}one{# credit card}other{# na credit card}}</translation>
@@ -4113,6 +4111,7 @@ Mga karagdagang detalye:
 <translation id="8527228059738193856">Mga Speaker</translation>
 <translation id="8527681393107582734">Agrikultura at Forestry</translation>
 <translation id="8528149813106025610">Damit na Pambata</translation>
+<translation id="8528479410903501741">I-save ang IBAN</translation>
 <translation id="853246364274116957">Broadway at Musical Theater</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">Bisitahin ang &lt;strong&gt;chrome://policy&lt;/strong&gt; para makita ang listahan ng mga naka-block na URL at ang iba pang patakarang ipinapatupad ng iyong system administrator.</translation>

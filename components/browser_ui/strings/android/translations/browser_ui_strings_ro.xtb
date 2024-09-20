@@ -96,6 +96,7 @@
 <translation id="2570922361219980984">Accesul la locație este dezactivat și pentru acest dispozitiv. Activează-l în <ph name="BEGIN_LINK" />Setări Android<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Afișare extinsă – dă clic pentru a restrânge.</translation>
 <translation id="2586657967955657006">Clipboard</translation>
+<translation id="2588271083332682494">Organizează-te cu ajutorul grupurilor de file</translation>
 <translation id="2597457036804169544">Nu aplica tema întunecată pe site-uri</translation>
 <translation id="2606760465469169465">Verificare automată</translation>
 <translation id="2621115761605608342">Permite JavaScript pentru un anumit site.</translation>
@@ -232,6 +233,7 @@
 <translation id="483914009762354899">Include toate site-urile din acest domeniu</translation>
 <translation id="4883854917563148705">Setările gestionate nu pot fi resetate</translation>
 <translation id="4887024562049524730">Întreabă înainte de a permite site-urilor să folosească dispozitivul de realitate virtuală și datele conexe (recomandat)</translation>
+<translation id="4936863036653376783">Vei găsi grupurile în secțiunea Grup de file de pe toate dispozitivele</translation>
 <translation id="4953688446973710931">Când opțiunea este activată, site-urile pot solicita permisiunea de a descărca automat mai multe fișiere. Când opțiunea este dezactivată, site-urile nu pot descărca automat mai multe fișiere.</translation>
 <translation id="4962975101802056554">Revocă toate permisiunile pentru dispozitiv</translation>
 <translation id="497421865427891073">Înainte</translation>
@@ -378,6 +380,7 @@
 <translation id="6840760312327750441">Pentru a grupa filele, atinge lung o filă. Apoi trage-o peste o altă filă.</translation>
 <translation id="6864395892908308021">Dispozitivul nu poate citi comunicările NFC</translation>
 <translation id="6870169401250095575">Ascunde cardul Verificarea de siguranță</translation>
+<translation id="6900883974539674431">Creează grupuri de file care se salvează și se actualizează automat pe toate dispozitivele</translation>
 <translation id="6912998170423641340">Blochează accesul de citire a textului și imaginilor din clipboard pentru site-uri</translation>
 <translation id="6945221475159498467">Selectează</translation>
 <translation id="6950072572526089586">Un site pe care îl accesezi poate salva informații despre ce faci, astfel încât să funcționeze conform așteptărilor, de exemplu, pentru a te menține conectat(ă) la un site sau pentru a salva articole în coșul de cumpărături. Adesea, site-urile salvează temporar aceste informații pe dispozitiv.</translation>

@@ -2849,7 +2849,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" /> – drücke die Tabulatortaste und dann die Eingabetaste, um in Chrome heruntergeladene Dateien zu verwalten</translation>
 <translation id="6254436959401408446">Nicht genügend Speicher, um diese Seite zu öffnen</translation>
 <translation id="625463612687472648">Nicht mehr zulassen</translation>
-<translation id="6256360366378574605">{FINANCIAL_ACCOUNT,plural, =1{Wenn du in Chrome einkaufst, wird die Option <ph name="FINANCIAL_ACCOUNT_TYPES" /> angezeigt}other{Wenn du in Chrome einkaufst, werden die Optionen <ph name="FINANCIAL_ACCOUNT_TYPES" /> angezeigt}}</translation>
 <translation id="6259156558325130047">&amp;Neu anordnen rückgängig machen</translation>
 <translation id="6263376278284652872"><ph name="DOMAIN" />-Lesezeichen</translation>
 <translation id="6264376385120300461">Trotzdem herunterladen</translation>
@@ -3135,6 +3134,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="6767985426384634228">Adresse aktualisieren?</translation>
 <translation id="6770747695101757579">Papier (Baumwolle)</translation>
 <translation id="677257480647123231">Kindersicheres Internet</translation>
+<translation id="6772959465807028761">Wenn du YouTube nutzen möchtest, melde dich mit deinem Google-Konto an</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6777088782163649345">YouTube mit den Einstellungen deines Elternteils verwenden</translation>
 <translation id="6779348349813025131">Der Google Passwortmanager benötigt Zugriff auf den macOS-Schlüsselbund</translation>
@@ -4076,7 +4076,6 @@ Weitere Details:
 <translation id="84561192812921051">Dein Administrator kann Änderungen an deinem Profil und Browser per Fernzugriff vornehmen, Informationen über den Browser durch Berichte analysieren und andere notwendige Aufgaben ausführen. Aktivitäten auf diesem Gerät können auch außerhalb von Chrome verwaltet werden.  <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
 <translation id="8457125768502047971">Unbestimmt</translation>
 <translation id="8458202188076138974">Letter Extra</translation>
-<translation id="8458605637341729751">Wenn du fortfährst, erklärst du dich damit einverstanden, dass dein genauer Gerätestandort erfasst und an den Kontoinhaber weitergegeben wird, um Betrug zu vermeiden. Wenn du Pix in Chrome deaktivieren möchtest, rufe deine <ph name="BEGIN_LINK1" />Zahlungseinstellungen<ph name="END_LINK1" /> auf.</translation>
 <translation id="8460854335417802511">Aktivieren</translation>
 <translation id="8461694314515752532">Synchronisierte Daten mit eigener Passphrase für die Synchronisierung verschlüsseln</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 Kreditkarte}other{# Kreditkarten}}</translation>
@@ -4111,6 +4110,7 @@ Weitere Details:
 <translation id="8527228059738193856">Lautsprecher</translation>
 <translation id="8527681393107582734">Land- und Forstwirtschaft</translation>
 <translation id="8528149813106025610">Kinderbekleidung</translation>
+<translation id="8528479410903501741">IBAN speichern</translation>
 <translation id="853246364274116957">Broadway und Musicals</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">Unter &lt;strong&gt;chrome://policy&lt;/strong&gt; findest du eine Liste mit blockierten URLs und andere Richtlinien, die von deinem Systemadministrator festgelegt wurden.</translation>
@@ -4304,6 +4304,7 @@ Weitere Details:
 <translation id="8891727572606052622">Ungültiger Proxymodus</translation>
 <translation id="8894794286471754040">Lange Seite zuerst</translation>
 <translation id="8895334001368918465">Wenn du einen anderen Autofill-Service in Chrome verwenden möchtest, aktiviere ihn in den Android-Einstellungen und hier</translation>
+<translation id="8897221284075091877">Wenn du Zugriff auf diese Inhalte anfordern möchtest, melde dich mit deinem Google-Konto an</translation>
 <translation id="8897428486789851669">Schwimmen</translation>
 <translation id="8899807382908246773">Aufdringliche Anzeigen</translation>
 <translation id="8903921497873541725">Vergrößern</translation>

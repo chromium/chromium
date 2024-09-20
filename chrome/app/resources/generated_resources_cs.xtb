@@ -1126,7 +1126,6 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili aplik
 <translation id="1794212650797661990">Skrýt heslo pro <ph name="DOMAIN" /></translation>
 <translation id="1794791083288629568">Odeslat zpětnou vazbu, která nám pomůže při řešení tohoto problému</translation>
 <translation id="1795214765651529549">Použít klasický motiv</translation>
-<translation id="1795668164971917185">Až Bezpečné prohlížení Google příště odhalí podezřelé stahování, automaticky ho zkontroluje pomocí vámi vybrané <ph name="LINK" /></translation>
 <translation id="1796588414813960292">Funkce vyžadující zvuk nebudou k dispozici</translation>
 <translation id="1797117170091578105">Hrajte na klávesnici Chromebooku. Můžete si nastavit klávesy pro konkrétní akce.</translation>
 <translation id="1798335429200675510">Kliknutím pravým tlačítkem do textového pole vytvoříte koncept nebo vylepšíte stávající text, používá Google AI. Dostupnost je v současné době omezená.</translation>
@@ -3936,6 +3935,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3799128412641261490">Nastavení přístupu pomocí přepínačů</translation>
 <translation id="3800828618615365228">Doplňující smluvní podmínky prohlížeče Google Chrome a systému ChromeOS</translation>
 <translation id="3800898876950197674">Pokud toto rozšíření chcete povolit, zadejte své heslo.</translation>
+<translation id="3801449494961771207">Hlas systémového převodu textu na řeč</translation>
 <translation id="3802486193901166966">Toto rozšíření nevyžaduje žádná speciální oprávnění a nemá přístup k žádným dalším webům</translation>
 <translation id="380329542618494757">Název</translation>
 <translation id="3803345858388753269">Kvalita videa</translation>
@@ -5908,7 +5908,6 @@ Oddálení provedete stisknutím kláves Ctrl + Alt + Snížit jas.</translation
 <translation id="5263656105659419083">Pokud se chcete snadno vrátit na boční panel, klikněte vpravo nahoře na Připnout</translation>
 <translation id="5264148714798105376">Tato akce může chvíli trvat.</translation>
 <translation id="5264252276333215551">Chcete-li aplikaci spustit v režimu veřejného terminálu, připojte se k internetu.</translation>
-<translation id="526539328530966548">vylepšené ochrany</translation>
 <translation id="5265797726250773323">Při instalaci došlo k chybě</translation>
 <translation id="5266113311903163739">Chyba při importu certifikační autority</translation>
 <translation id="526622169288322445">Další akce: <ph name="ADDRESS_SUMMARY" /></translation>
@@ -7286,6 +7285,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="628726841779494414">Spravujte své tiskárny v nastavení tiskáren</translation>
 <translation id="6287828400772161253">Telefon s Androidem (<ph name="HOST_DEVICE_NAME" />)</translation>
 <translation id="6290613030083731160">V okolí nejsou dostupná žádná zařízení sdílející obsah. <ph name="LINK_BEGIN" />Další informace<ph name="LINK_END" /></translation>
+<translation id="6291580570300353047">Obnovení se kvůli nedostatku úložného prostoru nezdařilo.</translation>
 <translation id="6291741848715722067">Potvrzovací kód</translation>
 <translation id="6291953229176937411">Zobrazit ve &amp;službě Finder</translation>
 <translation id="6292699686837272722">Karty se zmenší na střední šířku</translation>
@@ -11371,6 +11371,7 @@ Informace o tom, jaká data Google shromažďuje a proč je shromažďuje, naj
 <translation id="949807244219288032">Tato karta je připojena k zařízení HID</translation>
 <translation id="950079950995628542">Z telefonu <ph name="PHONE_NAME" /></translation>
 <translation id="950307215746360464">Průvodce nastavením</translation>
+<translation id="950728747178241190">Použít potlačení hluku a vylepšení zvuku. <ph name="LINK_BEGIN" />Další informace<ph name="LINK_END" /></translation>
 <translation id="951273949038779544"><ph name="SITE_ACCESS" />. Nainstaloval administrátor</translation>
 <translation id="951991426597076286">Odmítnout</translation>
 <translation id="952471655966876828">Když zařízení bude zapnuté a bude používáno, automaticky se připojí</translation>

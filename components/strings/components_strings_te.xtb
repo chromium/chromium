@@ -2846,7 +2846,6 @@
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chromeలో మీరు డౌన్‌లోడ్ చేసిన ఫైల్‌లను మేనేజ్ చేయడానికి Tabను నొక్కి, ఆపై Enterను నొక్కండి</translation>
 <translation id="6254436959401408446">ఈ పేజీని తెరవడానికి తగినంత మెమరీ లేదు</translation>
 <translation id="625463612687472648">అనుమతించడాన్ని ఆపివేయండి</translation>
-<translation id="6256360366378574605">{FINANCIAL_ACCOUNT,plural, =1{మీరు Chromeలో కొనుగోళ్లు చేసినప్పుడు, <ph name="FINANCIAL_ACCOUNT_TYPES" />‌ను ఒక ఆప్షన్‌గా చూడండి}other{మీరు Chromeలో కొనుగోళ్లు చేసినప్పుడు, <ph name="FINANCIAL_ACCOUNT_TYPES" />‌ను ఆప్షన్‌లగా చూడండి}}</translation>
 <translation id="6259156558325130047">&amp;మళ్లీ క్రమం చేయడాన్ని రిపీట్‌ చేయి</translation>
 <translation id="6263376278284652872"><ph name="DOMAIN" /> బుక్‌మార్క్‌లు</translation>
 <translation id="6264376385120300461">ఏదేమైనా డౌన్‌లోడ్ చేయండి</translation>
@@ -4073,7 +4072,6 @@
 <translation id="84561192812921051">మీ అడ్మినిస్ట్రేటర్ మీ ప్రొఫైల్, బ్రౌజర్ సెట్టింగ్‌లకు రిమోట్‌గా మార్పులు చేయవచ్చు, రిపోర్టింగ్ ద్వారా బ్రౌజర్ గురించిన సమాచారాన్ని విశ్లేషించవచ్చు, అవసరమైన ఇతర టాస్క్‌లను అమలు చేయవచ్చు. ఈ పరికరంలోని యాక్టివిటీని Chrome వెలుపల కూడా మేనేజ్ చేయవచ్చు.  <ph name="BEGIN_LINK" />మరింత తెలుసుకోండి<ph name="END_LINK" /></translation>
 <translation id="8457125768502047971">అనిశ్చితం</translation>
 <translation id="8458202188076138974">లెటర్ అదనం</translation>
-<translation id="8458605637341729751">కొనసాగించడం ద్వారా, మోసాల నివారణ ప్రయోజనాల కోసం మీ ఖచ్చితమైన పరికర స్థానాన్ని సేకరించి, మీ ఖాతాదారునితో షేర్ చేయడానికి మీరు అంగీకరిస్తున్నారు. Chromeలో PIXను ఆఫ్ చేయడానికి, మీ <ph name="BEGIN_LINK1" />పేమెంట్ సెట్టింగ్‌ల<ph name="END_LINK1" />కు వెళ్లండి</translation>
 <translation id="8460854335417802511">దీన్ని ఆన్ చేయండి</translation>
 <translation id="8461694314515752532">మీ స్వంత సింక్‌ రహస్య పదబంధంతో సింక్ చేయబడిన డేటాను ఎన్‌క్రిప్ట్ చేయండి</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 క్రెడిట్ కార్డ్}other{# క్రెడిట్ కార్డ్‌లు}}</translation>
@@ -4108,6 +4106,7 @@
 <translation id="8527228059738193856">స్పీకర్‌లు</translation>
 <translation id="8527681393107582734">వ్యవసాయం &amp; అటవీశాఖ</translation>
 <translation id="8528149813106025610">పిల్లల దుస్తులు</translation>
+<translation id="8528479410903501741">IBANని సేవ్ చేయండి</translation>
 <translation id="853246364274116957">బ్రాడ్‌వే &amp; మ్యూజికల్ థియేటర్</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">బ్లాక్ చేయబడి ఉన్న URLల లిస్ట్‌ను, మీ సిస్టమ్ అడ్మినిస్ట్రేటర్ ద్వారా అమలు చేయబడిన ఇతర పాలసీలను చూడటానికి &lt;strong&gt;chrome://policy&lt;/strong&gt;ని సందర్శించండి.</translation>

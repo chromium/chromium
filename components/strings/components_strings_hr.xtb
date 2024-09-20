@@ -2380,6 +2380,7 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="5371425731340848620">Ažuriranje kartice</translation>
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">"Sat kasni" ili "Sat ide unaprijed" ili "&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;"</translation>
+<translation id="5379618281582508161">Da biste tu zaporku dobili na svim svojim uređajima, potvrdite da ste to vi</translation>
 <translation id="5380953781541843508">uzlaznim redoslijedom</translation>
 <translation id="5381318171304904246">Kada nastavite, bit ćete preusmjereni na web-lokaciju banke. Nakon potvrde automatski ćemo vas vratiti da dovršite kupnju.</translation>
 <translation id="5383478552402031184">Postavljanje podova</translation>
@@ -2850,7 +2851,6 @@ To će u suprotnom biti onemogućeno na temelju vaših postavki privatnosti. To 
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite Tab, a zatim Enter da biste upravljali datotekama koje ste preuzeli u Chromeu</translation>
 <translation id="6254436959401408446">Nema dovoljno memorije za otvaranje ove stranice</translation>
 <translation id="625463612687472648">Povuci dopuštenje</translation>
-<translation id="6256360366378574605">{FINANCIAL_ACCOUNT,plural, =1{Za kupnje u Chromeu prikaži <ph name="FINANCIAL_ACCOUNT_TYPES" /> kao opciju}one{Za kupnje u Chromeu prikaži <ph name="FINANCIAL_ACCOUNT_TYPES" /> kao opcije}few{Za kupnje u Chromeu prikaži <ph name="FINANCIAL_ACCOUNT_TYPES" /> kao opcije}other{Za kupnje u Chromeu prikaži <ph name="FINANCIAL_ACCOUNT_TYPES" /> kao opcije}}</translation>
 <translation id="6259156558325130047">&amp;Ponovi promjenu rasporeda</translation>
 <translation id="6263376278284652872">Oznake domene <ph name="DOMAIN" /></translation>
 <translation id="6264376385120300461">Svejedno preuzmi</translation>
@@ -4077,7 +4077,6 @@ Dodatne pojedinosti:
 <translation id="84561192812921051">Vaš administrator može daljinski unositi promjene u vaš profil i preglednik, analizirati podatke o pregledniku putem izvješćivanja i izvršavati druge potrebne zadatke. Aktivnostima na ovom uređaju može se upravljati i izvan Chromea.  <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="8457125768502047971">Neodređeno</translation>
 <translation id="8458202188076138974">Letter Extra</translation>
-<translation id="8458605637341729751">Ako nastavite, pristajete na prikupljanje točne lokacije svojeg uređaja i dijeljenje s vlasnikom računa u svrhu sprječavanja prijevara. Pix u Chromeu možete isključiti u <ph name="BEGIN_LINK1" />postavkama plaćanja<ph name="END_LINK1" /></translation>
 <translation id="8460854335417802511">Uključite</translation>
 <translation id="8461694314515752532">Šifriraj sinkronizirane podatke vlastitom šifrom za sinkronizaciju</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 kreditna kartica}one{# kreditna kartica}few{# kreditne kartice}other{# kreditnih kartica}}</translation>
@@ -4112,6 +4111,7 @@ Dodatne pojedinosti:
 <translation id="8527228059738193856">Zvučnici</translation>
 <translation id="8527681393107582734">Poljoprivreda i šumarstvo</translation>
 <translation id="8528149813106025610">Dječja odjeća</translation>
+<translation id="8528479410903501741">Spremi IBAN</translation>
 <translation id="853246364274116957">Broadway i mjuzikli</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">Posjetite &lt;strong&gt;chrome://policy&lt;/strong&gt; da biste vidjeli popis blokiranih URL-ova i druga pravila koja je postavio vaš administrator sustava.</translation>

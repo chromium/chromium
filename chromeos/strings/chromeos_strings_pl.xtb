@@ -258,7 +258,6 @@
 <translation id="2148716181193084225">Dzisiaj</translation>
 <translation id="2152882202543497059">Zdjęcia: <ph name="NUMBER" /></translation>
 <translation id="2154460308960858308">Wyczyść wyszukiwanie</translation>
-<translation id="2156072344042480449">2 ostatnie prompty. Możesz ich używać tylko na tej stronie.</translation>
 <translation id="2157660087437850958">selektor emotikonów</translation>
 <translation id="2157959690810728433">W KOLEJCE</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: spróbuj ponownie</translation>
@@ -1196,15 +1195,6 @@
 <translation id="6975981640379148271">koale</translation>
 <translation id="6977381486153291903">Wersja oprogramowania</translation>
 <translation id="6981982820502123353">Ułatwienia dostępu</translation>
-<translation id="698242338298293034">Wybierz motyw, a następnie podkreślone słowa, aby spersonalizować obrazy wygenerowane przez AI.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />Wybierz „Zainspiruj mnie”, aby uzyskać dostęp do bardziej unikalnych i zróżnicowanych opcji obrazów wygenerowanych przez AI.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Gdy tworzysz treści za pomocą AI, prompt jest wysyłany na serwery AI od Google w celu wygenerowania obrazów oraz użycia go do ulepszania usługi, zgodnie z <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Polityką prywatności Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Generatywna AI to funkcja eksperymentalna, która znajduje się we wczesnej fazie rozwoju i obecnie jest dostępna z ograniczeniami.</translation>
 <translation id="6982462588253070448">wydmy</translation>
 <translation id="7005833343836210400">Urządzenie jest offline</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> zarządza tym urządzeniem i ma dostęp do wszelkiej aktywności użytkownika, w tym odwiedzanych stron internetowych, haseł i e-maili.</translation>
@@ -1448,7 +1438,6 @@ Aby korzystać z tej funkcji, pobierz model transkrypcji (do 100 MB).</transla
 <translation id="8208861521865154048">Korzyści</translation>
 <translation id="8226628635270268143">Wybierz ulubione zdjęcia i albumy</translation>
 <translation id="8227119283605456246">Załącz plik</translation>
-<translation id="8227488649450500937">Wypróbuj jeden z tych promptów lub zapoznaj się z <ph name="BEGIN_LINK_PROMPTING_GUIDE" />przewodnikiem po promptach<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="8230672074305416752">Nie udało się sprawdzić pingiem domyślnej bramy sieciowej</translation>
 <translation id="8236972776513018241">Transkrypcja</translation>
 <translation id="8238771987802558562">Wybierz APN</translation>

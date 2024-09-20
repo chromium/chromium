@@ -2850,7 +2850,6 @@
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />, നിങ്ങൾ Chrome-ൽ ഡൗൺലോഡ് ചെയ്തിരിക്കുന്ന ഫയലുകൾ മാനേജ് ചെയ്യാൻ Tab അമർത്തുക, തുടർന്ന് Enter അമർത്തുക</translation>
 <translation id="6254436959401408446">ഈ പേജ് തുറക്കാൻ മതിയായ മെമ്മറി ഇല്ല</translation>
 <translation id="625463612687472648">അനുവദിക്കുന്നത് നിർത്തുക</translation>
-<translation id="6256360366378574605">{FINANCIAL_ACCOUNT,plural, =1{നിങ്ങൾ Chrome-ൽ വാങ്ങലുകൾ നടത്തുമ്പോൾ, ഒരു ഓപ്ഷനായി <ph name="FINANCIAL_ACCOUNT_TYPES" /> കാണുക}other{നിങ്ങൾ Chrome-ൽ വാങ്ങലുകൾ നടത്തുമ്പോൾ, ഓപ്ഷനുകളായി <ph name="FINANCIAL_ACCOUNT_TYPES" /> കാണുക}}</translation>
 <translation id="6259156558325130047">&amp;പുനഃക്രമീകരിക്കുന്നത് വീണ്ടും ചെയ്യുക</translation>
 <translation id="6263376278284652872"><ph name="DOMAIN" /> ബുക്ക്‌മാർക്കുകൾ</translation>
 <translation id="6264376385120300461">എന്തായാലും ഡൗൺലോഡ് ചെയ്യുക</translation>
@@ -4075,7 +4074,6 @@
 <translation id="84561192812921051">നിങ്ങളുടെ അഡ്‌മിന് പ്രൊഫൈലിലും ബ്രൗസറിലും വിദൂരമായി മാറ്റങ്ങൾ വരുത്താനും റിപ്പോർട്ടിംഗിലൂടെ ബ്രൗസറിനെക്കുറിച്ചുള്ള വിവരങ്ങൾ വിശകലനം ചെയ്യാനും ആവശ്യമായ മറ്റ് ടാസ്‌ക്കുകൾ ചെയ്യാനും കഴിയും. ഈ ഉപകരണത്തിലെ ആക്‌റ്റിവിറ്റി Chrome-ന് പുറത്തും മാനേജ് ചെയ്തേക്കാം.  <ph name="BEGIN_LINK" />കൂടുതലറിയുക<ph name="END_LINK" /></translation>
 <translation id="8457125768502047971">അനിശ്ചിതം</translation>
 <translation id="8458202188076138974">ലെറ്റർ എക്‌സ്‌ട്രാ</translation>
-<translation id="8458605637341729751">തുടരുന്നതിലൂടെ, വഞ്ചന തടയുന്നതിനുള്ള ഉദ്ദേശ്യങ്ങൾക്കായി നിങ്ങളുടെ കൃത്യമായ ഉപകരണ ലൊക്കേഷൻ ശേഖരിച്ച് അത് അക്കൗണ്ട് ഉടമയുമായി പങ്കിടാൻ നിങ്ങൾ സമ്മതിക്കുന്നു. Chrome-ൽ Pix ഓഫാക്കാൻ, നിങ്ങളുടെ <ph name="BEGIN_LINK1" />പേയ്‌മെന്റ് ക്രമീകരണത്തിലേക്ക്<ph name="END_LINK1" /> പോകുക</translation>
 <translation id="8460854335417802511">ഇത് ഓണാക്കുക</translation>
 <translation id="8461694314515752532">നിങ്ങളുടെ സമന്വയ പാസ്‌ഫ്രെയ്‌സ് ഉപയോഗിച്ച്, സമന്വയിപ്പിച്ച ഡാറ്റ എൻക്രി‌പ്‌റ്റ് ചെയ്യുക</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{ഒരു ക്രെഡിറ്റ് കാർഡ്}other{# ക്രെഡിറ്റ് കാർഡുകൾ}}</translation>
@@ -4110,6 +4108,7 @@
 <translation id="8527228059738193856">സ്‌പീക്കറുകൾ</translation>
 <translation id="8527681393107582734">കൃഷിയും വനപരിപാലനവും</translation>
 <translation id="8528149813106025610">കുട്ടികൾക്കുള്ള വസ്‌ത്രം</translation>
+<translation id="8528479410903501741">IBAN സംരക്ഷിക്കുക</translation>
 <translation id="853246364274116957">ബ്രോഡ്‌വേ, മ്യൂസിക്കൽ തീയറ്റർ</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">ബ്ലോക്ക് ചെയ്ത URL-കളുടെ ലിസ്റ്റും നിങ്ങളുടെ സിസ്റ്റം അഡ്‌മിൻ നടപ്പിലാക്കിയ മറ്റ് നയങ്ങളും കാണുന്നതിന് &lt;strong&gt;chrome://policy&lt;/strong&gt; സന്ദർശിക്കുക.</translation>

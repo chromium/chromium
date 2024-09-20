@@ -258,7 +258,6 @@
 <translation id="2148716181193084225">امروز</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> عکس</translation>
 <translation id="2154460308960858308">پاک کردن جستجو</translation>
-<translation id="2156072344042480449">‫۲ پیام‌واره اخیر شما. فقط زمانی‌که در این صفحه هستید، می‌توانید از این پیام‌واره‌ها استفاده کنید.</translation>
 <translation id="2157660087437850958">انتخاب‌گر اموجی</translation>
 <translation id="2157959690810728433">در صف</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: امتحان مجدد</translation>
@@ -1196,16 +1195,6 @@
 <translation id="6975981640379148271">کوالا</translation>
 <translation id="6977381486153291903">بازبینی سفت‌افزار</translation>
 <translation id="6981982820502123353">دسترس‌پذیری</translation>
-<translation id="698242338298293034">‏موضوعی را انتخاب کنید و سپس کلمات زیرخط‌دار را برای شخصی‌سازی تصاویر هوش مصنوعی خود انتخاب کنید.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          «به من ایده بده» را انتخاب کنید تا گزینه‌های منحصربه‌فرد و متنوع‌تری برای تصاویر هوش مصنوعی دریافت کنید.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          وقتی محتوایی با هوش مصنوعی ایجاد می‌کنید، پیام‌واره شما برای تولید تصاویر و بهبود محصول، مطابق با <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />خط‌مشی رازداری Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> به سرورهای هوش مصنوعی Google ارسال می‌شود.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          هوش مصنوعی زایا آزمایشی است، در مراحل اولیه توسعه است، و درحال‌حاضر به‌صورت محدود دردسترس است.</translation>
 <translation id="6982462588253070448">تپه شنی</translation>
 <translation id="7005833343836210400">دستگاه آفلاین است</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> این دستگاه را مدیریت می‌کند و به همه فعالیت‌های کاربر، ازجمله صفحه‌های وب بازدیدشده، گذرواژه‌ها، و ایمیل دسترسی دارد.</translation>
@@ -1451,7 +1440,6 @@
 <translation id="8208861521865154048">هدیه‌ها</translation>
 <translation id="8226628635270268143">انتخاب عکس‌ها و آلبوم‌های دلخواه</translation>
 <translation id="8227119283605456246">پیوست کردن فایل</translation>
-<translation id="8227488649450500937">یکی از این پیام‌واره‌ها را امتحان کنید یا <ph name="BEGIN_LINK_PROMPTING_GUIDE" />راهنمای پیام‌واره<ph name="END_LINK_PROMPTING_GUIDE" /> را ببینید</translation>
 <translation id="8230672074305416752">پینگ کردن دروازه شبکه پیش‌فرض انجام نشد</translation>
 <translation id="8236972776513018241">ترانویسی</translation>
 <translation id="8238771987802558562">انتخاب «نام نقطه دستیابی»</translation>

@@ -2849,7 +2849,6 @@
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />, आफूले Chrome मा डाउनलोड गरेका फाइल व्यवस्थापन गर्न Tab थिच्नुहोस् अनि Enter थिच्नुहोस्</translation>
 <translation id="6254436959401408446">यो पृष्ठ खोल्नका लागि पर्याप्त मेमोरी छैन</translation>
 <translation id="625463612687472648">अनुमति रद्द गर्नुहोस्</translation>
-<translation id="6256360366378574605">{FINANCIAL_ACCOUNT,plural, =1{तपाईंले Chrome मा सामग्री खरिद गर्दा तपाईं <ph name="FINANCIAL_ACCOUNT_TYPES" /> विकल्पको रूपमा देख्नुहुने छ}other{तपाईंले Chrome मा सामग्री खरिद गर्दा तपाईं <ph name="FINANCIAL_ACCOUNT_TYPES" /> विकल्पका रूपमा देख्नुहुने छ}}</translation>
 <translation id="6259156558325130047">क्रम परिवर्तन गर्ने कार्य &amp;पुन: गर्नुहोस्</translation>
 <translation id="6263376278284652872"><ph name="DOMAIN" /> बुकमार्कहरू</translation>
 <translation id="6264376385120300461">जे भए पनि डाउनलोड गर्नुहोस्</translation>
@@ -4075,7 +4074,6 @@
 <translation id="84561192812921051">तपाईंका एड्मिन टाढैबाट तपाईंको प्रोफाइल र ब्राउजरमा परिवर्तन गर्न, रिपोर्टिङमार्फत ब्राउजरको जानकारी विश्लेषण गर्न र अन्य आवश्यक कार्यहरू गर्न सक्छन्। यो डिभाइसमा गरिएका क्रियाकलाप Chrome बाहिरबाट पनि व्यवस्थापन गरिन सक्छ।  <ph name="BEGIN_LINK" />थप जान्नुहोस्<ph name="END_LINK" /></translation>
 <translation id="8457125768502047971">अनिश्चितकालीन</translation>
 <translation id="8458202188076138974">Letter Extra</translation>
-<translation id="8458605637341729751">तपाईंले जारी राख्नुभयो भने तपाईं जालसाजी रोकथाम र जोखिम नियन्त्रण गर्ने प्रयोजनका लागि आफ्नो डिभाइसको सटीक लोकेसन सङ्कलन गर्न र आफ्ना खातावालासँग सेयर गर्न दिने कुरामा सहमति जनाउनुहुन्छ भन्ने अर्थ लाग्छ। Chrome मा Pix अफ गर्न <ph name="BEGIN_LINK1" />भुक्तानीसम्बन्धी सेटिङ<ph name="END_LINK1" />मा जानुहोस्</translation>
 <translation id="8460854335417802511">यो सुविधा अन गर्नुहोस्</translation>
 <translation id="8461694314515752532">सिंक गरिएको डेटालाई तपाईंको आफ्नै सिंक पासफ्रेजमार्फत इन्क्रिप्ट गर्नुहोस्</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{१ क्रेडिट कार्ड}other{# क्रेडिट कार्डहरू}}</translation>
@@ -4110,6 +4108,7 @@
 <translation id="8527228059738193856">स्पिकरहरू</translation>
 <translation id="8527681393107582734">कृषि तथा वन विज्ञान</translation>
 <translation id="8528149813106025610">बालबालिकाका लुगा</translation>
+<translation id="8528479410903501741">IBAN सेभ गर्नुहोस्</translation>
 <translation id="853246364274116957">ब्रोडवे तथा म्युजिकल थिएटर</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">ब्लक गरिएका URL र तपाईंको प्रणालीका एड्मिनले लागू गर्नुभएका अन्य नीतिहरूको सूची हेर्न &lt;strong&gt;chrome://policy&lt;/strong&gt; मा जानुहोस्।</translation>

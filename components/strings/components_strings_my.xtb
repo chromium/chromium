@@ -2851,7 +2851,6 @@
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />၊ Chrome တွင် သင် ဒေါင်းလုဒ်လုပ်ခဲ့သည့်ဖိုင်များကို စီမံရန် Enter ခလုတ် နှိပ်ပါ</translation>
 <translation id="6254436959401408446">ဤစာမျက်နှာကို ဖွင့်ရန် မှတ်ဉာဏ် အလုံအလောက်မရှိပါ</translation>
 <translation id="625463612687472648">ခွင့်ပြုခြင်း ရပ်ရန်</translation>
-<translation id="6256360366378574605">{FINANCIAL_ACCOUNT,plural, =1{Chrome တွင် ဝယ်ယူမှုများ ပြုလုပ်သောအခါ ရွေးစရာအနေဖြင့် <ph name="FINANCIAL_ACCOUNT_TYPES" /> ကိုကြည့်ပါ}other{Chrome တွင် ဝယ်ယူမှုများ ပြုလုပ်သောအခါ ရွေးစရာများအနေဖြင့် <ph name="FINANCIAL_ACCOUNT_TYPES" /> ကိုကြည့်ပါ}}</translation>
 <translation id="6259156558325130047">&amp;ပြန်လည်မှာယူမှုကို ပြန်လုပ်ရန်</translation>
 <translation id="6263376278284652872"><ph name="DOMAIN" /> စာညှပ်များ</translation>
 <translation id="6264376385120300461">မည်သို့ပင်ဖြစ်စေ ဒေါင်းလုဒ်လုပ်ရန်</translation>
@@ -4079,7 +4078,6 @@
 <translation id="84561192812921051">သင်၏စီမံခန့်ခွဲသူသည် သင့်ပရိုဖိုင်နှင့် ဘရောင်ဇာကို အဝေးမှပြောင်းခြင်း၊ သတင်းပေးပို့ခြင်းမှတစ်ဆင့် ဘရောင်ဇာနှင့်ဆိုင်သော အချက်အလက်ကို ပိုင်းခြားစိတ်ဖြာခြင်း၊ လိုအပ်သော အခြားလုပ်ဆောင်စရာများကို ဆောင်ရွက်ခြင်းတို့ ပြုလုပ်နိုင်သည်။ ဤစက်ရှိ လုပ်ဆောင်ချက်ကို Chrome ပြင်ပတွင်လည်း စီမံနိုင်သည်။  <ph name="BEGIN_LINK" />ပိုမိုလေ့လာရန်<ph name="END_LINK" /></translation>
 <translation id="8457125768502047971">အဆုံးမရှိ</translation>
 <translation id="8458202188076138974">လက်တာဆိုဒ်ကြီး</translation>
-<translation id="8458605637341729751">ရှေ့ဆက်ခြင်းဖြင့် သင်သည် လိမ်လည်မှုကာကွယ်ရေး ရည်ရွယ်ချက်များအတွက် သင့်စက်၏နေရာအတိအကျကို စုဆောင်းခွင့်ပေးပြီး အကောင့်ပိုင်ရှင်နှင့် မျှဝေရန် သဘောတူပါသည်။ Chrome တွင် Pix ပိတ်ရန် <ph name="BEGIN_LINK1" />ငွေပေးချေမှု ဆက်တင်များ<ph name="END_LINK1" /> သို့သွားပါ။</translation>
 <translation id="8460854335417802511">ဖွင့်ရန်</translation>
 <translation id="8461694314515752532">စင့်ခ်လုပ်ထားသော ဒေတာများကို သင့်ကိုယ်ပိုင် စင့်ခ်စကားဝှက်ဖြင့် အသွင်ဝှက်ရန်</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{ခရက်တစ်ကတ် ၁ ခု}other{ခရက်တစ်ကတ် # ခု}}</translation>
@@ -4114,6 +4112,7 @@
 <translation id="8527228059738193856">စပီကာများ</translation>
 <translation id="8527681393107582734">စိုက်ပျိုးရေး၊ သစ်တောလုပ်ငန်း</translation>
 <translation id="8528149813106025610">ကလေးအဝတ်အထည်</translation>
+<translation id="8528479410903501741">IBAN သိမ်းရန်</translation>
 <translation id="853246364274116957">ဘရော့ဝေးနှင့် ဂီတပြဇာတ်ရုံ</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">သင်၏ စနစ်စီမံခန့်ခွဲသူက ပြဋ္ဌာန်းထားသည့် အခြား မူဝါဒများနှင့် ပိတ်ထားသော URL များစာရင်းကို ကြည့်ရန် &lt;strong&gt;chrome://policy&lt;/strong&gt; သို့ ဝင်ကြည့်ပါ။</translation>

@@ -156,6 +156,7 @@
 <translation id="1672499492233627739">வெப்கேம் வீடியோ ஊட்டம்</translation>
 <translation id="1676557873873341166">வீடியோவை எடுக்கிறது</translation>
 <translation id="1684279041537802716">ஆக்ஸண்ட் வண்ணம்</translation>
+<translation id="1697278726914783200">ரெக்கார்டு செய்யும்</translation>
 <translation id="1703835215927279855">Letter</translation>
 <translation id="1706391837335750954">DNS ரிசால்வர் இருப்பது</translation>
 <translation id="1708602061922134366">Google நீலம்</translation>
@@ -257,7 +258,6 @@
 <translation id="2148716181193084225">இன்று</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> படங்கள்</translation>
 <translation id="2154460308960858308">தேடலை அழிக்கும்</translation>
-<translation id="2156072344042480449">உங்களின் மிகச் சமீபத்திய 2 ப்ராம்ப்ட்டுகள். நீங்கள் இந்தப் பக்கத்தில் இருக்கும்போது மட்டுமே இந்தப் ப்ராம்ப்ட்டுகளைப் பயன்படுத்த முடியும்.</translation>
 <translation id="2157660087437850958">ஈமோஜி தேர்வுக் கருவி ஐகான்</translation>
 <translation id="2157959690810728433">வரிசையிலுள்ளது</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: மீண்டும் முயலுங்கள்</translation>
@@ -711,6 +711,7 @@
 <translation id="458794348635939462">அனைத்து ஹோஸ்ட்களையும் சரிசெய்ய முடியவில்லை</translation>
 <translation id="4593212453765072419">பிராக்ஸி அங்கீகரிப்பு தேவை</translation>
 <translation id="4594021849294327751">டிரான்ஸ்கிரிப்ட்டை உருவாக்கு</translation>
+<translation id="4602266091140407479">மைக்</translation>
 <translation id="4607282946861182308">இதன் படங்களை உருவாக்க முடியவில்லை. வேறொரு ப்ராம்ப்ட்டை வழங்கவும்.</translation>
 <translation id="4609350030397390689">கீபோர்டு ஒளிர்வைக் குறைக்கும்</translation>
 <translation id="4623061655523261501">ரெக்கார்டிங் பெயர்கள் உருவாக்கப்பட்டன</translation>
@@ -1024,6 +1025,7 @@
 <translation id="6184793017104303157">B4</translation>
 <translation id="6188737759358894319">உருவாக்கப்பட்டது: <ph name="DATE" /></translation>
 <translation id="6189418609903030344">உபயோகத்தால் பேட்டரியின் திறன் குறைகிறது</translation>
+<translation id="6189987971574353264">பிளே செய்யும்</translation>
 <translation id="6191293864534840972">பெயர் சேவையகங்கள் தவறானவை</translation>
 <translation id="6196607555925437199">மீண்டும் உருவாக்கு</translation>
 <translation id="6205145102504628069">கிளவுடு ஃப்ளோ</translation>
@@ -1164,6 +1166,7 @@
 <translation id="6831043979455480757">Translate</translation>
 <translation id="6846843854964504403">பாதுகாப்பு மீட்டமைவு</translation>
 <translation id="6853312040151791195">சார்ஜ் இறங்கும் விகிதம்</translation>
+<translation id="6862228900689076919">உங்கள் நிர்வாகி இந்த அம்சத்தை நிர்வகிக்கிறார்</translation>
 <translation id="6862416241246624313">கருத்து சமர்ப்பிக்கப்பட்டது</translation>
 <translation id="6866732840889595464">டெய்ஸி</translation>
 <translation id="6871256179359663621">வெளிர் ஊதா</translation>
@@ -1192,16 +1195,6 @@
 <translation id="6975981640379148271">கோலா கரடிகள்</translation>
 <translation id="6977381486153291903">நிலைபொருள் பதிப்பு</translation>
 <translation id="6981982820502123353">அணுகல் தன்மை</translation>
-<translation id="698242338298293034">உங்கள் AI படங்களைப் பிரத்தியேகமாக்க, தீமினைத் தேர்வுசெய்தபின் அடிக்கோடிட்ட வார்த்தைகளைத் தேர்ந்தெடுக்கவும்.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          அதிகத் தனித்துவம் வாய்ந்த மற்றும் பலதரப்பட்ட AI பட விருப்பங்களைப் பெற "என்னை ஊக்கப்படுத்து" என்பதைத் தேர்ந்தெடுக்கவும்.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          நீங்கள் AI மூலம் உருவாக்கும்போது, <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Googleளின் தனியுரிமைக் கொள்கைக்கு<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> உட்பட்டு படங்களை உருவாக்கவும் தயாரிப்பை மேம்படுத்தவும் அந்த ப்ராம்ப்ட் Google AI சேவையகங்களுக்கு அனுப்பப்படும்.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          ஜெனரேட்டிவ் AI ஆரம்பக்கட்டப் பரிசோதனை நிலையில் உள்ளது, அது இன்னும் பரவலாகக் கிடைப்பதில்லை.</translation>
 <translation id="6982462588253070448">மணல் மேடுகள்</translation>
 <translation id="7005833343836210400">சாதனம் ஆஃப்லைனில் உள்ளது</translation>
 <translation id="7028979494427204405">இந்தச் சாதனத்தை <ph name="MANAGER" /> நிர்வகிக்கிறது. பார்வையிட்ட இணையப்பக்கங்கள், கடவுச்சொற்கள், மின்னஞ்சல் உட்பட பயனரின் செயல்பாடு அனைத்திற்குமான அணுகலும் இதற்கு உள்ளது.</translation>
@@ -1447,7 +1440,6 @@
 <translation id="8208861521865154048">சலுகைகள்</translation>
 <translation id="8226628635270268143">உங்களுக்குப் பிடித்த படங்களையும் ஆல்பங்களையும் தேர்வுசெய்க</translation>
 <translation id="8227119283605456246">ஃபைலை இணை</translation>
-<translation id="8227488649450500937">இவற்றில் ஒரு ப்ராம்ப்ட்டை முயலவும் அல்லது <ph name="BEGIN_LINK_PROMPTING_GUIDE" />ப்ராம்ப்ட்டிங் வழிகாட்டலைப்<ph name="END_LINK_PROMPTING_GUIDE" /> பார்க்கவும்</translation>
 <translation id="8230672074305416752">இயல்புநிலை நெட்வொர்க் கேட்வேயைப் பிங் செய்ய முடியவில்லை</translation>
 <translation id="8236972776513018241">டிரான்ஸ்கிரிப்ட்</translation>
 <translation id="8238771987802558562">APNனைத் தேர்வுசெய்தல்</translation>

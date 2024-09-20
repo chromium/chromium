@@ -127,6 +127,7 @@
 <translation id="1567064801249837505">Ama-albhamu</translation>
 <translation id="1572585716423026576">Setha njengephephadonga</translation>
 <translation id="1578784163189013834">Khetha indawo engemuva yesilondolozi sesikrini</translation>
+<translation id="1587031308639983732">Izinguquko ezisekelwe esikhathini zingase zinganembi. Le sethingi iphethwe umlawuli wakho.</translation>
 <translation id="1588438908519853928">Jwayelekile</translation>
 <translation id="1591562245178063882">Le nyanga</translation>
 <translation id="1593528591614229756">Qinisekisa ukukhetha ama-APN anikezwe umhlinzeki wakho weselula noma umlawuli. Ukukhetha i-APN kuzokhubaza noma imaphi ama-APN womuntu ngamunye. Ama-APN angavumelekile angaphazamisa uxhumo lweselula. <ph name="LINK_BEGIN" />Funda kabanzi<ph name="LINK_END" /></translation>
@@ -257,7 +258,6 @@
 <translation id="2148716181193084225">Namhlanje</translation>
 <translation id="2152882202543497059">izithombe ezingu-<ph name="NUMBER" /></translation>
 <translation id="2154460308960858308">Susa usesho</translation>
-<translation id="2156072344042480449">Imiyalelo yakho engu-2 yakamuva. Ungasebenzisa le miyalelo kuphela ngenkathi ukuleli khasi.</translation>
 <translation id="2157660087437850958">isikhi se-emoji</translation>
 <translation id="2157959690810728433">KUSEMUGQENI</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Zama futhi</translation>
@@ -1166,6 +1166,7 @@
 <translation id="6831043979455480757">Humusha</translation>
 <translation id="6846843854964504403">Ukusetha kabusha ukuphepha</translation>
 <translation id="6853312040151791195">Isilinganisela sokuyeka ukushaja</translation>
+<translation id="6862228900689076919">Lesi sakhi siphethwe umphathi wakho</translation>
 <translation id="6862416241246624313">Impendulo ithunyelwe</translation>
 <translation id="6866732840889595464">i-daisy</translation>
 <translation id="6871256179359663621">okunsomi okhanyayo</translation>
@@ -1194,16 +1195,6 @@
 <translation id="6975981640379148271">ama-koala</translation>
 <translation id="6977381486153291903">Isibuyekezo se-firmware</translation>
 <translation id="6981982820502123353">Ukufinyeleleka</translation>
-<translation id="698242338298293034">Khetha itimu bese ukhetha amagama adwetshelwe ukuze uqondanise nomuntu siqu imifanekiso yakho ye-AI.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Khetha okuthi "Ngikhuthaze" ukuze uthole imifanekiso ongakhetha kuyo ye-AI eyingqayizivele nezihlukile.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Uma usungula nge-AI, umyalo uthunyelwa kumaseva e-Google AI ukuze kukhiqizwe imifanekiso futhi kuthuthukiswe umkhiqizo, ngaphansi kokuthi <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Inqubomgomo Yobumfihlo ye-Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          I-AI Ekhiqizayo ingukuhlola okusathuthukiswa, futhi manje inokutholakala okukhawulelwe.</translation>
 <translation id="6982462588253070448">izindunduma zesihlabathi</translation>
 <translation id="7005833343836210400">Idivayisi ayixhunyiwe ku-inthanethi</translation>
 <translation id="7028979494427204405">I-<ph name="MANAGER" /> iphatha le divayisi futhi inokufinyelela kuwo wonke umsebenzi womsebenzisi, kufaka phakathi amakhasi ewebhu avakashelwe, amaphasiwedi, ne-imeyili.</translation>
@@ -1449,7 +1440,6 @@ Dawuniloda imodeli yokubhala (okungafika ku-100MB) ukuze uthole lokhu okubhaliwe
 <translation id="8208861521865154048">Izinzuzo</translation>
 <translation id="8226628635270268143">Khetha izithombe zakho eziyintandokazi kanye nama-albhamu</translation>
 <translation id="8227119283605456246">Namathisela ifayela</translation>
-<translation id="8227488649450500937">Zama omunye wale miyalelo noma ubone <ph name="BEGIN_LINK_PROMPTING_GUIDE" />umhlahlandlela wokuyalela<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="8230672074305416752">Yehlulekile ukuqhweba umasango wenethiwekhi yokuzenzakalelayo</translation>
 <translation id="8236972776513018241">Okulotshiweyo</translation>
 <translation id="8238771987802558562">Khetha i-APN</translation>

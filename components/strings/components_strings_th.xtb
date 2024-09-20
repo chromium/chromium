@@ -2850,7 +2850,6 @@
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" /> กด Tab ตามด้วย Enter เพื่อจัดการไฟล์ที่คุณดาวน์โหลดใน Chrome</translation>
 <translation id="6254436959401408446">หน่วยความจำไม่เพียงพอที่จะเปิดหน้านี้</translation>
 <translation id="625463612687472648">หยุดการอนุญาต</translation>
-<translation id="6256360366378574605">{FINANCIAL_ACCOUNT,plural, =1{เมื่อทำการซื้อใน Chrome คุณจะเห็น <ph name="FINANCIAL_ACCOUNT_TYPES" /> เป็นตัวเลือก}other{เมื่อทำการซื้อใน Chrome คุณจะเห็น <ph name="FINANCIAL_ACCOUNT_TYPES" /> เป็นตัวเลือก}}</translation>
 <translation id="6259156558325130047">&amp;ทำซ้ำการจัดลำดับใหม่</translation>
 <translation id="6263376278284652872">บุ๊กมาร์ก <ph name="DOMAIN" /></translation>
 <translation id="6264376385120300461">ดาวน์โหลดต่อไป</translation>
@@ -4077,7 +4076,6 @@
 <translation id="84561192812921051">ผู้ดูแลระบบสามารถเปลี่ยนแปลงโปรไฟล์และเบราว์เซอร์จากระยะไกล วิเคราะห์ข้อมูลเกี่ยวกับเบราว์เซอร์ผ่านการรายงาน รวมถึงดำเนินการอื่นๆ ที่จำเป็นได้ กิจกรรมในอุปกรณ์นี้อาจมีการจัดการภายนอก Chrome ได้ด้วย  <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" /></translation>
 <translation id="8457125768502047971">ไม่จำกัด</translation>
 <translation id="8458202188076138974">Letter Extra</translation>
-<translation id="8458605637341729751">การดำเนินการต่อหมายความว่าคุณยินยอมให้เก็บรวบรวมและแชร์ตำแหน่งที่แน่นอนของอุปกรณ์กับเจ้าของบัญชีเพื่อวัตถุประสงค์ในการป้องกันการประพฤติมิชอบ หากต้องการปิด Pix ใน Chrome ให้ไปที่<ph name="BEGIN_LINK1" />การตั้งค่าการชำระเงิน<ph name="END_LINK1" /></translation>
 <translation id="8460854335417802511">เปิด</translation>
 <translation id="8461694314515752532">เข้ารหัสข้อมูลที่ซิงค์ด้วยรหัสผ่านการซิงค์ของคุณเอง</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{บัตรเครดิต 1 ใบ}other{บัตรเครดิต # ใบ}}</translation>
@@ -4112,6 +4110,7 @@
 <translation id="8527228059738193856">ลำโพง</translation>
 <translation id="8527681393107582734">การเกษตรและป่าไม้</translation>
 <translation id="8528149813106025610">เสื้อผ้าเด็ก</translation>
+<translation id="8528479410903501741">บันทึก IBAN</translation>
 <translation id="853246364274116957">โรงละครบรอดเวย์และละครเพลง</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">ไปที่ &lt;strong&gt;chrome://policy&lt;/strong&gt; เพื่อดูรายการ URL ที่ถูกบล็อกและนโยบายอื่นๆ ที่ผู้ดูแลระบบบังคับใช้</translation>

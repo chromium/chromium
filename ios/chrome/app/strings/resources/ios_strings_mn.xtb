@@ -495,6 +495,7 @@
 <translation id="3435738964857648380">Нууцлал</translation>
 <translation id="3443810440409579745">Табыг хүлээн авлаа.</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> мин</translation>
+<translation id="344589138074534176">Google Lens-н талаар нэмэлт мэдээлэл авах</translation>
 <translation id="345348365500626747">Хаяг олдлоо</translation>
 <translation id="3464194322481586217">Үнэ хянаж чадсангүй.</translation>
 <translation id="3469117812148449995">Нууц үг хадгалах сонголтууд</translation>
@@ -580,6 +581,7 @@
 <translation id="3851938967634752633"><ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> болон өөр <ph name="NUMBER_OF_ACCOUNTS" /> бүртгэлийн нууц үгийг устгана. Таны бүртгэлүүдийг устгахгүй.</translation>
 <translation id="3858860766373142691">Нэр</translation>
 <translation id="3861908220442487587">Энэ хаягийг зөвхөн уг төхөөрөмжид хадгалдаг. Үүнийг бусад төхөөрөмждөө ашиглахын тулд <ph name="USER_EMAIL" /> Google Бүртгэл рүүгээ зөөнө үү</translation>
+<translation id="3868495844258915202">Бүтэн URL-г харуулах</translation>
 <translation id="3876833929577368454">Надаас тухай бүрд асуу</translation>
 <translation id="3885587018298784481">Гэр бүлийн бүлэгт нэгдэх</translation>
 <translation id="3888863481921783344">Үүнийг таны арга хэмжээнд урих боломжтой хүмүүсийг харуулахад ашиглана.</translation>
@@ -867,6 +869,7 @@
 <translation id="5210365745912300556">Цонхыг хаа</translation>
 <translation id="5211488077761630279">"<ph name="SITE_NAME" />"-д таны <ph name="PERMISSION" />-г ашиглахыг зөвшөөрөх үү?</translation>
 <translation id="5217245356412073535">Та сайтын өгөгдмөл харагдах байдлыг Тохиргоо &gt; Контентын тохиргоонд дэлгэц болгож өөрчлөх боломжтой</translation>
+<translation id="5217329997012062137">Таныг Google Lens-г ашиглах үед хуудасны дэлгэцийн агшныг Google-д илгээдэг.</translation>
 <translation id="5220945116117011963">Огноонуудаас календарийн үйл явдал үүсгэх</translation>
 <translation id="5222676887888702881">Гарах</translation>
 <translation id="5228579091201413441">Синхроныг идэвхжүүлэх</translation>
@@ -1641,6 +1644,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="8712534545803964353">Хуудаснаас олох…</translation>
 <translation id="8712637175834984815">Ойлголоо</translation>
 <translation id="8722229818691036192">Энэ төхөөрөмж дээрх бүртгэлүүд</translation>
+<translation id="8722649775263832315">Google Lens-р ямар нэг зүйл хайхын тулд товших эсвэл тодруулна уу</translation>
 <translation id="8725066075913043281">Дахин оролдож үзнэ үү.</translation>
 <translation id="8728922029615312208">Бүгдийг хаах</translation>
 <translation id="8730621377337864115">хийсэн</translation>

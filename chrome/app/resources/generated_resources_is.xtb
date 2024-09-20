@@ -1134,7 +1134,6 @@ Heimildir sem þú hefur þegar veitt forritum kunna að gilda á þessum reikni
 <translation id="1794212650797661990">Fela aðgangsorð fyrir <ph name="DOMAIN" /></translation>
 <translation id="1794791083288629568">Sendu ábendingu til að hjálpa okkur að leysa þetta vandamál.</translation>
 <translation id="1795214765651529549">Nota hefðbundið þema</translation>
-<translation id="1795668164971917185">Næst þegar örugg vefskoðun Google finnur grunsamlegt niðurhal mun hún sjálfkrafa skanna það sem hluti af <ph name="LINK" /> sem þú valdir</translation>
 <translation id="1796588414813960292">Eiginleikar sem þarfnast hljóðs munu ekki virka</translation>
 <translation id="1797117170091578105">Spilaðu með Chromebook lyklaborðinu. Þú getur sérsniðið lykla fyrir ákveðnar aðgerðir.</translation>
 <translation id="1798335429200675510">Hægrismelltu í textareit til að búa til drög eða fínpússa fyrirliggjandi skrif með aðstoð gervigreindar Google. Aðgengi er takmarkað eins og er.</translation>
@@ -3950,6 +3949,7 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3799128412641261490">Stillingar rofaaðgangs</translation>
 <translation id="3800828618615365228">Viðbótarskilmálar Google Chrome og ChromeOS</translation>
 <translation id="3800898876950197674">Sláðu inn aðgangsorðið þitt til að leyfa þessa viðbót.</translation>
+<translation id="3801449494961771207">Rödd kerfistalgervils</translation>
 <translation id="3802486193901166966">Þessi viðbót þarf engar sérstakar heimildir og hún hefur engan viðbótaraðgang að vefsvæðum</translation>
 <translation id="380329542618494757">Nafn</translation>
 <translation id="3803345858388753269">Myndgæði</translation>
@@ -5924,7 +5924,6 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="5263656105659419083">Smelltu á Festa uppi í hægra horninu til að komast auðveldlega aftur í hliðargluggann</translation>
 <translation id="5264148714798105376">Þetta gæti tekið um það bil mínútu.</translation>
 <translation id="5264252276333215551">Tengstu internetinu til að ræsa forritið í sjálfsalastillingu.</translation>
-<translation id="526539328530966548">auknu vörninni</translation>
 <translation id="5265797726250773323">Villa við uppsetningu</translation>
 <translation id="5266113311903163739">Villa við innflutning vottunarstöðvar</translation>
 <translation id="526622169288322445">Fleiri aðgerðir fyrir <ph name="ADDRESS_SUMMARY" /></translation>
@@ -7306,6 +7305,7 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="628726841779494414">Stjórnaðu prenturunum í prentarastillingunum</translation>
 <translation id="6287828400772161253">Android-sími (<ph name="HOST_DEVICE_NAME" />)</translation>
 <translation id="6290613030083731160">Engin tæki eru að deila nálægt. <ph name="LINK_BEGIN" />Frekari upplýsingar<ph name="LINK_END" /></translation>
+<translation id="6291580570300353047">Ekki er nægt geymslurými til að endurheimta.</translation>
 <translation id="6291741848715722067">Staðfestingarkóði</translation>
 <translation id="6291953229176937411">&amp;Sýna í Finder</translation>
 <translation id="6292699686837272722">Flipar minnka í miðlungsbreidd</translation>

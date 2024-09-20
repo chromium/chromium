@@ -96,6 +96,7 @@
 <translation id="2570922361219980984">此设备的位置信息使用权也已关闭；若想开启这项权限，请转到 <ph name="BEGIN_LINK" />Android 设置<ph name="END_LINK" />。</translation>
 <translation id="257931822824936280">已展开 - 点击此处即可收起。</translation>
 <translation id="2586657967955657006">剪贴板</translation>
+<translation id="2588271083332682494">使用标签页分组整理标签页</translation>
 <translation id="2597457036804169544">不对网站应用深色主题</translation>
 <translation id="2606760465469169465">自动验证</translation>
 <translation id="2621115761605608342">允许特定网站运行 JavaScript。</translation>
@@ -232,6 +233,7 @@
 <translation id="483914009762354899">包含该网域下的所有网站</translation>
 <translation id="4883854917563148705">无法重置受管理的设置</translation>
 <translation id="4887024562049524730">需先询问，得到许可后才允许网站使用您的虚拟现实设备和数据（推荐）</translation>
+<translation id="4936863036653376783">您可以在所有设备的“标签页分组”部分找到您的分组</translation>
 <translation id="4953688446973710931">开启此设置后，网站可以请求自动下载多个文件。关闭此设置后，网站无法自动下载多个文件。</translation>
 <translation id="4962975101802056554">撤消设备的所有权限</translation>
 <translation id="497421865427891073">前进</translation>
@@ -378,6 +380,7 @@
 <translation id="6840760312327750441">要将标签页分组，请轻触并按住某个标签页，然后拖动到另一个标签页上。</translation>
 <translation id="6864395892908308021">此设备无法读取 NFC 数据</translation>
 <translation id="6870169401250095575">隐藏“安全检查”卡片</translation>
+<translation id="6900883974539674431">创建标签页分组，这些分组会在您的所有设备上自动保存和更新</translation>
 <translation id="6912998170423641340">禁止网站读取剪贴板中的文字和图片</translation>
 <translation id="6945221475159498467">选择</translation>
 <translation id="6950072572526089586">您访问的网站可以保存与您正在进行的浏览活动有关的信息，以便网站能按预期运行 - 例如，以便保持您在网站上的登录状态或者保存您的购物车内的商品。网站通常会将这类信息暂时保存在您的设备上。</translation>

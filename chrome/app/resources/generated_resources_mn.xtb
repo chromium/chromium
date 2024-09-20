@@ -1129,7 +1129,6 @@
 <translation id="1794212650797661990"><ph name="DOMAIN" />-н нууц үгийг нуух</translation>
 <translation id="1794791083288629568">Энэ алдааг засахад бидэнд туслан, санал хүсэлтээ илгээнэ үү.</translation>
 <translation id="1795214765651529549">Сонгодог загварыг ашиглах</translation>
-<translation id="1795668164971917185">Дараагийн удаа Google-н аюулгүй хөтөч нь сэжигтэй татан авалтыг олох үед таны сонгосон <ph name="LINK" />-н нэг хэсэг болгон автоматаар скан хийх болно.</translation>
 <translation id="1796588414813960292">Дуу чимээ шаардлагатай онцлогууд ажиллахгүй</translation>
 <translation id="1797117170091578105">Chromebook-н гараа ашиглан тоглоно уу. Та тодорхой үйлдлүүдийн товчийг өөрчлөх боломжтой.</translation>
 <translation id="1798335429200675510">Ноорог үүсгэх эсвэл одоо байгаа ажлыг боловсронгуй болгоход Google AI-аар дэмжигдсэн текстийн хайрцагт хулганын баруун талыг товшино уу. Одоогоор боломжтой байдал нь хязгаарлагдмал байна.</translation>
@@ -3945,6 +3944,7 @@
 <translation id="3799128412641261490">Сэлгүүрийн тохиргоо</translation>
 <translation id="3800828618615365228">Google Chrome болон ChromeOS-н нэмэлт нөхцөл</translation>
 <translation id="3800898876950197674">Энэ өргөтгөлийг зөвшөөрөхийн тулд нууц үгээ оруулна уу.</translation>
+<translation id="3801449494961771207">Бичвэрийг ярианд хувиргах системийн дуу хоолой</translation>
 <translation id="3802486193901166966">Энэ өргөтгөлд ямар ч тусгай зөвшөөрөл шаардлагагүй бөгөөд сайтын нэмэлт хандалт байхгүй</translation>
 <translation id="380329542618494757">Нэр</translation>
 <translation id="3803345858388753269">Видеоны чанар</translation>
@@ -5918,7 +5918,6 @@
 <translation id="5263656105659419083">Хажуугийн самбар луу хялбархан буцахын тулд баруун дээд талын Бэхлэхийг товшино уу</translation>
 <translation id="5264148714798105376">Үүнд нэг эсвэл хоёр минут шаардлагатай.</translation>
 <translation id="5264252276333215551">Програмаа kiosk горимд эхлүүлэхийн тулд интернетэд холбогдоно уу.</translation>
-<translation id="526539328530966548">сайжруулсан хамгаалалт</translation>
 <translation id="5265797726250773323">Суулгах явцад алдаа гарлаа</translation>
 <translation id="5266113311903163739">Certification Authority Import Error</translation>
 <translation id="526622169288322445"><ph name="ADDRESS_SUMMARY" />-н бусад үйлдэл</translation>
@@ -7300,6 +7299,7 @@
 <translation id="628726841779494414">Хэвлэгчийн тохиргоонд хэвлэгчдээ удирдана уу</translation>
 <translation id="6287828400772161253">Android утас (<ph name="HOST_DEVICE_NAME" />)</translation>
 <translation id="6290613030083731160">Ойролцоо хуваалцаж буй боломжтой төхөөрөмж алга. <ph name="LINK_BEGIN" />Нэмэлт мэдээлэл авах<ph name="LINK_END" /></translation>
+<translation id="6291580570300353047">Хадгалах сангийн зай хангалтгүй байгаа тул сэргээх боломжгүй.</translation>
 <translation id="6291741848715722067">Баталгаажуулах код</translation>
 <translation id="6291953229176937411">&amp; Хайгч дотор харуулах</translation>
 <translation id="6292699686837272722">Табууд дундаж өргөнтэй болж агшина</translation>

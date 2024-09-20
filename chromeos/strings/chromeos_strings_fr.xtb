@@ -127,6 +127,7 @@
 <translation id="1567064801249837505">Albums</translation>
 <translation id="1572585716423026576">Définir comme fond d'écran</translation>
 <translation id="1578784163189013834">Sélectionner l'arrière-plan pour l'économiseur d'écran</translation>
+<translation id="1587031308639983732">Les modifications basées sur l'heure peuvent être inexactes. Ce paramètre est géré par votre administrateur.</translation>
 <translation id="1588438908519853928">Standard</translation>
 <translation id="1591562245178063882">Ce mois</translation>
 <translation id="1593528591614229756">Veillez à sélectionner un APN fourni par votre opérateur mobile ou administrateur. En sélectionnant un APN, vous désactivez les APN personnalisés. Votre connexion mobile peut être interrompue en cas d'APN non valide. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
@@ -257,7 +258,6 @@
 <translation id="2148716181193084225">Aujourd'hui</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> photos</translation>
 <translation id="2154460308960858308">Effacer la recherche</translation>
-<translation id="2156072344042480449">Vos deux requêtes les plus récentes. Vous ne pouvez utiliser ces requêtes que lorsque vous êtes sur cette page.</translation>
 <translation id="2157660087437850958">sélecteur d'emoji</translation>
 <translation id="2157959690810728433">Test ajouté à la file d'attente</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" /> : Réessayez</translation>
@@ -1166,6 +1166,7 @@
 <translation id="6831043979455480757">Traduire</translation>
 <translation id="6846843854964504403">Réinitialisation sécurisée</translation>
 <translation id="6853312040151791195">Vitesse de décharge</translation>
+<translation id="6862228900689076919">Cette fonctionnalité est gérée par votre administrateur</translation>
 <translation id="6862416241246624313">Commentaires envoyés</translation>
 <translation id="6866732840889595464">marguerite</translation>
 <translation id="6871256179359663621">violet clair</translation>
@@ -1194,16 +1195,6 @@
 <translation id="6975981640379148271">koalas</translation>
 <translation id="6977381486153291903">Version du micrologiciel</translation>
 <translation id="6981982820502123353">Accessibilité</translation>
-<translation id="698242338298293034">Choisissez un thème, puis sélectionnez les mots soulignés pour personnaliser vos images IA.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Sélectionnez "Inspire-moi" pour obtenir des options d'images IA plus uniques et variées.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Lorsque vous créez avec l'IA, la requête est envoyée aux serveurs d'IA de Google pour générer des images et améliorer le produit, conformément aux <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Règles de confidentialité de Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Encore au début de son développement, l'IA générative est expérimentale, et sa disponibilité est actuellement limitée.</translation>
 <translation id="6982462588253070448">dunes de sable</translation>
 <translation id="7005833343836210400">L'appareil est hors connexion</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> gère cet appareil et a accès à toutes les activités des utilisateurs, y compris les pages Web consultées, les mots de passe et la messagerie.</translation>
@@ -1449,7 +1440,6 @@ Téléchargez le modèle de transcription (jusqu'à 100 Mo) pour obtenir ces tr
 <translation id="8208861521865154048">Avantages</translation>
 <translation id="8226628635270268143">Choisir vos photos et vos albums préférés</translation>
 <translation id="8227119283605456246">Joindre un fichier</translation>
-<translation id="8227488649450500937">Essayez l'une de ces requêtes ou consultez le <ph name="BEGIN_LINK_PROMPTING_GUIDE" />guide sur les requêtes<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="8230672074305416752">Impossible de pinguer la passerelle du réseau par défaut</translation>
 <translation id="8236972776513018241">Transcription</translation>
 <translation id="8238771987802558562">Sélectionner un APN</translation>

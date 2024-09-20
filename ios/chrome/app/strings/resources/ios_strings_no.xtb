@@ -495,6 +495,7 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="3435738964857648380">Sikkerhet</translation>
 <translation id="3443810440409579745">Fane er mottatt.</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
+<translation id="344589138074534176">Finn ut mer om Google Lens</translation>
 <translation id="345348365500626747">Fant adressen</translation>
 <translation id="3464194322481586217">Kunne ikke spore prisen.</translation>
 <translation id="3469117812148449995">Alternativer for lagring av passord</translation>
@@ -580,6 +581,7 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="3851938967634752633">Passord for <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> og <ph name="NUMBER_OF_ACCOUNTS" /> andre slettes. Kontoene dine slettes ikke.</translation>
 <translation id="3858860766373142691">Navn</translation>
 <translation id="3861908220442487587">Denne adressen er bare lagret på denne enheten. For å bruke den på de andre enhetene dine, flytt den til Google-kontoen din, <ph name="USER_EMAIL" /></translation>
+<translation id="3868495844258915202">Vis hele nettadressen</translation>
 <translation id="3876833929577368454">Spør meg hver gang</translation>
 <translation id="3885587018298784481">Bli med i en familiegruppe</translation>
 <translation id="3888863481921783344">Dette brukes til å vise deg mulige personer du kan invitere til aktiviteten din.</translation>
@@ -867,6 +869,7 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="5210365745912300556">Lukk fanen</translation>
 <translation id="5211488077761630279">Vil du tillate at «<ph name="SITE_NAME" />» bruker <ph name="PERMISSION" />?</translation>
 <translation id="5217245356412073535">Du kan endre standard nettstedsvisning til datamaskin i Innstillinger &gt; Innholdsinnstillinger</translation>
+<translation id="5217329997012062137">Når du bruker Google Lens, sendes et skjermbilde av siden til Google.</translation>
 <translation id="5220945116117011963">Opprett kalenderaktiviteter fra datoer</translation>
 <translation id="5222676887888702881">Logg av</translation>
 <translation id="5228579091201413441">Slå på synkronisering</translation>
@@ -1641,6 +1644,7 @@ Nettsteder kan bruke informasjonskapsler til å se nettleseraktiviteten din på 
 <translation id="8712534545803964353">Finn på siden…</translation>
 <translation id="8712637175834984815">Skjønner</translation>
 <translation id="8722229818691036192">Kontoer på denne enheten</translation>
+<translation id="8722649775263832315">Trykk eller marker for å søke på hva som helst med Google Lens</translation>
 <translation id="8725066075913043281">Prøv på nytt</translation>
 <translation id="8728922029615312208">Lukk alle</translation>
 <translation id="8730621377337864115">Ferdig</translation>

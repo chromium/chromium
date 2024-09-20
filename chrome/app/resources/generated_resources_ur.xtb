@@ -1124,7 +1124,6 @@
 <translation id="1794212650797661990"><ph name="DOMAIN" /> کیلئے پاس ورڈ چھپائیں</translation>
 <translation id="1794791083288629568">اس مسئلے کو حل کرنے میں ہماری مدد کیلئے تاثرات بھیجیں۔</translation>
 <translation id="1795214765651529549">کلاسک استعمال کریں</translation>
-<translation id="1795668164971917185">‏اگلی بار جب Google محفوظ براؤزنگ کو کوئی مشتبہ ڈاؤن لوڈ ملے گا، تو یہ آپ کے منتخب کردہ <ph name="LINK" /> کے حصے کے طور پر اسے خودکار طور پر اسکین کرے گی</translation>
 <translation id="1796588414813960292">وہ خصوصیات کام نہیں کریں گی جن کیلئے آواز کی ضرورت ہوتی ہے</translation>
 <translation id="1797117170091578105">‏اپنا Chromebook کی بورڈ استعمال کر کے کھیلیں۔ آپ مخصوص کاروائیوں کے لیے کلیدوں کو حسب ضرورت بنا سکتے ہیں۔</translation>
 <translation id="1798335429200675510">‏مسودہ تخلیق کرنے یا موجودہ کام کو بہتر بنانے کے لیے ٹیکسٹ باکس میں دائیں کلک کریں، Google AI کے ذریعے تقویت یافتہ۔ فی الحال محدود دستیابی ہے۔</translation>
@@ -3936,6 +3935,7 @@
 <translation id="3799128412641261490">سوئچ رسائی کی ترتیبات</translation>
 <translation id="3800828618615365228">‏Google Chrome اور ChromeOS کی اضافی شرائط</translation>
 <translation id="3800898876950197674">اس ایکسٹینشن کی اجازت دینے کے لیے، اپنا پاس ورڈ درج کریں۔</translation>
+<translation id="3801449494961771207">ٹیکسٹ ٹو اسپیچ کی سسٹم کی آواز</translation>
 <translation id="3802486193901166966">اس ایکسٹینشن کو کسی خاص اجازت کی ضرورت نہیں ہے اور اس کے پاس سائٹ تک کوئی اضافی رسائی نہیں ہے</translation>
 <translation id="380329542618494757">نام</translation>
 <translation id="3803345858388753269">ویڈیو کا معیار</translation>
@@ -5909,7 +5909,6 @@
 <translation id="5263656105659419083">آسانی سے سائیڈ پینل پر واپس جانے کے لیے، اوپر دائیں جانب "پن" پر کلک کریں</translation>
 <translation id="5264148714798105376">اس میں ایک منٹ یا اس سے تھوڑا زیادہ وقت لگ سکتا ہے۔</translation>
 <translation id="5264252276333215551">براہ کرم کیوسک وضع میں اپنی ایپ شروع کرنے کیلئے انٹرنیٹ سے منسلک ہوں۔</translation>
-<translation id="526539328530966548">بہتر کردہ حفاظت</translation>
 <translation id="5265797726250773323">انسٹال کرنے کے دوران خرابی</translation>
 <translation id="5266113311903163739">سرٹیفکیشن اتھارٹی درآمد کرنے میں خرابی</translation>
 <translation id="526622169288322445"><ph name="ADDRESS_SUMMARY" /> کے لیے مزید کارروائیاں</translation>
@@ -7289,6 +7288,7 @@
 <translation id="628726841779494414">پرنٹر کی ترتیبات میں اپنے پرنٹرز کا نظم کریں</translation>
 <translation id="6287828400772161253">‏Android فون (<ph name="HOST_DEVICE_NAME" />)</translation>
 <translation id="6290613030083731160">قریبی اشتراک کرنے والا کوئی بھی آلہ دستیاب نہیں ہے۔ <ph name="LINK_BEGIN" />مزید جانیں<ph name="LINK_END" /></translation>
+<translation id="6291580570300353047">اسٹوریج کی جگہ کم ہونے کی وجہ سے بحال نہیں کیا جا سکتا۔</translation>
 <translation id="6291741848715722067">توثیقی کوڈ</translation>
 <translation id="6291953229176937411">فائنڈر میں &amp;دکھائیں</translation>
 <translation id="6292699686837272722">ٹیبز کی چوڑائی معتدل ہو جاتی ہے</translation>

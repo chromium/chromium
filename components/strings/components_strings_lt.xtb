@@ -2852,7 +2852,6 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />, paspauskite tabuliavimo klavišą, tada – „Enter“, jei norite tvarkyti failus, kuriuos atsisiuntėte naršyklėje „Chrome“.</translation>
 <translation id="6254436959401408446">Nepakanka atminties, kad būtų galima atidaryti šį puslapį</translation>
 <translation id="625463612687472648">Nebeleisti</translation>
-<translation id="6256360366378574605">{FINANCIAL_ACCOUNT,plural, =1{Kai perkate naršyklėje „Chrome“, žr. „<ph name="FINANCIAL_ACCOUNT_TYPES" />“ kaip parinktį}one{Kai perkate naršyklėje „Chrome“, žr. „<ph name="FINANCIAL_ACCOUNT_TYPES" />“ kaip parinktis}few{Kai perkate naršyklėje „Chrome“, žr. „<ph name="FINANCIAL_ACCOUNT_TYPES" />“ kaip parinktis}many{Kai perkate naršyklėje „Chrome“, žr. „<ph name="FINANCIAL_ACCOUNT_TYPES" />“ kaip parinktis}other{Kai perkate naršyklėje „Chrome“, žr. „<ph name="FINANCIAL_ACCOUNT_TYPES" />“ kaip parinktis}}</translation>
 <translation id="6259156558325130047">&amp;Pertvarkyti dar kartą</translation>
 <translation id="6263376278284652872"><ph name="DOMAIN" /> žymės</translation>
 <translation id="6264376385120300461">Vis tiek atsisiųsti</translation>
@@ -4079,7 +4078,6 @@ Papildoma išsami informacija:
 <translation id="84561192812921051">Administratorius gali nuotoliniu būdu atlikti profilio ir naršyklės pakeitimų, analizuoti informaciją apie naršyklę pateikdamas ataskaitas ir atlikti kitas reikiamas užduotis. Veiklą šiame įrenginyje taip pat galima tvarkyti ne naršyklėje „Chrome“.  <ph name="BEGIN_LINK" />Sužinokite daugiau<ph name="END_LINK" /></translation>
 <translation id="8457125768502047971">Neribota</translation>
 <translation id="8458202188076138974">Letter Extra</translation>
-<translation id="8458605637341729751">Tęsdami sutinkate, kad jūsų tiksli įrenginio vietovės informacija bus renkama ir bendrinama su paskyros savininku siekiant išvengti apgaulės. Jei norite išjungti PIX naršyklėje „Chrome“, eikite į <ph name="BEGIN_LINK1" />mokėjimo nustatymus<ph name="END_LINK1" /></translation>
 <translation id="8460854335417802511">Įjungti</translation>
 <translation id="8461694314515752532">Šifruokite sinchronizuojamus duomenis taikydami savo sinchronizavimo slaptafrazę</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 kredito kortelė}one{# kredito kortelė}few{# kredito kortelės}many{# kredito kortelės}other{# kredito kortelių}}</translation>
@@ -4114,6 +4112,7 @@ Papildoma išsami informacija:
 <translation id="8527228059738193856">Garsiakalbiai</translation>
 <translation id="8527681393107582734">Žemės ūkis ir miškininkystė</translation>
 <translation id="8528149813106025610">Vaikų apranga</translation>
+<translation id="8528479410903501741">Išsaugoti IBAN</translation>
 <translation id="853246364274116957">Brodvėjus ir muzikinis teatras</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">Apsilankykite adresu &lt;strong&gt;chrome://policy&lt;/strong&gt;, kad peržiūrėtumėte užblokuotų URL sąrašą ir kitą politiką, kurią taiko sistemos administratoriaus.</translation>

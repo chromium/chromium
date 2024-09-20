@@ -129,6 +129,7 @@
 <translation id="6549021453810473782">Lihat maklumat kedai</translation>
 <translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>
 <translation id="6562820390860419811">Alihkan tab ke kiri</translation>
+<translation id="6590332670428149473">Buka menu tindakan kumpulan tab untuk kumpulan tab dikongsi <ph name="TITLE_OF_GROUP" />, warna <ph name="COLOR_NAME" />.</translation>
 <translation id="6615455863669487791">Tunjukkan kepada saya</translation>
 <translation id="6668311240800004911">{NUMBER_OF_TABS_CHANGED,plural, =1{<ph name="ONE_CHANGED" /> tab ditukar}other{<ph name="MANY_CHANGED" /> tab ditukar}}</translation>
 <translation id="6694634756612002311">Urus perkongsian</translation>
@@ -189,6 +190,7 @@
 <translation id="8993967613304721520">{NUMBER_OF_TABS,plural, =1{Kembangkan kumpulan tab dengan <ph name="TABS_COUNT_ONE" /> tab.}other{Kembangkan kumpulan tab dengan <ph name="TABS_COUNT_MANY" /> tab.}}</translation>
 <translation id="9090098097337832354">Maklumat tentang kedai ini ditutup</translation>
 <translation id="9111228330448174435">Tunjukkan dialog dalam pembuatan kumpulan tab baharu</translation>
+<translation id="9114502155681725011">Buka menu tindakan kumpulan tab untuk kumpulan tab <ph name="TITLE_OF_GROUP" />, warna <ph name="COLOR_NAME" />.</translation>
 <translation id="9150694013019234766">Beralih antara tab dalam kumpulan tab anda berhampiran bahagian bawah skrin</translation>
 <translation id="9169594135889675189">Tambahkan tab baharu pada kumpulan</translation>
 <translation id="9216898458513705996">Tab akan kekal terbuka pada peranti ini tetapi kumpulan akan dipadamkan daripada semua peranti yang dilog masuk menggunakan <ph name="USER_EMAIL" /></translation>

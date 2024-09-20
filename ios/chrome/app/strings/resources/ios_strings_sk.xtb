@@ -50,6 +50,7 @@
 <translation id="1219674500290482172">Nepodarilo sa pripojiť k internetu.</translation>
 <translation id="1227113644794103810">Neaktívne karty</translation>
 <translation id="1231733316453485619">Chcete zapnúť synchronizáciu?</translation>
+<translation id="1253032109800629289">Skryť kartu Dostávajte upozornenia na sledovanie cien</translation>
 <translation id="1258491128795710625">Novinky</translation>
 <translation id="1263231323834454256">Čitateľský zoznam</translation>
 <translation id="1263433075299269530">Vaša posledná otvorená karta</translation>
@@ -395,6 +396,7 @@ Používate vyhľadávač <ph name="DSE_NAME" />. Prečítajte si jeho pokyny, a
 <translation id="2870560284913253234">Web</translation>
 <translation id="2876369937070532032">Pri ohrození zabezpečenia odosiela Googlu webové adresy niektorých navštívených stránok</translation>
 <translation id="2883151425485251736">Zobrazujte si a upravujte témy, ktoré ste v účte skryli</translation>
+<translation id="2888631381369839306">Upozornenia na sledovanie cien sú zapnuté</translation>
 <translation id="288902476966286676">Vrátenie odosielateľovi</translation>
 <translation id="2894757982205307093">Nová karta v skupine</translation>
 <translation id="2905479111267140204">Máte niekoľko (<ph name="NUMBER_OF_PASSWORDS" />) recyklovaných hesiel, ktoré môžu ohroziť vaše zabezpečenie.</translation>
@@ -493,6 +495,7 @@ Prečítajte si pokyny vyhľadávača, ako odstrániť históriu vyhľadávania 
 <translation id="3435738964857648380">Bezpečnosť</translation>
 <translation id="3443810440409579745">Karta bola prijatá.</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
+<translation id="344589138074534176">Ďalšie informácie o funkcii Google Lens</translation>
 <translation id="345348365500626747">Adresa bola nájdená</translation>
 <translation id="3464194322481586217">Cenu sa nepodarilo sledovať.</translation>
 <translation id="3469117812148449995">Možnosti uloženia hesla</translation>
@@ -578,6 +581,7 @@ Prečítajte si pokyny vyhľadávača, ako odstrániť históriu vyhľadávania 
 <translation id="3851938967634752633">Heslá pre <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> a ďalšie (<ph name="NUMBER_OF_ACCOUNTS" />) budú odstránené. Vaše účty odstránené nebudú.</translation>
 <translation id="3858860766373142691">Názov</translation>
 <translation id="3861908220442487587">Táto adresa je uložená iba v tomto zariadení. Ak ju chcete používať v iných zariadeniach, presuňte si ju do účtu Google <ph name="USER_EMAIL" />.</translation>
+<translation id="3868495844258915202">Zobraziť úplnú webovú adresu</translation>
 <translation id="3876833929577368454">Vždy sa opýtať</translation>
 <translation id="3885587018298784481">Pripojte sa k rodinnej skupine</translation>
 <translation id="3888863481921783344">Táto možnosť sa použije, aby sa vám mohli zobraziť hostia pozvaní na vašu udalosť.</translation>
@@ -865,6 +869,7 @@ Prečítajte si pokyny vyhľadávača, ako odstrániť históriu vyhľadávania 
 <translation id="5210365745912300556">Zatvoriť kartu</translation>
 <translation id="5211488077761630279">Chcete povoliť webu <ph name="SITE_NAME" /> používať povolenie <ph name="PERMISSION" />?</translation>
 <translation id="5217245356412073535">Predvolené zobrazenie webu môžete zmeniť na verziu pre počítače v sekcii Nastavenia &gt; Nastavenia obsahu</translation>
+<translation id="5217329997012062137">Keď používate Google Lens, snímka obrazovky stránky sa odošle Googlu.</translation>
 <translation id="5220945116117011963">Vytvorenie udalostí v kalendári z dátumov</translation>
 <translation id="5222676887888702881">Odhlásiť sa</translation>
 <translation id="5228579091201413441">Povoliť synchronizáciu</translation>
@@ -877,6 +882,7 @@ Prečítajte si pokyny vyhľadávača, ako odstrániť históriu vyhľadávania 
 <translation id="5271265092610673171">{count,plural, =1{Povinné pole je prázdne. Pred uložením ho vyplňte.}few{Niektoré povinné polia sú prázdne. Pred uložením ich vyplňte.}many{Niektoré povinné polia sú prázdne. Pred uložením ich vyplňte.}other{Niektoré povinné polia sú prázdne. Pred uložením ich vyplňte.}}</translation>
 <translation id="5271549068863921519">Uložiť heslo</translation>
 <translation id="5279600392753459966">Blokovať všetky</translation>
+<translation id="5282340693022193851">Ak chcete dostávať upozornenia na sledovanie cien, zapnite upozornenia v nastaveniach systému iOS.</translation>
 <translation id="5294624619177114121">Mobilné upozornenia</translation>
 <translation id="5295239312320826323">Chcete odstrániť účet <ph name="USER_EMAIL" />?</translation>
 <translation id="5300589172476337783">Zobraziť</translation>
@@ -1638,6 +1644,7 @@ Na základe súborov cookie si môžu zobraziť vašu históriu prehliadania v 
 <translation id="8712534545803964353">Vyhľadanie na stránke…</translation>
 <translation id="8712637175834984815">Dobre</translation>
 <translation id="8722229818691036192">Účty v tomto zariadení</translation>
+<translation id="8722649775263832315">Klepnutím alebo zvýraznením vyhľadajte čokoľvek pomocou funkcie Google Lens</translation>
 <translation id="8725066075913043281">Skúsiť znova</translation>
 <translation id="8728922029615312208">Zavrieť všetko</translation>
 <translation id="8730621377337864115">Hotovo</translation>

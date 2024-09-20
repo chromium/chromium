@@ -258,7 +258,6 @@
 <translation id="2148716181193084225">Hoxe</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> fotos</translation>
 <translation id="2154460308960858308">Borrar o texto de busca</translation>
-<translation id="2156072344042480449">As dúas solicitudes máis recentes. Só podes usar estas solicitudes cando estás nesta páxina.</translation>
 <translation id="2157660087437850958">selector de emojis</translation>
 <translation id="2157959690810728433">EN COLA</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: tentar de novo</translation>
@@ -1196,16 +1195,6 @@
 <translation id="6975981640379148271">coalas</translation>
 <translation id="6977381486153291903">Revisión do firmware</translation>
 <translation id="6981982820502123353">Accesibilidade</translation>
-<translation id="698242338298293034">Escolle un tema e, a continuación, selecciona as palabras subliñadas para personalizar as túas imaxes de IA.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          A opción Inspírame pode ofrecerche máis opcións de imaxes de IA únicas e variadas.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Cando creas contido con IA, a solicitude envíase aos servidores de IA de Google para xerar imaxes e mellorar o produto, tal e como se establece na <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Política de privacidade de Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          A IA xenerativa é experimental, está nas primeiras etapas de programación e actualmente ten dispoñibilidade limitada.</translation>
 <translation id="6982462588253070448">dunas</translation>
 <translation id="7005833343836210400">O dispositivo non ten conexión</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> xestiona este dispositivo e ten acceso a toda a actividade dos usuarios, como as páxinas web visitadas, os contrasinais e o correo electrónico.</translation>
@@ -1451,7 +1440,6 @@ Descarga o modelo de transcrición (ocupa un máximo de 100 MB) para ver estas 
 <translation id="8208861521865154048">Vantaxes</translation>
 <translation id="8226628635270268143">Escolle as fotos e os álbums que máis che gustan</translation>
 <translation id="8227119283605456246">Anexar ficheiro</translation>
-<translation id="8227488649450500937">Proba con algunha destas ideas ou consulta a <ph name="BEGIN_LINK_PROMPTING_GUIDE" />guía para a creación de solicitudes<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="8230672074305416752">Produciuse un erro ao facer ping na pasarela de rede predeterminada</translation>
 <translation id="8236972776513018241">Transcrición</translation>
 <translation id="8238771987802558562">Escoller un APN</translation>

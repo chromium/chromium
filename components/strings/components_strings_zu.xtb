@@ -2848,7 +2848,6 @@ Lokhu uma kungenjalo kuzovinjelwa izilungiselelo zakho zobumfihlo. Lokhu kuzovum
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Cindezela u-Tab no-Enter ukuphatha amafayela owadawunilodile ku-Chrome</translation>
 <translation id="6254436959401408446">Ayikho imemori eyanele ukuvula leli khasi</translation>
 <translation id="625463612687472648">Yeka ukuvumela okuthi</translation>
-<translation id="6256360366378574605">{FINANCIAL_ACCOUNT,plural, =1{Uma uthenga ku-Chrome, bona i-<ph name="FINANCIAL_ACCOUNT_TYPES" /> njengongakukhetha}one{Uma uthenga ku-Chrome, bona i-<ph name="FINANCIAL_ACCOUNT_TYPES" /> njengongakukhetha.}other{Uma uthenga ku-Chrome, bona i-<ph name="FINANCIAL_ACCOUNT_TYPES" /> njengongakukhetha.}}</translation>
 <translation id="6259156558325130047">&amp;Yenza futhi ukuhlela kabusha</translation>
 <translation id="6263376278284652872"><ph name="DOMAIN" /> amabhukhimakhi</translation>
 <translation id="6264376385120300461">Dawuniloda noma kunjalo</translation>
@@ -3134,6 +3133,7 @@ Lokhu uma kungenjalo kuzovinjelwa izilungiselelo zakho zobumfihlo. Lokhu kuzovum
 <translation id="6767985426384634228">Buyekeza Ikheli?</translation>
 <translation id="6770747695101757579">Iphepha (Ukotini)</translation>
 <translation id="677257480647123231">Ukuphepha Kwezingane Ku-inthanethi</translation>
+<translation id="6772959465807028761">Ukuze usebenzise iYouTube, qhubeka neGoogle Account</translation>
 <translation id="6775759552199460396">I-JIS B2</translation>
 <translation id="6777088782163649345">Sebenzisa iYouTube ngokwalokho okukhethwe abazali bakho</translation>
 <translation id="6779348349813025131">I-Google Password Manager idinga ukufinyelela ku-MacOS Keychain</translation>
@@ -4073,7 +4073,6 @@ Imininingwane engeziwe:
 <translation id="84561192812921051">Umlawuli wakho angenza izinguquko kuphrofayela yakho nebhrawuza ekude, ahlaziye ulwazi mayelana nebhrawuza ngokubika, futhi enze eminye imisebenzi edingekayo. Umsebenzi kule divayisi ungaphinda uphathwe ngaphandle kwe-Chrome.  <ph name="BEGIN_LINK" />Funda kabanzi<ph name="END_LINK" /></translation>
 <translation id="8457125768502047971">Ngenamkhawulo</translation>
 <translation id="8458202188076138974">Incwadi-Engeziwe</translation>
-<translation id="8458605637341729751">Ngokuqhubeka, uyavuma ukuthi indawo yedivayisi yakho enembile iqoqwe futhi kwabelwane ngayo nomphathi we-akhawunti yakho ngezinjongo zokuvimbela ukukhwabanisa. Ukuze uvale iPix kuChrome, iya kokuthi <ph name="BEGIN_LINK1" />amasethingi okukhokha<ph name="END_LINK1" /></translation>
 <translation id="8460854335417802511">Yivule</translation>
 <translation id="8461694314515752532">Bethela idatha evunyelanisiwe ngomushwana wokungena wakho wokuvumelanisa</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 ikhadi lesikweletu}one{# amakhadi esikweletu}other{# amakhadi esikweletu}}</translation>
@@ -4108,6 +4107,7 @@ Imininingwane engeziwe:
 <translation id="8527228059738193856">Izipikha</translation>
 <translation id="8527681393107582734">Ezolimo Namahlathi</translation>
 <translation id="8528149813106025610">Izingubo zezingane</translation>
+<translation id="8528479410903501741">Londoloza i-IBAN</translation>
 <translation id="853246364274116957">I-Broadway Netiyetha Yomculo</translation>
 <translation id="8533411848724153701">I-Gemini</translation>
 <translation id="8533619373899488139">Vakashela ku-&lt;strong&gt;chrome://policy&lt;/strong&gt; ukuze ubone uhlu lwama-URL avinjiwe nezinye izinqubomgomo eziphoqwa ngumlawuli wesistimu yakho.</translation>
@@ -4300,6 +4300,7 @@ Imininingwane engeziwe:
 <translation id="8891727572606052622">Imodi yommeleli engavumelekile.</translation>
 <translation id="8894794286471754040">Umkhawulo omude kuqala</translation>
 <translation id="8895334001368918465">Ukuze usebenzise enye isevisi yokugcwalisa ngokuzenzekelayo kuChrome, yivule kumasethingi we-Android nalapha</translation>
+<translation id="8897221284075091877">Ukuze ucele ukubona lokhu okuqukethwe, qhubeka neGoogle Account</translation>
 <translation id="8897428486789851669">Ukubhukuda</translation>
 <translation id="8899807382908246773">Izikhangiso ezizivelelayo</translation>
 <translation id="8903921497873541725">Sondeza</translation>

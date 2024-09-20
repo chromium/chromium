@@ -258,7 +258,6 @@
 <translation id="2148716181193084225">오늘</translation>
 <translation id="2152882202543497059">사진 <ph name="NUMBER" />장</translation>
 <translation id="2154460308960858308">검색 지우기</translation>
-<translation id="2156072344042480449">최근의 프롬프트 2개입니다. 이 페이지에 있는 동안에만 이러한 프롬프트를 사용할 수 있습니다.</translation>
 <translation id="2157660087437850958">그림 이모티콘 선택 도구입니다</translation>
 <translation id="2157959690810728433">대기 중</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: 다시 시도</translation>
@@ -1196,16 +1195,6 @@
 <translation id="6975981640379148271">코알라</translation>
 <translation id="6977381486153291903">펌웨어 버전</translation>
 <translation id="6981982820502123353">접근성</translation>
-<translation id="698242338298293034">테마를 선택한 후 밑줄이 그어진 단어를 선택해 AI 이미지를 맞춤설정하세요.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          '아이디어 얻기'를 선택하면 더욱 다양하고 고유한 AI 이미지 옵션이 제공됩니다.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          AI로 만들면 <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google 개인정보처리방침<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />에 따라 이미지를 생성하고 제품을 개선하기 위해 프롬프트가 Google AI 서버로 전송됩니다.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          생성형 AI는 실험 단계의 기술로, 초기 개발 단계에 있으며 현재 제한적으로만 이용할 수 있습니다.</translation>
 <translation id="6982462588253070448">모래 언덕</translation>
 <translation id="7005833343836210400">기기가 오프라인 상태입니다.</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" />에서 이 기기를 관리하고 방문한 웹페이지, 비밀번호, 이메일을 비롯한 모든 사용자 활동에 액세스합니다.</translation>
@@ -1451,7 +1440,6 @@
 <translation id="8208861521865154048">혜택</translation>
 <translation id="8226628635270268143">좋아하는 사진 및 앨범을 선택합니다.</translation>
 <translation id="8227119283605456246">파일 첨부</translation>
-<translation id="8227488649450500937">다음 프롬프트 중 하나를 사용해 보거나 <ph name="BEGIN_LINK_PROMPTING_GUIDE" />프롬프트 가이드<ph name="END_LINK_PROMPTING_GUIDE" />를 참고하세요.</translation>
 <translation id="8230672074305416752">기본 네트워크 게이트웨이를 핑할 수 없습니다.</translation>
 <translation id="8236972776513018241">스크립트</translation>
 <translation id="8238771987802558562">APN 선택</translation>

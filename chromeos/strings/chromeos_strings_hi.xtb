@@ -127,6 +127,7 @@
 <translation id="1567064801249837505">एल्बम</translation>
 <translation id="1572585716423026576">वॉलपेपर के तौर पर सेट करें</translation>
 <translation id="1578784163189013834">स्क्रीन सेवर का बैकग्राउंड चुनें</translation>
+<translation id="1587031308639983732">ऐसा हो सकता है कि समय के हिसाब से किए गए बदलाव सटीक न हों. इस सेटिंग को आपका एडमिन मैनेज करता है.</translation>
 <translation id="1588438908519853928">सामान्य</translation>
 <translation id="1591562245178063882">इस माह</translation>
 <translation id="1593528591614229756">मोबाइल और इंटरनेट सेवा देने वाली कंपनी या एडमिन की ओर से उपलब्ध कराए गए एपीएन ज़रूर चुनें. कोई एपीएन चुनने पर, सभी कस्टम एपीएन बंद हो जाएंगे. अमान्य एपीएन चुनने पर, आपके मोबाइल कनेक्शन में रुकावट आ सकती है. <ph name="LINK_BEGIN" />ज़्यादा जानें<ph name="LINK_END" /></translation>
@@ -257,7 +258,6 @@
 <translation id="2148716181193084225">आज</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> फ़ोटो</translation>
 <translation id="2154460308960858308">खोज के लिए डाला गया टेक्स्ट हटाएं</translation>
-<translation id="2156072344042480449">आपके हाल ही में इस्तेमाल किए गए दो प्रॉम्प्ट. इनका इस्तेमाल तभी किया जा सकता है, जब आप इस पेज पर हों.</translation>
 <translation id="2157660087437850958">इमोजी पिकर</translation>
 <translation id="2157959690810728433">कतार में है</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: फिर से कोशिश करें</translation>
@@ -1195,16 +1195,6 @@
 <translation id="6975981640379148271">कोअला</translation>
 <translation id="6977381486153291903">फ़र्मवेयर पुनरीक्षण</translation>
 <translation id="6981982820502123353">सुलभता</translation>
-<translation id="698242338298293034">अपने हिसाब से एआई वाली इमेज जनरेट करने के लिए, कोई थीम चुनें और फिर अंडरलाइन किए गए शब्दों को चुनें.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          एआई वाली इमेज के अलग-अलग और यूनीक विकल्प पाने के लिए, "वॉलपेपर के नए आइडिया दें" को चुनें.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          एआई से वॉलपेपर जनरेट करने पर आपका प्रॉम्प्ट, Google के एआई वाले सर्वर को भेजा जाता है. ऐसा इसलिए किया जाता है, ताकि इमेज जनरेट की जा सकें और प्रॉडक्ट को बेहतर बनाया जा सके. इस प्रोसेस पर, <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google की निजता नीति<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> लागू होती है.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          जनरेटिव एआई की सुविधा, फ़िलहाल एक्सपेरिमेंट के तौर पर उपलब्ध है. इस पर अभी काम चल रहा है. फ़िलहाल, यह सभी लोगों के लिए उपलब्ध नहीं है.</translation>
 <translation id="6982462588253070448">रेत के टीले</translation>
 <translation id="7005833343836210400">डिवाइस ऑफ़लाइन है</translation>
 <translation id="7028979494427204405">इस डिवाइस को <ph name="MANAGER" /> प्रबंधित करता है और इसके पास उपयोगकर्ता की सभी गतिविधियों का ऐक्सेस है. इन गतिविधियों में उपयोगकर्ता के पासवर्ड, ईमेल, और उन पेजों की जानकारी होती है जिन पर वह जाता है.</translation>
@@ -1449,7 +1439,6 @@
 <translation id="8208861521865154048">फ़ायदे</translation>
 <translation id="8226628635270268143">अपनी पसंदीदा फ़ोटो और एल्बम चुनें</translation>
 <translation id="8227119283605456246">फ़ाइल अटैच करें</translation>
-<translation id="8227488649450500937">इनमें से कोई एक प्रॉम्प्ट आज़माएं या <ph name="BEGIN_LINK_PROMPTING_GUIDE" />प्रॉम्प्ट से जुड़ी गाइड<ph name="END_LINK_PROMPTING_GUIDE" /> देखें</translation>
 <translation id="8230672074305416752">डिफ़ॉल्ट नेटवर्क गेटवे को पिंग नहीं किया जा सका</translation>
 <translation id="8236972776513018241">ट्रांसक्रिप्ट</translation>
 <translation id="8238771987802558562">कोई एपीएन चुनें</translation>

@@ -1133,7 +1133,6 @@ Az alkalmazások számára már megadott engedélyek erre a fiókra is érvénye
 <translation id="1794212650797661990"><ph name="DOMAIN" /> jelszavának elrejtése</translation>
 <translation id="1794791083288629568">Küldjön visszajelzést, hogy segítsen a probléma megoldásában.</translation>
 <translation id="1795214765651529549">Klasszikus téma használata</translation>
-<translation id="1795668164971917185">Amikor a Google Biztonságos Böngészés legközelebb gyanús letöltést észlel, automatikusan átvizsgálja az Ön által kiválasztott <ph name="LINK" /> részeként.</translation>
 <translation id="1796588414813960292">A hangot igénylő funkciók nem működnek majd</translation>
 <translation id="1797117170091578105">Játszhat a Chromebook billentyűzetével. Az egyes billentyűket a kívánt műveletekhez rendelheti.</translation>
 <translation id="1798335429200675510">A jobb egérgombbal egy szövegmezőre kattintva vázlatot hozhat létre, vagy finomíthat egy meglévő munkán a Google AI segítségével. Ez a funkció jelenleg csak korlátozottan áll rendelkezésre.</translation>
@@ -5922,7 +5921,6 @@ kicsinyítéshez pedig a Ctrl + Alt + Fényerő csökkentése billentyűpara
 <translation id="5263656105659419083">Az oldalsó panelre való egyszerű visszatéréshez kattintson a jobb felső sarokban lévő Kitűzés gombra</translation>
 <translation id="5264148714798105376">Ez eltarthat egy-két percig.</translation>
 <translation id="5264252276333215551">Csatlakozzon az internethez az alkalmazás kioszk módban való indításához.</translation>
-<translation id="526539328530966548">Speciális védelem</translation>
 <translation id="5265797726250773323">Hiba a telepítés során</translation>
 <translation id="5266113311903163739">Tanúsítványkibocsátó-importálási hiba</translation>
 <translation id="526622169288322445">További műveletek a következőhöz: <ph name="ADDRESS_SUMMARY" /></translation>
@@ -11386,6 +11384,7 @@ A webhelyek és alkalmazások számára már megadott engedélyek erre a fiókra
 <translation id="949807244219288032">Ez a lap HID-eszközhöz csatlakozik</translation>
 <translation id="950079950995628542">Forrás: „<ph name="PHONE_NAME" />”</translation>
 <translation id="950307215746360464">Beállítási útmutató</translation>
+<translation id="950728747178241190">Zajszűrés és hangjavítások alkalmazása. <ph name="LINK_BEGIN" />További információ<ph name="LINK_END" />.</translation>
 <translation id="951273949038779544"><ph name="SITE_ACCESS" />. A rendszergazda telepítette</translation>
 <translation id="951991426597076286">Elutasítás</translation>
 <translation id="952471655966876828">Az eszköz automatikusan csatlakozik, amikor bekapcsolásra kerül, vagy használatban van</translation>

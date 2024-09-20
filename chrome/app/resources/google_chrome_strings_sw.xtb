@@ -217,6 +217,7 @@ Baadhi ya vipengele huenda visipatikane na mabadiliko katika mapendeleo hayatahi
 <translation id="3596080736082218006">{COUNT,plural, =0{Msimamizi wako anataka ufungue Chrome tena ili utumie sasisho}=1{Msimamizi wako anataka ufungue Chrome tena ili utumie sasisho. Haitafungua upya dirisha fiche.}other{Msimamizi wako anataka ufungue Chrome tena ili utumie sasisho. Haitafungua upya madirisha # fiche.}}</translation>
 <translation id="3597003331831379823">Imeshindwa kuweka mipangilio ikitumia ufikiaji maalum. <ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3609788354808247807">Hujatembelea hivi majuzi. Chrome imeondoa <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /></translation>
+<translation id="3622716124581627104">Tambua vitu au maeneo kisha unakili au utafsiri maandishi. Unapotumia Lenzi ya Google, picha ya skrini ya ukurasa hutumwa kwenda Google. <ph name="LEARN_MORE" /></translation>
 <translation id="3622797965165704966">Sasa ni rahisi zaidi kutumia Chrome pamoja na Akaunti yako ya Google na kwenye kompyuta zinazoshirikiwa.</translation>
 <translation id="3625345586754200168">Jaribu kutumia Lenzi</translation>
 <translation id="3635073343384702370">Chrome inaweza kukagua manenosiri yako unapoyahifadhi</translation>
@@ -402,6 +403,7 @@ Google Chrome haiwezi kufufua mipangilio yako.</translation>
 <translation id="608006075545470555">Ongeza Wasifu wa Kazini kwenye kivinjari hiki</translation>
 <translation id="6097822892606850415">Andika kwa uhakika zaidi ukisaidiwa na AI</translation>
 <translation id="6113794647360055231">Chrome imeboreshwa zaidi</translation>
+<translation id="6116252277240876590">Lugha hii hutumika kuonyesha menyu, mipangilio, arifa na maandishi mengine katika Chrome</translation>
 <translation id="6134085236017727171">Ili utumie maikrofoni yako, ruhusu Chrome ifikie <ph name="BEGIN_LINK" />mipangilio ya mfumo<ph name="END_LINK" /></translation>
 <translation id="6135456723633883042">Vichupo hivi vinatumia nyenzo za ziada. Ruhusu Chrome ivifanye visitumike ili kuboresha utendaji wako.</translation>
 <translation id="6145313976051292476">Fungua PDF katika Chrome</translation>
@@ -602,6 +604,7 @@ Huenda ruhusa ambazo tayari umezipa tovuti na programu zikatumika kwenye akaunti
 <translation id="8498858610309223613">Sasisho maalum la usalama wa Google Chrome limewekwa sasa hivi. Ifunge kisha uifungue sasa na tutarejesha vichupo vyako.</translation>
 <translation id="8516431725144212809">Mambo yanayokuvutia kama yalivyokadiriwa na Chrome</translation>
 <translation id="8521348052903287641">Sheria ya kuingia ya Google Chrome Dev ili kuruhusu trafiki ya mDNS.</translation>
+<translation id="852529348814672339">Onyesha Chrome katika lugha hii</translation>
 <translation id="8550334526674375523">Wasifu huu wa kazini ni tofauti kabisa na wasifu wako wa binafsi.</translation>
 <translation id="8555465886620020932">Hitilafu ya huduma: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8571790202382503603">Ukitumia kipengele cha wasifu kwenye Chrome, unaweza kutenganisha vitu vyako vyote vya Chrome. Hali hii hukurahisishia mchakato wa kutenganisha kazi na burudani.</translation>

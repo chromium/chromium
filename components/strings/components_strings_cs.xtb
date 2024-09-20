@@ -2846,7 +2846,6 @@ Kontaktujte administrátora systému.</translation>
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />, stisknutím tabulátoru a poté klávesy Enter můžete spravovat soubory, které jste v Chromu stáhli</translation>
 <translation id="6254436959401408446">K otevření této stránky není k dispozici dostatek paměti</translation>
 <translation id="625463612687472648">Odebrat oprávnění</translation>
-<translation id="6256360366378574605">{FINANCIAL_ACCOUNT,plural, =1{Při nakupování v Chromu zobrazovat jako možnost účet <ph name="FINANCIAL_ACCOUNT_TYPES" />}few{Při nakupování v Chromu zobrazovat jako možnosti účty <ph name="FINANCIAL_ACCOUNT_TYPES" />}many{Při nakupování v Chromu zobrazovat jako možnosti účty <ph name="FINANCIAL_ACCOUNT_TYPES" />}other{Při nakupování v Chromu zobrazovat jako možnosti účty <ph name="FINANCIAL_ACCOUNT_TYPES" />}}</translation>
 <translation id="6259156558325130047">&amp;Opakovat změnu uspořádání</translation>
 <translation id="6263376278284652872">Záložky webu <ph name="DOMAIN" /></translation>
 <translation id="6264376385120300461">Přesto stáhnout</translation>
@@ -3132,6 +3131,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="6767985426384634228">Aktualizovat adresu?</translation>
 <translation id="6770747695101757579">Papír (bavlněný)</translation>
 <translation id="677257480647123231">Bezpečnost dětí na internetu</translation>
+<translation id="6772959465807028761">Pokud chcete používat YouTube, pokračujte se svým účtem Google</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6777088782163649345">Používej YouTube s nastavením od rodičů</translation>
 <translation id="6779348349813025131">Správce hesel Google potřebuje přístup ke Klíčence systému MacOS</translation>
@@ -4071,7 +4071,6 @@ Další podrobnosti:
 <translation id="84561192812921051">Administrátor může vzdálené měnit nastavení profilu a prohlížeče, analyzovat informace o prohlížeči prostřednictvím přehledů a provádět další nezbytné úkoly. Aktivita na tomto zařízení může být spravována také mimo Chrome.  <ph name="BEGIN_LINK" />Další informace<ph name="END_LINK" /></translation>
 <translation id="8457125768502047971">Bez časového omezení</translation>
 <translation id="8458202188076138974">Letter Extra</translation>
-<translation id="8458605637341729751">Pokračováním souhlasíte se shromažďováním přesné polohy vašeho zařízení a s jejím sdílením s majitelem vašeho účtu pro účely prevence podvodů. Pokud službu PIX chcete v Chromu vypnout, přejděte do <ph name="BEGIN_LINK1" />nastavení plateb<ph name="END_LINK1" /></translation>
 <translation id="8460854335417802511">Zapnout</translation>
 <translation id="8461694314515752532">Šifrovat synchronizovaná data pomocí vlastní heslové fráze pro synchronizaci</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 platební karta}few{# platební karty}many{# platební karty}other{# platebních karet}}</translation>
@@ -4106,6 +4105,7 @@ Další podrobnosti:
 <translation id="8527228059738193856">Reproduktory</translation>
 <translation id="8527681393107582734">Zemědělství a lesnictví</translation>
 <translation id="8528149813106025610">Dětské oděvy</translation>
+<translation id="8528479410903501741">Uložit číslo IBAN</translation>
 <translation id="853246364274116957">Muzikály a hudební divadla</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">Na stránce &lt;strong&gt;chrome://policy&lt;/strong&gt; naleznete seznam blokovaných adres URL a další zásady vynucené vaším administrátorem systému.</translation>
@@ -4299,6 +4299,7 @@ Další podrobnosti:
 <translation id="8891727572606052622">Neplatný režim proxy serveru.</translation>
 <translation id="8894794286471754040">Dlouhou stranou napřed</translation>
 <translation id="8895334001368918465">Pokud v Chromu chcete používat jinou službu automatického vyplňování, zapněte ji v nastavení Androidu a tady</translation>
+<translation id="8897221284075091877">Pokud chcete požádat o zobrazení tohoto obsahu, pokračujte se svým účtem Google</translation>
 <translation id="8897428486789851669">Plavání</translation>
 <translation id="8899807382908246773">Rušivé reklamy</translation>
 <translation id="8903921497873541725">Přiblížit</translation>

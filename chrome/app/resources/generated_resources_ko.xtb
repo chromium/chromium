@@ -1133,7 +1133,6 @@
 <translation id="1794212650797661990"><ph name="DOMAIN" /> 비밀번호 숨기기</translation>
 <translation id="1794791083288629568">이 문제를 해결하는 데 도움이 되도록 의견 전송</translation>
 <translation id="1795214765651529549">기본 테마 사용</translation>
-<translation id="1795668164971917185">다음번에 Google 세이프 브라우징에서 의심스러운 다운로드를 발견하면 선택한 <ph name="LINK" />의 일부로 해당 다운로드를 자동으로 스캔합니다.</translation>
 <translation id="1796588414813960292">소리가 필요한 기능이 작동하지 않습니다</translation>
 <translation id="1797117170091578105">Chromebook 키보드를 사용하여 플레이합니다. 특정 작업에 맞게 키를 맞춤설정할 수 있습니다.</translation>
 <translation id="1798335429200675510">텍스트 상자를 마우스 오른쪽 버튼으로 클릭하여 Google AI를 기반으로 초안을 작성하거나 기존 작업물을 다듬어 보세요. 현재는 제한적으로만 이용할 수 있습니다.</translation>
@@ -5925,7 +5924,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5263656105659419083">측면 패널로 손쉽게 돌아가려면 오른쪽 상단의 고정을 클릭하세요</translation>
 <translation id="5264148714798105376">1분 정도 소요될 수 있습니다.</translation>
 <translation id="5264252276333215551">앱을 키오스크 모드로 실행하려면 인터넷에 연결하세요.</translation>
-<translation id="526539328530966548">향상된 보호 모드</translation>
 <translation id="5265797726250773323">설치 중 오류 발생</translation>
 <translation id="5266113311903163739">인증 기관 가져오기 오류</translation>
 <translation id="526622169288322445"><ph name="ADDRESS_SUMMARY" />의 작업 메뉴 더보기</translation>

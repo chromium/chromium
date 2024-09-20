@@ -127,6 +127,7 @@
 <translation id="1567064801249837505">Албуми</translation>
 <translation id="1572585716423026576">Постави како тапет</translation>
 <translation id="1578784163189013834">Изберете заднина за штедачот на екранот</translation>
+<translation id="1587031308639983732">Промените според време може да не бидат точни. Администраторот управува со поставкава.</translation>
 <translation id="1588438908519853928">Нормален</translation>
 <translation id="1591562245178063882">Овој месец</translation>
 <translation id="1593528591614229756">Погрижете се да ги изберете APN што ги обезбедил вашиот мобилен оператор или администратор. Ако изберете APN, ќе се оневозможат сите приспособени APN. Неважечки APN може да ја прекинат вашата мобилна врска. <ph name="LINK_BEGIN" />Дознајте повеќе<ph name="LINK_END" /></translation>
@@ -257,7 +258,6 @@
 <translation id="2148716181193084225">Денес</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> фотографии</translation>
 <translation id="2154460308960858308">Избриши го пребарувањето</translation>
-<translation id="2156072344042480449">Вашите 2 последни барања. Барањава може да ги користите само додека сте на страницава.</translation>
 <translation id="2157660087437850958">избирач на емоџија</translation>
 <translation id="2157959690810728433">ЧЕКА НА РЕД</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Обиди се пак</translation>
@@ -1166,6 +1166,7 @@
 <translation id="6831043979455480757">Преведи</translation>
 <translation id="6846843854964504403">Ресетирање за безбедност</translation>
 <translation id="6853312040151791195">Брзина на празнење</translation>
+<translation id="6862228900689076919">Администраторот управува со функцијава</translation>
 <translation id="6862416241246624313">Повратните информации се испратени</translation>
 <translation id="6866732840889595464">маргаритка</translation>
 <translation id="6871256179359663621">светлопурпурна</translation>
@@ -1194,16 +1195,6 @@
 <translation id="6975981640379148271">коали</translation>
 <translation id="6977381486153291903">Ревизија на фирмвер</translation>
 <translation id="6981982820502123353">Пристапност</translation>
-<translation id="698242338298293034">Изберете тема, па изберете ги подвлечените зборови за персонализирање на вашите слики со AI.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Изберете „Инспирирај ме“ за да добиете повеќе уникатни и разновидни опции за слики со AI.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Кога создавате со AI, барањето се испраќа до серверите на Google AI за да се генерираат слики и да се подобрува производот, што подлежи на <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Политиката за приватност на Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Генеративната AI е во експериментална фаза и во моментов има ограничена достапност.</translation>
 <translation id="6982462588253070448">песочни дини</translation>
 <translation id="7005833343836210400">Уредот е офлајн</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> управува со уредов и има пристап до целата активност на корисникот, вклучувајќи ги и посетените веб-страници, лозинките и е-поштата.</translation>
@@ -1449,7 +1440,6 @@
 <translation id="8208861521865154048">Поволности</translation>
 <translation id="8226628635270268143">Изберете ги омилените фотографии и албуми</translation>
 <translation id="8227119283605456246">Прикачи датотека</translation>
-<translation id="8227488649450500937">Испробајте некое од овие барања или погледнете го <ph name="BEGIN_LINK_PROMPTING_GUIDE" />водичот за барања<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="8230672074305416752">Не успеа да се пингува стандардниот мрежен портал</translation>
 <translation id="8236972776513018241">Транскрипција</translation>
 <translation id="8238771987802558562">Изберете APN</translation>

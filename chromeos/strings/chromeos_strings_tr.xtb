@@ -127,6 +127,7 @@
 <translation id="1567064801249837505">Albümler</translation>
 <translation id="1572585716423026576">Duvar kağıdı yap</translation>
 <translation id="1578784163189013834">Ekran koruyucu arka planı seç</translation>
+<translation id="1587031308639983732">Zamana dayalı değişiklikler doğru olmayabilir. Bu ayar, yöneticiniz tarafından yönetilir.</translation>
 <translation id="1588438908519853928">Normal</translation>
 <translation id="1591562245178063882">Bu ay</translation>
 <translation id="1593528591614229756">Mobil sağlayıcınız veya yöneticiniz tarafından sağlanan APN'leri seçtiğinizden emin olun. Bir APN'yi seçtiğinizde tüm özel APN'ler devre dışı bırakılır. Geçersiz APN'ler, mobil bağlantınızın kesilmesine neden olabilir. <ph name="LINK_BEGIN" />Daha fazla bilgi edinin<ph name="LINK_END" />.</translation>
@@ -257,7 +258,6 @@
 <translation id="2148716181193084225">Bugün</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> fotoğraf</translation>
 <translation id="2154460308960858308">Aramayı temizle</translation>
-<translation id="2156072344042480449">Son 2 isteminiz. Bu istemleri yalnızca bu sayfadayken kullanabilirsiniz.</translation>
 <translation id="2157660087437850958">emoji seç</translation>
 <translation id="2157959690810728433">SIRAYA ALINDI</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Yeniden dene</translation>
@@ -1166,6 +1166,7 @@
 <translation id="6831043979455480757">Çevir</translation>
 <translation id="6846843854964504403">Güvenlik ayarları sıfırlama</translation>
 <translation id="6853312040151791195">Şarjın boşalma hızı</translation>
+<translation id="6862228900689076919">Bu özellik, yöneticiniz tarafından belirleniyor</translation>
 <translation id="6862416241246624313">Geri bildirim gönderildi</translation>
 <translation id="6866732840889595464">papatya</translation>
 <translation id="6871256179359663621">açık mor</translation>
@@ -1194,16 +1195,6 @@
 <translation id="6975981640379148271">koalalar</translation>
 <translation id="6977381486153291903">Donanım yazılımı düzeltmesi</translation>
 <translation id="6981982820502123353">Erişilebilirlik</translation>
-<translation id="698242338298293034">Yapay zeka resimlerinizi kişiselleştirmek için bir tema ve ardından altı çizili kelimeleri seçin.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Daha benzersiz ve çeşitli yapay zeka resim seçenekleri için "Bana ilham ver"i seçin.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Yapay zeka ile içerik ürettiğinizde istem, <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google'ın Gizlilik Politikası<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />'na tabi olarak resim üretmek ve ürünü iyileştirmek için Google Yapay Zeka sunucularına gönderilir.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Üretken yapay zeka henüz geliştirme aşamasındaki deneysel bir çalışma olup şu anda kullanılabilirliği sınırlıdır.</translation>
 <translation id="6982462588253070448">kum tepeleri</translation>
 <translation id="7005833343836210400">Cihaz çevrimdışı</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> bu cihazı yönetir ve ziyaret edilen web sayfaları, şifreler ve e-posta dahil tüm kullanıcı etkinliğine erişebilir.</translation>
@@ -1449,7 +1440,6 @@ Bu transkriptleri almak için metne dönüştürme modelini (100 MB'a kadar) ind
 <translation id="8208861521865154048">Avantajlar</translation>
 <translation id="8226628635270268143">En beğendiğiniz fotoğraf ve albümleri seçin</translation>
 <translation id="8227119283605456246">Dosya ekle</translation>
-<translation id="8227488649450500937">Bu istemlerden birini deneyin veya <ph name="BEGIN_LINK_PROMPTING_GUIDE" />istem kılavuzuna<ph name="END_LINK_PROMPTING_GUIDE" /> göz atın</translation>
 <translation id="8230672074305416752">Varsayılan ağ geçidi pinglenemedi</translation>
 <translation id="8236972776513018241">Transkript</translation>
 <translation id="8238771987802558562">Bir APN seçin</translation>

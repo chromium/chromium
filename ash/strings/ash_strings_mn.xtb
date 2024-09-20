@@ -215,6 +215,7 @@
 <translation id="1703117532528082099">Идэвхтэй цонхыг зүүн талд суурилуулсан.</translation>
 <translation id="1708345662127501511">Дэлгэц: <ph name="DESK_NAME" /></translation>
 <translation id="1709762881904163296">Сүлжээний тохиргоо</translation>
+<translation id="171610090693716835">Төвлөрөхдөө сонсох хувийн болгосон тоглуулах жагсаалтаар төлөвлөгөөнийхөө дагуу байгаарай. YouTube Premium-н 3 сарын эрхээр зар сурталчилгаагүй YouTube Music, YouTube-г ямар ч зардалгүйгээр аваарай.</translation>
 <translation id="1719094688023114093">Шууд тайлбар асаалттай байна.</translation>
 <translation id="1720011244392820496">Wi-Fi синкийг асаана уу</translation>
 <translation id="1720230731642245863">Сүлжээний цэг унтраалттай байна</translation>
@@ -1415,6 +1416,7 @@
 <translation id="5777841717266010279">Дэлгэц хуваалцахыг зогсоох уу?</translation>
 <translation id="5779721926447984944">Бэхэлсэн файлууд</translation>
 <translation id="5785221443435874078">Энэ зөвлөмжийг устгах</translation>
+<translation id="5787431783058088906">Хөнгөлөлт авах</translation>
 <translation id="5788127256798019331">Файлуудыг тоглуулах</translation>
 <translation id="5788535737706478207">Хаасан сүүлийн таб эсвэл цонхыг дахин нээх</translation>
 <translation id="5790085346892983794">Амжилттай гүйцэтгэлээ</translation>
@@ -1646,6 +1648,7 @@
 <translation id="6574587113394758819">Үзэх хамгаалалт асаалттай тул <ph name="APP_TITLE" />-н мэдэгдлийг нуусан</translation>
 <translation id="6574622320167699133">Таны утаснаас түгжээг тайлсан. Нэвтрэхийн тулд дарах эсвэл товшино уу.</translation>
 <translation id="6578407462441924264">Нэргүй</translation>
+<translation id="6582012689384648647">Төвлөрөхдөө сонсох хувийн болгосон тоглуулах жагсаалт авах бол YouTube Music-д хандах эрх олгоно уу</translation>
 <translation id="6582034443359256692">Батарейн цэнэгийн түвшнийг тооцоолж байна.</translation>
 <translation id="6585808820553845416"><ph name="SESSION_TIME_REMAINING" /> хугацааны дараа таны цаг дуусна.</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
@@ -1884,6 +1887,7 @@
 <translation id="7477793887173910789">Хөгжим, видео болон бусад зүйлээ хянах</translation>
 <translation id="7488762544858401571">Зассан</translation>
 <translation id="7489261257412536105">Бүтэн дэлгэцэд орох эсвэл гарах</translation>
+<translation id="7490157877815329797">Зар сурталчилгаагүй хөгжим болон хувийн болгосон төвлөрүүлэх хөгжмийг таатай сонсохын тулд YouTube Music Premium-г туршиж үзнэ үү</translation>
 <translation id="7490360161041035804">Та Google Драйвын файлыг оруулаад чухал файлуудыг бэхлэх боломжтой. Бэхлэхийн тулд зүйл дээгүүр курсорыг зөөх эсвэл Файлсыг нээж, зүйл дээр баруун талыг товшино уу.</translation>
 <translation id="7497767806359279797">Хэл болон гарыг сонгох</translation>
 <translation id="7507162824403726948">Таниулбараа баталгаажуулж дуусгах</translation>
@@ -2159,6 +2163,7 @@
 <translation id="8380784334203145311">Сайхан амраарай,</translation>
 <translation id="8382715499079447151">Үзэх хамгаалалт</translation>
 <translation id="8383614331548401927">Угтах тойм</translation>
+<translation id="838540623579162843">Music Premium-г авах</translation>
 <translation id="8388750414311082622">Сүүлийн дэлгэцийг устгах боломжгүй байна.</translation>
 <translation id="8394567579869570560">Таны эцэг эх энэ төхөөрөмжийг түгжсэн</translation>
 <translation id="8401850874595457088">Хэлний цэсийг оруулна уу</translation>

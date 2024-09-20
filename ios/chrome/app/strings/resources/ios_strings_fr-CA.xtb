@@ -50,6 +50,7 @@
 <translation id="1219674500290482172">Échec de connexion à Internet.</translation>
 <translation id="1227113644794103810">Onglets inactifs</translation>
 <translation id="1231733316453485619">Activer la synchronisation?</translation>
+<translation id="1253032109800629289">Masquer « Recevoir les notifications de suivi de prix »</translation>
 <translation id="1258491128795710625">Nouveautés</translation>
 <translation id="1263231323834454256">Liste de lecture</translation>
 <translation id="1263433075299269530">Votre dernier onglet ouvert</translation>
@@ -395,6 +396,7 @@ Vous utilisez <ph name="DSE_NAME" /> comme moteur de recherche. Consultez les in
 <translation id="2870560284913253234">Site</translation>
 <translation id="2876369937070532032">Envoie des URL de certaines pages que vous visitez à Google, lorsque votre sécurité pourrait être compromise</translation>
 <translation id="2883151425485251736">Affichez et modifiez les sujets que vous avez masqués dans votre compte</translation>
+<translation id="2888631381369839306">Notifications de suivi des prix activées</translation>
 <translation id="288902476966286676">Retourner à l'expéditeur</translation>
 <translation id="2894757982205307093">Nouvel onglet dans le groupe</translation>
 <translation id="2905479111267140204">Vous avez <ph name="NUMBER_OF_PASSWORDS" /> mots de passe réutilisés, ce qui pourrait compromettre votre sécurité.</translation>
@@ -493,6 +495,7 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="3435738964857648380">Sécurité</translation>
 <translation id="3443810440409579745">Onglet reçu.</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
+<translation id="344589138074534176">En savoir plus sur Lentille Google</translation>
 <translation id="345348365500626747">Adresse trouvée</translation>
 <translation id="3464194322481586217">Impossible d'effectuer le suivi du prix.</translation>
 <translation id="3469117812148449995">Options d'enregistrement du mot de passe</translation>
@@ -578,6 +581,7 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="3851938967634752633">Les mots de passe de <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> et de<ph name="NUMBER_OF_ACCOUNTS" /> autres comptes seront supprimés. Vos comptes ne seront pas supprimés.</translation>
 <translation id="3858860766373142691">Nom</translation>
 <translation id="3861908220442487587">Cette adresse n'est enregistrée que sur cet appareil. Pour l'utiliser sur vos autres appareils, transférez-la vers votre compte Google, <ph name="USER_EMAIL" /></translation>
+<translation id="3868495844258915202">Afficher l'URL complète</translation>
 <translation id="3876833929577368454">Toujours me demander</translation>
 <translation id="3885587018298784481">Se joindre à un groupe familial</translation>
 <translation id="3888863481921783344">Cela sera utilisé pour vous montrer les invités potentiels à votre événement.</translation>
@@ -865,6 +869,7 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="5210365745912300556">Fermer l'onglet</translation>
 <translation id="5211488077761630279">Autoriser « <ph name="SITE_NAME" /> » à utiliser votre <ph name="PERMISSION" />?</translation>
 <translation id="5217245356412073535">Vous pouvez modifier l'affichage du site par défaut pour le mode Bureau dans Paramètres &gt; Paramètres de contenu</translation>
+<translation id="5217329997012062137">Lorsque vous utilisez Lentille Google, une capture d'écran de la page est envoyée à Google.</translation>
 <translation id="5220945116117011963">Créer des événements d'agenda à partir de dates</translation>
 <translation id="5222676887888702881">Déconnexion</translation>
 <translation id="5228579091201413441">Activer la synchronisation</translation>
@@ -877,6 +882,7 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="5271265092610673171">{count,plural, =1{Un champ obligatoire est vide. Remplissez-le avant d'enregistrer.}one{Certains champs obligatoires sont vides. Remplissez-les avant d'enregistrer.}other{Certains champs obligatoires sont vides. Remplissez-les avant d'enregistrer.}}</translation>
 <translation id="5271549068863921519">Enregistrer le mot de passe</translation>
 <translation id="5279600392753459966">Tout bloquer</translation>
+<translation id="5282340693022193851">Pour recevoir des notifications de suivi de prix, activez les notifications dans vos paramètres iOS.</translation>
 <translation id="5294624619177114121">Notifications sur appareil mobile</translation>
 <translation id="5295239312320826323">Supprimer le compte <ph name="USER_EMAIL" />?</translation>
 <translation id="5300589172476337783">Afficher</translation>
@@ -1638,6 +1644,7 @@ Les sites peuvent utiliser des témoins afin de voir votre activité de navigati
 <translation id="8712534545803964353">Rechercher dans la page…</translation>
 <translation id="8712637175834984815">OK</translation>
 <translation id="8722229818691036192">Comptes sur cet appareil</translation>
+<translation id="8722649775263832315">Toucher ou mettre en évidence n'importe quel élément pour le rechercher avec Lentille Google</translation>
 <translation id="8725066075913043281">Réessayer</translation>
 <translation id="8728922029615312208">Tout fermer</translation>
 <translation id="8730621377337864115">Terminé</translation>

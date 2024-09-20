@@ -2851,7 +2851,6 @@
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Натиснете Tab и след това – Enter, за да управлявате файловете, които сте изтеглили с Chrome</translation>
 <translation id="6254436959401408446">Няма достатъчно памет за отваряне на тази страница</translation>
 <translation id="625463612687472648">Оттегляне на разрешението</translation>
-<translation id="6256360366378574605">{FINANCIAL_ACCOUNT,plural, =1{Когато извършвате покупки в Chrome, ще виждате <ph name="FINANCIAL_ACCOUNT_TYPES" /> като опция}other{Когато извършвате покупки в Chrome, ще виждате <ph name="FINANCIAL_ACCOUNT_TYPES" /> като опции}}</translation>
 <translation id="6259156558325130047">&amp;Възстановяване на пренареждането</translation>
 <translation id="6263376278284652872">Отметки от <ph name="DOMAIN" /></translation>
 <translation id="6264376385120300461">Изтегляне въпреки това</translation>
@@ -4078,7 +4077,6 @@
 <translation id="84561192812921051">Администраторът ви може да извършва промени в потребителския профил и браузъра ви отдалечено, да анализира информацията за браузъра чрез отчитане и да изпълнява други необходими задачи. Възможно е активността на това устройство да се управлява и извън Chrome.  <ph name="BEGIN_LINK" />Научете повече<ph name="END_LINK" /></translation>
 <translation id="8457125768502047971">Неограничено</translation>
 <translation id="8458202188076138974">Letter Extra</translation>
-<translation id="8458605637341729751">Продължавайки, приемате точното местоположение на устройството ви да се събира и споделя със собственика на профила с цел предотвратяване на измами. За да изключите PIX в Chrome, отворете <ph name="BEGIN_LINK1" />настройките за плащане<ph name="END_LINK1" /></translation>
 <translation id="8460854335417802511">Включване</translation>
 <translation id="8461694314515752532">Шифроване на синхронизираните данни със собствения ви пропуск за синхронизиране</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 кредитна карта}other{# кредитни карти}}</translation>
@@ -4113,6 +4111,7 @@
 <translation id="8527228059738193856">Високоговорители</translation>
 <translation id="8527681393107582734">Земеделие и гори</translation>
 <translation id="8528149813106025610">Детско облекло</translation>
+<translation id="8528479410903501741">Запазване на IBAN</translation>
 <translation id="853246364274116957">Бродуей и мюзикъли</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">Посетете &lt;strong&gt;chrome://policy&lt;/strong&gt;, за да видите блокираните URL адреси и другите правила, наложени от системния ви администратор.</translation>

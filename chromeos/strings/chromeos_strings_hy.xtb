@@ -127,6 +127,7 @@
 <translation id="1567064801249837505">Ալբոմներ</translation>
 <translation id="1572585716423026576">Օգտագործել որպես պաստառ</translation>
 <translation id="1578784163189013834">Ընտրել էկրանապահի ֆոն</translation>
+<translation id="1587031308639983732">Ժամանակի հիման վրա փոփոխությունները կարող են ճշգրիտ չլինել։ Այս կարգավորումը կառավարվում է ձեր ադմինիստրատորի կողմից։</translation>
 <translation id="1588438908519853928">Սովորական</translation>
 <translation id="1591562245178063882">Այս ամիս</translation>
 <translation id="1593528591614229756">Ընտրեք միայն ձեր բջջային օպերատորի կամ ադմինիստրատորի կողմից տրամադրված APN-ները։ APN ընտրելու արդյունքում բոլոր հատուկ APN-ները կանջատվեն։ Անվավեր APN-ները կարող են խաթարել ձեր բջջային կապը։ <ph name="LINK_BEGIN" />Իմանալ ավելին<ph name="LINK_END" /></translation>
@@ -257,7 +258,6 @@
 <translation id="2148716181193084225">Այսօր</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> լուսանկար</translation>
 <translation id="2154460308960858308">Մաքրել որոնման դաշտը</translation>
-<translation id="2156072344042480449">Ձեր վերջին 2 հարցումները։ Դուք կարող եք օգտագործել այս հարցումները միայն այն ժամանակ, երբ այս էջում եք։</translation>
 <translation id="2157660087437850958">զմայլիկների ընտրիչ</translation>
 <translation id="2157959690810728433">ՀԵՐԹԱԳՐՎԱԾ Է</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />՝ նորից փորձել</translation>
@@ -1166,6 +1166,7 @@
 <translation id="6831043979455480757">Թարգմանել</translation>
 <translation id="6846843854964504403">Անվտանգ կարգավորումների վերականգնում</translation>
 <translation id="6853312040151791195">Լիցքաթափման արագությունը</translation>
+<translation id="6862228900689076919">Այս գործառույթը կառավարվում է ձեր ադմինիստրատորի կողմից</translation>
 <translation id="6862416241246624313">Կարծիքն ուղարկվեց</translation>
 <translation id="6866732840889595464">մարգարտածաղիկ</translation>
 <translation id="6871256179359663621">բաց մանուշակագույն</translation>
@@ -1194,16 +1195,6 @@
 <translation id="6975981640379148271">կոալաներ</translation>
 <translation id="6977381486153291903">Ներկառուցված ծրագրակազմի տարբերակը</translation>
 <translation id="6981982820502123353">Մատչելիությունը</translation>
-<translation id="698242338298293034">Ընտրեք թեմա, այնուհետև ընտրեք ընդգծված բառերը՝ ձեր ԱԲ պատկերներն անհատականացնելու համար։
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Ընտրեք «Ոգեշնչիր ինձ»՝ ԱԲ պատկերների ավելի յուրօրինակ և բազմազան տարբերակներ ստանալու համար։
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Երբ դուք որևէ բան եք ստեղծում ԱԲ-ի միջոցով, հարցումն ուղարկվում է Google ԱԲ-ի սերվերներ՝ պատկերներ գեներացնելու և պրոդուկտը բարելավելու համար՝ <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google-ի գաղտնիության քաղաքականության<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> համաձայն։
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Գեներատիվ արհեստական բանականությունը փորձարկման ու մշակման վաղ փուլում է և ներկայումս ունի սահմանափակ հասանելիություն։</translation>
 <translation id="6982462588253070448">ավազաթմբեր</translation>
 <translation id="7005833343836210400">Սարքը միացած չէ ինտերնետին</translation>
 <translation id="7028979494427204405">Այս սարքը կառավարվում է <ph name="MANAGER" />-ի կողմից, և վերջինիս տեսանելի են օգտատիրոջ բոլոր գործողությունները, այդ թվում՝ այցելած կայքերը, գաղտնաբառերը և նամակները:</translation>
@@ -1449,7 +1440,6 @@
 <translation id="8208861521865154048">Բոնուսներ</translation>
 <translation id="8226628635270268143">Ընտրեք ձեր սիրած լուսանկարներն ու ալբոմները</translation>
 <translation id="8227119283605456246">Կցել ֆայլ</translation>
-<translation id="8227488649450500937">Փորձեք այս հարցումներից մեկը կամ դիտեք <ph name="BEGIN_LINK_PROMPTING_GUIDE" />ուղեցույցը<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="8230672074305416752">Չհաջողվեց փինգ ուղարկել կանխադրված ցանցի անցախուցին</translation>
 <translation id="8236972776513018241">Տեքստային տարբերակ</translation>
 <translation id="8238771987802558562">Ընտրեք APN</translation>

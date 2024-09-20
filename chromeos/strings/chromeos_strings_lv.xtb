@@ -127,6 +127,7 @@
 <translation id="1567064801249837505">Albumi</translation>
 <translation id="1572585716423026576">Iestatīt kā fona tapeti</translation>
 <translation id="1578784163189013834">Izvēlēties ekrānsaudzētāja fonu</translation>
+<translation id="1587031308639983732">Uz laiku balstītās izmaiņas var nebūt precīzas. Šo iestatījumu pārvalda jūsu administrators.</translation>
 <translation id="1588438908519853928">Parasts</translation>
 <translation id="1591562245178063882">Šis mēnesis</translation>
 <translation id="1593528591614229756">Atlasiet mobilo sakaru operatora vai administratora nodrošinātos APN. Atlasot APN, tiks atspējoti visi pielāgotie APN. Nederīgi APN var pārtraukt mobilo sakaru savienojumu. <ph name="LINK_BEGIN" />Uzzināt vairāk<ph name="LINK_END" /></translation>
@@ -257,7 +258,6 @@
 <translation id="2148716181193084225">Šodien</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> fotoattēli</translation>
 <translation id="2154460308960858308">Notīrīt meklēšanas vaicājumu</translation>
-<translation id="2156072344042480449">Jūsu divas jaunākās uzvednes. Varat izmantot šīs uzvednes tikai šajā lapā.</translation>
 <translation id="2157660087437850958">emocijzīmju atlasītājs</translation>
 <translation id="2157959690810728433">IEVIETOTS RINDĀ</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />. Mēģināt vēlreiz</translation>
@@ -1166,6 +1166,7 @@
 <translation id="6831043979455480757">Tulkot</translation>
 <translation id="6846843854964504403">Drošības atiestatīšana</translation>
 <translation id="6853312040151791195">Izlādes ātrums</translation>
+<translation id="6862228900689076919">Šo funkciju pārvalda jūsu administrators.</translation>
 <translation id="6862416241246624313">Atsauksme ir iesniegta</translation>
 <translation id="6866732840889595464">margrietiņa</translation>
 <translation id="6871256179359663621">gaiši violetā</translation>
@@ -1194,12 +1195,6 @@
 <translation id="6975981640379148271">koalas</translation>
 <translation id="6977381486153291903">Aparātprogrammatūras pārskatīšana</translation>
 <translation id="6981982820502123353">Pieejamība</translation>
-<translation id="698242338298293034">Izvēlieties tēmu un pēc tam atlasiet pasvītrotos vārdus, lai personalizētu savus MI attēlus.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Atlasiet opciju “Iedvesmot mani”, lai iegūtu unikālākas un daudzveidīgākas MI attēlu iespējas.
-          <ph name="LINE_BREAK" /><ph name="LINE_BREAK" />Ja izveidei izmantojat MI, uzvedne tiek nosūtīta Google MI serveriem, lai ģenerētu attēlus un uzlabotu produktu, ievērojot <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google konfidencialitātes politiku<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />.
-          <ph name="LINE_BREAK" /><ph name="LINE_BREAK" />Ģeneratīvais MI ir eksperimentāls, tas ir agrīnā izstrādes stadijā, un pašlaik tam ir ierobežota pieejamība.</translation>
 <translation id="6982462588253070448">smilšu kāpas</translation>
 <translation id="7005833343836210400">Ierīce ir bezsaistē</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> pārvalda šo ierīci un var piekļūt visām lietotāja darbībām, tostarp apmeklētajām tīmekļa lapām, parolēm un e-pastam.</translation>
@@ -1445,7 +1440,6 @@ Lai varētu izveidot šādas transkripcijas, lejupielādējiet transkribēšanas
 <translation id="8208861521865154048">Priekšrocības</translation>
 <translation id="8226628635270268143">Izvēlieties savus iecienītākos fotoattēlus un albumus.</translation>
 <translation id="8227119283605456246">Pievienot failu</translation>
-<translation id="8227488649450500937">Izmēģiniet kādu no šīm uzvednēm vai skatiet <ph name="BEGIN_LINK_PROMPTING_GUIDE" />uzvedņu rakstīšanas ceļvedi<ph name="END_LINK_PROMPTING_GUIDE" />.</translation>
 <translation id="8230672074305416752">Neizdevās ehotestēt noklusējuma tīkla vārteju</translation>
 <translation id="8236972776513018241">Transkripcija</translation>
 <translation id="8238771987802558562">Izvēlieties APN</translation>

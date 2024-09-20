@@ -2856,7 +2856,6 @@ Del</translation>
 <translation id="6252613631861574218">‏<ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />, מקישים על Tab ואז על Enter כדי לנהל קבצים שהורדת ב-Chrome</translation>
 <translation id="6254436959401408446">אין מספיק זיכרון כדי לפתוח את הדף</translation>
 <translation id="625463612687472648">ביטול ההרשאה</translation>
-<translation id="6256360366378574605">{FINANCIAL_ACCOUNT,plural, =1{‏כשמבצעים רכישות ב-Chrome, צריך להתייחס אל <ph name="FINANCIAL_ACCOUNT_TYPES" /> כאפשרות}one{‏כשמבצעים רכישות ב-Chrome, צריך להתייחס אל <ph name="FINANCIAL_ACCOUNT_TYPES" /> כחלק מהאפשרויות}two{‏כשמבצעים רכישות ב-Chrome, צריך להתייחס אל <ph name="FINANCIAL_ACCOUNT_TYPES" /> כחלק מהאפשרויות}other{‏כשמבצעים רכישות ב-Chrome, צריך להתייחס אל <ph name="FINANCIAL_ACCOUNT_TYPES" /> כחלק מהאפשרויות}}</translation>
 <translation id="6259156558325130047">&amp;ביצוע מחדש של שינוי סדר</translation>
 <translation id="6263376278284652872">סימניות <ph name="DOMAIN" /></translation>
 <translation id="6264376385120300461">להוריד בכל זאת</translation>
@@ -4083,7 +4082,6 @@ Del</translation>
 <translation id="84561192812921051">‏לאדמין יש אפשרות לבצע מרחוק שינויים בפרופיל ובדפדפן, לנתח מידע על הדפדפן באמצעות דוחות ולבצע משימות חשובות אחרות. אפשר לנהל את הפעילות במכשיר הזה גם מחוץ ל-Chrome.  <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>
 <translation id="8457125768502047971">ללא הגבלת זמן</translation>
 <translation id="8458202188076138974">‏9.5x12 אינץ' (Letter Extra)</translation>
-<translation id="8458605637341729751">‏המשך מבטא את הסכמתך לכך שנתוני המיקום המדויק של המכשיר שלך ייאספו וישותפו עם בעלי החשבון לצורך מניעת הונאות. כדי להשבית את Pix ב-Chrome, צריך לעבור אל <ph name="BEGIN_LINK1" />הגדרות התשלומים<ph name="END_LINK1" /></translation>
 <translation id="8460854335417802511">להפעלת ההגדרה</translation>
 <translation id="8461694314515752532">הצפנת נתונים מסונכרנים בעזרת ביטוי סיסמה אישי לסנכרון</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{כרטיס אשראי אחד}one{# כרטיסי אשראי}two{שני כרטיסי אשראי}other{# כרטיסי אשראי}}</translation>
@@ -4118,6 +4116,7 @@ Del</translation>
 <translation id="8527228059738193856">רמקולים</translation>
 <translation id="8527681393107582734">חקלאות ויערנות</translation>
 <translation id="8528149813106025610">בגדי ילדים</translation>
+<translation id="8528479410903501741">‏שמירת מספר IBAN</translation>
 <translation id="853246364274116957">ברודווי ומחזות זמר</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">‏בכתובת &lt;strong&gt;chrome://policy&lt;/strong&gt; מוצגת רשימה של כתובות אתרים שנחסמו ותקנונים אחרים שנאכפים על ידי מנהל המערכת.</translation>

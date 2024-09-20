@@ -50,6 +50,7 @@
 <translation id="1219674500290482172">Nem lehet kapcsolódni az internethez.</translation>
 <translation id="1227113644794103810">Inaktív lapok</translation>
 <translation id="1231733316453485619">Bekapcsolja a szinkronizálást?</translation>
+<translation id="1253032109800629289">Az „Árfigyelési értesítések fogadása” funkció elrejtése</translation>
 <translation id="1258491128795710625">Újdonságok</translation>
 <translation id="1263231323834454256">Olvasási lista</translation>
 <translation id="1263433075299269530">A legutóbb megnyitott lap</translation>
@@ -395,6 +396,7 @@ Az Ön keresőmotorja a következő: <ph name="DSE_NAME" />. A keresési előzm�
 <translation id="2870560284913253234">Webhely</translation>
 <translation id="2876369937070532032">Elküldi egyes felkeresett oldalak URL-jét a Google-nak, ha veszélyben van az Ön biztonsága</translation>
 <translation id="2883151425485251736">Megtekintheti és szerkesztheti a fiókjában elrejtett témákat</translation>
+<translation id="2888631381369839306">Az árfigyelési értesítések bekapcsolva</translation>
 <translation id="288902476966286676">Vissza a feladónak</translation>
 <translation id="2894757982205307093">Új lap a csoportban</translation>
 <translation id="2905479111267140204"><ph name="NUMBER_OF_PASSWORDS" /> újrafelhasznált jelszava van, amelyek veszélyeztethetik az Ön biztonságát.</translation>
@@ -880,6 +882,7 @@ A keresési előzmények törléséről a keresőmotorja útmutatójából táj�
 <translation id="5271265092610673171">{count,plural, =1{Egy kötelező mező üres. A mentés előtt töltse ki.}other{Néhány kötelező mező üres. A mentés előtt töltse ki őket.}}</translation>
 <translation id="5271549068863921519">Jelszó mentése</translation>
 <translation id="5279600392753459966">Összes letiltása</translation>
+<translation id="5282340693022193851">Ha árfigyelési értesítéseket szeretne kapni, kapcsolja be az értesítéseket az iOS beállításaiban.</translation>
 <translation id="5294624619177114121">Mobilos értesítések</translation>
 <translation id="5295239312320826323">Eltávolítja a(z) <ph name="USER_EMAIL" /> fiókot?</translation>
 <translation id="5300589172476337783">Megjelenítés</translation>

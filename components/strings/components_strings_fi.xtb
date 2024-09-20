@@ -2852,7 +2852,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />, ylläpidä Chromessa lataamiasi tiedostoja painamalla sarkainta ja sitten Enter</translation>
 <translation id="6254436959401408446">Muisti ei riitä sivun avaamiseen</translation>
 <translation id="625463612687472648">Estä</translation>
-<translation id="6256360366378574605">{FINANCIAL_ACCOUNT,plural, =1{Kun teet ostoksia Chromessa, näet vaihtoehtona <ph name="FINANCIAL_ACCOUNT_TYPES" />}other{Kun teet ostoksia Chromessa, näet vaihtoehtoina <ph name="FINANCIAL_ACCOUNT_TYPES" />}}</translation>
 <translation id="6259156558325130047">&amp;Toista uudelleenjärjestely</translation>
 <translation id="6263376278284652872">Verkkotunnuksen <ph name="DOMAIN" /> kirjanmerkit</translation>
 <translation id="6264376385120300461">Lataa silti</translation>
@@ -3138,6 +3137,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="6767985426384634228">Päivitetäänkö osoite?</translation>
 <translation id="6770747695101757579">Paperi (puuvilla)</translation>
 <translation id="677257480647123231">Lasten turvallinen internetin käyttö</translation>
+<translation id="6772959465807028761">Jatka YouTuben käyttöä Google-tilillä</translation>
 <translation id="6775759552199460396">JIS B2 (515 mm x 728 mm)</translation>
 <translation id="6777088782163649345">Käytä YouTubea vanhempien valintojen kanssa</translation>
 <translation id="6779348349813025131">Google Salasanat tarvitsee pääsyn MacOS-avainnippuun</translation>
@@ -4078,7 +4078,6 @@ Lisätietoja:
 <translation id="84561192812921051">Järjestelmänvalvoja voi tehdä muutoksia profiiliin ja selaimeen etänä, analysoida selaimen tietoja raporttien avulla ja tehdä muita tarvittavia tehtäviä. Toimintaa tällä laitteella saatetaan ylläpitää myös Chromen ulkopuolelta.  <ph name="BEGIN_LINK" />Lue lisää<ph name="END_LINK" /></translation>
 <translation id="8457125768502047971">Määrittämätön</translation>
 <translation id="8458202188076138974">Letter Extra</translation>
-<translation id="8458605637341729751">Jatkamalla hyväksyt, että laitteesi tarkka sijainti kerätään ja jaetaan tilin omistajalle petosten ehkäisemiseksi. Voit laittaa Pixin pois päältä Chromessa <ph name="BEGIN_LINK1" />maksuasetuksista<ph name="END_LINK1" /></translation>
 <translation id="8460854335417802511">Laita päälle</translation>
 <translation id="8461694314515752532">Salaa synkronoidut tiedot oman synkronoinnin tunnuslauseesi avulla</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 luottokortti}other{# luottokorttia}}</translation>
@@ -4113,6 +4112,7 @@ Lisätietoja:
 <translation id="8527228059738193856">Kaiuttimet</translation>
 <translation id="8527681393107582734">Maatalous ja metsänhoito</translation>
 <translation id="8528149813106025610">Lasten vaatteet</translation>
+<translation id="8528479410903501741">Tallenna IBAN</translation>
 <translation id="853246364274116957">Broadway-esitykset ja musiikkiteatteri</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">Voit nähdä estetyt URL-osoitteet ja muut järjestelmänvalvojasi määräämät käytännöt osoitteessa &lt;strong&gt;chrome://policy&lt;/strong&gt;.</translation>
@@ -4306,6 +4306,7 @@ Lisätietoja:
 <translation id="8891727572606052622">Virheellinen välityspalvelimen tila.</translation>
 <translation id="8894794286471754040">Pitkä reuna ensin</translation>
 <translation id="8895334001368918465">Jos haluat käyttää toista automaattisen täytön palvelua Chromessa, laita se päälle Android-asetuksista ja täältä</translation>
+<translation id="8897221284075091877">Jos haluat nähdä sisällön, jatka Google-tililläsi</translation>
 <translation id="8897428486789851669">Uinti</translation>
 <translation id="8899807382908246773">Häiritsevät mainokset</translation>
 <translation id="8903921497873541725">Lähennä</translation>

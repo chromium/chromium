@@ -96,6 +96,7 @@
 <translation id="2570922361219980984">Lokationsadgang er også deaktiveret for denne enhed. Aktivér det under <ph name="BEGIN_LINK" />indstillinger for Android<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Udvidet – klik for at skjule.</translation>
 <translation id="2586657967955657006">Udklipsholder</translation>
+<translation id="2588271083332682494">Hold orden med fanegrupper</translation>
 <translation id="2597457036804169544">Anvend ikke Mørkt tema på websites</translation>
 <translation id="2606760465469169465">Automatisk verificering</translation>
 <translation id="2621115761605608342">Tillad JavaScript for et bestemt website.</translation>
@@ -232,6 +233,7 @@
 <translation id="483914009762354899">Medtag alle websites under dette domæne</translation>
 <translation id="4883854917563148705">Administrerede indstillinger kan ikke nulstilles</translation>
 <translation id="4887024562049524730">Spørg, inden websites kan anvende dine virtual reality-enheder og -data (anbefales)</translation>
+<translation id="4936863036653376783">Du finder dine grupper i sektionen for fanegrupper på alle dine enheder</translation>
 <translation id="4953688446973710931">Når dette er slået til, kan websites anmode om tilladelse til automatisk at downloade flere filer. Når dette er slået fra, kan websites ikke downloade flere filer automatisk.</translation>
 <translation id="4962975101802056554">Tilbagekald alle tilladelser for enheden</translation>
 <translation id="497421865427891073">Gå fremad</translation>
@@ -378,6 +380,7 @@
 <translation id="6840760312327750441">Du kan gruppere faner ved at holde en fane nede. Træk den derefter oven på en anden fane.</translation>
 <translation id="6864395892908308021">Denne enhed kan ikke læse NFC</translation>
 <translation id="6870169401250095575">Skjul kortet Sikkerhedstjek</translation>
+<translation id="6900883974539674431">Opret fanegrupper, der automatisk gemmes og opdateres på alle dine enheder</translation>
 <translation id="6912998170423641340">Bloker websites, så de ikke kan læse tekst og billeder fra udklipsholderen</translation>
 <translation id="6945221475159498467">Vælg</translation>
 <translation id="6950072572526089586">Et website, du besøger, kan gemme oplysninger om, hvad du foretager dig, så det kan fungere optimalt – f.eks. så du kan forblive logget ind på et website eller gemme varer i din indkøbskurv. Websites gemmer ofte disse oplysninger midlertidigt på din enhed.</translation>

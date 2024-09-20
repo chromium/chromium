@@ -2851,7 +2851,6 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Bonyeza 'Tab' kisha 'Enter' ili udhibiti faili ulizozipakua katika Chrome</translation>
 <translation id="6254436959401408446">Hakuna hifadhi ya kutosha kufungua ukurasa huu</translation>
 <translation id="625463612687472648">Acha kuruhusu</translation>
-<translation id="6256360366378574605">{FINANCIAL_ACCOUNT,plural, =1{Unapofanya ununuzi kwenye Chrome, angalia <ph name="FINANCIAL_ACCOUNT_TYPES" /> kama chaguo}other{Unapofanya ununuzi kwenye Chrome, angalia <ph name="FINANCIAL_ACCOUNT_TYPES" /> kama chaguo}}</translation>
 <translation id="6259156558325130047">Rudia Kupanga Upya</translation>
 <translation id="6263376278284652872">Alamisho za <ph name="DOMAIN" /></translation>
 <translation id="6264376385120300461">Pakua licha ya hayo</translation>
@@ -4074,7 +4073,6 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="84561192812921051">Msimamizi wako anaweza kufanya mabadiliko kwenye wasifu na kivinjari chako akiwa mbali, kuchanganua maelezo kuhusu kivinjari kupitia kuripoti na kutekeleza majukumu mengine muhimu. Huenda shughuli kwenye kifaa hiki zikadhibitiwa nje ya Chrome.  <ph name="BEGIN_LINK" />Pata maelezo zaidi<ph name="END_LINK" /></translation>
 <translation id="8457125768502047971">Haijabainishwa</translation>
 <translation id="8458202188076138974">Ukubwa wa Letter Extra</translation>
-<translation id="8458605637341729751">Kwa kuendelea, unakubali tukusanye data ya eneo mahususi ambapo kifaa chako kiko na kuruhusu mmiliki wa akaunti aifikie kwa madhumuni ya kuzuia ulaghai. Ili uzime Pix katika Chrome, nenda kwenye <ph name="BEGIN_LINK1" />mipangilio yako ya malipo<ph name="END_LINK1" /></translation>
 <translation id="8460854335417802511">Washa</translation>
 <translation id="8461694314515752532">Simba data iliyosawazishwa kwa njia fiche ukitumia kauli yako ya siri ya usawazishaji</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{Kadi 1 ya mikopo}other{Kadi # za mikopo}}</translation>
@@ -4109,6 +4107,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="8527228059738193856">Spika</translation>
 <translation id="8527681393107582734">Kilimo na Elimu ya Misitu</translation>
 <translation id="8528149813106025610">Mavazi ya Watoto</translation>
+<translation id="8528479410903501741">Hifadhi IBAN</translation>
 <translation id="853246364274116957">Ukumbi Mpana wa Muziki</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">Tembelea &lt;strong&gt;chrome://policy&lt;/strong&gt; ili uone orodha ya URL zilizozuiwa na sera zingine zinazotekelezwa na msimamizi wako wa mfumo.</translation>

@@ -127,6 +127,7 @@
 <translation id="1567064801249837505">Albúm</translation>
 <translation id="1572585716423026576">Nota sem veggfóður</translation>
 <translation id="1578784163189013834">Velja bakgrunn skjávara</translation>
+<translation id="1587031308639983732">Breytingar sem byggjast á tímasetningu eru hugsanlega ekki nákvæmar. Kerfisstjórinn þinn stjórnar þessari stillingu.</translation>
 <translation id="1588438908519853928">Venjuleg</translation>
 <translation id="1591562245178063882">Þessi mánuður</translation>
 <translation id="1593528591614229756">Gakktu úr skugga um að velja aðgangsstaði sem símafyrirtækið eða stjórnandinn þinn veita. Slökkt verður á sérsniðnum aðgangsstöðum þegar þú velur aðgangsstað. Ógildir aðgangsstaðir kunna að valda truflunum á farsímatengingunni þinni. <ph name="LINK_BEGIN" />Nánar<ph name="LINK_END" /></translation>
@@ -257,7 +258,6 @@
 <translation id="2148716181193084225">Í dag</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> myndir</translation>
 <translation id="2154460308960858308">Hreinsa leit</translation>
-<translation id="2156072344042480449">Tvær síðustu skipanir frá þér. Þú getur aðeins notað þessari skipanir á þessari síðu.</translation>
 <translation id="2157660087437850958">emoji-val</translation>
 <translation id="2157959690810728433">Í BIÐRÖÐ</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Reyna aftur</translation>
@@ -1195,16 +1195,6 @@
 <translation id="6975981640379148271">kóalabirnir</translation>
 <translation id="6977381486153291903">Útgáfa fastbúnaðar</translation>
 <translation id="6981982820502123353">Aðgengi</translation>
-<translation id="698242338298293034">Veldu þema og síðan undirstrikuðu orðin til að sérsníða gervigreindarmyndirnar þínar.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Veldu „Fá innblástur“ til að fá einstakari og fjölbreyttari valkosti fyrir gervigreindarmyndir.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Þegar þú býrð til efni með aðstoð gervigreindar er skipunin þín send til gervigreindarþjóna Google til að búa til myndir og bæta vöruna í samræmi við <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />persónuverndarstefnu Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Skapandi gervigreind er á tilraunastigi, á fyrstu stigum þróunar og stendur ekki öllum til boða eins og er.</translation>
 <translation id="6982462588253070448">sandöldur</translation>
 <translation id="7005833343836210400">Tækið er án nettengingar</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> hefur umsjón með þessu tæki og hefur aðgang að allri notendavirkni, þ.m.t. heimsóttum vefsíðum, aðgangsorðum og tölvupósti.</translation>
@@ -1450,7 +1440,6 @@ Sæktu umritunarlíkanið (allt að 100 MB) til að fá þessar textauppskriftir
 <translation id="8208861521865154048">Fríðindi</translation>
 <translation id="8226628635270268143">Veldu uppáhaldsmyndir og -möppur</translation>
 <translation id="8227119283605456246">Hengja skrá við</translation>
-<translation id="8227488649450500937">Prófaðu eina af þessum skipunum eða skoðaðu <ph name="BEGIN_LINK_PROMPTING_GUIDE" />leiðbeiningar um skipanir<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="8230672074305416752">Ping-prófun sjálfvalinnar netkerfisgáttar mistókst</translation>
 <translation id="8236972776513018241">Textauppskrift</translation>
 <translation id="8238771987802558562">Veldu aðgangsstað</translation>

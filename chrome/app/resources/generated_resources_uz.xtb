@@ -1122,7 +1122,6 @@ Ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Android ilovala
 <translation id="1794212650797661990"><ph name="DOMAIN" /> parolini berkitish</translation>
 <translation id="1794791083288629568">Muammoni bartaraf etishga yordam beruvchi fikrlar yuborish.</translation>
 <translation id="1795214765651529549">Klassik mavzu ishlatilsin</translation>
-<translation id="1795668164971917185">Google Saytlarni xavfsiz kezish tizimi keyingi safar shubhali yuklanma aniqlaganda fayl siz tanlagan <ph name="LINK" /> doirasida avtomatik tekshiriladi</translation>
 <translation id="1796588414813960292">Ovozdan foydalanadigan funksiyalar ishlamaydi</translation>
 <translation id="1797117170091578105">Chromebook klaviaturasi bilan oʻynang. Muayyan amallar uchun tugmalarni moslashtirishingiz mumkin.</translation>
 <translation id="1798335429200675510">Qoralama yaratish yoki mavjud matnni yaxshilash uchun matn maydonida oʻng klik bosing, Google AI asosida ishlaydi. Funksiya hamma uchun mavjud emas.</translation>
@@ -3936,6 +3935,7 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="3799128412641261490">Switch Access sozlamalari</translation>
 <translation id="3800828618615365228">Google Chrome va ChromeOS qoʻshimcha shartlari</translation>
 <translation id="3800898876950197674">Bu kengaytmaga ruxsat berish uchun parol kiriting.</translation>
+<translation id="3801449494961771207">Tizim nutq sintezatori ovozi</translation>
 <translation id="3802486193901166966">Bu kengaytma hech qanday maxsus ruxsat talab qilmaydi va saytlarga qoʻshimcha ruxsati yoʻq</translation>
 <translation id="380329542618494757">Ism</translation>
 <translation id="3803345858388753269">Video sifati</translation>
@@ -5909,7 +5909,6 @@ Kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="5263656105659419083">Yon panelga tezda qaytish uchun yuqori oʻng burchakdagi “Qadash” tugmasini bosing</translation>
 <translation id="5264148714798105376">Bunga bir-ikki daqiqa ketadi</translation>
 <translation id="5264252276333215551">Ilovani kiosk-rejimida ishga tushirish uchun Internetga ulaning.</translation>
-<translation id="526539328530966548">kuchaytirilgan himoya</translation>
 <translation id="5265797726250773323">O‘rnatilmadi</translation>
 <translation id="5266113311903163739">Sertifikatlash markazidan import qilishda xatolik</translation>
 <translation id="526622169288322445"><ph name="ADDRESS_SUMMARY" /> uchun boshqa amallar</translation>
@@ -7291,6 +7290,7 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="628726841779494414">Printerlarni sozlamalar orqali boshqaring</translation>
 <translation id="6287828400772161253">Android telefon (<ph name="HOST_DEVICE_NAME" />)</translation>
 <translation id="6290613030083731160">Atrofda hech qanday qurilma topilmadi. <ph name="LINK_BEGIN" />Batafsil<ph name="LINK_END" /></translation>
+<translation id="6291580570300353047">Tiklash uchun xotirada joy yetarli emas.</translation>
 <translation id="6291741848715722067">Tasdiqlash kodi</translation>
 <translation id="6291953229176937411">&amp;Finder’da ko‘rsatish</translation>
 <translation id="6292699686837272722">Varaqlar toʻrt marta kichraytiriladi</translation>

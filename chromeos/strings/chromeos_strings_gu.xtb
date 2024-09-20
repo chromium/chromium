@@ -127,6 +127,7 @@
 <translation id="1567064801249837505">આલ્બમ</translation>
 <translation id="1572585716423026576">વૉલપેપર તરીકે સેટ કરો</translation>
 <translation id="1578784163189013834">સ્ક્રીન સેવરનું બૅકગ્રાઉન્ડ પસંદ કરો</translation>
+<translation id="1587031308639983732">સમય આધારિત ફેરફારો સચોટ ન પણ હોઈ શકે. આ સેટિંગને તમારા ઍડમિનિસ્ટ્રેટર દ્વારા મેનેજ કરવામાં આવે છે.</translation>
 <translation id="1588438908519853928">સામાન્ય</translation>
 <translation id="1591562245178063882">આ મહિને</translation>
 <translation id="1593528591614229756">તમારા મોબાઇલ પ્રદાતા કે ઍડમિનિસ્ટ્રેટરે પ્રદાન કરેલા APNs પસંદ કરવાની ખાતરી કરો. કોઈ APN પસંદ કરવાથી જે પણ કસ્ટમ APNs હશે, તે બંધ થઈ જશે. અમાન્ય APNs તમારા મોબાઇલ કનેક્શનને વિક્ષેપિત કરી શકે છે. <ph name="LINK_BEGIN" />વધુ જાણો<ph name="LINK_END" /></translation>
@@ -257,7 +258,6 @@
 <translation id="2148716181193084225">આજે</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> ફોટા</translation>
 <translation id="2154460308960858308">શોધ સાફ કરો</translation>
-<translation id="2156072344042480449">તમારા સૌથી તાજેતરના 2 પ્રૉમ્પ્ટ. તમે આ પેજ પર હો, માત્ર ત્યારે જ તમે આ પ્રૉમ્પ્ટનો ઉપયોગ કરી શકો છો.</translation>
 <translation id="2157660087437850958">ઇમોજી પિકર</translation>
 <translation id="2157959690810728433">કતારમાં</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: ફરી પ્રયાસ કરો</translation>
@@ -1195,16 +1195,6 @@
 <translation id="6975981640379148271">કોઆલા</translation>
 <translation id="6977381486153291903">ફર્મવેયર પુનરાવર્તન</translation>
 <translation id="6981982820502123353">ઍક્સેસિબિલિટી</translation>
-<translation id="698242338298293034">તમારી AI છબીઓને મનગમતી બનાવવા માટે, થીમ પસંદ કરો અને પછી અન્ડરલાઇન કરેલા શબ્દો પસંદ કરો.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          AI છબીઓના વધુ અનન્ય અને વૈવિધ્યસભર વિકલ્પો મેળવવા માટે "મને પ્રેરણા આપો" પસંદ કરો.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          જ્યારે તમે AI વડે બનાવો છો, ત્યારે છબીઓ જનરેટ કરવા અને પ્રોડક્ટને બહેતર બનાવવા માટે, <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Googleની પ્રાઇવસી પૉલિસી<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />ને આધીન રહીને Google AI સર્વરને પ્રૉમ્પ્ટ મોકલવામાં આવે છે.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          જનરેટિવ AI પ્રાયોગિક છે અને વિકાસના પ્રારંભિક તબક્કામાં છે તથા હાલમાં તેની ઉપલબ્ધતા મર્યાદિત છે.</translation>
 <translation id="6982462588253070448">રેતીના ઢૂવા</translation>
 <translation id="7005833343836210400">ડિવાઇસ ઑફલાઇન છે</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> આ ડિવાઇસને મેનેજ કરે છે અને મુલાકાત લીધેલા વેબપેજ, પાસવર્ડ અને ઇમેઇલ સહિત, બધી વપરાશકર્તા પ્રવૃત્તિઓનો ઍક્સેસ ધરાવે છે.</translation>
@@ -1450,7 +1440,6 @@
 <translation id="8208861521865154048">લાભ</translation>
 <translation id="8226628635270268143">તમારા મનગમતા ફોટા અને આલ્બમ પસંદ કરો</translation>
 <translation id="8227119283605456246">ફાઇલ જોડો</translation>
-<translation id="8227488649450500937">આમાંથી કોઈ એક પ્રૉમ્પ્ટ અજમાવો અથવા <ph name="BEGIN_LINK_PROMPTING_GUIDE" />પ્રૉમ્પ્ટ સંબંધિત માર્ગદર્શિકા<ph name="END_LINK_PROMPTING_GUIDE" /> જુઓ</translation>
 <translation id="8230672074305416752">ડિફૉલ્ટ નેટવર્ક ગેટવેને પિંગ કરવામાં નિષ્ફળ રહ્યાં</translation>
 <translation id="8236972776513018241">ટ્રાન્સક્રિપ્ટ</translation>
 <translation id="8238771987802558562">APN પસંદ કરો</translation>

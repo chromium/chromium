@@ -217,6 +217,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="3596080736082218006">{COUNT,plural, =0{Your administrator requires that you relaunch Chrome to apply an update}=1{Your administrator requires that you relaunch Chrome to apply an update. Your Incognito window won't reopen.}other{Your administrator requires that you relaunch Chrome to apply an update. Your # Incognito windows won't reopen.}}</translation>
 <translation id="3597003331831379823">Failed to run setup with elevated privileges. <ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3609788354808247807">You haven't visited recently. Chrome removed <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /></translation>
+<translation id="3622716124581627104">Identify things or places and copy or translate text. When you use Google Lens, a screenshot of the page is sent to Google. <ph name="LEARN_MORE" /></translation>
 <translation id="3622797965165704966">Now it's easier to use Chrome with your Google Account and on shared computers.</translation>
 <translation id="3625345586754200168">Try Lens</translation>
 <translation id="3635073343384702370">Chrome can check your passwords when you save them.</translation>
@@ -402,6 +403,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="608006075545470555">Add work profile to this browser</translation>
 <translation id="6097822892606850415">Write with more confidence with help from AI</translation>
 <translation id="6113794647360055231">Chrome just got better</translation>
+<translation id="6116252277240876590">This language is used to display menus, settings, alerts and other text in Chrome</translation>
 <translation id="6134085236017727171">To use your microphone, give Chrome access in <ph name="BEGIN_LINK" />system settings<ph name="END_LINK" /></translation>
 <translation id="6135456723633883042">These tabs are using extra resources. To improve your performance, let Chrome make them inactive.</translation>
 <translation id="6145313976051292476">Open PDFs in Chrome</translation>
@@ -602,6 +604,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="8498858610309223613">A special security update for Google Chrome was just applied. Restart now and we'll restore your tabs.</translation>
 <translation id="8516431725144212809">Your interests as estimated by Chrome</translation>
 <translation id="8521348052903287641">Inbound rule for Google Chrome Dev to allow mDNS traffic.</translation>
+<translation id="852529348814672339">Display Chrome in this language</translation>
 <translation id="8550334526674375523">This work profile is completely separate from your personal profile.</translation>
 <translation id="8555465886620020932">Service error: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8571790202382503603">With Chrome profiles you can separate all of your Chrome things. This makes it easier to split between work and fun.</translation>

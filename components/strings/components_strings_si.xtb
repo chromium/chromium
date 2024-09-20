@@ -2851,7 +2851,6 @@
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome තුළ ඔබ බාගෙන ඇති ගොනු කළමනාකරණය කිරීමට Tab ඔබා අනතුරුව Enter ඔබන්න</translation>
 <translation id="6254436959401408446">මෙම පිටුව විවෘත කිරීමට ප්‍රමාණවත් තරම් මතකයක් නැත</translation>
 <translation id="625463612687472648">ඉඩ දීම නවත්වන්න</translation>
-<translation id="6256360366378574605">{FINANCIAL_ACCOUNT,plural, =1{ඔබ Chrome මත මිලදී ගැනීම් කරන විට, විකල්පයක් වශයෙන් <ph name="FINANCIAL_ACCOUNT_TYPES" /> දකින්න}one{ඔබ Chrome මත මිලදී ගැනීම් කරන විට, විකල්ප වශයෙන් <ph name="FINANCIAL_ACCOUNT_TYPES" /> දකින්න}other{ඔබ Chrome මත මිලදී ගැනීම් කරන විට, විකල්ප වශයෙන් <ph name="FINANCIAL_ACCOUNT_TYPES" /> දකින්න}}</translation>
 <translation id="6259156558325130047">යළි ඇනවුම් කිරීම &amp;යළි කරන්න</translation>
 <translation id="6263376278284652872"><ph name="DOMAIN" /> පොත්සලකුණු</translation>
 <translation id="6264376385120300461">කෙසේ වුවත් බාගන්න</translation>
@@ -3137,6 +3136,7 @@
 <translation id="6767985426384634228">ලිපිනය යාවත්කාලීන කරන්නද?</translation>
 <translation id="6770747695101757579">කඩදාසි (කපු)</translation>
 <translation id="677257480647123231">ළමා අන්තර්ජාල ආරක්‍ෂාව</translation>
+<translation id="6772959465807028761">YouTube භාවිත කිරීමට, ඔබේ Google ගිණුම සමග ඉදිරියට යන්න</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6777088782163649345">ඔබේ මාපියන්ගේ තේරීම් සමග YouTube භාවිත කරන්න</translation>
 <translation id="6779348349813025131">Google මුරපද කළමනාකරුට MacOS Keychain වෙත ප්‍රවේශය අවශ්‍යයි</translation>
@@ -4076,7 +4076,6 @@
 <translation id="84561192812921051">ඔබේ පරිපාලකයාට දුරස්ථව ඔබේ පැතිකඩ සහ බ්‍රවුසරය වෙත වෙනස්කම් කිරීමට, වාර්තා කිරීම හරහා බ්‍රවුසරය ගැන තොරතුරු විශ්ලේෂණ කිරීමට, සහ වෙනත් අත්‍යවශ්‍ය කාර්යභාර ඉටු කිරීමට හැකි ය. මෙම උපාංගය මත ක්‍රියාකාරකම Chrome හට පිටතින් ද කළමනා කරනු ලැබිය හැක.  <ph name="BEGIN_LINK" />තව දැන ගන්න<ph name="END_LINK" /></translation>
 <translation id="8457125768502047971">අනියත</translation>
 <translation id="8458202188076138974">ලිපිය අමතර</translation>
-<translation id="8458605637341729751">ඉදිරියට යාමෙන්, වංචා වැළැක්වීමේ අරමුණු සඳහා ඔබේ නිශ්චිත උපාංග ස්ථානය එකතු කර ඔබේ ගිණුම් හිමියා සමග බෙදා ගැනීමට ඔබ එකඟ වේ. Chrome හි Pix ක්‍රියා විරහිත කිරීමට, ඔබේ <ph name="BEGIN_LINK1" />ගෙවීම් සැකසීම්<ph name="END_LINK1" /> වෙත යන්න</translation>
 <translation id="8460854335417802511">එය ක්‍රියාත්මක කරන්න</translation>
 <translation id="8461694314515752532">ඔබගේම සමමුහූර්ත මුර-වැකිකඩ සමඟ සමමුහූර්ත කළ දත්ත සංකේතන කරන්න</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{ණය කාඩ්පත් 1}one{ණය කාඩ්පත් #}other{ණය කාඩ්පත් #}}</translation>
@@ -4111,6 +4110,7 @@
 <translation id="8527228059738193856">ස්පීකර්</translation>
 <translation id="8527681393107582734">කෘෂිකර්මය සහ වන විද්‍යාව</translation>
 <translation id="8528149813106025610">ළමා ඇඳුම්</translation>
+<translation id="8528479410903501741">IBAN සුරකින්න</translation>
 <translation id="853246364274116957">පළල් පාරවල් සහ සංගීත ශාලා</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">ඔබේ පද්ධති පරිපාලක විසින් පනවන ලද අවහිර කළ URL සහ වෙනත් ප්‍රතිපත්ති බැලීමට &lt;strong&gt;chrome://policy&lt;/strong&gt; වෙත පිවිසෙන්න.</translation>
@@ -4303,6 +4303,7 @@
 <translation id="8891727572606052622">අවලංගු ප්‍රොක්සි ප්‍රකාරය.</translation>
 <translation id="8894794286471754040">දිග දාරය පළමුවට</translation>
 <translation id="8895334001368918465">Chrome හි වෙනත් ස්වයං පිරවුම් සේවාවක් භාවිත කිරීමට, එය Android සැකසීම් තුළ සහ මෙහි ක්‍රියාත්මක කරන්න</translation>
+<translation id="8897221284075091877">මෙම අන්තර්ගතය බැලීමට ඇසීමට, ඔබේ Google ගිණුම සමග ඉදිරියට යන්න</translation>
 <translation id="8897428486789851669">පිහිනීම</translation>
 <translation id="8899807382908246773">ආක්‍රමණශීලී දැන්වීම්</translation>
 <translation id="8903921497873541725">විශාලනය කරන්න</translation>

@@ -1131,7 +1131,6 @@
 <translation id="1794212650797661990"><ph name="DOMAIN" />ৰ পাছৱৰ্ড লুকুৱাওক</translation>
 <translation id="1794791083288629568">আমাক এই সমস্যা সামাধান কৰাত সহায় কৰিবলৈ মতামত পঠিয়াওক।</translation>
 <translation id="1795214765651529549">ক্লাছিক থীম ব্যৱহাৰ কৰক</translation>
-<translation id="1795668164971917185">পৰৱৰ্তী সময়ত Googleৰ সুৰক্ষিত ব্ৰাউজিঙে কোনো সন্দেহজনক ডাউনল’ড পালে, আপুনি বাছনি কৰা <ph name="LINK" />ৰ অংশ হিচাপে ই স্বয়ংক্ৰিয়ভাৱে ইয়াক স্কেন কৰিব</translation>
 <translation id="1796588414813960292">ধ্বনিৰ আৱশ্যক হোৱা সুবিধাসমূহে কাম নকৰিব</translation>
 <translation id="1797117170091578105">আপোনাৰ Chromebook কীব’ৰ্ড ব্যৱহাৰ কৰি খেলক। নিৰ্দিষ্ট কাৰ্যৰ বাবে আপুনি কী কাষ্টমাইজ কৰিব পাৰে।</translation>
 <translation id="1798335429200675510">এটা খচৰা সৃষ্টি কৰিবলৈ অথবা ইতিমধ্যে থকা কাম মসৃণ কৰিবলৈ পাঠৰ বাকচটোত ৰাইট ক্লিক কৰক, যিটো Google AIৰ দ্বাৰ সঞ্চালিত। বৰ্তমান সীমিতৰূপত উপলব্ধ।</translation>
@@ -3947,6 +3946,7 @@
 <translation id="3799128412641261490">ছুইচৰ দ্বাৰা এক্সেছৰ ছেটিংসমূহ</translation>
 <translation id="3800828618615365228">Google Chrome আৰু ChromeOSৰ অতিৰিক্ত চৰ্তাৱলী</translation>
 <translation id="3800898876950197674">এই এক্সটেনশ্বনটোক অনুমতি দিবলৈ, আপোনাৰ পাছৱৰ্ডটো দিয়ক।</translation>
+<translation id="3801449494961771207">ছিষ্টেমৰ পাঠৰ পৰা কথনৰ কণ্ঠধ্বনি</translation>
 <translation id="3802486193901166966">এই এক্সটেনশ্বনটোৰ বাবে কোনো বিশেষ অনুমতিৰ প্ৰয়োজন নাই আৰু ইয়াৰ কোনো অতিৰিক্ত ছাইটৰ এক্সেছ নাই</translation>
 <translation id="380329542618494757">নাম</translation>
 <translation id="3803345858388753269">ভিডিঅ’ৰ গুণগত মান</translation>
@@ -5920,7 +5920,6 @@
 <translation id="5263656105659419083">সহজে ছাইডৰ পেনেললৈ উভতি যাবলৈ, সোঁফালে একেবাৰে ওপৰৰ থকা পিন কৰকত ক্লিক কৰক</translation>
 <translation id="5264148714798105376">এই কাম সম্পূৰ্ণ হ’বলৈ একমিনিটমান লাগিব পাৰে।</translation>
 <translation id="5264252276333215551">আপোনাৰ এপ্ কিঅ'স্ক ম'ডত লঞ্চ কৰিবলৈ অনুগ্ৰহ কৰি ইণ্টাৰনেটত সংযোগ কৰক।</translation>
-<translation id="526539328530966548">বৰ্ধিত সুৰক্ষা</translation>
 <translation id="5265797726250773323">ইনষ্টল কৰোঁতে আসোঁৱাহ হৈছে</translation>
 <translation id="5266113311903163739">প্ৰমাণপত্ৰ প্ৰদানকাৰী আমদানি কৰোঁতে আসোঁৱাহ হ’ল</translation>
 <translation id="526622169288322445"><ph name="ADDRESS_SUMMARY" />ৰ বাবে আৰু অধিক কাৰ্য</translation>
@@ -7302,6 +7301,7 @@
 <translation id="628726841779494414">প্ৰিণ্টাৰৰ ছেটিঙত আপোনাৰ প্ৰিণ্টাৰ পৰিচালনা কৰক</translation>
 <translation id="6287828400772161253">Android ফ’ন (<ph name="HOST_DEVICE_NAME" />)</translation>
 <translation id="6290613030083731160">কোনো উপলব্ধ ডিভাইচে ওচৰত শ্বেয়াৰ কৰি থকা নাই। <ph name="LINK_BEGIN" />অধিক জানক<ph name="LINK_END" /></translation>
+<translation id="6291580570300353047">ষ্ট’ৰেজত ঠাই নোহোৱাৰ বাবে পুনঃস্থাপন কৰিব নোৱাৰি।</translation>
 <translation id="6291741848715722067">নিশ্চিতকৰণ ক’ড</translation>
 <translation id="6291953229176937411">&amp;Finderত দেখুৱাওক</translation>
 <translation id="6292699686837272722">টেবসমূহ এক মধ্যমীয়া প্ৰস্থলৈ সংকুচিত হয়</translation>
@@ -11384,6 +11384,7 @@
 <translation id="949807244219288032">এই টেবটো এটা HID ডিভাইচৰ সৈতে সংযোগ কৰা হৈছে</translation>
 <translation id="950079950995628542">"<ph name="PHONE_NAME" />"ৰ পৰা</translation>
 <translation id="950307215746360464">ছেটআপ গাইড</translation>
+<translation id="950728747178241190">অদৰকাৰী ধ্বনি নাশ আৰু অডিঅ’ উন্নীতকৰণ সুবিধা প্ৰয়োগ কৰক। <ph name="LINK_BEGIN" />অধিক জানক<ph name="LINK_END" /></translation>
 <translation id="951273949038779544"><ph name="SITE_ACCESS" />। আপোনাৰ প্ৰশাসকে ইনষ্টল কৰিছে</translation>
 <translation id="951991426597076286">অস্বীকাৰ কৰক</translation>
 <translation id="952471655966876828">অন কৰিলে অথবা ব্যৱহাৰ কৰিলে ডিভাইচ স্বয়ংক্ৰিয়ভাৱে সংযুক্ত হ’ব</translation>

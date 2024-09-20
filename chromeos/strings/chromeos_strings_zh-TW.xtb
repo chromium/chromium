@@ -258,7 +258,6 @@
 <translation id="2148716181193084225">今天</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> 張相片</translation>
 <translation id="2154460308960858308">清除搜尋內容</translation>
-<translation id="2156072344042480449">這是你最近使用的 2 個提示。你只能在這個頁面上使用這些提示。</translation>
 <translation id="2157660087437850958">表情符號挑選器</translation>
 <translation id="2157959690810728433">已排入佇列</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />：重試</translation>
@@ -1196,16 +1195,6 @@
 <translation id="6975981640379148271">無尾熊</translation>
 <translation id="6977381486153291903">韌體版本</translation>
 <translation id="6981982820502123353">無障礙設定</translation>
-<translation id="698242338298293034">選擇主題並選取加上底線的字詞，即可打造個人化的 AI 圖像。
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          選取「給我靈感」即可取得更多獨特多樣的 AI 圖像選項。
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          使用 AI 製作內容時，系統會將提示傳送至 Google AI 伺服器，以便生成圖像及改進產品，且處理資料的過程中會遵守《<ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google 隱私權政策<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />》的規定。
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          生成式 AI 為實驗功能，處於初期開發階段，目前並未全面開放。</translation>
 <translation id="6982462588253070448">沙丘</translation>
 <translation id="7005833343836210400">裝置處於離線狀態</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> 管理這個裝置，且可存取所有使用者活動，包括網頁造訪記錄、密碼和電子郵件。</translation>
@@ -1451,7 +1440,6 @@
 <translation id="8208861521865154048">獎勵</translation>
 <translation id="8226628635270268143">選擇你最喜愛的相片和相簿</translation>
 <translation id="8227119283605456246">附加檔案</translation>
-<translation id="8227488649450500937">試試以下任一提示或參閱<ph name="BEGIN_LINK_PROMPTING_GUIDE" />提示指南<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="8230672074305416752">無法連線偵測預設的網路閘道</translation>
 <translation id="8236972776513018241">轉錄稿</translation>
 <translation id="8238771987802558562">選擇 APN</translation>

@@ -2851,7 +2851,6 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Nhấn phím Tab rồi nhấn phím Enter để quản lý các tệp bạn đã tải xuống trong Chrome</translation>
 <translation id="6254436959401408446">Không đủ bộ nhớ để mở trang này</translation>
 <translation id="625463612687472648">Dừng cho phép</translation>
-<translation id="6256360366378574605">{FINANCIAL_ACCOUNT,plural, =1{Khi bạn mua hàng trên Chrome, hãy cân nhắc sử dụng <ph name="FINANCIAL_ACCOUNT_TYPES" />}other{Khi bạn mua hàng trên Chrome, hãy cân nhắc sử dụng <ph name="FINANCIAL_ACCOUNT_TYPES" />}}</translation>
 <translation id="6259156558325130047">&amp;Làm lại sắp xếp lại</translation>
 <translation id="6263376278284652872">Dấu trang trên <ph name="DOMAIN" /></translation>
 <translation id="6264376385120300461">Vẫn tải xuống</translation>
@@ -4078,7 +4077,6 @@ Thông tin chi tiết bổ sung:
 <translation id="84561192812921051">Quản trị viên có thể thay đổi hồ sơ và trình duyệt của bạn từ xa, phân tích thông tin về trình duyệt thông qua báo cáo và thực hiện những nhiệm vụ cần thiết khác. Hoạt động trên thiết bị này cũng có thể được quản lý bên ngoài Chrome.  <ph name="BEGIN_LINK" />Tìm hiểu thêm<ph name="END_LINK" /></translation>
 <translation id="8457125768502047971">Vô thời hạn</translation>
 <translation id="8458202188076138974">Letter Extra</translation>
-<translation id="8458605637341729751">Bằng việc tiếp tục, bạn đồng ý cho hệ thống thu thập và chia sẻ vị trí chính xác của thiết bị với chủ tài khoản nhằm ngăn chặn hành vi gian lận. Để tắt Pix trong Chrome, hãy chuyển đến phần <ph name="BEGIN_LINK1" />cài đặt thông tin thanh toán<ph name="END_LINK1" /></translation>
 <translation id="8460854335417802511">Bật</translation>
 <translation id="8461694314515752532">Mã hóa dữ liệu đã đồng bộ hóa bằng cụm mật khẩu đồng bộ hóa của riêng bạn</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 thẻ tín dụng}other{# thẻ tín dụng}}</translation>
@@ -4113,6 +4111,7 @@ Thông tin chi tiết bổ sung:
 <translation id="8527228059738193856">Loa</translation>
 <translation id="8527681393107582734">Nông nghiệp và lâm nghiệp</translation>
 <translation id="8528149813106025610">Quần áo trẻ em</translation>
+<translation id="8528479410903501741">Lưu IBAN</translation>
 <translation id="853246364274116957">Broadway và nhà hát âm nhạc</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">Hãy truy cập vào &lt;strong&gt;chrome://policy&lt;/strong&gt; để xem danh sách các URL bị chặn và những chính sách khác do quản trị viên hệ thống thực thi.</translation>

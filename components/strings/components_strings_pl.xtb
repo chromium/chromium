@@ -2851,7 +2851,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />; aby zarządzać pobranymi plikami w Chrome, naciśnij Tab, a potem Enter</translation>
 <translation id="6254436959401408446">Za mało pamięci, by otworzyć tę stronę</translation>
 <translation id="625463612687472648">Cofnij uprawnienia:</translation>
-<translation id="6256360366378574605">{FINANCIAL_ACCOUNT,plural, =1{Podczas zakupów w Chrome wyświetlaj <ph name="FINANCIAL_ACCOUNT_TYPES" /> jako opcję}few{Podczas zakupów w Chrome wyświetlaj <ph name="FINANCIAL_ACCOUNT_TYPES" /> jako opcje}many{Podczas zakupów w Chrome wyświetlaj <ph name="FINANCIAL_ACCOUNT_TYPES" /> jako opcje}other{Podczas zakupów w Chrome wyświetlaj <ph name="FINANCIAL_ACCOUNT_TYPES" /> jako opcje}}</translation>
 <translation id="6259156558325130047">&amp;Ponów zmianę kolejności</translation>
 <translation id="6263376278284652872">Zakładki <ph name="DOMAIN" /></translation>
 <translation id="6264376385120300461">Pobierz mimo to</translation>
@@ -4078,7 +4077,6 @@ Dodatkowe informacje:
 <translation id="84561192812921051">Administrator może zdalnie wprowadzać zmiany w Twoim profilu i przeglądarce, analizować informacje o przeglądarce za pomocą raportów i wykonywać inne niezbędne zadania. Aktywność na tym urządzeniu może być zarządzana również poza Chrome.  <ph name="BEGIN_LINK" />Więcej informacji<ph name="END_LINK" /></translation>
 <translation id="8457125768502047971">Bez ograniczeń</translation>
 <translation id="8458202188076138974">Letter Extra</translation>
-<translation id="8458605637341729751">Przechodząc dalej, zgadzasz się na zbieranie danych o dokładnej lokalizacji urządzenia i udostępnianie ich właścicielowi konta w celu zapobiegania oszustwom. Aby wyłączyć Pix w Chrome, otwórz <ph name="BEGIN_LINK1" />ustawienia płatności<ph name="END_LINK1" /></translation>
 <translation id="8460854335417802511">Włącz</translation>
 <translation id="8461694314515752532">Szyfruj synchronizowane dane własnym hasłem wielowyrazowym do synchronizacji</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 karta kredytowa}few{# karty kredytowe}many{# kart kredytowych}other{# karty kredytowej}}</translation>
@@ -4113,6 +4111,7 @@ Dodatkowe informacje:
 <translation id="8527228059738193856">Głośniki</translation>
 <translation id="8527681393107582734">Rolnictwo i leśnictwo</translation>
 <translation id="8528149813106025610">Odzież dziecięca</translation>
+<translation id="8528479410903501741">Zapisz numer IBAN</translation>
 <translation id="853246364274116957">Broadway i teatry muzyczne</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">Wejdź na stronę &lt;strong&gt;chrome://policy&lt;/strong&gt;, by wyświetlić listę zablokowanych adresów URL oraz inne zasady egzekwowane przez administratora systemu.</translation>

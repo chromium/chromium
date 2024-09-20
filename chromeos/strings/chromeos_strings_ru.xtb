@@ -258,7 +258,6 @@
 <translation id="2148716181193084225">Сегодня</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> фото</translation>
 <translation id="2154460308960858308">Очистить строку поиска</translation>
-<translation id="2156072344042480449">Видны два ваших последних запроса. Их можно использовать только на этой странице.</translation>
 <translation id="2157660087437850958">окно выбора эмодзи</translation>
 <translation id="2157959690810728433">В ОЧЕРЕДИ</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />. Повторить</translation>
@@ -1196,16 +1195,6 @@
 <translation id="6975981640379148271">коалы</translation>
 <translation id="6977381486153291903">Версия встроенного ПО</translation>
 <translation id="6981982820502123353">Спец. возможности</translation>
-<translation id="698242338298293034">Выберите тему, а затем используйте подчеркнутые слова для персонализации ИИ-изображений.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Нажмите "Случайные обои", чтобы получить больше уникальных и разнообразных картинок.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Когда вы создаете контент с помощью ИИ, запрос отправляется на серверы ИИ от Google. Это позволяет сгенерировать изображения и улучшить продукт. В отношении данных действует <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Политика конфиденциальности Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Генеративный искусственный интеллект – экспериментальная технология, которая находится на раннем этапе разработки и пока доступна с ограничениями.</translation>
 <translation id="6982462588253070448">дюны</translation>
 <translation id="7005833343836210400">Устройство не подключено к интернету</translation>
 <translation id="7028979494427204405">Этим устройством управляет <ph name="MANAGER" />. Администратору доступна информация обо всех действиях пользователя, в том числе о посещенных веб-страницах, а также адрес электронной почты и пароли.</translation>
@@ -1451,7 +1440,6 @@
 <translation id="8208861521865154048">Преимущества</translation>
 <translation id="8226628635270268143">Выберите любимые фото и альбомы</translation>
 <translation id="8227119283605456246">Прикрепить файл</translation>
-<translation id="8227488649450500937">Попробуйте один из этих запросов или посмотрите <ph name="BEGIN_LINK_PROMPTING_GUIDE" />руководство<ph name="END_LINK_PROMPTING_GUIDE" />.</translation>
 <translation id="8230672074305416752">Не удалось выполнить проверку ping сетевого шлюза, заданного по умолчанию.</translation>
 <translation id="8236972776513018241">Расшифровка</translation>
 <translation id="8238771987802558562">Выбор точки доступа</translation>

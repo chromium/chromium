@@ -50,6 +50,7 @@
 <translation id="1219674500290482172">ইণ্টাৰনেটৰ লগত সংযোগ কৰিব পৰা নাই।</translation>
 <translation id="1227113644794103810">নিষ্ক্ৰিয় টেব</translation>
 <translation id="1231733316453485619">ছিংক অন কৰিবনে?</translation>
+<translation id="1253032109800629289">"মূল্য ট্ৰেকিঙৰ জাননী" লুকুৱাওক</translation>
 <translation id="1258491128795710625">নতুন কি আছে</translation>
 <translation id="1263231323834454256">পঢ়াৰ সূচী</translation>
 <translation id="1263433075299269530">আপুনি শেহতীয়াকৈ খোলা টেব</translation>
@@ -395,6 +396,7 @@
 <translation id="2870560284913253234">ছাইট</translation>
 <translation id="2876369937070532032">আপোনাৰ সুৰক্ষা বিপদাপন্ন হ'লে আপুনি চোৱা কিছুমান পৃষ্ঠাৰ URLসমূহ Googleলৈ পঠিয়ায়</translation>
 <translation id="2883151425485251736">আপুনি আপোনাৰ একাউণ্টৰ পৰা লুকুৱাই ৰখা বিষয়বস্তু চাওক আৰু সম্পাদনা কৰক</translation>
+<translation id="2888631381369839306">মূল্য ট্ৰেকিঙৰ জাননী অন কৰা হ’ল</translation>
 <translation id="288902476966286676">প্ৰেৰকলৈ উভতাই পঠিয়াওক</translation>
 <translation id="2894757982205307093">গোটটোত নতুন টেব</translation>
 <translation id="2905479111267140204">আপোনাৰ <ph name="NUMBER_OF_PASSWORDS" /> টা পুনৰ্ব্যৱহৃত পাছৱৰ্ড আছে যিয়ে আপোনাৰ সুৰক্ষা বিপদাপন্ন কৰিব পাৰে।</translation>
@@ -493,6 +495,7 @@
 <translation id="3435738964857648380">সুৰক্ষা</translation>
 <translation id="3443810440409579745">টেব পাইছে।</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> মিনিট</translation>
+<translation id="344589138074534176">Google Lensৰ বিষয়ে অধিক জানক</translation>
 <translation id="345348365500626747">ঠিকনা বিচাৰি পোৱা গৈছে</translation>
 <translation id="3464194322481586217">মূল্যটো ট্ৰেক কৰিব পৰা নগ’ল।</translation>
 <translation id="3469117812148449995">পাছৱৰ্ড ছেভ কৰাৰ বিকল্পসমূহ</translation>
@@ -578,6 +581,7 @@
 <translation id="3851938967634752633"><ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> আৰু <ph name="NUMBER_OF_ACCOUNTS" /> টা অন্যৰ পাছৱৰ্ড মচা হ’ব। আপোনাৰ একাউণ্টসমূহ মচা নহয়।</translation>
 <translation id="3858860766373142691">নাম</translation>
 <translation id="3861908220442487587">এই ঠিকনাটো কেৱল এই ডিভাইচত ছেভ কৰা হৈছে। এইটো আপোনাৰ আন ডিভাইচসমূহত ব্যৱহাৰ কৰিবলৈ, আপোনাৰ Google একাউণ্ট, <ph name="USER_EMAIL" />লৈ স্থানান্তৰ কৰক</translation>
+<translation id="3868495844258915202">সম্পূৰ্ণ URL দেখুৱাওক</translation>
 <translation id="3876833929577368454">মোক প্ৰতিবাৰেই সোধক</translation>
 <translation id="3885587018298784481">এটা পৰিয়ালৰ গোটত যোগদান কৰক</translation>
 <translation id="3888863481921783344">আপোনাক আপোনাৰ অনুষ্ঠানলৈ সম্ভাব্য আমন্ত্ৰিত ব্যক্তিসকল দেখুৱাবলৈ এইটো ব্যৱহাৰ কৰা হ’ব।</translation>
@@ -865,6 +869,7 @@
 <translation id="5210365745912300556">টেব বন্ধ কৰক</translation>
 <translation id="5211488077761630279">"<ph name="SITE_NAME" />"ক আপোনাৰ <ph name="PERMISSION" /> ব্যৱহাৰ কৰাৰ অনুমতি দিবনে?</translation>
 <translation id="5217245356412073535">আপুনি ছেটিং &gt; সমলৰ ছেটিঙত ছাইটৰ ডিফ’ল্ট ভিউ ডেস্কটপলৈ সলনি কৰিব পাৰে</translation>
+<translation id="5217329997012062137">আপুনি Google Lens ব্যৱহাৰ কৰিলে পৃষ্ঠাখনৰ এটা স্ক্ৰীনশ্বট Googleলৈ প্ৰেৰণ কৰা হয়।</translation>
 <translation id="5220945116117011963">তাৰিখৰ পৰা কেলেণ্ডাৰৰ অনুষ্ঠান সৃষ্টি কৰক</translation>
 <translation id="5222676887888702881">ছাইন আউট কৰক</translation>
 <translation id="5228579091201413441">ছিংক সক্ষম কৰক</translation>
@@ -877,6 +882,7 @@
 <translation id="5271265092610673171">{count,plural, =1{এটা আৱশ্যকীয় ক্ষেত্ৰ খালী হৈ আছে। ছেভ কৰাৰ আগতে এইটো পূৰ কৰক।}one{কিছুমান আৱশ্যকীয় ক্ষেত্ৰ খালী হৈ আছে। ছেভ কৰাৰ আগতে সেইবোৰ পূৰ কৰক।}other{কিছুমান আৱশ্যকীয় ক্ষেত্ৰ খালী হৈ আছে। ছেভ কৰাৰ আগতে সেইবোৰ পূৰ কৰক।}}</translation>
 <translation id="5271549068863921519">পাছৱৰ্ড ছেভ কৰক</translation>
 <translation id="5279600392753459966">আটাইবোৰ অৱৰোধ কৰক</translation>
+<translation id="5282340693022193851">মূল্য ট্ৰেকিঙৰ জাননী লাভ কৰিবলৈ, আপোনাৰ iOSৰ ছেটিঙত জাননী অন কৰক।</translation>
 <translation id="5294624619177114121">ম’বাইলৰ জাননী</translation>
 <translation id="5295239312320826323"><ph name="USER_EMAIL" /> একাউণ্টটো আঁতৰাবনে?</translation>
 <translation id="5300589172476337783">দেখুৱাওক</translation>
@@ -1638,6 +1644,7 @@
 <translation id="8712534545803964353">পৃষ্ঠাখনত বিচাৰক…</translation>
 <translation id="8712637175834984815">বুজি পালোঁ</translation>
 <translation id="8722229818691036192">এই ডিভাইচটোত থকা একাউণ্টসমূহ</translation>
+<translation id="8722649775263832315">Google Lensৰ জৰিয়তে যিকোনো বস্তু সন্ধান কৰিবলৈ টিপক বা হাইলাইট কৰক</translation>
 <translation id="8725066075913043281">আকৌ চেষ্টা কৰক</translation>
 <translation id="8728922029615312208">আটাইবোৰ বন্ধ কৰক</translation>
 <translation id="8730621377337864115">হ’ল</translation>

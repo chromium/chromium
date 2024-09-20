@@ -2851,7 +2851,6 @@
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chromeમાં તમે ડાઉનલોડ કરેલી ફાઇલો મેનેજ કરવા માટે, પહેલાં Tab અને પછી Enter કી દબાવો</translation>
 <translation id="6254436959401408446">આ પેજ ખોલવા માટે પૂરતી મેમરી નથી</translation>
 <translation id="625463612687472648">મંજૂરી આપવાનું રોકો</translation>
-<translation id="6256360366378574605">{FINANCIAL_ACCOUNT,plural, =1{જ્યારે તમે Chrome પર ખરીદી કરો, ત્યારે <ph name="FINANCIAL_ACCOUNT_TYPES" />ને વિકલ્પ તરીકે જુઓ}one{જ્યારે તમે Chrome પર ખરીદી કરો, ત્યારે <ph name="FINANCIAL_ACCOUNT_TYPES" />ને વિકલ્પ તરીકે જુઓ}other{જ્યારે તમે Chrome પર ખરીદી કરો, ત્યારે <ph name="FINANCIAL_ACCOUNT_TYPES" />ને વિકલ્પો તરીકે જુઓ}}</translation>
 <translation id="6259156558325130047">&amp;પુનઃક્રમાંકિત કરવું ફરી કરો</translation>
 <translation id="6263376278284652872"><ph name="DOMAIN" /> બુકમાર્ક</translation>
 <translation id="6264376385120300461">તેમ છતાં ડાઉનલોડ કરો</translation>
@@ -3137,6 +3136,7 @@
 <translation id="6767985426384634228">સરનામું અપડેટ કરીએ?</translation>
 <translation id="6770747695101757579">પેપર (કૉટન)</translation>
 <translation id="677257480647123231">ઇન્ટરનેટ પર બાળકોની સલામતી</translation>
+<translation id="6772959465807028761">YouTubeનો ઉપયોગ કરવા માટે, તમારા Google એકાઉન્ટ વડે ચાલુ રાખો</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6777088782163649345">તમારા માતાપિતાની પસંદગીઓ સાથે YouTubeનો ઉપયોગ કરો</translation>
 <translation id="6779348349813025131">Google Password Managerને MacOS કીચેનનો ઍક્સેસ હોવો જરૂરી છે</translation>
@@ -4077,7 +4077,6 @@
 <translation id="84561192812921051">તમારા ઍડમિનિસ્ટ્રેટર તમારી પ્રોફાઇલ અને બ્રાઉઝરમાં રિમોટલી ફેરફાર કરી શકે, રિપોર્ટિંગ મારફતે બ્રાઉઝર વિશેની માહિતીનું વિશ્લેષણ કરી શકે અને અન્ય જરૂરી કાર્યો કરી શકે. આ ડિવાઇસ પરની ઍક્ટિવિટી Chromeની બહારથી પણ મેનેજ કરી શકાય છે.  <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
 <translation id="8457125768502047971">અનિશ્ચિત</translation>
 <translation id="8458202188076138974">લેટર એક્સ્ટ્રા</translation>
-<translation id="8458605637341729751">ચાલુ રાખીને, તમે કપટ અટકાવવાના હેતુઓથી તમારા ડિવાઇસનું ચોક્કસ લોકેશન એકત્રિત કરવા અને તમારા એકાઉન્ટ ધારક સાથે શેર કરવા માટે સંમત થાઓ છો. Chromeમાં Pix બંધ કરવા માટે, તમારા <ph name="BEGIN_LINK1" />ચુકવણી માટેના સેટિંગ<ph name="END_LINK1" />માં જાઓ</translation>
 <translation id="8460854335417802511">તેને ચાલુ કરો</translation>
 <translation id="8461694314515752532">તમારા પોતાના સિંક પાસફ્રેઝ સાથે સિંક કરેલા ડેટાને એન્ક્રિપ્ટ કરો</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 ક્રેડિટ કાર્ડ}one{# ક્રેડિટ કાર્ડ}other{# ક્રેડિટ કાર્ડ}}</translation>
@@ -4112,6 +4111,7 @@
 <translation id="8527228059738193856">સ્પીકર</translation>
 <translation id="8527681393107582734">કૃષિ અને વનસંવર્ધન</translation>
 <translation id="8528149813106025610">બાળકોના કપડાં</translation>
+<translation id="8528479410903501741">IBAN સાચવો</translation>
 <translation id="853246364274116957">બ્રોડવે અને મ્યુઝિકલ થિયેટર</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">બ્લૉક કરેલા URLsની સૂચિ અને તમારા સિસ્ટમ વ્યવસ્થાપક દ્વારા લાગુ કરવામાં આવેલી અન્ય પૉલિસીઓ જોવા માટે &lt;strong&gt;chrome://policy&lt;/strong&gt;ની મુલાકાત લો.</translation>
@@ -4304,6 +4304,7 @@
 <translation id="8891727572606052622">અમાન્ય પ્રૉક્સી મોડ.</translation>
 <translation id="8894794286471754040">પહેલાં લાંબી કિનારી</translation>
 <translation id="8895334001368918465">Chromeમાં અન્ય કોઈ ઑટોમૅટિક રીતે ભરવાની સુવિધાનો ઉપયોગ કરવા માટે, Androidના સેટિંગમાં જઈને અને અહીં તે ચાલુ કરો</translation>
+<translation id="8897221284075091877">આ કન્ટેન્ટ જોવાનું પૂછવા માટે, તમારા Google એકાઉન્ટ વડે ચાલુ રાખો</translation>
 <translation id="8897428486789851669">સ્વિમિંગ</translation>
 <translation id="8899807382908246773">ખલેલ પાડતી જાહેરાતો</translation>
 <translation id="8903921497873541725">ઝૂમ વધારો</translation>

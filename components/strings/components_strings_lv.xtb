@@ -2849,7 +2849,6 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />, lai pārvaldītu pārlūkā Chrome lejupielādētos failus, nospiediet tabulēšanas taustiņu un pēc tam — taustiņu Enter</translation>
 <translation id="6254436959401408446">Nav pietiekami daudz vietas atmiņā, lai atvērtu šo lapu</translation>
 <translation id="625463612687472648">Atsaukt atļauju</translation>
-<translation id="6256360366378574605">{FINANCIAL_ACCOUNT,plural, =1{Veicot pirkumus pārlūkā Chrome, varat izmantot <ph name="FINANCIAL_ACCOUNT_TYPES" />}zero{Veicot pirkumus pārlūkā Chrome, varat izmantot <ph name="FINANCIAL_ACCOUNT_TYPES" />}one{Veicot pirkumus pārlūkā Chrome, varat izmantot <ph name="FINANCIAL_ACCOUNT_TYPES" />}other{Veicot pirkumus pārlūkā Chrome, varat izmantot <ph name="FINANCIAL_ACCOUNT_TYPES" />}}</translation>
 <translation id="6259156558325130047">&amp;Pārkārtošanas atsaukuma atcelšana</translation>
 <translation id="6263376278284652872"><ph name="DOMAIN" /> grāmatzīmes</translation>
 <translation id="6264376385120300461">Tomēr lejupielādēt</translation>
@@ -3135,6 +3134,7 @@ Varat arī sazināties ar vietnes īpašnieku un ieteikt jaunināt vietni uz pro
 <translation id="6767985426384634228">Vai atjaunināt adresi?</translation>
 <translation id="6770747695101757579">Papīrs (kokvilna)</translation>
 <translation id="677257480647123231">Bērnu drošība internetā</translation>
+<translation id="6772959465807028761">Lai izmantotu pakalpojumu YouTube, turpiniet darbu ar savu Google kontu.</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6777088782163649345">Izmantojiet pakalpojumu YouTube ar vecāku izvēlēm</translation>
 <translation id="6779348349813025131">Google paroļu pārvaldniekam ir nepieciešama piekļuve MacOS sistēmai Keychain</translation>
@@ -4075,7 +4075,6 @@ Papildu informācija:
 <translation id="84561192812921051">Administrators var attālināti veikt izmaiņas jūsu profilā un pārlūkā, analizēt informāciju par pārlūku, izmantojot pārskatus, kā arī veikt citus nepieciešamos uzdevumus. Darbības šajā ierīcē var pārvaldīt arī ārpus pārlūka Chrome.  <ph name="BEGIN_LINK" />Uzziniet vairāk<ph name="END_LINK" />.</translation>
 <translation id="8457125768502047971">Nenoteiktu periodu</translation>
 <translation id="8458202188076138974">Letter Extra</translation>
-<translation id="8458605637341729751">Turpinot jūs piekrītat, ka tiks vākti dati par precīzu jūsu ierīces atrašanās vietu un ka šie dati tiks kopīgoti ar jūsu konta īpašnieku, lai novērstu krāpšanu. Lai pārlūkā Chrome izslēgtu pakalpojumu Pix, pārejiet uz <ph name="BEGIN_LINK1" />maksājumu iestatījumiem<ph name="END_LINK1" />.</translation>
 <translation id="8460854335417802511">Ieslēgt</translation>
 <translation id="8461694314515752532">Šifrējiet sinhronizētos datus, izmantojot savu sinhronizācijas ieejas frāzi</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 kredītkarte}zero{# kredītkartes}one{# kredītkarte}other{# kredītkartes}}</translation>
@@ -4110,6 +4109,7 @@ Papildu informācija:
 <translation id="8527228059738193856">Skaļruņi</translation>
 <translation id="8527681393107582734">Lauksaimniecība un mežkopība</translation>
 <translation id="8528149813106025610">Bērnu apģērbs</translation>
+<translation id="8528479410903501741">Saglabāt IBAN</translation>
 <translation id="853246364274116957">Brodveja un mūzikli</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">Apmeklējiet vietni &lt;strong&gt;chrome://policy&lt;/strong&gt;, lai skatītu bloķēto URL sarakstu, kā arī citas politikas, ko noteicis sistēmas administrators.</translation>
@@ -4303,6 +4303,7 @@ Papildu informācija:
 <translation id="8891727572606052622">Nederīgs starpniekservera režīms.</translation>
 <translation id="8894794286471754040">Vispirms garākā mala</translation>
 <translation id="8895334001368918465">Lai pārlūkā Chrome izmantotu citu automātiskās aizpildes pakalpojumu, ieslēdziet to Android iestatījumos un šeit.</translation>
+<translation id="8897221284075091877">Lai lūgtu atļauju skatīt šo saturu, turpiniet darbu ar savu Google kontu.</translation>
 <translation id="8897428486789851669">Peldēšana</translation>
 <translation id="8899807382908246773">Traucējošas reklāmas</translation>
 <translation id="8903921497873541725">Tuvināt</translation>

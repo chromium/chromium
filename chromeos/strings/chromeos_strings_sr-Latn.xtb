@@ -258,7 +258,6 @@
 <translation id="2148716181193084225">Danas</translation>
 <translation id="2152882202543497059">Slika: <ph name="NUMBER" /></translation>
 <translation id="2154460308960858308">Obrišite pretragu</translation>
-<translation id="2156072344042480449">2 poslednja upita. Ove upite možete da koristite samo dok ste na ovoj stranici.</translation>
 <translation id="2157660087437850958">birač emodžija</translation>
 <translation id="2157959690810728433">NA ČEKANJU</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Probaj ponovo</translation>
@@ -1196,16 +1195,6 @@
 <translation id="6975981640379148271">koale</translation>
 <translation id="6977381486153291903">Revizija firmvera</translation>
 <translation id="6981982820502123353">Pristupačnost</translation>
-<translation id="698242338298293034">Odaberite temu, pa izaberite podvučene reči da biste personalizovali slike koje je generisala veštačka inteligencija.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Izaberite Inspiriši me da biste dobili više jedinstvenih i raznovrsnijih opcija za slike generisane pomoću veštačke inteligencije.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Kada pravite sadržaj pomoću veštačke inteligencije, upit se šalje serverima Google veštačke inteligencije radi generisanja slika i poboljšanja proizvoda, u skladu sa <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google politikom privatnosti<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Generativni AI je eksperimentalan, u ranom razvoju i trenutno ima ograničenu dostupnost.</translation>
 <translation id="6982462588253070448">peščane dine</translation>
 <translation id="7005833343836210400">Uređaj je oflajn</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> upravlja ovim uređajem i ima pristup svim aktivnostima korisnika, uključujući posećene veb-stranice, lozinke i imejlove.</translation>
@@ -1451,7 +1440,6 @@ Preuzmite model transkripcije (do 100 MB) da biste preuzeli te transkripcije.</t
 <translation id="8208861521865154048">Pogodnosti</translation>
 <translation id="8226628635270268143">Odaberite omiljene slike i albume</translation>
 <translation id="8227119283605456246">Priloži datoteku</translation>
-<translation id="8227488649450500937">Probajte neki od ovih upita ili pogledajte <ph name="BEGIN_LINK_PROMPTING_GUIDE" />vodič za upite<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="8230672074305416752">Pingovanje podrazumevanog mrežnog prolaza nije uspelo</translation>
 <translation id="8236972776513018241">Transkript</translation>
 <translation id="8238771987802558562">Odaberite naziv pristupne tačke</translation>

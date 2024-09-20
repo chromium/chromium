@@ -2847,7 +2847,6 @@
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab düyməsi, sonra Enter düyməsinə basaraq Chrome'da endirdiyiniz faylları idarə edin</translation>
 <translation id="6254436959401408446">Bu səhifəni açmaq üçün kifayət qədər yaddaş yoxdur</translation>
 <translation id="625463612687472648">İcazəni dayandırın</translation>
-<translation id="6256360366378574605">{FINANCIAL_ACCOUNT,plural, =1{Chrome-da alış etdikdə <ph name="FINANCIAL_ACCOUNT_TYPES" /> seçiminə baxın}other{Chrome-da alış etdikdə <ph name="FINANCIAL_ACCOUNT_TYPES" /> seçiminə baxın}}</translation>
 <translation id="6259156558325130047">&amp;Təkrar sıralamanı yenidən edin</translation>
 <translation id="6263376278284652872"><ph name="DOMAIN" /> əlfəcinləri</translation>
 <translation id="6264376385120300461">Hər bir halda endirin</translation>
@@ -3133,6 +3132,7 @@
 <translation id="6767985426384634228">Ünvan yenilənsin?</translation>
 <translation id="6770747695101757579">Kağız (pambıq)</translation>
 <translation id="677257480647123231">Uşaq İnternet Təhlükəsizliyi</translation>
+<translation id="6772959465807028761">YouTube istifadə etmək üçün Google Hesabınız ilə davam edin</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6777088782163649345">YouTube-u valideyninizin seçimləri ilə istifadə edin</translation>
 <translation id="6779348349813025131">Google Parol Meneceri MacOS Keychain-ə giriş tələb edir</translation>
@@ -4072,7 +4072,6 @@
 <translation id="84561192812921051">Administrator profil və brauzerinizə uzaqdan dəyişikliklər edə, hesabat vasitəsilə brauzer haqqında məlumatları təhlil edə və digər zəruri tapşırıqları yerinə yetirə bilər. Bu cihazdakı fəaliyyət Chrome-dan kənarda da idarə edilə bilər.  <ph name="BEGIN_LINK" />Ətraflı məlumat<ph name="END_LINK" /></translation>
 <translation id="8457125768502047971">Qeyri-müəyyən</translation>
 <translation id="8458202188076138974">Məktub Ekstra</translation>
-<translation id="8458605637341729751">Davam etməklə dələduzluğun qarşısının alınması üçün dəqiq cihaz məkanının toplanaraq hesab sahibi ilə paylaşılmasına razılaşırsınız. Chrome-da Pix-i söndürmək üçün <ph name="BEGIN_LINK1" />ödəniş ayarlarına<ph name="END_LINK1" /> keçin</translation>
 <translation id="8460854335417802511">Aktiv edin</translation>
 <translation id="8461694314515752532">Sinxronizasiya parolunuz ilə sinxronizasiya edilmiş datanı şifrələyin</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 kredit kartı}other{# kredit kartı}}</translation>
@@ -4107,6 +4106,7 @@
 <translation id="8527228059738193856">Dinamiklər</translation>
 <translation id="8527681393107582734">Kənd və Meşə Təsərrüfatı</translation>
 <translation id="8528149813106025610">Uşaq Geyimi</translation>
+<translation id="8528479410903501741">IBAN'ı yadda saxlayın</translation>
 <translation id="853246364274116957">Broadway və musiqi teatrı</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">Bloklanmış URL-ləri və sistem admininin tətbiq etdiyi digər siyasətləri görmək üçün buraya keçin: &lt;strong&gt;chrome://policy&lt;/strong&gt;</translation>
@@ -4299,6 +4299,7 @@
 <translation id="8891727572606052622">Yanlış proksi rejimi.</translation>
 <translation id="8894794286471754040">Əvvəlcə uzun kənar</translation>
 <translation id="8895334001368918465">Chrome-da başqa avtodoldurma xidmətindən istifadə etmək üçün onu Android ayarlarında və burada aktiv edin</translation>
+<translation id="8897221284075091877">Bu kontenti istəmək üçün Google Hesabınız ilə davam edin</translation>
 <translation id="8897428486789851669">Üzgüçülük</translation>
 <translation id="8899807382908246773">İntruziv reklamlar</translation>
 <translation id="8903921497873541725">Zoom</translation>

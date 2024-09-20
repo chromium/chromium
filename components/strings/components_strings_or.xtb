@@ -1997,6 +1997,7 @@
 <translation id="467662567472608290">ଏହି ସର୍ଭର୍ ପ୍ରମାଣ କରିପାରିଲା ନାହିଁ ଯେ, ଏହା ଏକ <ph name="DOMAIN" /> ଅଟେ; ଏହାର ସୁରକ୍ଷା ସାର୍ଟିଫିକେଟ୍‌ରେ ତ୍ରୁଟି ଅଛି। ଏହା ହୁଏତ, ଏକ ଭୁଲ୍ କନଫିଗ୍‍‍ରେସନ୍ କିମ୍ବା ଜଣେ ଆକ୍ରମଣକାରୀ ଆପଣଙ୍କର ସଂଯୋଗକୁ ପ୍ରତିରୋଧ କରୁଥିବା କାରଣରୁ ହୋଇପାରେ।</translation>
 <translation id="4677585247300749148"><ph name="URL" /> ଆକ୍ସେସିବିଲିଟୀ ଇଭେଣ୍ଟକୁ ପ୍ରତିକ୍ରିୟା ଦେବାକୁ ଚାହୁଁଛି</translation>
 <translation id="467809019005607715">Google Slides</translation>
+<translation id="4678379207584374453"><ph name="BEGIN_LINK" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="END_LINK" /></translation>
 <translation id="4682496302933121474">ପୃଷ୍ଠାକୁ ଅନୁବାଦ କରିବେ?</translation>
 <translation id="468314109939257734">ଆପଣଙ୍କ ଭର୍ଚୁଆଲ୍ କାର୍ଡ ନମ୍ବର ଦେଖନ୍ତୁ</translation>
 <translation id="4686942373615810936">ଏବେ ତିଆରି ହୋଇଛି</translation>
@@ -2846,7 +2847,6 @@
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chromeରେ ଆପଣ ଡାଉନଲୋଡ୍ କରିଥିବା ଫାଇଲଗୁଡ଼ିକୁ ପରିଚାଳନା କରିବା ପାଇଁ Tab କରି Enter ଦବାନ୍ତୁ</translation>
 <translation id="6254436959401408446">ଏହି ପୃଷ୍ଠା ଖୋଲିବା ପାଇଁ ପର୍ଯ୍ୟାପ୍ତ ମେମୋରୀ ନାହିଁ</translation>
 <translation id="625463612687472648">ଅନୁମତି ଦେବା ବନ୍ଦ କରନ୍ତୁ</translation>
-<translation id="6256360366378574605">{FINANCIAL_ACCOUNT,plural, =1{ଆପଣ Chromeରେ କ୍ରୟଗୁଡ଼ିକ କଲେ, <ph name="FINANCIAL_ACCOUNT_TYPES" />କୁ ଏକ ବିକଳ୍ପ ଭାବେ ଦେଖନ୍ତୁ}other{ଆପଣ Chromeରେ କ୍ରୟଗୁଡ଼ିକ କଲେ, <ph name="FINANCIAL_ACCOUNT_TYPES" />କୁ ବିକଳ୍ପ ଭାବେ ଦେଖନ୍ତୁ}}</translation>
 <translation id="6259156558325130047">&amp;ରି-ଡୁକୁ ପୁନଃକ୍ରମରେ ରଖନ୍ତୁ</translation>
 <translation id="6263376278284652872"><ph name="DOMAIN" /> ବୁକମାର୍କଗୁଡ଼ିକ</translation>
 <translation id="6264376385120300461">ଯେ କୌଣସି ମତେ ଡାଉନଲୋଡ୍ କରନ୍ତୁ</translation>
@@ -3132,6 +3132,7 @@
 <translation id="6767985426384634228">ଠିକଣା ଅପଡ଼େଟ୍ କରିବେ?</translation>
 <translation id="6770747695101757579">କାଗଜ (କଟନ)</translation>
 <translation id="677257480647123231">ପିଲାଙ୍କ ପାଇଁ ଇଣ୍ଟରନେଟ ସୁରକ୍ଷା</translation>
+<translation id="6772959465807028761">YouTube ବ୍ୟବହାର କରିବାକୁ ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟ ସହ ଜାରି ରଖନ୍ତୁ</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6777088782163649345">ତୁମ ବାପାମାଙ୍କ ପସନ୍ଦ ଅନୁସାରେ YouTube ବ୍ୟବହାର କର</translation>
 <translation id="6779348349813025131">Google Password Manager MacOS କୀଚେନକୁ ଆକ୍ସେସ ଆବଶ୍ୟକ କରେ</translation>
@@ -4071,7 +4072,6 @@
 <translation id="84561192812921051">ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟର ରିମୋଟ ଭାବେ ଆପଣଙ୍କର ପ୍ରୋଫାଇଲ ଏବଂ ବ୍ରାଉଜରରେ ପରିବର୍ତ୍ତନ କରିପାରିବେ, ରିପୋର୍ଟିଂ ମାଧ୍ୟମରେ ବ୍ରାଉଜର ବିଷୟରେ ସୂଚନାକୁ ବିଶ୍ଳେଷଣ କରିପାରିବେ ଏବଂ ଅନ୍ୟ ଜରୁରୀ ଟାସ୍କଗୁଡ଼ିକୁ କରିପାରିବେ। ଏହି ଡିଭାଇସରେ କରାଯାଉଥିବା କାର୍ଯ୍ୟକଳାପ Chrome ବାହାରେ ମଧ୍ୟ ପରିଚାଳନା କରାଯାଇପାରେ।  <ph name="BEGIN_LINK" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="END_LINK" /></translation>
 <translation id="8457125768502047971">ଅନିର୍ଦ୍ଦିଷ୍ଟ</translation>
 <translation id="8458202188076138974">ଲେଟର ଏକ୍ସଟ୍ରା</translation>
-<translation id="8458605637341729751">ଜାରି ରଖି ଆପଣ ଠକାମିର ପ୍ରତିରୋଧ କରିବା ଉଦ୍ଦେଶ୍ୟରେ ଆପଣଙ୍କ ଡିଭାଇସର ସଠିକ ଲୋକେସନ ସଂଗ୍ରହ କରି ଆପଣଙ୍କର ଆକାଉଣ୍ଟ ହୋଲ୍ଡରଙ୍କ ସହ ସେୟାର କରିବା ପାଇଁ ସମ୍ମତ ଅଛନ୍ତି। Chromeରେ Pix ବନ୍ଦ କରିବା ପାଇଁ ଆପଣଙ୍କ <ph name="BEGIN_LINK1" />ପେମେଣ୍ଟ ସେଟିଂସ<ph name="END_LINK1" />କୁ ଯାଆନ୍ତୁ</translation>
 <translation id="8460854335417802511">ଏହାକୁ ଚାଲୁ କରନ୍ତୁ</translation>
 <translation id="8461694314515752532">ଆପଣ ନିଜର ସିଙ୍କ୍‌ ପାସ୍‌ଫ୍ରେଜ୍ ସହିତ ସିଙ୍କ୍ କରାଯାଇଥିବା ଡାଟାକୁ ଏନ୍‌କ୍ରିପ୍ଟ କରନ୍ତୁ।</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1ଟି କ୍ରେଡିଟ୍ କାର୍ଡ}other{#ଟି କ୍ରେଡିଟ୍ କାର୍ଡ}}</translation>
@@ -4106,6 +4106,7 @@
 <translation id="8527228059738193856">ସ୍ପିକରଗୁଡ଼ିକ</translation>
 <translation id="8527681393107582734">ଏଗ୍ରିକଲଚର ଏବଂ ଫରେଷ୍ଟ୍ରି</translation>
 <translation id="8528149813106025610">ପିଲାମାନଙ୍କ ପୋଷାକ</translation>
+<translation id="8528479410903501741">IBAN ସେଭ କରନ୍ତୁ</translation>
 <translation id="853246364274116957">ବ୍ରଡୱେ ଏବଂ ମ୍ୟୁଜିକାଲ ଥିଏଟର</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">ବ୍ଲକ୍ କରାଯାଇଥିବା URLଗୁଡ଼ିକର ତାଲିକା ଏବଂ ଆପଣଙ୍କ ସିଷ୍ଟମ୍ ଆଡମିନିଷ୍ଟ୍ରେଟରଙ୍କ ଦ୍ଵାରା ଲାଗୁ କରାଯାଇଥିବା ଅନ୍ୟ ନୀତିଗୁଡ଼ିକୁ ଦେଖିବା ପାଇଁ &lt;strong&gt;chrome://policy&lt;/strong&gt; କୁ ଭିଜିଟ୍ କରନ୍ତୁ।</translation>
@@ -4298,6 +4299,7 @@
 <translation id="8891727572606052622">ଅବୈଧ ପ୍ରକ୍ସି ମୋଡ୍</translation>
 <translation id="8894794286471754040">ପ୍ରଥମେ ଲମ୍ବା ଏଡଜ୍</translation>
 <translation id="8895334001368918465">Chromeରେ ଅନ୍ୟ ଏକ ଅଟୋଫିଲ ସେବାକୁ ବ୍ୟବହାର କରିବା ପାଇଁ ଏହାକୁ Android ସେଟିଂରେ ଏବଂ ଏଠାରେ ଚାଲୁ କରେ</translation>
+<translation id="8897221284075091877">ଏହି ବିଷୟବସ୍ତୁ ଦେଖିବା ପାଇଁ ପଚାରିବାକୁ ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟ ସହ ଜାରି ରଖନ୍ତୁ</translation>
 <translation id="8897428486789851669">ସନ୍ତରଣ</translation>
 <translation id="8899807382908246773">ଇଣ୍ଟ୍ରୁସିଭ ବିଜ୍ଞାପନଗୁଡ଼ିକ</translation>
 <translation id="8903921497873541725">ଜୁମ୍ ବଢ଼ାନ୍ତୁ</translation>

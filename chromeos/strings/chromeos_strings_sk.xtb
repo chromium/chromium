@@ -127,6 +127,7 @@
 <translation id="1567064801249837505">Albumy</translation>
 <translation id="1572585716423026576">Nastaviť ako tapetu</translation>
 <translation id="1578784163189013834">Vybrať pozadie šetriča obrazovky</translation>
+<translation id="1587031308639983732">Zmeny na základe času nemusia byť presné. Toto nastavenie ovláda váš správca.</translation>
 <translation id="1588438908519853928">Normálny</translation>
 <translation id="1591562245178063882">Tento mesiac</translation>
 <translation id="1593528591614229756">Vyberte názvy prístupových bodov (APN), ktoré vám poskytol mobilný operátor alebo správca. Výberom názvu prístupového bodu (APN) sa deaktivujú všetky vlastné názvy prístupových bodov (APN). Neplatné názvy prístupových bodov môžu prerušiť vaše mobilné pripojenie. <ph name="LINK_BEGIN" />Ďalšie informácie<ph name="LINK_END" /></translation>
@@ -257,7 +258,6 @@
 <translation id="2148716181193084225">Dnes</translation>
 <translation id="2152882202543497059">Počet fotiek: <ph name="NUMBER" /></translation>
 <translation id="2154460308960858308">Vymazať vyhľadávanie</translation>
-<translation id="2156072344042480449">Vaše dva posledné pokyny. Kým ste na tejto stránke, môžete použiť iba tieto pokyny.</translation>
 <translation id="2157660087437850958">výber emodži</translation>
 <translation id="2157959690810728433">V PORADÍ</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Skúsiť znova</translation>
@@ -1166,6 +1166,7 @@
 <translation id="6831043979455480757">Preložiť</translation>
 <translation id="6846843854964504403">Bezpečnostný reset</translation>
 <translation id="6853312040151791195">Rýchlosť vybíjania</translation>
+<translation id="6862228900689076919">Túto funkciu ovláda váš správca</translation>
 <translation id="6862416241246624313">Spätná väzba bola odoslaná</translation>
 <translation id="6866732840889595464">sedmokráska</translation>
 <translation id="6871256179359663621">svetlofialový/-á</translation>
@@ -1194,16 +1195,6 @@
 <translation id="6975981640379148271">koaly</translation>
 <translation id="6977381486153291903">Revízia firmvéru</translation>
 <translation id="6981982820502123353">Dostupnosť</translation>
-<translation id="698242338298293034">Zvoľte motív a výberom podčiarknutých slov prispôsobte obrázky vytvorené pomocou umelej inteligencie.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Vyberte Inšpiruj ma a získajte jedinečnejšie a rozmanitejšie možnosti obrázkov vytvorených pomocou umelej inteligencie.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Pri vytváraní obsahu pomocou umelej inteligencie sa príslušný pokyn odosiela na servery umelej inteligencie od Googlu na účely generovania obrázkov a zlepšovania danej služby v súlade s <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />pravidlami ochrany súkromia spoločnosti Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Generatívna umelá inteligencia je experiment v ranom vývoji a momentálne je jej dostupnosť obmedzená.</translation>
 <translation id="6982462588253070448">piesočné duny</translation>
 <translation id="7005833343836210400">Zariadenie je offline</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> spravuje toto zariadenie a má prístup k všetkým aktivitám používateľa vrátane navštívených webových stránok, hesiel a pošty.</translation>
@@ -1449,7 +1440,6 @@ Ak chcete mať tieto prepisy k dispozícii, stiahnite si model prepisov (až 10
 <translation id="8208861521865154048">Výhody</translation>
 <translation id="8226628635270268143">Vyberte svoje obľúbené fotky a albumy</translation>
 <translation id="8227119283605456246">Pripojiť súbor</translation>
-<translation id="8227488649450500937">Vyskúšajte jeden z týchto pokynov alebo si pozrite <ph name="BEGIN_LINK_PROMPTING_GUIDE" />sprievodcu pokynmi<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="8230672074305416752">Predvolenú bránu siete sa nepodarilo otestovať</translation>
 <translation id="8236972776513018241">Prepis</translation>
 <translation id="8238771987802558562">Výber názvu prístupového bodu (APN)</translation>

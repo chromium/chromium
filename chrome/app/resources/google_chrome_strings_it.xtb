@@ -213,6 +213,7 @@
 <translation id="3596080736082218006">{COUNT,plural, =0{L'amministratore richiede il riavvio di Chrome per installare un aggiornamento}=1{L'amministratore richiede il riavvio di Chrome per installare un aggiornamento. La finestra di navigazione in incognito non verrà riaperta.}other{L'amministratore richiede il riavvio di Chrome per installare un aggiornamento. Le # finestre di navigazione in incognito non verranno riaperte.}}</translation>
 <translation id="3597003331831379823">Impossibile eseguire la configurazione con privilegi elevati. <ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3609788354808247807">Non hai visitato il sito di recente. Chrome ha rimosso <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> e <ph name="PERMISSION_3" /></translation>
+<translation id="3622716124581627104">Identifica cose o luoghi e copia o traduci testi. Quando usi Google Lens, viene inviato uno screenshot della pagina a Google. <ph name="LEARN_MORE" /></translation>
 <translation id="3622797965165704966">Ora è più facile utilizzare Chrome con il tuo Account Google e sui computer condivisi.</translation>
 <translation id="3625345586754200168">Prova Lens</translation>
 <translation id="3635073343384702370">Chrome può controllare le password quando le salvi</translation>
@@ -296,6 +297,7 @@
 <translation id="4680828127924988555">Annulla l'installazione</translation>
 <translation id="469553575393225953">Estensioni, app e temi da origini sconosciute possono danneggiare il tuo dispositivo. Chrome consiglia di installare questi elementi soltanto dal Chrome Web Store</translation>
 <translation id="4710245680469034439">Personalizza il browser con temi ispirati a natura, collezioni di artisti e altro ancora</translation>
+<translation id="4720851490453439956">Servizio interno di Google Updater</translation>
 <translation id="4724676981607797757">Installazione non riuscita a causa di un errore di protocollo non supportato.</translation>
 <translation id="4728575227883772061">Installazione non riuscita a causa di un errore non specificato. Se Google Chrome è attivo, chiudilo e riprova.</translation>
 <translation id="4741235124132242877">Riquadro bloccato. Usa di nuovo Google Lens dalla barra degli strumenti.</translation>
@@ -454,6 +456,7 @@
 <translation id="6885412569789873916">App di Chrome Beta</translation>
 <translation id="6893363893008038481">Rimuovi account da Chrome</translation>
 <translation id="6896758677409633944">Copia</translation>
+<translation id="6930294499209825">Mantiene aggiornato il software di Google. Se questo servizio viene disattivato o interrotto, il software di Google non verrà aggiornato, il che significa che le vulnerabilità di sicurezza che potrebbero verificarsi non potranno essere corrette e le funzionalità potrebbero non essere eseguite correttamente. Questo servizio si disinstalla autonomamente quando non viene utilizzato da nessun software di Google.</translation>
 <translation id="6933858244219479645">Sistema ChromeOS</translation>
 <translation id="6938166777909186039">Per ricevere gli aggiornamenti futuri di Google Chrome, devi avere Windows 10 o versioni successive. Su questo computer è installato Windows 8.1.</translation>
 <translation id="6943584222992551122">I dati di navigazione di questa persona verranno eliminati dal dispositivo. Per recuperare i dati, accedi a Chromium con il nome utente <ph name="USER_EMAIL" />.</translation>
@@ -503,6 +506,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="7477130805345743099">Chrome ti avvisa prima di caricare qualsiasi sito che utilizza una connessione non sicura</translation>
 <translation id="7481213027396403996">Usa la funzionalità di sicurezza più efficace di Chrome</translation>
 <translation id="749228101751499733">Se hai eseguito l'accesso, puoi usare le password e altri dati del tuo Account Google in Chrome. <ph name="SHORTCUT" /> può modificare le impostazioni dei servizi Google.</translation>
+<translation id="7514258452813684157">Servizio di Google Updater</translation>
 <translation id="7515191208480168435">Puoi bloccare Google Lens per un facile accesso</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
 <translation id="7572537927358445944">Off • Chrome non può verificare la provenienza dell'estensione</translation>

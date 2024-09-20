@@ -50,6 +50,7 @@
 <translation id="1219674500290482172">Հնարավոր չէ միանալ համացանցին:</translation>
 <translation id="1227113644794103810">Ոչ ակտիվ ներդիրներ</translation>
 <translation id="1231733316453485619">Միացնե՞լ համաժամացումը</translation>
+<translation id="1253032109800629289">Թաքցնել «Ստանալ ծանուցումներ գների հետագծման մասին» քարտը</translation>
 <translation id="1258491128795710625">Նորություններ</translation>
 <translation id="1263231323834454256">Ընթերցանության ցանկ</translation>
 <translation id="1263433075299269530">Ձեր վերջին բաց ներդիրը</translation>
@@ -395,6 +396,7 @@
 <translation id="2870560284913253234">Կայք</translation>
 <translation id="2876369937070532032">Ձեր այցելած որոշ էջերի URL-ներն ուղարկվում են Google-ին, երբ ձեր հաշիվը կամ սարքը վտանգված է</translation>
 <translation id="2883151425485251736">Դիտեք և փոփոխեք թեմաները, որոնք թաքցրել եք ձեր հաշվից</translation>
+<translation id="2888631381369839306">Գների հետագծման ծանուցումները միացված են</translation>
 <translation id="288902476966286676">Վերադարձվում է ուղարկողին</translation>
 <translation id="2894757982205307093">Նոր ներդիր խմբում</translation>
 <translation id="2905479111267140204">Դուք ունեք <ph name="NUMBER_OF_PASSWORDS" /> կրկնվող գաղտնաբառ, որոնք վտանգում են ձեր անվտանգությունը։</translation>
@@ -493,6 +495,7 @@
 <translation id="3435738964857648380">Անվտանգություն</translation>
 <translation id="3443810440409579745">Դուք ներդիր եք ստացել։</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> րոպե</translation>
+<translation id="344589138074534176">Իմանալ ավելին Google Տեսապակու մասին</translation>
 <translation id="345348365500626747">Հասցեն գտնվել է</translation>
 <translation id="3464194322481586217">Չհաջողվեց հետագծել գինը։</translation>
 <translation id="3469117812148449995">Գաղտնաբառը պահելու տարբերակներ</translation>
@@ -578,6 +581,7 @@
 <translation id="3851938967634752633">Կջնջվեն <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> ու ևս <ph name="NUMBER_OF_ACCOUNTS" /> հաշվի գաղտնաբառերը։ Ձեր հաշիվները չեն ջնջվի։</translation>
 <translation id="3858860766373142691">Անուն</translation>
 <translation id="3861908220442487587">Այս հասցեն պահված է միայն այս սարքում։ Հասցեն ձեր մյուս սարքերում օգտագործելու համար տեղափոխեք այն ձեր <ph name="USER_EMAIL" /> Google հաշիվ։</translation>
+<translation id="3868495844258915202">Ցույց տալ ամբողջ URL-ը</translation>
 <translation id="3876833929577368454">Ամեն անգամ հարցնել</translation>
 <translation id="3885587018298784481">Միացեք ընտանեկան խմբի</translation>
 <translation id="3888863481921783344">Սա կօգտագործվի՝ ցույց տալու ձեր միջոցառմանը հնարավոր հրավիրված օգտատերերին։</translation>
@@ -865,6 +869,7 @@
 <translation id="5210365745912300556">Փակել ներդիրը</translation>
 <translation id="5211488077761630279">Թույլատրե՞լ «<ph name="SITE_NAME" />» կայքին օգտագործել ձեր <ph name="PERMISSION" />։</translation>
 <translation id="5217245356412073535">Կայքերի ցուցադրման կանխադրված ռեժիմը համակարգչային տարբերակի փոխելու համար անցեք Կարգավորումներ &gt; Բովանդակության կարգավորումներ</translation>
+<translation id="5217329997012062137">Երբ օգտագործում եք Google Տեսապակին, էջի սքրինշոթն ուղարկվում է Google-ին։</translation>
 <translation id="5220945116117011963">Օրացույցի միջոցառումներ ստեղծել ամսաթվերից</translation>
 <translation id="5222676887888702881">Դուրս գրվել</translation>
 <translation id="5228579091201413441">Միացնել համաժամացումը</translation>
@@ -877,6 +882,7 @@
 <translation id="5271265092610673171">{count,plural, =1{Չլրացված պարտադիր դաշտ կա։ Պահելուց առաջ լրացրեք այն։}one{Չլրացված պարտադիր դաշտ կա։ Պահելուց առաջ լրացրեք այն։}other{Չլրացված պարտադիր դաշտեր կան։ Պահելուց առաջ լրացրեք դրանք։}}</translation>
 <translation id="5271549068863921519">Պահել գաղտնաբառը</translation>
 <translation id="5279600392753459966">Արգելափակել բոլորը</translation>
+<translation id="5282340693022193851">Գների հետագծման ծանուցումներ ստանալու համար միացրեք ծանուցումները ձեր iOS-ի կարգավորումներում։</translation>
 <translation id="5294624619177114121">Բջջային ծանուցումներ</translation>
 <translation id="5295239312320826323">Հեռացնե՞լ <ph name="USER_EMAIL" /> հաշիվը</translation>
 <translation id="5300589172476337783">Ցույց տալ</translation>
@@ -1638,6 +1644,7 @@ Handoff-ը պետք է միացված լինի նաև Կարգավորումնե
 <translation id="8712534545803964353">Գտնել էջում…</translation>
 <translation id="8712637175834984815">Պատրաստ է</translation>
 <translation id="8722229818691036192">Այս սարքում գրանցված հաշիվներ</translation>
+<translation id="8722649775263832315">Հպեք կամ նշեք՝ Google Տեսապակու միջոցով ցանկացած բան որոնելու համար</translation>
 <translation id="8725066075913043281">Փորձել կրկին</translation>
 <translation id="8728922029615312208">Փակել բոլորը</translation>
 <translation id="8730621377337864115">Պատրաստ է</translation>

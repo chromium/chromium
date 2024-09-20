@@ -127,6 +127,7 @@
 <translation id="1567064801249837505">ඇල්බම</translation>
 <translation id="1572585716423026576">බිතුපත ලෙස සකසන්න</translation>
 <translation id="1578784163189013834">තිර සුරැකුම් පසුබිම තෝරන්න</translation>
+<translation id="1587031308639983732">කාලය පදකම් වන වෙනස්කම් නිරවද්‍ය නොවේවි. මෙම සැකසුම ඔබේ පරිපාලකයා විසින් කළමනා කෙරේ.</translation>
 <translation id="1588438908519853928">සාමාන්‍ය</translation>
 <translation id="1591562245178063882">මෙම මාසය</translation>
 <translation id="1593528591614229756">ඔබේ ජංගම සැපයුම්කරු හෝ පරිපාලක විසින් සපයන ලද APN තේරීමට වග බලා ගන්න. APN එකක් තේරීම ඕනෑම අභිරුචි APN එකක් අබල කරයි. අවලංගු APN ඔබේ ජංගම සම්බන්‍ධතාවට බාධා කරාවි. <ph name="LINK_BEGIN" />තව දැන ගන්න<ph name="LINK_END" /></translation>
@@ -257,7 +258,6 @@
 <translation id="2148716181193084225">අද</translation>
 <translation id="2152882202543497059">ඡායාරූප <ph name="NUMBER" />ක්</translation>
 <translation id="2154460308960858308">සෙවීම හිස් කරන්න</translation>
-<translation id="2156072344042480449">ඔබේ මෑත කාලීන ප්‍රේරක 2. ඔබට මෙම ප්‍රේරක භාවිත කළ හැක්කේ ඔබ මෙම පිටුවේ සිටින විට පමණි.</translation>
 <translation id="2157660087437850958">ඉමොජි තෝරකය</translation>
 <translation id="2157959690810728433">පෙළ ගස්වන ලදි</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: යළි උත්සාහ කරන්න</translation>
@@ -1166,6 +1166,7 @@
 <translation id="6831043979455480757">පරිවර්තනය කරන්න</translation>
 <translation id="6846843854964504403">සුරක්ෂිත යළි පිහිටුවීම</translation>
 <translation id="6853312040151791195">විසර්ජන වේගය</translation>
+<translation id="6862228900689076919">මෙම විශේෂාංගය ඔබේ පරිපාලක විසින් කළමනාකරණය කරනු ලැබේ</translation>
 <translation id="6862416241246624313">ප්‍රතිචාරය ඉදිරිපත් කළා</translation>
 <translation id="6866732840889595464">ඩේසි</translation>
 <translation id="6871256179359663621">ලා දම්</translation>
@@ -1194,16 +1195,6 @@
 <translation id="6975981640379148271">කෝලා</translation>
 <translation id="6977381486153291903">නිත්‍ය මෘදුකාංග සංශෝධනය</translation>
 <translation id="6981982820502123353">ප්‍රවේශ්‍යතාව</translation>
-<translation id="698242338298293034">තේමාවක් තෝරා පසුව ඔබේ AI රූප පුද්ගලායන කිරීමට යටි ඉරැති වචන තෝරන්න.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          ඉතා අද්විතීය සහ විවිධ AI රූප විකල්ප ලබා ගැනීමට "මා ප්‍රබෝධමත් කරන්න" තෝරන්න.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          ඔබ AI සමග සාදන විට, <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google හි පෞද්ගලිකත්ව ප්‍රතිපත්තියට<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> යටත්ව රූප ජනන කිරීමට සහ නිෂ්පාදන දියුණු කිරීමට ප්‍රේරකය Google AI සේවාදායක වෙත යවනු ලැබේ.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          උත්පාදක AI පර්යේෂණාත්මක, මුල් සංවර්ධන අවධියේ පවතින අතර දැනට සීමිත ලැබීම ඇත.</translation>
 <translation id="6982462588253070448">වැලි කඳු</translation>
 <translation id="7005833343836210400">උපාංගය නොබැඳි වේ</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> මෙම උපාංගය කළමනාකරණය කරන අතර, එයට පිවිසි වෙබ් පිටු, මුරපද සහ ඉ-තැපෑල ඇතුළුව සියලු පරිශීලක ක්‍රියාකාරකම් වෙත ප්‍රවේශය තිබේ.</translation>
@@ -1449,7 +1440,6 @@
 <translation id="8208861521865154048">අමතර වාසි</translation>
 <translation id="8226628635270268143">ඔබේ ප්‍රියතම ඡායාරූප සහ ඇල්බම තෝරන්න</translation>
 <translation id="8227119283605456246">ගොනුව අමුණන්න</translation>
-<translation id="8227488649450500937">මෙම ප්‍රේරක වලින් එකක් උත්සාහ කරන්න හෝ <ph name="BEGIN_LINK_PROMPTING_GUIDE" />ප්‍රේරක මාර්ගෝපදේශය<ph name="END_LINK_PROMPTING_GUIDE" /> බලන්න</translation>
 <translation id="8230672074305416752">පෙරනිමි ජාල වාහල පින්ග් කිරීම අසාර්ථක විය</translation>
 <translation id="8236972776513018241">අනුපත</translation>
 <translation id="8238771987802558562">APN එකක් තෝරන්න</translation>

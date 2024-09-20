@@ -2851,7 +2851,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Prima Tab e, em seguida, Enter para gerir ficheiros que transferiu no Chrome</translation>
 <translation id="6254436959401408446">Não existe memória suficiente para abrir esta página</translation>
 <translation id="625463612687472648">Deixar de permitir</translation>
-<translation id="6256360366378574605">{FINANCIAL_ACCOUNT,plural, =1{Ao fazer compras no Chrome, veja <ph name="FINANCIAL_ACCOUNT_TYPES" /> como opção}other{Ao fazer compras no Chrome, veja <ph name="FINANCIAL_ACCOUNT_TYPES" /> como opções}}</translation>
 <translation id="6259156558325130047">&amp;Refazer reordenação</translation>
 <translation id="6263376278284652872">Marcadores do <ph name="DOMAIN" /></translation>
 <translation id="6264376385120300461">Transferir mesmo assim</translation>
@@ -2878,7 +2877,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="629730747756840877">Conta</translation>
 <translation id="6298456705131259420">Afeta os sites indicados aqui. Inserir "[*.]" antes de um nome de domínio cria uma exceção para todo o domínio. Por exemplo, adicionar "[*.]google.com" significa que os cookies de terceiros também podem estar ativos em mail.google.com, uma vez que fazem parte de google.com.</translation>
 <translation id="6300452962057769623">{0,plural, =0{O seu dispositivo será reiniciado agora}=1{O seu dispositivo será reiniciado dentro de 1 segundo}other{O seu dispositivo será reiniciado dentro de # segundos}}</translation>
-<translation id="6301104306974789820">Receba notificações de monitorização de preços</translation>
+<translation id="6301104306974789820">Receba notificações de acompanhamento de preço</translation>
 <translation id="6302546952464230349">Mostrar detalhes da autorização <ph name="PERMISSION_NAME" /></translation>
 <translation id="6304398603974202180">Software multimédia</translation>
 <translation id="6305205051461490394"><ph name="URL" /> está inacessível.</translation>
@@ -4077,7 +4076,6 @@ Detalhes adicionais:
 <translation id="84561192812921051">O administrador pode fazer alterações ao perfil e navegador remotamente, analisar informações sobre o navegador através de relatórios e realizar outras tarefas necessárias. A atividade neste dispositivo também pode ser gerida fora do Chrome.  <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="8457125768502047971">Indefinida</translation>
 <translation id="8458202188076138974">Letter Extra</translation>
-<translation id="8458605637341729751">Ao continuar, aceita que a localização exata do seu dispositivo seja recolhida e partilhada com o titular da conta para fins de prevenção de fraudes. Para desativar o Pix no Chrome, aceda às <ph name="BEGIN_LINK1" />definições de pagamento<ph name="END_LINK1" /></translation>
 <translation id="8460854335417802511">Ativar</translation>
 <translation id="8461694314515752532">Encriptar dados sincronizados com a sua própria frase de acesso de sincronização</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 cartão de crédito}other{# cartões de crédito}}</translation>
@@ -4112,6 +4110,7 @@ Detalhes adicionais:
 <translation id="8527228059738193856">Altifalantes</translation>
 <translation id="8527681393107582734">Agricultura e silvicultura</translation>
 <translation id="8528149813106025610">Vestuário de criança</translation>
+<translation id="8528479410903501741">Guarde o IBAN</translation>
 <translation id="853246364274116957">Teatro musical e da Broadway</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">Visite &lt;strong&gt;chrome://policy&lt;/strong&gt; para ver a lista dos URLs bloqueados e outras políticas aplicadas pelo administrador do sistema.</translation>

@@ -1124,7 +1124,6 @@ Baliteke aplikazioei emandako baimenak kontu honi aplikatzea. <ph name="APPS_LIN
 <translation id="1794212650797661990">Ezkutatu <ph name="DOMAIN" /> domeinuko pasahitza</translation>
 <translation id="1794791083288629568">Bidali informazioa arazoa konpon dezagun.</translation>
 <translation id="1795214765651529549">Erabili Klasikoa</translation>
-<translation id="1795668164971917185">Google-ren Arakatze segurua eginbideak deskarga susmagarriren bat aurkitzen duen hurrengoan, automatikoki eskaneatuko du aukeratu duzun <ph name="LINK" /> barnean</translation>
 <translation id="1796588414813960292">Soinua behar duten eginbideek ez dute funtzionatuko</translation>
 <translation id="1797117170091578105">Jokatu Chromebook-aren teklatua erabilita. Teklak pertsonaliza ditzakezu ekintza jakin batzuk egin ditzaten.</translation>
 <translation id="1798335429200675510">Egin klik eskuineko botoiarekin testu-koadro batean zirriborro bat sortzeko edo jadanik badaukazun testu bat hobetzeko, Google-ren AA bidez. Oraingoz, erabilgarritasun mugatua du.</translation>
@@ -3934,6 +3933,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3799128412641261490">Erabilerraztasun-osagarriaren ezarpenak</translation>
 <translation id="3800828618615365228">Chrome-ren eta ChromeOS-ren baldintza gehigarriak</translation>
 <translation id="3800898876950197674">Luzapen hau onartzeko, idatzi pasahitza.</translation>
+<translation id="3801449494961771207">Testua ahots bihurtzeko eginbiderako sistemaren ahotsa</translation>
 <translation id="3802486193901166966">Luzapen honek ez du behar baimen berezirik eta ez dauka webgunerako sarbide gehigarririk</translation>
 <translation id="380329542618494757">Izena</translation>
 <translation id="3803345858388753269">Bideoaren kalitatea</translation>
@@ -5907,7 +5907,6 @@ Pantaila txikitzeko, berriz, erabili Ktrl + Alt + Txikitu distira.</translat
 <translation id="5263656105659419083">Alboko panelera erraz itzultzeko, sakatu goiko eskuineko Ainguratu aukera</translation>
 <translation id="5264148714798105376">Minutu bat inguru beharko da.</translation>
 <translation id="5264252276333215551">Konektatu Internetera aplikazioa kiosko moduan exekutatzeko.</translation>
-<translation id="526539328530966548">babes hobetuaren</translation>
 <translation id="5265797726250773323">Errore bat gertatu da instalatzean</translation>
 <translation id="5266113311903163739">Errore bat gertatu da autoritate ziurtagiri-emailea inportatzean</translation>
 <translation id="526622169288322445"><ph name="ADDRESS_SUMMARY" /> enpresa-profilean egin daitezkeen ekintza gehiago</translation>
@@ -7285,6 +7284,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="628726841779494414">Kudeatu inprimagailuak haien ezarpenetan</translation>
 <translation id="6287828400772161253">Android-eko telefonoa (<ph name="HOST_DEVICE_NAME" />)</translation>
 <translation id="6290613030083731160">Ez dago partekatzen ari den gailurik inguruan. <ph name="LINK_BEGIN" />Lortu informazio gehiago<ph name="LINK_END" /></translation>
+<translation id="6291580570300353047">Ezin da leheneratu, ez dagoelako behar adina biltegiratzeko toki.</translation>
 <translation id="6291741848715722067">Berrespen-kodea</translation>
 <translation id="6291953229176937411">&amp;Erakutsi Finder-en</translation>
 <translation id="6292699686837272722">Fitxek zabalera ertaina hartzen dute txikituz gero</translation>

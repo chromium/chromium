@@ -213,6 +213,7 @@
 <translation id="3596080736082218006">{COUNT,plural, =0{Administratorul solicită să relansezi Chrome pentru a aplica o actualizare}=1{Administratorul solicită să relansezi Chrome pentru a aplica o actualizare. Fereastra incognito nu se va mai deschide.}few{Administratorul solicită să relansezi Chrome pentru a aplica o actualizare. Cele # ferestre incognito nu se vor mai deschide.}other{Administratorul solicită să relansezi Chrome pentru a aplica o actualizare. Cele # de ferestre incognito nu se vor mai deschide.}}</translation>
 <translation id="3597003331831379823">Nu s-a putut rula configurarea cu privilegii de nivel superior. <ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3609788354808247807">Nu ai accesat recent site-ul. Chrome a eliminat <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" />.</translation>
+<translation id="3622716124581627104">Identifică lucruri sau locuri și copiază sau traduce text. Când folosești Google Lens, se trimite la Google o captură de ecran a paginii. <ph name="LEARN_MORE" /></translation>
 <translation id="3622797965165704966">Acum este mai ușor să folosiți Chrome cu Contul Google și pe computerele utilizate în comun.</translation>
 <translation id="3625345586754200168">Încearcă Lens</translation>
 <translation id="3635073343384702370">Chrome îți poate verifica parolele dacă le salvezi</translation>
@@ -394,6 +395,7 @@
 <translation id="608006075545470555">Adaugă un profil de serviciu în acest browser</translation>
 <translation id="6097822892606850415">Scrie cu mai multă încredere cu ajutorul AI</translation>
 <translation id="6113794647360055231">Chrome a devenit și mai bun</translation>
+<translation id="6116252277240876590">Această limbă se folosește pentru a afișa meniuri, setări, alerte și alte texte în Chrome</translation>
 <translation id="6134085236017727171">Pentru a folosi microfonul, permite accesul browserului Chrome în <ph name="BEGIN_LINK" />setările de sistem<ph name="END_LINK" />.</translation>
 <translation id="6135456723633883042">Aceste file folosesc resurse suplimentare. Pentru a-ți îmbunătăți performanța, permite-i browserului Chrome să le dezactiveze.</translation>
 <translation id="6145313976051292476">Deschide fișierele PDF în Chrome</translation>
@@ -594,6 +596,7 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="8498858610309223613">Tocmai a fost aplicată o actualizare de securitate specială pentru Google Chrome. Repornește acum și filele vor fi restabilite.</translation>
 <translation id="8516431725144212809">Interesele tale estimate de Chrome</translation>
 <translation id="8521348052903287641">Regula de intrare pentru Google Chrome Dev pentru a permite traficul mDNS.</translation>
+<translation id="852529348814672339">Afișează Chrome în această limbă</translation>
 <translation id="8550334526674375523">Acest profil de serviciu este complet separat de profilul tău personal.</translation>
 <translation id="8555465886620020932">Eroare de serviciu: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8571790202382503603">Cu ajutorul profilurilor Chrome, poți păstra separat toate informațiile din Chrome. Astfel, poți face mai ușor diferența între muncă și timpul liber.</translation>

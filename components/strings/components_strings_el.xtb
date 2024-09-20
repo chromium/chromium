@@ -2852,7 +2852,6 @@
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />, πατήστε το πλήκτρο Tab και έπειτα το πλήκτρο Enter για να διαχειριστείτε αρχεία που έχετε κατεβάσει στο Chrome.</translation>
 <translation id="6254436959401408446">Δεν υπάρχει αρκετή μνήμη για το άνοιγμα αυτής της σελίδας</translation>
 <translation id="625463612687472648">Να μην επιτρέπεται πλέον</translation>
-<translation id="6256360366378574605">{FINANCIAL_ACCOUNT,plural, =1{Όταν κάνετε αγορές στο Chrome, εμφανίζεται η επιλογή <ph name="FINANCIAL_ACCOUNT_TYPES" />}other{Όταν κάνετε αγορές στο Chrome, εμφανίζονται οι επιλογές <ph name="FINANCIAL_ACCOUNT_TYPES" />}}</translation>
 <translation id="6259156558325130047">&amp;Επανάληψη αναδιάταξης</translation>
 <translation id="6263376278284652872">Σελιδοδείκτες <ph name="DOMAIN" /></translation>
 <translation id="6264376385120300461">Να γίνει η λήψη ούτως ή άλλως</translation>
@@ -3138,6 +3137,7 @@
 <translation id="6767985426384634228">Ενημέρωση διεύθυνσης;</translation>
 <translation id="6770747695101757579">Χαρτί (Βαμβακερό)</translation>
 <translation id="677257480647123231">Ασφάλεια παιδιών στο διαδίκτυο</translation>
+<translation id="6772959465807028761">Για να χρησιμοποιήσετε το YouTube, συνεχίστε με τον Λογαριασμό σας Google</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6777088782163649345">Χρήση του YouTube με τις επιλογές του γονέα σου</translation>
 <translation id="6779348349813025131">Η Διαχείριση κωδικών πρόσβασης Google χρειάζεται πρόσβαση στην Κλειδοθήκη macOS</translation>
@@ -4078,7 +4078,6 @@
 <translation id="84561192812921051">Ο διαχειριστής μπορεί να κάνει αλλαγές στο προφίλ σας και στο πρόγραμμα περιήγησης από απόσταση, να αναλύει πληροφορίες σχετικά με το πρόγραμμα περιήγησης μέσω αναφορών και να εκτελεί άλλες απαραίτητες εργασίες. Η διαχείριση της δραστηριότητας σε αυτή τη συσκευή μπορεί επίσης να πραγματοποιηθεί εκτός Chrome.  <ph name="BEGIN_LINK" />Μάθετε περισσότερα<ph name="END_LINK" /></translation>
 <translation id="8457125768502047971">Επ' αόριστον</translation>
 <translation id="8458202188076138974">Letter Extra</translation>
-<translation id="8458605637341729751">Εάν συνεχίσετε, συμφωνείτε με τη συλλογή και κοινοποίηση της ακριβούς τοποθεσίας της συσκευής σας στον κάτοχο του λογαριασμού για σκοπούς πρόληψης απάτης. Για να απενεργοποιήσετε το Pix στο Chrome, μεταβείτε στις <ph name="BEGIN_LINK1" />ρυθμίσεις πληρωμής<ph name="END_LINK1" /></translation>
 <translation id="8460854335417802511">Ενεργοποίηση</translation>
 <translation id="8461694314515752532">Κρυπτογράφηση συγχρονισμένων δεδομένων με τη δική σας φράση πρόσβασης συγχρονισμού</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 πιστωτική κάρτα}other{# πιστωτικές κάρτες}}</translation>
@@ -4113,6 +4112,7 @@
 <translation id="8527228059738193856">Ηχεία</translation>
 <translation id="8527681393107582734">Γεωργία και δασοπονία</translation>
 <translation id="8528149813106025610">Παιδική ένδυση</translation>
+<translation id="8528479410903501741">Αποθήκευση IBAN</translation>
 <translation id="853246364274116957">Broadway και μουσικό θέατρο</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">Μεταβείτε στη διεύθυνση &lt;strong&gt;chrome://policy&lt;/strong&gt; για να δείτε τη λίστα των αποκλεισμένων URL και άλλες πολιτικές που έχουν τεθεί σε εφαρμογή από τον διαχειριστή του συστήματός σας.</translation>
@@ -4306,6 +4306,7 @@
 <translation id="8891727572606052622">Μη έγκυρη λειτουργία διακομιστή μεσολάβησης.</translation>
 <translation id="8894794286471754040">Πρώτα η μεγάλη πλευρά</translation>
 <translation id="8895334001368918465">Για να χρησιμοποιήσετε κάποια άλλη υπηρεσία αυτόματης συμπλήρωσης στο Chrome, ενεργοποιήστε τη στις ρυθμίσεις του Android και εδώ</translation>
+<translation id="8897221284075091877">Για να ζητήσετε να δείτε αυτό το περιεχόμενο, συνεχίστε με τον Λογαριασμό σας Google</translation>
 <translation id="8897428486789851669">Κολύμβηση</translation>
 <translation id="8899807382908246773">Παρεμβατικές διαφημίσεις</translation>
 <translation id="8903921497873541725">Μεγέθυνση</translation>

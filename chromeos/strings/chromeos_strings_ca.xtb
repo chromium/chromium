@@ -127,6 +127,7 @@
 <translation id="1567064801249837505">Àlbums</translation>
 <translation id="1572585716423026576">Defineix com a fons de pantalla</translation>
 <translation id="1578784163189013834">Tria el fons de l'estalvi de pantalla</translation>
+<translation id="1587031308639983732">És possible que els canvis basats en l'hora no siguin precisos. El teu administrador gestiona aquesta opció de configuració.</translation>
 <translation id="1588438908519853928">Normal</translation>
 <translation id="1591562245178063882">Aquest mes</translation>
 <translation id="1593528591614229756">Assegura't de seleccionar els APN que hagi proporcionat el teu administrador o proveïdor de serveis per a mòbils. Si selecciones un APN, es desactivaran tots els APN personalitzats. Els APN no vàlids poden interrompre la connexió mòbil. <ph name="LINK_BEGIN" />Més informació<ph name="LINK_END" /></translation>
@@ -257,7 +258,6 @@
 <translation id="2148716181193084225">Avui</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> fotos</translation>
 <translation id="2154460308960858308">Esborra la cerca</translation>
-<translation id="2156072344042480449">Les teves dues indicacions més recents. Només pots utilitzar aquestes indicacions mentre siguis en aquesta pàgina.</translation>
 <translation id="2157660087437850958">selector d'emojis</translation>
 <translation id="2157959690810728433">S'HA POSAT A LA CUA</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />. Torna-ho a provar</translation>
@@ -1195,16 +1195,6 @@
 <translation id="6975981640379148271">coales</translation>
 <translation id="6977381486153291903">Revisió de microprogramari</translation>
 <translation id="6981982820502123353">Accessibilitat</translation>
-<translation id="698242338298293034">Tria un tema i selecciona les paraules subratllades per personalitzar les teves imatges d'IA.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Per obtenir més opcions d'imatges d'IA úniques i variades, selecciona Inspira'm.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Quan crees contingut amb IA, la indicació s'envia als servidors de la IA de Google per generar imatges i millorar el producte, de conformitat amb la <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />política de privadesa de Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          La IA generativa és experimental, està en fase primerenca de desenvolupament i actualment té una disponibilitat limitada.</translation>
 <translation id="6982462588253070448">dunes de sorra</translation>
 <translation id="7005833343836210400">El dispositiu no té connexió</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> gestiona aquest dispositiu i té accés a tota l'activitat dels usuaris, com ara les pàgines web visitades, les contrasenyes i el correu electrònic.</translation>
@@ -1450,7 +1440,6 @@ Baixa el model de transcripció (fins a 100 MB) per obtenir aquestes transcripci
 <translation id="8208861521865154048">Avantatges</translation>
 <translation id="8226628635270268143">Tria les teves fotos i els teus àlbums preferits</translation>
 <translation id="8227119283605456246">Adjunta un fitxer</translation>
-<translation id="8227488649450500937">Prova una d'aquestes indicacions o consulta la <ph name="BEGIN_LINK_PROMPTING_GUIDE" />guia d'indicacions<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="8230672074305416752">No s'ha pogut fer ping a la passarel·la de xarxa predeterminada</translation>
 <translation id="8236972776513018241">Transcripció</translation>
 <translation id="8238771987802558562">Tria un APN</translation>

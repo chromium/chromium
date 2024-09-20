@@ -127,6 +127,7 @@
 <translation id="1567064801249837505">Albomlar</translation>
 <translation id="1572585716423026576">Divar kağızı kimi ayarlayın</translation>
 <translation id="1578784163189013834">Ekran qoruyucusu üçün arxa fon seçin</translation>
+<translation id="1587031308639983732">Zaman əsaslı dəyişikliklər dəqiq olmaya bilər. Bu ayar inzibatçınız tərəfindən idarə edilir.</translation>
 <translation id="1588438908519853928">Normal</translation>
 <translation id="1591562245178063882">Bu ay</translation>
 <translation id="1593528591614229756">Mobil təminatçı və ya administrator tərəfindən təqdim edilən APN-ləri seçin. APN seçdikdə fərdi APN-lər deaktiv ediləcək. Yanlış APN-lər mobil bağlantıya mane ola bilər. <ph name="LINK_BEGIN" />Ətraflı məlumat<ph name="LINK_END" /></translation>
@@ -257,7 +258,6 @@
 <translation id="2148716181193084225">Bu gün</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> foto</translation>
 <translation id="2154460308960858308">Axtarışı silin</translation>
-<translation id="2156072344042480449">2 ən son ipucunuz. Yalnız bu səhifədə olduğunuz zaman bu ipucularını istifadə edə bilərsiniz.</translation>
 <translation id="2157660087437850958">emoji seçicisi</translation>
 <translation id="2157959690810728433">NÖVBƏDƏDİR</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Yenidən cəhd edin</translation>
@@ -1166,6 +1166,7 @@
 <translation id="6831043979455480757">Tərcümə et</translation>
 <translation id="6846843854964504403">Təhlükəsizlik sıfırlaması</translation>
 <translation id="6853312040151791195">Deşarj faizi</translation>
+<translation id="6862228900689076919">Bu funksiyanı administrator idarə edir</translation>
 <translation id="6862416241246624313">Rəy göndərildi</translation>
 <translation id="6866732840889595464">çobanyastığı</translation>
 <translation id="6871256179359663621">açıq-bənövşəyi</translation>
@@ -1194,16 +1195,6 @@
 <translation id="6975981640379148271">koalalar</translation>
 <translation id="6977381486153291903">Mikro proqram versiyası</translation>
 <translation id="6981982820502123353">Giriş İmkanı</translation>
-<translation id="698242338298293034">Tema seçdikdən sonra Sİ şəkillərini fərdiləşdirmək üçün altından xətt çəkilən sözləri seçin.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Unikal və müxtəlif Sİ şəkilləri üçün "Təsadüfi" seçin.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Sİ ilə yaradıcılıq zamanı <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google Məxfilik Siyasətinə<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> uyğun olaraq şəkil yaratmaq və məhsul təkmilləşdirmək sorğusu Google Sİ serverlərinə göndərilir.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Yaradan Sİ təcrübidir, ilkin hazırlanma mərhələsindədir və məhdud əlçatanlığa malikdir.</translation>
 <translation id="6982462588253070448">qum təpələri</translation>
 <translation id="7005833343836210400">Cihaz oflayndır</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> bu cihazı idarə edir və giriş edilən veb səhifə, parol və e-poçt daxil olmaqla bütün istifadəçi fəaliyyətinə girişi var.</translation>
@@ -1449,7 +1440,6 @@ Bu transkripsiyaları əldə etmək üçün transkripsiya modelini (maksimum 100
 <translation id="8208861521865154048">İmtiyazlar</translation>
 <translation id="8226628635270268143">Sevimli fotolarınızı və albomlarınızı seçin</translation>
 <translation id="8227119283605456246">Fayl qoşun</translation>
-<translation id="8227488649450500937">Bu ipuculardan birini yoxlayın, yaxud <ph name="BEGIN_LINK_PROMPTING_GUIDE" />ipucu təlimatına<ph name="END_LINK_PROMPTING_GUIDE" /> nəzər salın</translation>
 <translation id="8230672074305416752">Defolt şəbəkə girişini yoxlamaq alınmadı</translation>
 <translation id="8236972776513018241">Transkript</translation>
 <translation id="8238771987802558562">APN seçin</translation>

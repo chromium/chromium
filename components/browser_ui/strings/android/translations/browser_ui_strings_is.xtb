@@ -96,6 +96,7 @@
 <translation id="2570922361219980984">Einnig er slökkt á aðgangi að staðsetningu fyrir þetta tæki. Kveiktu á honum í <ph name="BEGIN_LINK" />stillingum Android<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Stækkað – smelltu til að minnka.</translation>
 <translation id="2586657967955657006">Klippiborð</translation>
+<translation id="2588271083332682494">Taktu til með flipahópum</translation>
 <translation id="2597457036804169544">Ekki nota dökkt þema fyrir vefsvæði</translation>
 <translation id="2606760465469169465">Sjálfvirk staðfesting</translation>
 <translation id="2621115761605608342">Leyfa JavaScript fyrir ákveðna síðu.</translation>
@@ -232,6 +233,7 @@
 <translation id="483914009762354899">Hafa öll vefsvæði undir þessu léni</translation>
 <translation id="4883854917563148705">Ekki er hægt að endurstilla stýrðar stillingar</translation>
 <translation id="4887024562049524730">Spyrja áður en vefsvæði nota sýndarveruleikatæki og -gögn (ráðlagt)</translation>
+<translation id="4936863036653376783">Þú finnur hópana þína í flipahópahlutanum í öllum þínum tækjum</translation>
 <translation id="4953688446973710931">Þegar kveikt er á þessu geta vefsvæði beðið um að fá að hlaða niður mörgum skrám. Þegar slökkt er á þessu geta vefsvæði ekki hlaðið niður mörgum skrám.</translation>
 <translation id="4962975101802056554">Afturkalla allar heimildir fyrir þetta tæki</translation>
 <translation id="497421865427891073">Áfram</translation>
@@ -378,6 +380,7 @@
 <translation id="6840760312327750441">Haltu fingri á flipa til að flokka hann. Dragðu hann svo ofan á annan flipa.</translation>
 <translation id="6864395892908308021">Þetta tæki getur ekki lesið NFC</translation>
 <translation id="6870169401250095575">Fela spjaldið „Öryggisathugun“</translation>
+<translation id="6900883974539674431">Búa til flipahópa sem vistast og uppfærast sjálfkrafa í öllum tækjunum þínum</translation>
 <translation id="6912998170423641340">Koma í veg fyrir að vefsvæði geti lesið texta og myndir af klippiborðinu</translation>
 <translation id="6945221475159498467">Velja</translation>
 <translation id="6950072572526089586">Vefsvæði sem þú skoðar getur vistað upplýsingar um það sem þú ert að gera svo það virki sem skyldi — svo sem til að viðhalda innskráningu þinni á vefsvæði eða til að vista vörur í innkaupakörfunni þinni. Oft vista vefsvæði þessar upplýsingar í tækinu tímabundið.</translation>

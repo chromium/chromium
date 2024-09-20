@@ -1134,7 +1134,6 @@ As permissões que você já concedeu a apps podem ser aplicadas a essa conta. V
 <translation id="1794212650797661990">Ocultar senha de <ph name="DOMAIN" /></translation>
 <translation id="1794791083288629568">Envie um feedback para nos ajudar a corrigir esse problema.</translation>
 <translation id="1795214765651529549">Usar "Clássico"</translation>
-<translation id="1795668164971917185">Na próxima vez que a Navegação segura do Google encontrar um download suspeito, ela vai fazer a verificação automática como parte do <ph name="LINK" /> que você escolheu.</translation>
 <translation id="1796588414813960292">Os recursos que precisam de som não funcionarão</translation>
 <translation id="1797117170091578105">Jogue com o teclado do Chromebook. Você pode personalizar quais teclas vão realizar ações específicas.</translation>
 <translation id="1798335429200675510">Clique com o botão direito do mouse em uma caixa de texto para criar um rascunho ou refinar um trabalho com a tecnologia de IA do Google. No momento, a disponibilidade é limitada.</translation>
@@ -5925,7 +5924,6 @@ Use Ctrl + Alt + Diminuir brilho para diminuir o zoom.</translation>
 <translation id="5263656105659419083">Para voltar facilmente ao painel lateral, clique em "Fixar" no canto superior direito</translation>
 <translation id="5264148714798105376">Isso pode levar aproximadamente um minuto.</translation>
 <translation id="5264252276333215551">Conecte-se à Internet para iniciar seu aplicativo no modo quiosque.</translation>
-<translation id="526539328530966548">proteção reforçada</translation>
 <translation id="5265797726250773323">Erro ao instalar</translation>
 <translation id="5266113311903163739">Erro de importação da Autoridade de certificação</translation>
 <translation id="526622169288322445">Mais ações para <ph name="ADDRESS_SUMMARY" /></translation>
@@ -11393,6 +11391,7 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="949807244219288032">Esta guia está conectada a um dispositivo HID</translation>
 <translation id="950079950995628542">De "<ph name="PHONE_NAME" />"</translation>
 <translation id="950307215746360464">Guia de configuração</translation>
+<translation id="950728747178241190">Aplique o cancelamento de ruído e as melhorias de áudio. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
 <translation id="951273949038779544"><ph name="SITE_ACCESS" />. Instalado pelo administrador</translation>
 <translation id="951991426597076286">Recusar</translation>
 <translation id="952471655966876828">O dispositivo será conectado automaticamente quando estiver ligado e em uso</translation>

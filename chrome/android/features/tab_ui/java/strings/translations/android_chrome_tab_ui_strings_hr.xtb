@@ -129,6 +129,7 @@
 <translation id="6549021453810473782">Prikaži podatke o trgovini</translation>
 <translation id="6557858706263317126">+ <ph name="HIDDEN_TABS_COUNT" /></translation>
 <translation id="6562820390860419811">Pomakni karticu ulijevo</translation>
+<translation id="6590332670428149473">Otvorite izbornik aktivnosti grupe kartica za dijeljenu grupu kartica <ph name="TITLE_OF_GROUP" />, <ph name="COLOR_NAME" /> boja.</translation>
 <translation id="6615455863669487791">Pokaži mi</translation>
 <translation id="6668311240800004911">{NUMBER_OF_TABS_CHANGED,plural, =1{Promijenjena je <ph name="ONE_CHANGED" /> kartica}one{Promijenjena je <ph name="MANY_CHANGED" /> kartica}few{Promijenjene su <ph name="MANY_CHANGED" /> kartice}other{Promijenjeno je <ph name="MANY_CHANGED" /> kartica}}</translation>
 <translation id="6694634756612002311">Upravljanje dijeljenjem</translation>
@@ -189,6 +190,7 @@
 <translation id="8993967613304721520">{NUMBER_OF_TABS,plural, =1{Proširite grupu kartica koja sadrži <ph name="TABS_COUNT_ONE" /> karticu.}one{Proširite grupu kartica koja sadrži <ph name="TABS_COUNT_MANY" /> karticu.}few{Proširite grupu kartica koja sadrži <ph name="TABS_COUNT_MANY" /> kartice.}other{Proširite grupu kartica koja sadrži <ph name="TABS_COUNT_MANY" /> kartica.}}</translation>
 <translation id="9090098097337832354">Zatvorene su informacije o ovoj trgovini</translation>
 <translation id="9111228330448174435">Prikaži dijaloški okvir pri izradi nove grupe kartica</translation>
+<translation id="9114502155681725011">Otvorite izbornik aktivnosti grupe kartica za grupu kartica <ph name="TITLE_OF_GROUP" />, <ph name="COLOR_NAME" /> boja.</translation>
 <translation id="9150694013019234766">Prebacujte se između kartica u grupi kartica pri dnu zaslona</translation>
 <translation id="9169594135889675189">Dodajte novu karticu grupi</translation>
 <translation id="9216898458513705996">Kartice će ostati otvorene na ovom uređaju, ali će se grupa izbrisati sa svih uređaja na kojima ste prijavljeni na <ph name="USER_EMAIL" /></translation>

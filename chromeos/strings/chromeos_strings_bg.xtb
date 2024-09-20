@@ -258,7 +258,6 @@
 <translation id="2148716181193084225">днес</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> снимки</translation>
 <translation id="2154460308960858308">Изчистване на търсенето</translation>
-<translation id="2156072344042480449">Двете ви най-скорошни подкани. Можете да ги използвате само докато сте на тази страница.</translation>
 <translation id="2157660087437850958">инструмент за избор на емоджи</translation>
 <translation id="2157959690810728433">В ОПАШКАТА</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Нов опит</translation>
@@ -1196,16 +1195,6 @@
 <translation id="6975981640379148271">коали</translation>
 <translation id="6977381486153291903">Версия на фърмуера</translation>
 <translation id="6981982820502123353">Достъпност</translation>
-<translation id="698242338298293034">Изберете тема и след това изберете подчертаните думи, за да персонализирате изображенията си от AI.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Изберете „Вдъхнови ме“, за да получите повече уникални и разнообразни опции за изображения от AI.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Когато създавате с AI, подканата се изпраща до сървърите за AI на Google с цел генериране на изображения и подобряване на продукта, като това е предмет на <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Декларацията за поверителност на Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Генеративният AI е експериментален, в ранен етап на разработка и понастоящем е с ограничена наличност.</translation>
 <translation id="6982462588253070448">пясъчни дюни</translation>
 <translation id="7005833343836210400">Устройството е офлайн</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> управлява това устройство и има достъп до цялата потребителска активност, включително посетените уеб страници, паролите и имейлите.</translation>
@@ -1451,7 +1440,6 @@
 <translation id="8208861521865154048">Предимства</translation>
 <translation id="8226628635270268143">Изберете любимите си снимки и албуми</translation>
 <translation id="8227119283605456246">Прикачване на файл</translation>
-<translation id="8227488649450500937">Изпробвайте една от тези подкани или вижте <ph name="BEGIN_LINK_PROMPTING_GUIDE" />ръководството за подкани<ph name="END_LINK_PROMPTING_GUIDE" />.</translation>
 <translation id="8230672074305416752">Неуспех при команда ping към шлюза на основната мрежа</translation>
 <translation id="8236972776513018241">Препис</translation>
 <translation id="8238771987802558562">Избиране на APN</translation>

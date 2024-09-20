@@ -258,7 +258,6 @@
 <translation id="2148716181193084225">Šiandien</translation>
 <translation id="2152882202543497059">Nuotraukų: <ph name="NUMBER" /></translation>
 <translation id="2154460308960858308">Išvalyti paiešką</translation>
-<translation id="2156072344042480449">Dvi naujausios užklausos. Šias užklausas galite naudoti tik būdami šiame puslapyje.</translation>
 <translation id="2157660087437850958">jaustukų rinkiklis</translation>
 <translation id="2157959690810728433">ĮTRAUKTAS Į EILĘ</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: bandyti dar kartą</translation>
@@ -1196,16 +1195,6 @@
 <translation id="6975981640379148271">koalos</translation>
 <translation id="6977381486153291903">Programinės aparatinės įrangos taisymas</translation>
 <translation id="6981982820502123353">Pritaikymas neįgaliesiems</translation>
-<translation id="698242338298293034">Pasirinkite temą, tada – pabrauktus žodžius, kad suasmenintumėte DI vaizdus.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Pasirinkite „Įkvėpk mane“, kad gautumėte unikalesnių ir įvairesnių DI vaizdų.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Kai kuriate naudodami DI, užklausa siunčiama į „Google“ DI serverius, kad būtų galima generuoti vaizdus ir tobulinti produktą, vadovaujantis <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />„Google“ privatumo politika<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Generatyvinis DI yra eksperimentinis, dar tik kuriamas ir šiuo metu jo pasiekiamumas ribotas.</translation>
 <translation id="6982462588253070448">kopos</translation>
 <translation id="7005833343836210400">Įrenginys neprijungtas prie interneto</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> tvarko šį įrenginį ir gali pasiekti visus naudotojo veiklos duomenis, įskaitant tinklalapius, kuriuose lankėsi, slaptažodžius ir el. paštą.</translation>
@@ -1451,7 +1440,6 @@ Atsisiųskite transkribavimo modelį (iki 100 MB), kad gautumėte transkribuotus
 <translation id="8208861521865154048">Privilegijos</translation>
 <translation id="8226628635270268143">Pasirinkite mėgstamiausias nuotraukas ir albumus</translation>
 <translation id="8227119283605456246">Pridėtas failas</translation>
-<translation id="8227488649450500937">Pabandykite vieną iš šių užklausų arba peržiūrėkite <ph name="BEGIN_LINK_PROMPTING_GUIDE" />užklausų vadovą<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="8230672074305416752">Nepavyko patikrinti ryšio su numatytuoju tinklų sietuvu</translation>
 <translation id="8236972776513018241">Transkribuotas tekstas</translation>
 <translation id="8238771987802558562">APN pasirinkimas</translation>

@@ -127,6 +127,7 @@
 <translation id="1567064801249837505">এলবাম</translation>
 <translation id="1572585716423026576">ৱালপেপাৰ হিচাপে ছেট কৰক</translation>
 <translation id="1578784163189013834">স্ক্ৰীন ছেভাৰৰ পটভূমি বাছনি কৰক</translation>
+<translation id="1587031308639983732">সময় ভিত্তিক সালসলনিসমূহ সঠিক নহ’বও পাৰে। এই ছেটিংটো আপোনাৰ প্ৰশাসকে পৰিচালনা কৰে।</translation>
 <translation id="1588438908519853928">সাধাৰণ</translation>
 <translation id="1591562245178063882">এইটো মাহ</translation>
 <translation id="1593528591614229756">আপোনাৰ ম’বাইল প্ৰদানকাৰী অথবা প্ৰশাসকে প্ৰদান কৰা এপিএনসমূহ বাছনি কৰাটো নিশ্চিত কৰক। কোনো এপিএন বাছনি কৰাটোৱে যিকোনো কাষ্টম এপিএন অক্ষম কৰিব। অমান্য এপিএনসমূহে আপোনাৰ ম’বাইল সংযোগত ব্যাঘাত জন্মাব পাৰে। <ph name="LINK_BEGIN" />অধিক জানক<ph name="LINK_END" /></translation>
@@ -257,7 +258,6 @@
 <translation id="2148716181193084225">আজি</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> খন ফট’</translation>
 <translation id="2154460308960858308">সন্ধান কৰা বস্তুবোৰ মচক</translation>
-<translation id="2156072344042480449">আপোনাৰ আটাইতকৈ শেহতীয়া ২ টা প্ৰম্প্‌ট। আপুনি এই পৃষ্ঠাখনত থাকিলেহে এই প্ৰম্প্‌টসমূহ ব্যৱহাৰ কৰিব পাৰে।</translation>
 <translation id="2157660087437850958">ইম’জি বাছনি কৰোঁতা</translation>
 <translation id="2157959690810728433">শাৰীত ৰখা হৈছে</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: পুনৰ চেষ্টা কৰক</translation>
@@ -1166,6 +1166,7 @@
 <translation id="6831043979455480757">Translate</translation>
 <translation id="6846843854964504403">সুৰক্ষা ৰিছেট</translation>
 <translation id="6853312040151791195">চাৰ্জ খৰচ হোৱাৰ হাৰ</translation>
+<translation id="6862228900689076919">এই সুবিধাটো আপোনাৰ প্ৰশাসকে পৰিচালনা কৰে</translation>
 <translation id="6862416241246624313">মতামত দাখিল কৰা হৈছে</translation>
 <translation id="6866732840889595464">ডেইজী</translation>
 <translation id="6871256179359663621">পাতল বেঙুনীয়া</translation>
@@ -1194,16 +1195,6 @@
 <translation id="6975981640379148271">কোৱালা</translation>
 <translation id="6977381486153291903">ফাৰ্মৱেৰৰ পুনৰীক্ষণ</translation>
 <translation id="6981982820502123353">সাধ্য সুবিধাসমূহ</translation>
-<translation id="698242338298293034">এটা থীম বাছনি কৰক আৰু তাৰ পাছত আপোনাৰ AI প্ৰতিচ্ছবিসমূহ ব্যক্তিগতকৰণ কৰিবলৈ আণ্ডাৰলাইন কৰা শব্দসমূহ বাছনি কৰক।
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          অধিক অদ্বিতীয় আৰু বৈচিত্ৰময় AI প্ৰতিচ্ছবিৰ বিকল্পসমূহ লাভ কৰিবলৈ "মোক অনুপ্ৰাণিত কৰক" বাছনি কৰক।
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          যেতিয়া আপুনি AIৰ জৰিয়তে সৃষ্টি কৰে, <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Googleৰ গোপনীয়তাৰ নীতি<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />ৰ অধীনত প্ৰতিচ্ছবি সৃষ্টি আৰু প্ৰ’ডাক্ট উন্নত কৰিবলৈ প্ৰ’ম্পট্‌টো Google AI ছাৰ্ভাৰসমূহলৈ পঠিওৱা হয়।
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Generative AI সম্পৰীক্ষামূলক, বিকাশৰ প্ৰাৰম্ভিক স্থিতিত আছে আৰু বৰ্তমান ইয়াৰ উপলব্ধতা সীমিত।</translation>
 <translation id="6982462588253070448">বালিৰ স্তূপ</translation>
 <translation id="7005833343836210400">ডিভাইচটো অফলাইন হৈ আছে</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" />এ এই ডিভাইচটো পৰিচালনা কৰে আৰু চোৱা ৱেবপৃষ্ঠা, পাছৱৰ্ড আৰু ইমেইলকে ধৰি ব্যৱহাৰকাৰীৰ আটাইবোৰ কাৰ্যকলাপ এক্সেছ কৰিব পাৰে।</translation>
@@ -1449,7 +1440,6 @@
 <translation id="8208861521865154048">লাভালাভসমূহ</translation>
 <translation id="8226628635270268143">আপোনাৰ প্ৰিয় ফট’ আৰু এলবামসমূহ বাছনি কৰক</translation>
 <translation id="8227119283605456246">ফাইল সংলগ্ন কৰক</translation>
-<translation id="8227488649450500937">এই প্ৰম্প্‌টসমূহৰ এটা ব্যৱহাৰ কৰি চাওক বা <ph name="BEGIN_LINK_PROMPTING_GUIDE" />প্ৰম্প্‌ট সম্পৰ্কীয় নিৰ্দেশনা<ph name="END_LINK_PROMPTING_GUIDE" /> চাওক</translation>
 <translation id="8230672074305416752">ডিফ'ল্ট নেটৱৰ্কৰ গে’টৱে’টো পিং কৰাত বিফল হ'ল</translation>
 <translation id="8236972776513018241">ট্ৰান্সক্ৰিপ্ট</translation>
 <translation id="8238771987802558562">কোনো এপিএন বাছনি কৰক</translation>

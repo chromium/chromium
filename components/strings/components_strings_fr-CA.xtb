@@ -2851,7 +2851,6 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />, appuyez sur la touche Tabulation, puis sur la touche Entrée pour gérer les fichiers que vous avez téléchargés dans Chrome</translation>
 <translation id="6254436959401408446">Mémoire insuffisante pour ouvrir cette page</translation>
 <translation id="625463612687472648">Arrêter l'autorisation</translation>
-<translation id="6256360366378574605">{FINANCIAL_ACCOUNT,plural, =1{Lorsque vous effectuez des achats sur Chrome, consultez <ph name="FINANCIAL_ACCOUNT_TYPES" /> comme option}one{Lorsque vous effectuez des achats sur Chrome, consultez <ph name="FINANCIAL_ACCOUNT_TYPES" /> comme option}other{Lorsque vous effectuez des achats sur Chrome, consultez <ph name="FINANCIAL_ACCOUNT_TYPES" /> comme options}}</translation>
 <translation id="6259156558325130047">&amp;Rétablir la réorganisation</translation>
 <translation id="6263376278284652872">Favoris de <ph name="DOMAIN" /></translation>
 <translation id="6264376385120300461">Télécharger quand même</translation>
@@ -3137,6 +3136,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="6767985426384634228">Mettre à jour l'adresse?</translation>
 <translation id="6770747695101757579">Papier (Coton)</translation>
 <translation id="677257480647123231">Sécurité des enfants sur Internet</translation>
+<translation id="6772959465807028761">Pour utiliser YouTube, continue avec ton compte Google</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6777088782163649345">Utilise YouTube selon les choix de tes parents</translation>
 <translation id="6779348349813025131">Le gestionnaire de mots de passe Google doit accéder au trousseau macOS</translation>
@@ -4076,7 +4076,6 @@ Détails supplémentaires :
 <translation id="84561192812921051">Votre administrateur peut apporter des modifications à votre profil et à votre navigateur à distance, analyser les informations concernant le navigateur au moyen des rapports et effectuer d'autres tâches nécessaires. L'activité sur cet appareil peut aussi être gérée à l'extérieur de Chrome.  <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="8457125768502047971">Indéfini</translation>
 <translation id="8458202188076138974">Lettre extra</translation>
-<translation id="8458605637341729751">En continuant, vous acceptez que la position précise de votre appareil soit collectée et partagée avec le titulaire de votre compte à des fins de prévention de la fraude. Pour désactiver Pix dans Chrome, accédez à vos <ph name="BEGIN_LINK1" />paramètres des paiements<ph name="END_LINK1" /></translation>
 <translation id="8460854335417802511">Activer l'initiative</translation>
 <translation id="8461694314515752532">Chiffrer vos données synchronisées avec votre propre phrase de passe de synchronisation</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 carte de crédit}one{# carte de crédit}other{# cartes de crédit}}</translation>
@@ -4111,6 +4110,7 @@ Détails supplémentaires :
 <translation id="8527228059738193856">Haut-parleurs</translation>
 <translation id="8527681393107582734">Agriculture et foresterie</translation>
 <translation id="8528149813106025610">Vêtements pour enfants</translation>
+<translation id="8528479410903501741">Enregistrer l'IBAN</translation>
 <translation id="853246364274116957">Pièces de Broadway et théâtre musical</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">Consultez &lt;strong&gt;chrome://policy&lt;/strong&gt; pour voir les URL bloquées et des politiques mises en œuvre par votre administrateur système.</translation>
@@ -4303,6 +4303,7 @@ Détails supplémentaires :
 <translation id="8891727572606052622">Mode mandataire non valide.</translation>
 <translation id="8894794286471754040">Bord long en premier</translation>
 <translation id="8895334001368918465">Pour utiliser un autre service de remplissage automatique dans Chrome, activez-le dans les paramètres Android et ici</translation>
+<translation id="8897221284075091877">Pour demander à voir ce contenu, continue avec ton compte Google</translation>
 <translation id="8897428486789851669">Natation</translation>
 <translation id="8899807382908246773">Annonces intrusives</translation>
 <translation id="8903921497873541725">Zoom avant</translation>

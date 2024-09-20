@@ -2848,7 +2848,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Nyomja le a Tab, majd az Enter gombot a Chrome-ban letöltött fájlok kezeléséhez.</translation>
 <translation id="6254436959401408446">Nincs elég memória az oldal megnyitásához</translation>
 <translation id="625463612687472648">Engedélyezés leállítása</translation>
-<translation id="6256360366378574605">{FINANCIAL_ACCOUNT,plural, =1{Amikor a Chrome-ban vásárol, megjelenik lehetőségként a(z) <ph name="FINANCIAL_ACCOUNT_TYPES" />}other{Amikor a Chrome-ban vásárol, megjelennek lehetőségként a következők: <ph name="FINANCIAL_ACCOUNT_TYPES" />}}</translation>
 <translation id="6259156558325130047">&amp;Átrendezés újra</translation>
 <translation id="6263376278284652872"><ph name="DOMAIN" /> könyvjelzők</translation>
 <translation id="6264376385120300461">Letöltés mindenképpen</translation>
@@ -4076,7 +4075,6 @@ További részletek:
 <translation id="84561192812921051">A rendszergazda távolról módosításokat végezhet az Ön profiljában és böngészőjében, jelentésekkel elemezheti a böngészőadatait, és egyéb szükséges feladatokat is elvégezhet. Az is lehetséges, hogy az eszközön végzett tevékenységeket a Chrome-on kívülről felügyelik.  <ph name="BEGIN_LINK" />További információ<ph name="END_LINK" /></translation>
 <translation id="8457125768502047971">Határozatlan</translation>
 <translation id="8458202188076138974">„Letter Extra” méret</translation>
-<translation id="8458605637341729751">A folytatással beleegyezik abba, hogy eszköze pontos helyadatait a rendszer gyűjtse, és a csalások megelőzése érdekében megosszuk őket fióktulajdonosával. A Pix Chrome-ban való kikapcsolásához lépjen a <ph name="BEGIN_LINK1" />fizetési beállításokhoz<ph name="END_LINK1" />.</translation>
 <translation id="8460854335417802511">Bekapcsolás</translation>
 <translation id="8461694314515752532">A szinkronizált adatok titkosítása saját összetett szinkronizálási jelszóval</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 hitelkártya}other{# hitelkártya}}</translation>
@@ -4111,6 +4109,7 @@ További részletek:
 <translation id="8527228059738193856">Hangfalak</translation>
 <translation id="8527681393107582734">Mezőgazdaság és erdészet</translation>
 <translation id="8528149813106025610">Gyermekruházat</translation>
+<translation id="8528479410903501741">IBAN-kód mentése</translation>
 <translation id="853246364274116957">Broadway és musicalszínház</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">A &lt;strong&gt;chrome://policy&lt;/strong&gt; oldalon láthatja a rendszergazda által letiltott URL-ek és a beállított egyéb kötelező irányelvek listáját.</translation>

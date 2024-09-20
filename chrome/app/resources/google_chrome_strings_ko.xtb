@@ -217,6 +217,7 @@
 <translation id="3596080736082218006">{COUNT,plural, =0{관리자의 요구에 따라 업데이트를 적용하려면 Chrome을 다시 실행해야 합니다.}=1{관리자의 요구에 따라 업데이트를 적용하려면 Chrome을 다시 실행해야 합니다. 시크릿 창이 다시 열리지 않습니다.}other{관리자의 요구에 따라 업데이트를 적용하려면 Chrome을 다시 실행해야 합니다. 시크릿 창 #개가 다시 열리지 않습니다.}}</translation>
 <translation id="3597003331831379823">승격된 권한으로 설정을 실행할 수 없습니다. <ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3609788354808247807">최근에 사이트를 방문하지 않았습니다. Chrome에서 <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /> 권한을 삭제했습니다.</translation>
+<translation id="3622716124581627104">사물 또는 장소를 식별하고 텍스트를 복사하거나 번역합니다. Google 렌즈를 사용하면 페이지의 스크린샷이 Google에 전송됩니다. <ph name="LEARN_MORE" /></translation>
 <translation id="3622797965165704966">이제 Google 계정으로 공유 컴퓨터에서 Chrome을 손쉽게 사용할 수 있습니다.</translation>
 <translation id="3625345586754200168">렌즈 사용해 보기</translation>
 <translation id="3635073343384702370">비밀번호를 저장하면 Chrome에서 확인할 수 있습니다</translation>
@@ -401,6 +402,7 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="608006075545470555">이 브라우저에 직장 프로필 추가</translation>
 <translation id="6097822892606850415">AI의 도움으로 더욱 자신 있게 글을 작성하세요.</translation>
 <translation id="6113794647360055231">더욱 업그레이드된 Chrome</translation>
+<translation id="6116252277240876590">Chrome에서 메뉴, 설정, 알림, 기타 텍스트를 표시하는 데 사용되는 언어입니다</translation>
 <translation id="6134085236017727171">마이크를 사용하려면 <ph name="BEGIN_LINK" />시스템 설정<ph name="END_LINK" />에서 Chrome에 액세스 권한을 부여하세요.</translation>
 <translation id="6135456723633883042">이러한 탭은 추가 리소스를 사용하고 있습니다. 성능을 개선하려면 Chrome에서 이러한 탭을 비활성화하도록 허용하세요.</translation>
 <translation id="6145313976051292476">Chrome에서 PDF 열기</translation>
@@ -601,6 +603,7 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="8498858610309223613">Chrome 특별 보안 업데이트를 방금 적용했습니다. 다시 시작하면 탭이 복원됩니다.</translation>
 <translation id="8516431725144212809">Chrome에서 예측한 관심분야</translation>
 <translation id="8521348052903287641">Chrome 개발자에서 mDNS 트래픽을 허용할 때 사용되는 인바운드 규칙입니다.</translation>
+<translation id="852529348814672339">이 언어로 Chrome 표시</translation>
 <translation id="8550334526674375523">이 직장 프로필은 개인 프로필과 완전히 분리됩니다.</translation>
 <translation id="8555465886620020932">서비스 오류(<ph name="SERVICE_ERROR" />)가 발생했습니다.</translation>
 <translation id="8571790202382503603">Chrome 프로필을 사용하면 모든 Chrome 데이터를 분리할 수 있습니다. 업무용 데이터와 개인용 데이터를 더 쉽게 분리해 보세요.</translation>

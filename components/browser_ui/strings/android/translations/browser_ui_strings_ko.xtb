@@ -96,6 +96,7 @@
 <translation id="2570922361219980984">이 기기의 위치 정보 액세스도 사용 중지되었습니다. <ph name="BEGIN_LINK" />Android 설정<ph name="END_LINK" />에서 사용 설정하세요.</translation>
 <translation id="257931822824936280">펼쳐짐 - 접으려면 클릭</translation>
 <translation id="2586657967955657006">클립보드</translation>
+<translation id="2588271083332682494">탭 그룹으로 깔끔하게 정리하기</translation>
 <translation id="2597457036804169544">사이트에 어두운 테마를 적용하지 마세요.</translation>
 <translation id="2606760465469169465">자동 인증</translation>
 <translation id="2621115761605608342">특정 사이트에서 자바스크립트를 허용합니다.</translation>
@@ -232,6 +233,7 @@
 <translation id="483914009762354899">이 도메인의 모든 사이트 포함</translation>
 <translation id="4883854917563148705">관리 설정은 재설정할 수 없습니다.</translation>
 <translation id="4887024562049524730">사이트에서 내 가상 현실 기기 및 데이터를 사용하도록 허용하기 전에 확인(권장)</translation>
+<translation id="4936863036653376783">모든 기기의 탭 그룹 섹션에서 그룹을 확인할 수 있습니다.</translation>
 <translation id="4953688446973710931">사용 설정하면 사이트에서 여러 파일의 자동 다운로드를 요청할 수 있습니다. 사용 중지하면 사이트에서 여러 파일을 자동으로 다운로드할 수 없습니다.</translation>
 <translation id="4962975101802056554">기기에서 모든 권한을 취소합니다.</translation>
 <translation id="497421865427891073">앞으로 이동</translation>
@@ -378,6 +380,7 @@
 <translation id="6840760312327750441">탭을 그룹화하려면 탭을 길게 터치한 다음 다른 탭으로 드래그하세요.</translation>
 <translation id="6864395892908308021">기기에서 NFC를 읽을 수 없음</translation>
 <translation id="6870169401250095575">안전 확인 숨기기 카드</translation>
+<translation id="6900883974539674431">모든 기기에서 자동으로 저장되고 업데이트되는 탭 그룹을 만드세요.</translation>
 <translation id="6912998170423641340">사이트에서 클립보드의 텍스트 및 이미지에 액세스하지 못하도록 차단</translation>
 <translation id="6945221475159498467">선택</translation>
 <translation id="6950072572526089586">내가 방문하는 사이트에서 로그인 상태를 유지하거나 장바구니에 상품을 저장하는 등 사이트의 정상적인 작동을 위하여 내 활동 정보를 저장할 수 있습니다. 사이트에서는 이 정보를 주로 기기에 임시 저장합니다.</translation>

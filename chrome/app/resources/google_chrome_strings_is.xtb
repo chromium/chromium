@@ -217,6 +217,7 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="3596080736082218006">{COUNT,plural, =0{Kerfisstjórinn þinn gerir kröfu um að þú endurræsir Chrome til að setja upp uppfærslu}=1{Kerfisstjórinn þinn gerir kröfu um að þú endurræsir Chrome til að setja upp uppfærslu. Huliðsglugginn enduropnast ekki.}one{Kerfisstjórinn þinn gerir kröfu um að þú endurræsir Chrome til að setja upp uppfærslu. # huliðsgluggi enduropnast ekki.}other{Kerfisstjórinn þinn gerir kröfu um að þú endurræsir Chrome til að setja upp uppfærslu. # huliðsgluggar enduropnast ekki.}}</translation>
 <translation id="3597003331831379823">Ekki tókst að hefja uppsetningu með auknum heimildum. <ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3609788354808247807">Þú hefur ekki skoðað vefsvæðið nýlega. Chrome fjarlægði <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /></translation>
+<translation id="3622716124581627104">Berðu kennsl á hluti eða staði og afritaðu eða þýddu texta. Þegar þú notar Google-linsu er skjámynd af síðunni send til Google. <ph name="LEARN_MORE" /></translation>
 <translation id="3622797965165704966">Nú er auðveldara að nota Chrome með Google reikningnum þínum og í samnýttum tölvum.</translation>
 <translation id="3625345586754200168">Prófa Linsu</translation>
 <translation id="3635073343384702370">Chrome getur athugað aðgangsorðin þín þegar þú vistar þau</translation>
@@ -402,6 +403,7 @@ Google Chrome getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="608006075545470555">Bæta vinnusniði við þennan vafra</translation>
 <translation id="6097822892606850415">Skrifaðu af meira öryggi með hjálp frá gervigreind</translation>
 <translation id="6113794647360055231">Chrome er nú enn betra</translation>
+<translation id="6116252277240876590">Þetta tungumál er notað til að birta valmyndir, stillingar, viðvaranir og annan texta í Chrome</translation>
 <translation id="6134085236017727171">Veittu Chrome aðgang að hljóðnemanum þínum í <ph name="BEGIN_LINK" />kerfisstillingum<ph name="END_LINK" /> til að geta notað hann</translation>
 <translation id="6135456723633883042">Þessir flipar nota aukagögn. Leyfðu Chrome að óvirkja þá til að bæta afköstin.</translation>
 <translation id="6145313976051292476">Opna PDF-skjöl í Chrome</translation>
@@ -602,6 +604,7 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="8498858610309223613">Sérstök öryggisuppfærsla fyrir Google Chrome var tekin í notkun. Endurræstu núna og við opnum flipana þína aftur.</translation>
 <translation id="8516431725144212809">Mat Chrome á áhugasviðum þínum</translation>
 <translation id="8521348052903287641">Innleiðarregla til að láta Google Chrome Dev leyfa mDNS-umferð.</translation>
+<translation id="852529348814672339">Birta Chrome á þessu tungumáli</translation>
 <translation id="8550334526674375523">Þessi vinnuprófíll er algjörlega aðskilinn þínum eigin prófíl.</translation>
 <translation id="8555465886620020932">Þjónustuvilla: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8571790202382503603">Þú getur aðskilið allt efnið þitt á Chrome með Chrome prófílum. Á þann hátt er auðveldara að skipta á milli vinnu og afþreyingar.</translation>

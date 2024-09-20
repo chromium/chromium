@@ -2847,7 +2847,6 @@
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />, ನೀವು Chrome ನಲ್ಲಿ ಡೌನ್‌ಲೋಡ್ ಮಾಡಿದ ಫೈಲ್‌ಗಳನ್ನು ನಿರ್ವಹಿಸಲು Tab ಒತ್ತಿ, ನಂತರ Enter ಒತ್ತಿ</translation>
 <translation id="6254436959401408446">ಈ ಪುಟವನ್ನು ತೆರೆಯಲು ಸಾಕಷ್ಟು ಮೆಮೊರಿ ಇಲ್ಲ</translation>
 <translation id="625463612687472648">ಅನುಮತಿಯನ್ನು ರದ್ದುಮಾಡಿ</translation>
-<translation id="6256360366378574605">{FINANCIAL_ACCOUNT,plural, =1{ನೀವು Chrome ನಲ್ಲಿ ಖರೀದಿಗಳನ್ನು ಮಾಡಿದಾಗ, <ph name="FINANCIAL_ACCOUNT_TYPES" /> ಅನ್ನು ಒಂದು ಆಯ್ಕೆಯಾಗಿ ನೋಡಿ}one{ನೀವು Chrome ನಲ್ಲಿ ಖರೀದಿಗಳನ್ನು ಮಾಡಿದಾಗ, <ph name="FINANCIAL_ACCOUNT_TYPES" /> ಅನ್ನು ಒಂದು ಆಯ್ಕೆಗಳಾಗಿ ನೋಡಿ}other{ನೀವು Chrome ನಲ್ಲಿ ಖರೀದಿಗಳನ್ನು ಮಾಡಿದಾಗ, <ph name="FINANCIAL_ACCOUNT_TYPES" /> ಅನ್ನು ಒಂದು ಆಯ್ಕೆಗಳಾಗಿ ನೋಡಿ}}</translation>
 <translation id="6259156558325130047">&amp;ಮರುಕ್ರಮಗೊಳಿಸುವುದನ್ನು ಮತ್ತೆಮಾಡು</translation>
 <translation id="6263376278284652872"><ph name="DOMAIN" /> ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳು</translation>
 <translation id="6264376385120300461">ಹೇಗಿದ್ದರೂ ಡೌನ್‌ಲೋಡ್ ಮಾಡಿ</translation>
@@ -4074,7 +4073,6 @@
 <translation id="84561192812921051">ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ದೂರದಿಂದಲೇ ನಿಮ್ಮ ಪ್ರೊಫೈಲ್ ಮತ್ತು ಬ್ರೌಸರ್‌ಗೆ ಬದಲಾವಣೆಗಳನ್ನು ಮಾಡಬಹುದು, ವರದಿ ಮಾಡುವ ಮೂಲಕ ಬ್ರೌಸರ್ ಕುರಿತು ಮಾಹಿತಿಯನ್ನು ವಿಶ್ಲೇಷಿಸಬಹುದು ಮತ್ತು ಇತರ ಅಗತ್ಯ ಕಾರ್ಯಗಳನ್ನು ನಿರ್ವಹಿಸಬಹುದು. ಈ ಸಾಧನದಲ್ಲಿನ ಚಟುವಟಿಕೆಯನ್ನು Chrome ನ ಹೊರಗೆ ಸಹ ನಿರ್ವಹಿಸಬಹುದು.  <ph name="BEGIN_LINK" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LINK" /></translation>
 <translation id="8457125768502047971">ಅನಿರ್ದಿಷ್ಟ</translation>
 <translation id="8458202188076138974">Letter Extra</translation>
-<translation id="8458605637341729751">ಮುಂದುವರಿಸುವ ಮೂಲಕ, ನಿಮ್ಮ ಸಾಧನದ ನಿಖರವಾದ ಸ್ಥಳವನ್ನು ಸಂಗ್ರಹಿಸಲು ಮತ್ತು ವಂಚನೆ ತಡೆಗಟ್ಟುವ ಉದ್ದೇಶಗಳಿಗಾಗಿ ಅದನ್ನು ನಿಮ್ಮ ಖಾತೆದಾರರೊಂದಿಗೆ ಹಂಚಿಕೊಳ್ಳಲು ನೀವು ಸಮ್ಮತಿಸುತ್ತೀರಿ. Chrome ನಲ್ಲಿ Pix ಅನ್ನು ಆಫ್ ಮಾಡಲು, ನಿಮ್ಮ <ph name="BEGIN_LINK1" />ಪಾವತಿ ಸೆಟ್ಟಿಂಗ್‌ಗಳಿಗೆ<ph name="END_LINK1" /> ಹೋಗಿ</translation>
 <translation id="8460854335417802511">ಅದನ್ನು ಆನ್ ಮಾಡಿ</translation>
 <translation id="8461694314515752532">ನಿಮ್ಮ ಸ್ವಂತ ಸಿಂಕ್ ಪಾಸ್‌ಫ್ರೇಸ್‌ ಬಳಸಿಕೊಂಡು ಸಿಂಕ್ ಮಾಡಿದ ಡೇಟಾವನ್ನು ಎನ್‌ಕ್ರಿಪ್ಟ್ ಮಾಡಿ</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 ಕ್ರೆಡಿಟ್ ಕಾರ್ಡ್}one{# ಕ್ರೆಡಿಟ್ ಕಾರ್ಡ್‌ಗಳು}other{# ಕ್ರೆಡಿಟ್ ಕಾರ್ಡ್‌ಗಳು}}</translation>
@@ -4109,6 +4107,7 @@
 <translation id="8527228059738193856">ಸ್ಪೀಕರ್‌ಗಳು</translation>
 <translation id="8527681393107582734">ಕೃಷಿ ಮತ್ತು ಅರಣ್ಯ ಶಾಸ್ತ್ರ</translation>
 <translation id="8528149813106025610">ಮಕ್ಕಳ ಉಡುಪು</translation>
+<translation id="8528479410903501741">IBAN ಸೇವ್ ಮಾಡಿ</translation>
 <translation id="853246364274116957">ಬ್ರಾಡ್‌ವೇ ಮತ್ತು ಸಂಗೀತ ನಾಟಕ</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">ನಿಮ್ಮ ಸಿಸ್ಟಮ್ ನಿರ್ವಾಹಕರು ನಿರ್ಬಂಧಿಸಿರುವ URLಗಳ ಪಟ್ಟಿ ಮತ್ತು ಜಾರಿಗೊಳಿಸಿರುವ ಇತರ ನೀತಿಗಳನ್ನು ವೀಕ್ಷಿಸಲು &lt;strong&gt;chrome://policy&lt;/strong&gt; ಗೆ ಭೇಟಿ ನೀಡಿ.</translation>

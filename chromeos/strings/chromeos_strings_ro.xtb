@@ -258,7 +258,6 @@
 <translation id="2148716181193084225">Astăzi</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> fotografii</translation>
 <translation id="2154460308960858308">Șterge căutarea</translation>
-<translation id="2156072344042480449">Cele mai recente două solicitări ale tale. Poți să folosești aceste solicitări numai din această pagină.</translation>
 <translation id="2157660087437850958">selector de emoji</translation>
 <translation id="2157959690810728433">ÎN COADĂ</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: reîncearcă</translation>
@@ -1196,16 +1195,6 @@
 <translation id="6975981640379148271">urși koala</translation>
 <translation id="6977381486153291903">Versiune firmware</translation>
 <translation id="6981982820502123353">Accesibilitate</translation>
-<translation id="698242338298293034">Alege o temă, apoi selectează cuvintele subliniate pentru a personaliza imaginile AI.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Selectează Inspiră-mă pentru a obține mai multe opțiuni unice și variate de imagini AI.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Când creezi cu AI, solicitarea se trimite la serverele Google AI pentru a genera imagini și a îmbunătăți produsul, în conformitate cu <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Politica de confidențialitate Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          AI generativ este o funcție experimentală, în primele etape de dezvoltare și, momentan, are disponibilitate limitată.</translation>
 <translation id="6982462588253070448">dune de nisip</translation>
 <translation id="7005833343836210400">Dispozitivul este offline</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> gestionează acest dispozitiv și are acces la toată activitatea utilizatorului, inclusiv la paginile web accesate, parole și e-mail.</translation>
@@ -1451,7 +1440,6 @@ Descarcă modelul de transcriere (până la 100 MB) pentru a obține aceste tran
 <translation id="8208861521865154048">Avantaje</translation>
 <translation id="8226628635270268143">Alege fotografiile și albumele preferate</translation>
 <translation id="8227119283605456246">Atașează un fișier</translation>
-<translation id="8227488649450500937">Încearcă una dintre aceste solicitări sau consultă <ph name="BEGIN_LINK_PROMPTING_GUIDE" />ghidul pentru solicitări<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="8230672074305416752">Nu s-a putut da ping către gateway-ul de rețea prestabilit</translation>
 <translation id="8236972776513018241">Transcriere</translation>
 <translation id="8238771987802558562">Alege un APN</translation>

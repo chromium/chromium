@@ -2851,7 +2851,6 @@
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />, притисните Tab, па Enter да бисте управљали фајловима које сте преузели у Chrome-у</translation>
 <translation id="6254436959401408446">Нема довољно меморије за отварање ове странице</translation>
 <translation id="625463612687472648">Опозови дозволу</translation>
-<translation id="6256360366378574605">{FINANCIAL_ACCOUNT,plural, =1{Када купујете у Chrome-у, погледајте <ph name="FINANCIAL_ACCOUNT_TYPES" /> као опцију}one{Када купујете у Chrome-у, погледајте <ph name="FINANCIAL_ACCOUNT_TYPES" /> као опције}few{Када купујете у Chrome-у, погледајте <ph name="FINANCIAL_ACCOUNT_TYPES" /> као опције}other{Када купујете у Chrome-у, погледајте <ph name="FINANCIAL_ACCOUNT_TYPES" /> као опције}}</translation>
 <translation id="6259156558325130047">&amp;Понови промену редоследа</translation>
 <translation id="6263376278284652872">Обележивачи домена <ph name="DOMAIN" /></translation>
 <translation id="6264376385120300461">Ипак преузми</translation>
@@ -4078,7 +4077,6 @@
 <translation id="84561192812921051">Администратор може даљински да уноси промене у профил и прегледач, да анализира информације о прегледачу помоћу извештавања и обавља друге неопходне задатке. Активностима на овом уређају може да се управља и ван Chrome-а.  <ph name="BEGIN_LINK" />Сазнајте више<ph name="END_LINK" /></translation>
 <translation id="8457125768502047971">Неограничено</translation>
 <translation id="8458202188076138974">Letter Extra</translation>
-<translation id="8458605637341729751">Ако наставите, прихватате да се прецизна локација уређаја прикупља и дели са власником налога ради спречавања превара. Да бисте искључили Pix у Chrome-у, идите у <ph name="BEGIN_LINK1" />подешавања плаћања<ph name="END_LINK1" /></translation>
 <translation id="8460854335417802511">Укључи</translation>
 <translation id="8461694314515752532">Шифрујте синхронизоване податке помоћу сопствене приступне фразе за синхронизацију</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 кредитна картица}one{# кредитна картица}few{# кредитне картице}other{# кредитних картица}}</translation>
@@ -4113,6 +4111,7 @@
 <translation id="8527228059738193856">Звучници</translation>
 <translation id="8527681393107582734">Пољопривреда и шумарство</translation>
 <translation id="8528149813106025610">Дечја одећа</translation>
+<translation id="8528479410903501741">Сачувај IBAN</translation>
 <translation id="853246364274116957">Бродвеј и музичка позоришта</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">Посетите &lt;strong&gt;chrome://policy&lt;/strong&gt; да бисте видели листу блокираних URL-ова и друге смернице које је одредио администратор система.</translation>

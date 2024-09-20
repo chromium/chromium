@@ -129,6 +129,7 @@
 <translation id="6549021453810473782">მაღაზიის ინფორმაციის ნახვა</translation>
 <translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>
 <translation id="6562820390860419811">ჩანართის მარცხნივ გადატანა</translation>
+<translation id="6590332670428149473">გახსენით ჩანართების ჯგუფზე მოქმედებების მენიუ ჩანართების <ph name="COLOR_NAME" /> ფერის გაზიარებული ჯგუფისთვის „<ph name="TITLE_OF_GROUP" />“.</translation>
 <translation id="6615455863669487791">მაჩვენე</translation>
 <translation id="6668311240800004911">{NUMBER_OF_TABS_CHANGED,plural, =1{<ph name="ONE_CHANGED" /> ჩანართი შეიცვალა}other{<ph name="MANY_CHANGED" /> ჩანართი შეიცვალა}}</translation>
 <translation id="6694634756612002311">გაზიარების მართვა</translation>
@@ -189,6 +190,7 @@
 <translation id="8993967613304721520">{NUMBER_OF_TABS,plural, =1{ჩანართების <ph name="TABS_COUNT_ONE" />-ჩანართიანი ჯგუფის გაფართოება.}other{ჩანართების <ph name="TABS_COUNT_MANY" />-ჩანართიანი ჯგუფის გაფართოება.}}</translation>
 <translation id="9090098097337832354">ამ მაღაზიის შესახებ ინფორმაცია დახურულია</translation>
 <translation id="9111228330448174435">ახალი ჩანართების ჯგუფის შექმნის დიალოგის ჩვენება</translation>
+<translation id="9114502155681725011">გახსენით ჩანართების ჯგუფზე მოქმედებების მენიუ ჩანართების <ph name="COLOR_NAME" /> ფერის ჯგუფისთვის „<ph name="TITLE_OF_GROUP" />“.</translation>
 <translation id="9150694013019234766">გადაერთეთ ჩანართებს შორის თქვენს ჩანართების ჯგუფში, ეკრანის ქვედა ნაწილში</translation>
 <translation id="9169594135889675189">ჯგუფში ახალი ჩანართის დამატება</translation>
 <translation id="9216898458513705996">ჩანართები დარჩება გახსნილი ამ მოწყობილობაზე, მაგრამ ჯგუფი წაიშლება ყველა მოწყობილობიდან, რომელიც შესულია ანგარიშში: <ph name="USER_EMAIL" /></translation>

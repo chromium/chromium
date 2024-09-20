@@ -2852,7 +2852,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />, presiona Tab y, luego, Intro para administrar los archivos que descargaste en Chrome</translation>
 <translation id="6254436959401408446">Tu dispositivo no tiene suficiente memoria para abrir esta página</translation>
 <translation id="625463612687472648">Dejar de permitir</translation>
-<translation id="6256360366378574605">{FINANCIAL_ACCOUNT,plural, =1{Cuando realices compras en Chrome, verás <ph name="FINANCIAL_ACCOUNT_TYPES" /> como opción}other{Cuando realices compras en Chrome, verás <ph name="FINANCIAL_ACCOUNT_TYPES" /> como opciones}}</translation>
 <translation id="6259156558325130047">&amp;Rehacer Reorganizar</translation>
 <translation id="6263376278284652872">Favoritos de <ph name="DOMAIN" /></translation>
 <translation id="6264376385120300461">Descargar de todos modos</translation>
@@ -4079,7 +4078,6 @@ Detalles adicionales:
 <translation id="84561192812921051">El administrador puede realizar cambios en tu perfil y navegador de forma remota, analizar información sobre el navegador a través de informes y realizar otras tareas necesarias. Es posible que la actividad en este dispositivo también se administre fuera de Chrome.  <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="8457125768502047971">Indefinida</translation>
 <translation id="8458202188076138974">Carta extra</translation>
-<translation id="8458605637341729751">Si continúas, aceptas que se recopile la ubicación precisa de tu dispositivo y que se comparta con el titular de la cuenta, con el fin de prevenir fraudes. Para desactivar Pix en Chrome, ve a la <ph name="BEGIN_LINK1" />configuración de pagos<ph name="END_LINK1" /></translation>
 <translation id="8460854335417802511">Activar</translation>
 <translation id="8461694314515752532">Encriptar los datos sincronizados con tu propia frase de contraseña de sincronización</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 tarjeta de crédito}other{# tarjetas de crédito}}</translation>
@@ -4114,6 +4112,7 @@ Detalles adicionales:
 <translation id="8527228059738193856">Bocinas</translation>
 <translation id="8527681393107582734">Agricultura y silvicultura</translation>
 <translation id="8528149813106025610">Indumentaria infantil</translation>
+<translation id="8528479410903501741">Guardar IBAN</translation>
 <translation id="853246364274116957">Broadway y teatro musical</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">Visita &lt;strong&gt;chrome://policy&lt;/strong&gt; para ver la lista de URL bloqueadas y otras políticas que estableció el administrador del sistema.</translation>

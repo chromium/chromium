@@ -2382,6 +2382,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="5371425731340848620">Kemas kini kad</translation>
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">"Jam anda lambat" atau "Jam anda cepat" atau "&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;"</translation>
+<translation id="5379618281582508161">Untuk mendapatkan kata laluan ini pada semua peranti anda, sahkan identiti anda</translation>
 <translation id="5380953781541843508">Dalam tertib menaik</translation>
 <translation id="5381318171304904246">Apabila anda meneruskan proses, anda akan dibawa kepada laman web bank anda. Selepas anda membuat pengesahan, anda akan dikembalikan secara automatik untuk menyelesaikan pembelian anda.</translation>
 <translation id="5383478552402031184">Lantai</translation>
@@ -2852,7 +2853,6 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tekan Tab kemudian Enter untuk mengurus fail yang telah anda muat turun dalam Chrome</translation>
 <translation id="6254436959401408446">Memori tidak mencukupi untuk membuka halaman ini</translation>
 <translation id="625463612687472648">Hentikan kebenaran</translation>
-<translation id="6256360366378574605">{FINANCIAL_ACCOUNT,plural, =1{Apabila anda membuat pembelian pada Chrome, lihat <ph name="FINANCIAL_ACCOUNT_TYPES" /> sebagai pilihan}other{Apabila anda membuat pembelian pada Chrome, lihat <ph name="FINANCIAL_ACCOUNT_TYPES" /> sebagai pilihan}}</translation>
 <translation id="6259156558325130047">&amp;Buat Asal Susun Semula</translation>
 <translation id="6263376278284652872">Penanda halaman <ph name="DOMAIN" /></translation>
 <translation id="6264376385120300461">Muat turun juga</translation>
@@ -4079,7 +4079,6 @@ Butiran tambahan:
 <translation id="84561192812921051">Pentadbir anda boleh membuat perubahan pada profil dan penyemak imbas anda dari jauh, menganalisis maklumat tentang penyemak imbas melalui pelaporan dan melaksanakan tugas penting yang lain. Aktiviti pada peranti ini mungkin turut diurus di luar Chrome.  <ph name="BEGIN_LINK" />Ketahui lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="8457125768502047971">Tidak tentu</translation>
 <translation id="8458202188076138974">Surat Ekstra</translation>
-<translation id="8458605637341729751">Dengan meneruskan proses, anda bersetuju supaya lokasi tepat peranti anda dikumpulkan dan dikongsi dengan pemegang akaun anda untuk tujuan pencegahan penipuan. Untuk mematikan Pix dalam Chrome, akses <ph name="BEGIN_LINK1" />tetapan pembayaran<ph name="END_LINK1" /> anda</translation>
 <translation id="8460854335417802511">Hidupkan</translation>
 <translation id="8461694314515752532">Sulitkan data yang disegerakkan dengan ungkapan laluan penyegerakan anda sendiri</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 kad kredit}other{# kad kredit}}</translation>
@@ -4114,6 +4113,7 @@ Butiran tambahan:
 <translation id="8527228059738193856">Pembesar suara</translation>
 <translation id="8527681393107582734">Pertanian &amp; Perhutanan</translation>
 <translation id="8528149813106025610">Pakaian Kanak-kanak</translation>
+<translation id="8528479410903501741">Simpan IBAN</translation>
 <translation id="853246364274116957">Teater Broadway &amp; Muzikal</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">Lawati &lt;strong&gt;chrome://policy&lt;/strong&gt; untuk melihat senarai URL yang disekat dan dasar lain yang dikuatkuasakan oleh pentadbir sistem anda.</translation>

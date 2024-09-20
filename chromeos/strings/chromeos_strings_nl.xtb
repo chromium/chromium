@@ -258,7 +258,6 @@
 <translation id="2148716181193084225">Vandaag</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> foto's</translation>
 <translation id="2154460308960858308">Zoekvak wissen</translation>
-<translation id="2156072344042480449">Je 2 meest recente prompts. Je kunt deze prompts alleen gebruiken terwijl je op deze pagina bent.</translation>
 <translation id="2157660087437850958">emoji-kiezer</translation>
 <translation id="2157959690810728433">IN DE WACHTRIJ</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Opnieuw proberen</translation>
@@ -1196,16 +1195,6 @@
 <translation id="6975981640379148271">koala's</translation>
 <translation id="6977381486153291903">Firmwarerevisie</translation>
 <translation id="6981982820502123353">Toegankelijkheid</translation>
-<translation id="698242338298293034">Kies een thema en selecteer de onderstreepte woorden om je AI-afbeeldingen te personaliseren.
-          <ph name="LINE_BREAK" />
-<ph name="LINE_BREAK" />
-Selecteer Inspireer me voor meer unieke en gevarieerde opties voor AI-afbeeldingen.
-          <ph name="LINE_BREAK" />
-<ph name="LINE_BREAK" />
-Als je iets maakt met AI, wordt de prompt naar de AI-servers van Google gestuurd om afbeeldingen te genereren en het product te verbeteren, in overeenstemming met het <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Privacybeleid van Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />.
-          <ph name="LINE_BREAK" />
-<ph name="LINE_BREAK" />
-Generatieve AI is experimenteel, in vroege ontwikkeling en op dit moment beperkt beschikbaar.</translation>
 <translation id="6982462588253070448">duinen</translation>
 <translation id="7005833343836210400">Apparaat is offline</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> beheert dit apparaat en heeft toegang tot alle gebruikersactiviteit, waaronder bezochte webpagina's, wachtwoorden en e-mails.</translation>
@@ -1451,7 +1440,6 @@ Download het transcriptiemodel (maximaal 100 MB) om deze transcripties te krijg
 <translation id="8208861521865154048">Speciale voordelen</translation>
 <translation id="8226628635270268143">Kies je favoriete foto's en albums</translation>
 <translation id="8227119283605456246">Bestand bijvoegen</translation>
-<translation id="8227488649450500937">Probeer een van deze prompts of bekijk de <ph name="BEGIN_LINK_PROMPTING_GUIDE" />handleiding voor prompts<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="8230672074305416752">Kan de standaard netwerkgateway niet pingen</translation>
 <translation id="8236972776513018241">Transcript</translation>
 <translation id="8238771987802558562">Een APN kiezen</translation>

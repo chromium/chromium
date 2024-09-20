@@ -1124,7 +1124,6 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="1794212650797661990">Amaga la contrasenya per a <ph name="DOMAIN" /></translation>
 <translation id="1794791083288629568">Envia suggeriments per ajudar-nos a solucionar el problema.</translation>
 <translation id="1795214765651529549">Utilitza el tema clàssic</translation>
-<translation id="1795668164971917185">La propera vegada que Navegació segura de Google trobi una baixada sospitosa, l'analitzarà automàticament com a part de la <ph name="LINK" /> que has triat</translation>
 <translation id="1796588414813960292">Les funcions que necessitin so no funcionaran</translation>
 <translation id="1797117170091578105">Juga utilitzant el teclat del Chromebook. Pots personalitzar les tecles perquè facin accions específiques.</translation>
 <translation id="1798335429200675510">Fes clic amb el botó dret en un quadre de text per crear un esborrany o polir el treball existent amb la tecnologia de la IA de Google. En aquests moments té una disponibilitat limitada.</translation>
@@ -3934,6 +3933,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3799128412641261490">Configuració d'Accés amb interruptors</translation>
 <translation id="3800828618615365228">Condicions addicionals de Google Chrome i Chrome OS</translation>
 <translation id="3800898876950197674">Per permetre aquesta extensió, introdueix la contrasenya.</translation>
+<translation id="3801449494961771207">Veu del text a parla del sistema</translation>
 <translation id="3802486193901166966">Aquesta extensió no requereix cap permís especial i no té accés a cap lloc web addicional</translation>
 <translation id="380329542618494757">Nom</translation>
 <translation id="3803345858388753269">Qualitat de vídeo</translation>
@@ -5907,7 +5907,6 @@ Fes servir Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="5263656105659419083">Per tornar fàcilment al tauler lateral, a la part superior dreta, fes clic a Fixa</translation>
 <translation id="5264148714798105376">Aquesta acció pot tardar més o menys un minut.</translation>
 <translation id="5264252276333215551">Connecteu-vos a Internet per iniciar l'aplicació en el mode quiosc.</translation>
-<translation id="526539328530966548">protecció millorada</translation>
 <translation id="5265797726250773323">S'ha produït un error durant la instal·lació</translation>
 <translation id="5266113311903163739">Error d'importació de l'entitat emissora de certificats</translation>
 <translation id="526622169288322445">Més accions per a <ph name="ADDRESS_SUMMARY" /></translation>
@@ -7286,6 +7285,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="628726841779494414">Gestiona les teves impressores a la configuració de la impressora</translation>
 <translation id="6287828400772161253">Telèfon Android (<ph name="HOST_DEVICE_NAME" />)</translation>
 <translation id="6290613030083731160">No hi ha cap dispositiu disponible a prop per compartir contingut. <ph name="LINK_BEGIN" />Més informació<ph name="LINK_END" /></translation>
+<translation id="6291580570300353047">No es pot dur a terme la restauració perquè no hi ha prou espai d'emmagatzematge.</translation>
 <translation id="6291741848715722067">Codi de confirmació</translation>
 <translation id="6291953229176937411">&amp;Mostra a Finder</translation>
 <translation id="6292699686837272722">Les pestanyes es redueixen a una amplada mitjana</translation>

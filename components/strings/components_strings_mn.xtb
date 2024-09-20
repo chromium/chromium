@@ -2851,7 +2851,6 @@
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome-д татсан файлуудаа удирдахын тулд эхлээд Tab, дараа нь Enter дээр дарна уу</translation>
 <translation id="6254436959401408446">Энэ хуудсыг нээхэд санах ойн багтаамж хүрэлцэхгүй байна</translation>
 <translation id="625463612687472648">Зөвшөөрөхийг болих</translation>
-<translation id="6256360366378574605">{FINANCIAL_ACCOUNT,plural, =1{Та Chrome дээрээс худалдан авалт хийхдээ <ph name="FINANCIAL_ACCOUNT_TYPES" />-г сонголт болгон харна уу}other{Та Chrome дээрээс худалдан авалт хийхдээ <ph name="FINANCIAL_ACCOUNT_TYPES" />-г сонголт болгон харна уу}}</translation>
 <translation id="6259156558325130047">&amp; Дахин эрэмбэлэх үйлдлийг дахин хийх</translation>
 <translation id="6263376278284652872"><ph name="DOMAIN" /> хавчуургууд</translation>
 <translation id="6264376385120300461">Ямартай ч татах</translation>
@@ -3137,6 +3136,7 @@
 <translation id="6767985426384634228">Хаягийг шинэчлэх үү?</translation>
 <translation id="6770747695101757579">Цаас (хөвөн)</translation>
 <translation id="677257480647123231">Хүүхдийн интернэтийн аюулгүй байдал</translation>
+<translation id="6772959465807028761">YouTube-г ашиглахын тулд Google Бүртгэлээрээ үргэлжлүүлнэ үү</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6777088782163649345">YouTube-г эцэг эхийнхээ сонголтын дагуу ашиглана уу</translation>
 <translation id="6779348349813025131">Google Password Manager-т MacOS Keychain-д хандах эрх шаардлагатай</translation>
@@ -4076,7 +4076,6 @@
 <translation id="84561192812921051">Танай администратор профайл, хөтчид тань зайнаас өөрчлөлт хийх, тайлангаар дамжуулан хөтчийн талаарх мэдээллийг задлан шинжлэх, бусад шаардлагатай ажлыг гүйцэтгэх боломжтой. Энэ төхөөрөмж дээрх үйл ажиллагааг мөн Chrome-с гадуур удирдаж болно.  <ph name="BEGIN_LINK" />Нэмэлт мэдээлэл авах<ph name="END_LINK" /></translation>
 <translation id="8457125768502047971">Тодорхойгүй</translation>
 <translation id="8458202188076138974">Илүү том захидал</translation>
-<translation id="8458605637341729751">Та үргэлжлүүлснээр залилангаас сэргийлэх зорилгоор таны төхөөрөмжийн нарийвчилсан байршлыг цуглуулж, бүртгэл эзэмшигчтэй тань хуваалцахыг зөвшөөрч байна. Pix-г Chrome-д унтраахын тулд <ph name="BEGIN_LINK1" />төлбөрийн тохиргоо<ph name="END_LINK1" /> руугаа очно уу</translation>
 <translation id="8460854335417802511">Үүнийг асаах</translation>
 <translation id="8461694314515752532">Синк хийсэн өгөгдлийг синкийн нэвтрэх үгээрээ шифрлэх</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 кредит карт}other{# кредит карт}}</translation>
@@ -4111,6 +4110,7 @@
 <translation id="8527228059738193856">Чанга яригч</translation>
 <translation id="8527681393107582734">Хөдөө аж ахуй, ойн аж ахуй</translation>
 <translation id="8528149813106025610">Хүүхдийн хувцас</translation>
+<translation id="8528479410903501741">Олон улсын банк акаунтны дугаарыг хадгалах</translation>
 <translation id="853246364274116957">Бродвей болон мюзикл театр</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">Системийн администраторынхаа хэрэгжүүлдэг блоклосон URL-үүдийн болон бусад удирдамжийн жагсаалтыг харахын тулд &lt;strong&gt; chrome://policy&lt;/strong&gt;-д зочилно уу.</translation>
@@ -4303,6 +4303,7 @@
 <translation id="8891727572606052622">Орлон ашиглах горим хүчингүй байна</translation>
 <translation id="8894794286471754040">Эхлээд урт зах</translation>
 <translation id="8895334001368918465">Chrome-д автоматаар бөглөх хэсгийн өөр үйлчилгээг ашиглахын тулд тухайн үйлчилгээг Android-н тохиргоонд болон энд асаана уу</translation>
+<translation id="8897221284075091877">Энэ контентыг харахыг хүсэхийн тулд Google Бүртгэлээрээ үргэлжлүүлнэ үү</translation>
 <translation id="8897428486789851669">Усанд сэлэлт</translation>
 <translation id="8899807382908246773">Төвөгтэй зар</translation>
 <translation id="8903921497873541725">Томруулж харах</translation>

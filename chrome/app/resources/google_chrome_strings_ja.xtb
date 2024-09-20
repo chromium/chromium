@@ -213,6 +213,7 @@
 <translation id="3596080736082218006">{COUNT,plural, =0{管理者が、アップデートを適用するために Chrome を再起動するよう求めています}=1{管理者が、アップデートを適用するために Chrome を再起動するよう求めています。シークレット ウィンドウは、再起動後は自動的には開きません。}other{管理者が、アップデートを適用するために Chrome を再起動するよう求めています。現在開いている # 個のシークレット ウィンドウは、再起動後は自動的には開きません。}}</translation>
 <translation id="3597003331831379823">昇格された権限で設定を実行できませんでした。<ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3609788354808247807">最近アクセスしていないため、Chrome で <ph name="PERMISSION_1" />、<ph name="PERMISSION_2" />、<ph name="PERMISSION_3" /> の権限を削除しました</translation>
+<translation id="3622716124581627104">ものや場所を特定したり、テキストをコピーまたは翻訳したりできます。Google レンズを使用すると、ページのスクリーンショットが Google に送信されます。<ph name="LEARN_MORE" /></translation>
 <translation id="3622797965165704966">共有パソコンの Chrome で Google アカウントが簡単に使用できるようになりました。</translation>
 <translation id="3625345586754200168">レンズを使ってみる</translation>
 <translation id="3635073343384702370">パスワードを保存すると、Chrome による確認が可能になります</translation>
@@ -296,6 +297,7 @@
 <translation id="4680828127924988555">インストールをキャンセル</translation>
 <translation id="469553575393225953">提供元不明の拡張機能、アプリ、テーマはデバイスに危害を及ぼす可能性があります。Chrome ウェブストアで公開されているアイテムのみをインストールすることをおすすめします</translation>
 <translation id="4710245680469034439">自然、アーティストのコレクションなどから着想を得たテーマでブラウザをカスタマイズできます</translation>
+<translation id="4720851490453439956">Google Updater 内部サービス</translation>
 <translation id="4724676981607797757">サポートされていないプロトコル エラーが発生したため、インストールできませんでした。</translation>
 <translation id="4728575227883772061">原因不明のエラーによりインストールが失敗しました。実行中の Google Chrome を終了してからやり直してください。</translation>
 <translation id="4741235124132242877">固定しました。ツールバーから Google レンズを使用できます</translation>
@@ -393,6 +395,7 @@
 <translation id="608006075545470555">このブラウザに仕事用プロファイルを追加</translation>
 <translation id="6097822892606850415">AI のサポートで文書を作成できます</translation>
 <translation id="6113794647360055231">進化する Chrome</translation>
+<translation id="6116252277240876590">この言語が Chrome のメニュー、設定、アラートなどのテキストの表示に使用されます</translation>
 <translation id="6134085236017727171">マイクを使用するには、<ph name="BEGIN_LINK" />システム設定<ph name="END_LINK" />で Chrome にアクセスを許可してください</translation>
 <translation id="6135456723633883042">これらのタブでは追加のリソースが使用されています。パフォーマンスを改善するには、Chrome でこれらのタブを非アクティブにしてください。</translation>
 <translation id="6145313976051292476">Chrome で PDF を開く</translation>
@@ -454,6 +457,7 @@
 <translation id="6885412569789873916">Chrome ベータ版アプリ</translation>
 <translation id="6893363893008038481">Chrome からアカウントを削除</translation>
 <translation id="6896758677409633944">コピー</translation>
+<translation id="6930294499209825">Google ソフトウェアを最新の状態に保ちます。このサービスを無効にしたり停止したりすると、Google ソフトウェアが最新の状態に保たれなくなります。その結果、セキュリティ上の脆弱性が見つかっても修正できず、機能が動作しなくなる可能性があります。このサービスを使用する Google ソフトウェアがなくなると、このサービスは自動的にアンインストールされます。</translation>
 <translation id="6933858244219479645">ChromeOS システム</translation>
 <translation id="6938166777909186039">今後、Google Chrome のアップデートを受信するには、Windows 10 以降が必要となります。このパソコンでは Windows 8.1 が実行されています。</translation>
 <translation id="6943584222992551122">この操作を行うと、このユーザーの閲覧データがこのデバイスから削除されます。データを復元するには、<ph name="USER_EMAIL" /> として Chrome にログインしてください。</translation>
@@ -503,6 +507,7 @@
 <translation id="7477130805345743099">Chrome で安全でない接続を使用してサイトを読み込む前に警告を表示します</translation>
 <translation id="7481213027396403996">Chrome の最高水準のセキュリティで保護</translation>
 <translation id="749228101751499733">Chrome にログイン中は、Google アカウントのパスワードやその他の設定を使用できます。<ph name="SHORTCUT" /> キーを押すと Google サービスの設定を変更できます。</translation>
+<translation id="7514258452813684157">Google Updater サービス</translation>
 <translation id="7515191208480168435">Google レンズを固定して簡単にアクセスできます</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
 <translation id="7572537927358445944">オフ • Chrome では、この拡張機能の提供元を確認できません</translation>
@@ -593,6 +598,7 @@
 <translation id="8498858610309223613">Google Chrome の特別なセキュリティ アップデートが適用されました。今すぐ再起動してください。タブは復元されます。</translation>
 <translation id="8516431725144212809">Chrome が推定したお客様の興味 / 関心</translation>
 <translation id="8521348052903287641">mDNS トラフィックを許可する Google Chrome Dev のインバウンド ルールです。</translation>
+<translation id="852529348814672339">Chrome をこの言語で表示する</translation>
 <translation id="8550334526674375523">この仕事用プロファイルは個人用プロファイルとは別に管理されます。</translation>
 <translation id="8555465886620020932">サービスエラー: <ph name="SERVICE_ERROR" />。</translation>
 <translation id="8571790202382503603">Chrome プロフィールを使うと、Chrome のあらゆる項目や設定を個別に管理できます。これにより、仕事と遊びの使い分けが簡単になります。</translation>

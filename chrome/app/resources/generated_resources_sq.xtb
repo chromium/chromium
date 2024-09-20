@@ -1121,7 +1121,6 @@ Lejet që u ke dhënë tashmë sajteve të uebit dhe aplikacioneve mund të zbat
 <translation id="1794212650797661990">Fshih fjalëkalimin për <ph name="DOMAIN" /></translation>
 <translation id="1794791083288629568">Dërgo komente për të na ndihmuar ta rregullojmë këtë problem.</translation>
 <translation id="1795214765651529549">Përdor temën klasike</translation>
-<translation id="1795668164971917185">Herën tjetër kur "Shfletimi i sigurt i Google" të gjejë një shkarkim të dyshimtë, ai do ta skanojë automatikisht atë si pjesë e <ph name="LINK" /> që ke zgjedhur</translation>
 <translation id="1796588414813960292">Veçoritë që kanë nevojë për tingujt nuk do të funksionojnë</translation>
 <translation id="1797117170091578105">Luaj duke përdorur tastierën e Chromebook. Mund t'i personalizosh tastet për veprime specifike.</translation>
 <translation id="1798335429200675510">Kliko me butonin djathtas në një kuti teksti për të krijuar një draft ose për të rafinuar një punë ekzistuese, mundësuar nga inteligjenca artificiale e Google Aktualisht ka disponueshmëri të kufizuar.</translation>
@@ -3932,6 +3931,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3799128412641261490">Cilësimet e qasjes me çelës</translation>
 <translation id="3800828618615365228">Kushtet shtesë të Google Chrome dhe ChromeOS</translation>
 <translation id="3800898876950197674">Për ta lejuar këtë shtesë, fut fjalëkalimin.</translation>
+<translation id="3801449494961771207">Zëri i sistemit për "Tekstin në ligjërim"</translation>
 <translation id="3802486193901166966">Kjo shtesë nuk kërkon leje të veçanta dhe nuk ka nuk ka qasje shtesë në sajt</translation>
 <translation id="380329542618494757">Emri</translation>
 <translation id="3803345858388753269">Cilësia e videos</translation>
@@ -5905,7 +5905,6 @@ Përdor Ctrl + Alt + "Ul ndriçimin" për ta zvogëluar.</translation>
 <translation id="5263656105659419083">Për t'u kthyer me lehtësi te paneli anësor, kliko te "Gozhdo" në këndin e sipërm djathtas</translation>
 <translation id="5264148714798105376">Kjo mund të zgjasë një minutë ose pak më shumë.</translation>
 <translation id="5264252276333215551">Lidhu me internetin për të nisur aplikacionin tënd në modalitetin kioskë.</translation>
-<translation id="526539328530966548">mbrojtjes së përmirësuar</translation>
 <translation id="5265797726250773323">Gabim gjatë instalimit</translation>
 <translation id="5266113311903163739">Gabim në importimin e Autoritetit të Certifikimit</translation>
 <translation id="526622169288322445">Më shumë veprime për "<ph name="ADDRESS_SUMMARY" />"</translation>
@@ -7286,6 +7285,7 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="628726841779494414">Menaxho printerët e tu te cilësimet e printerëve</translation>
 <translation id="6287828400772161253">Telefon me Android (<ph name="HOST_DEVICE_NAME" />)</translation>
 <translation id="6290613030083731160">Asnjë pajisje e disponueshme nuk po ndan në afërsi. <ph name="LINK_BEGIN" />Mëso më shumë<ph name="LINK_END" /></translation>
+<translation id="6291580570300353047">Nuk mund të restaurohet për shkak të mungesës së hapësirës ruajtëse.</translation>
 <translation id="6291741848715722067">Kodi i konfirmimit</translation>
 <translation id="6291953229176937411">Shfaqe te "Gjetësi"</translation>
 <translation id="6292699686837272722">Skedat tkurren në një gjerësi të mesme</translation>
@@ -11364,6 +11364,7 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="949807244219288032">Kjo skedë është e lidhur me një pajisje HID</translation>
 <translation id="950079950995628542">Nga "<ph name="PHONE_NAME" />"</translation>
 <translation id="950307215746360464">Udhëzuesi i konfigurimit</translation>
+<translation id="950728747178241190">Zbato anulimin e zhurmës dhe përmirësimet e audios. <ph name="LINK_BEGIN" />Mëso më shumë<ph name="LINK_END" /></translation>
 <translation id="951273949038779544"><ph name="SITE_ACCESS" />. Instaluar nga administratori yt</translation>
 <translation id="951991426597076286">Refuzo</translation>
 <translation id="952471655966876828">Pajisja lidhet automatikisht kur ndizet dhe përdoret</translation>

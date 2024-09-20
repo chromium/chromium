@@ -127,6 +127,7 @@
 <translation id="1567064801249837505">Цомог</translation>
 <translation id="1572585716423026576">Дэлгэцийн зураг болгох</translation>
 <translation id="1578784163189013834">Дэлгэц амраагчийн арын дэвсгэрийг сонгох</translation>
+<translation id="1587031308639983732">Цагт тулгуурласан өөрчлөлт оновчгүй байж магадгүй. Энэ тохиргоог танай администратор удирддаг.</translation>
 <translation id="1588438908519853928">Хэвийн</translation>
 <translation id="1591562245178063882">Энэ сар</translation>
 <translation id="1593528591614229756">Мобайл үйлчилгээ үзүүлэгч эсвэл администраторынхаа олгосон APN-уудыг сонгохоо мартуузай. APN-уудыг сонгосноор дурын захиалгат APN-г идэвхгүй болгоно. Хүчингүй APN-ууд нь таны мобайл холболтыг тасалдуулж болзошгүй. <ph name="LINK_BEGIN" />Нэмэлт мэдээлэл авах<ph name="LINK_END" /></translation>
@@ -257,7 +258,6 @@
 <translation id="2148716181193084225">Өнөөдөр</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> зураг</translation>
 <translation id="2154460308960858308">Хайлтыг арилгах</translation>
-<translation id="2156072344042480449">Таны хамгийн сүүлийн 2 заавар. Та эдгээр зааврыг зөвхөн энэ хуудсан дээр байхдаа ашиглах боломжтой.</translation>
 <translation id="2157660087437850958">эможи сонгогч</translation>
 <translation id="2157959690810728433">ЖАГСААСАН</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Дахин оролдох</translation>
@@ -1195,16 +1195,6 @@
 <translation id="6975981640379148271">коаланууд</translation>
 <translation id="6977381486153291903">Жижиг программын шалгалт</translation>
 <translation id="6981982820502123353">Хандалт</translation>
-<translation id="698242338298293034">Загвар сонгоод, дараа нь ХОУ-ы зургуудаа хувийн болгохын тулд доогуур нь зурсан үгнүүдийг сонгоно уу.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          ХОУ-ы зургуудын илүү өвөрмөц, ялгаатай сонголтыг авахын тулд "Надад урам өг" гэснийг сонгоно уу.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Та ХОУ-аар үүсгэх үед <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google-н нууцлалын бодлогын<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> дагуу зааврыг зургууд үүсгэх, бүтээгдэхүүнийг сайжруулахын тулд Google AI-н серверүүд рүү илгээдэг.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Үүсгэгч ХОУ нь туршилтынх мөн хөгжүүлэлтийн эхэн шатандаа байгаа бөгөөд боломжтой байдал нь одоогоор хязгаарлагдмал байна.</translation>
 <translation id="6982462588253070448">элсэн манхнууд</translation>
 <translation id="7005833343836210400">Төхөөрөмж офлайн байна</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> энэ төхөөрөмжийг удирддаг бөгөөд хэрэглэгчийн зочилсон веб хуудас, нууц үг болон имэйл зэрэг бүх үйл ажиллагаанд хандах эрхтэй.</translation>
@@ -1450,7 +1440,6 @@
 <translation id="8208861521865154048">Нэмэлтүүд</translation>
 <translation id="8226628635270268143">Дуртай зураг, цомгуудаа сонгоно уу</translation>
 <translation id="8227119283605456246">Файл хавсаргах</translation>
-<translation id="8227488649450500937">Эдгээр зааврын аль нэгийг туршиж үзэх эсвэл <ph name="BEGIN_LINK_PROMPTING_GUIDE" />заавар бичих хөтчийг<ph name="END_LINK_PROMPTING_GUIDE" /> харна уу</translation>
 <translation id="8230672074305416752">Сүлжээний өгөгдмөл гэйтвэйд пин илгээж чадсангүй</translation>
 <translation id="8236972776513018241">Сийрүүлэг</translation>
 <translation id="8238771987802558562">APN-г сонгох</translation>

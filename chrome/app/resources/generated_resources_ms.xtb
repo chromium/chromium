@@ -1133,7 +1133,6 @@ Kebenaran yang telah anda berikan kepada apl mungkin dikenakan pada akaun ini. A
 <translation id="1794212650797661990">Sembunyikan kata laluan untuk <ph name="DOMAIN" /></translation>
 <translation id="1794791083288629568">Hantar maklum balas untuk membantu kami menyelesaikan isu ini.</translation>
 <translation id="1795214765651529549">Gunakan Klasik</translation>
-<translation id="1795668164971917185">Apabila Penyemakan Imbas Selamat Google mendapati muat turun yang mencurigakan selepas ini, Penyemakan Imbas Selamat Google akan mengimbas muat turun tersebut secara automatik sebagai sebahagian daripada <ph name="LINK" /> yang dipilih</translation>
 <translation id="1796588414813960292">Ciri yang memerlukan bunyi tidak akan berfungsi</translation>
 <translation id="1797117170091578105">Main menggunakan papan kekunci Chromebook anda. Anda boleh menyesuaikan kekunci kepada tindakan tertentu.</translation>
 <translation id="1798335429200675510">Klik kanan dalam kotak teks untuk membuat draf atau memperhalus kerja sedia ada, dikuasakan oleh Google AI. Ketersediaan ciri ini terhad pada masa ini.</translation>
@@ -2231,6 +2230,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2546991196809436099">Zum masuk untuk menjadikan item pada skrin lebih besar. Gunakan Cari + Ctrl + M untuk menghidupkan dan mematikan penggadang.</translation>
 <translation id="2548347166720081527"><ph name="PERMISSION" /> dibenarkan</translation>
 <translation id="2548545707296594436">Tetapkan semula cache profil eSIM</translation>
+<translation id="2549766998450508148">Tekan kekunci pengubah suai 1-4 (ctrl, alt, shift atau carian) dan 1 kekunci lagi. Anda juga boleh memilih satu kekunci.</translation>
 <translation id="2549985041256363841">Mulakan rakaman</translation>
 <translation id="2550212893339833758">Memori ditukar</translation>
 <translation id="2550596535588364872">Benarkan <ph name="EXTENSION_NAME" /> membuka <ph name="FILE_NAME" />?</translation>
@@ -5924,7 +5924,6 @@ Gunakan Ctrl + Alt + Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="5263656105659419083">Untuk kembali kepada panel sisi dengan mudah, klik Pin pada bahagian atas sebelah kanan</translation>
 <translation id="5264148714798105376">Proses ini mungkin mengambil masa seminit atau lebih.</translation>
 <translation id="5264252276333215551">Sila sambung ke Internet untuk melancarkan apl anda dalam mod kios.</translation>
-<translation id="526539328530966548">perlindungan dipertingkat</translation>
 <translation id="5265797726250773323">Ralat semasa pemasangan</translation>
 <translation id="5266113311903163739">Ralat Import Pihak Berkuasa Pensijilan</translation>
 <translation id="526622169288322445">Lagi tindakan untuk <ph name="ADDRESS_SUMMARY" /></translation>
@@ -10641,6 +10640,7 @@ perubahan ini berlaku, anda mungkin tidak mahukannya.</translation>
 <translation id="8715480913140015283">Tab latar belakang menggunakan kamera anda</translation>
 <translation id="8716931980467311658">Padamkan semua apl dan data Linux dalam folder fail Linux anda daripada <ph name="DEVICE_TYPE" /> ini?</translation>
 <translation id="8717864919010420084">Salin Pautan</translation>
+<translation id="8718560545710680911">Tanya menggunakan halaman ini</translation>
 <translation id="8718994464069323380">Skrin sentuh dikesan</translation>
 <translation id="8719472795285728850">Mendengar aktiviti sambungan...</translation>
 <translation id="8719665168401479425">Gunakan gerak isyarat wajah untuk melakukan tindakan</translation>

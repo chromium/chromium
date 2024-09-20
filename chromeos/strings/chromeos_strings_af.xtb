@@ -258,7 +258,6 @@
 <translation id="2148716181193084225">Vandag</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> foto's</translation>
 <translation id="2154460308960858308">Vee soektog uit</translation>
-<translation id="2156072344042480449">Jou 2 mees onlangse portekste. Jy kan dié portekste net gebruik terwyl jy op hierdie bladsy is.</translation>
 <translation id="2157660087437850958">emosiekoon-kieser</translation>
 <translation id="2157959690810728433">OP WAGLYS</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: herprobeer</translation>
@@ -1196,16 +1195,6 @@
 <translation id="6975981640379148271">koalas</translation>
 <translation id="6977381486153291903">Fermwarehersiening</translation>
 <translation id="6981982820502123353">Toeganklikheid</translation>
-<translation id="698242338298293034">Kies ’n tema en kies dan die onderstreepte woorde om jou AI-prente te personaliseer.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Kies "Inspireer my" om meer unieke en verskillende opsies vir AI-prente te kry.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Wanneer jy met AI skep, word die porboodskap na Google-bedieners gestuur om prente te genereer en die produk te verbeter, onderworpe aan <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google se privaatheidsbeleid<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Generatiewe AI is eksperimenteel, in vroeë ontwikkeling, en het tans beperkte beskikbaarheid.</translation>
 <translation id="6982462588253070448">sandduine</translation>
 <translation id="7005833343836210400">Toestel is vanlyn</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> bestuur hierdie toestel en het toegang tot alle gebruikeraktiwiteit, insluitend webblaaie wat besoek is, wagwoorde en e-pos.</translation>
@@ -1451,7 +1440,6 @@ Laai die transkripsiemodel (tot 100 MB) af om hierdie transkripsies te kry.</tr
 <translation id="8208861521865154048">Byvoordele</translation>
 <translation id="8226628635270268143">Kies jou gunstelingfoto's en -albums</translation>
 <translation id="8227119283605456246">Heg lêer aan</translation>
-<translation id="8227488649450500937">Probeer een van hierdie porboodskappe of besoek die <ph name="BEGIN_LINK_PROMPTING_GUIDE" />porboodskapgids<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="8230672074305416752">Kon nie die versteknetwerkdeurgang pieng nie</translation>
 <translation id="8236972776513018241">Transkripsie</translation>
 <translation id="8238771987802558562">Kies ’n APN</translation>

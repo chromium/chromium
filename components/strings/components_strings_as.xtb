@@ -2845,7 +2845,6 @@
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />, আপুনি Chromeত ডাউনল’ড কৰা ফাইল পৰিচালনা কৰিবলৈ প্ৰথমে টেব আৰু তাৰ পাছত এণ্টাৰ টিপক</translation>
 <translation id="6254436959401408446">এই পৃষ্ঠাটো খুলিবলৈ পর্যাপ্ত মেম’ৰি নাই</translation>
 <translation id="625463612687472648">অনুমতি দিয়াটো বন্ধ কৰক</translation>
-<translation id="6256360366378574605">{FINANCIAL_ACCOUNT,plural, =1{আপুনি Chromeত ক্ৰয় কৰিলে, এটা বিকল্প হিচাপে<ph name="FINANCIAL_ACCOUNT_TYPES" /> দেখা পাওক}one{আপুনি Chromeত ক্ৰয় কৰিলে, বিকল্প হিচাপে<ph name="FINANCIAL_ACCOUNT_TYPES" /> দেখা পাওক}other{আপুনি Chromeত ক্ৰয় কৰিলে, বিকল্প হিচাপে<ph name="FINANCIAL_ACCOUNT_TYPES" /> দেখা পাওক}}</translation>
 <translation id="6259156558325130047">&amp;পুনৰ ক্ৰমবদ্ধ কৰাটো ৰিডু কৰক</translation>
 <translation id="6263376278284652872"><ph name="DOMAIN" />ৰ বুকমার্ক</translation>
 <translation id="6264376385120300461">তথাপি ডাউনল’ড কৰক</translation>
@@ -3131,6 +3130,7 @@
 <translation id="6767985426384634228">ঠিকনা আপডে’ট কৰিবনে?</translation>
 <translation id="6770747695101757579">কাগজ (কপাহী)</translation>
 <translation id="677257480647123231">ইণ্টাৰনেটত শিশুৰ সুৰক্ষা</translation>
+<translation id="6772959465807028761">YouTube ব্যৱহাৰ কৰিবলৈ, আপোনাৰ Google একাউণ্টেৰে অব্যাহত কৰক</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6777088782163649345">আপোনাৰ অভিভাৱকৰ পচন্দ অনুসৰি YouTube ব্যৱহাৰ কৰক</translation>
 <translation id="6779348349813025131">Google Password Managerএ MacOS কীচেইন এক্সেছ কৰাৰ প্ৰয়োজন</translation>
@@ -4070,7 +4070,6 @@
 <translation id="84561192812921051">আপোনাৰ প্ৰশাসকে দূৰৰ পৰা আপোনাৰ প্ৰ’ফাইল আৰু ব্ৰাউজাৰৰ সালসলনি কৰিব পাৰে, ৰিপ’ৰ্টিঙৰ জৰিয়তে ব্ৰাউজাৰৰ বিষয়ে তথ্য বিশ্লেষণ কৰিব পাৰে আৰু অন্য আৱশ্যকীয় কাৰ্যসমূহ কৰিব পাৰে। এই ডিভাইচটোত কৰা কাৰ্যকলাপ Chromeৰ বাহিৰৰ পৰাও পৰিচালনা কৰা হ’ব পাৰে।  <ph name="BEGIN_LINK" />অধিক জানক<ph name="END_LINK" /></translation>
 <translation id="8457125768502047971">অনিৰ্ধাৰিত</translation>
 <translation id="8458202188076138974">লেটাৰ এক্সট্ৰা</translation>
-<translation id="8458605637341729751">অব্যাহত ৰাখি, আপুনি প্ৰৱঞ্চনা প্ৰতিৰোধৰ উদ্দেশ্যে আপোনাৰ ডিভাইচৰ সঠিক অৱস্থান সংগ্ৰহ কৰিবলৈ আৰু আপোনাৰ একাউণ্টৰ গৰাকীৰ সৈতে শ্বেয়াৰ কৰিবলৈ সন্মত হয়। Chromeত Pix অফ কৰিবলৈ, আপোনাৰ <ph name="BEGIN_LINK1" />পৰিশোধৰ ছেটিঙ<ph name="END_LINK1" />লৈ যাওক</translation>
 <translation id="8460854335417802511">এইটো অন কৰক</translation>
 <translation id="8461694314515752532">আপোনাৰ নিজৰ ছিংক পাছফ্ৰেজৰ সৈতে ছিংক কৰা ডেটা এনক্ৰিপ্ট কৰক।</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{১খন ক্ৰেডিট কাৰ্ড}one{#খন ক্ৰেডিট কাৰ্ড}other{#খন ক্ৰেডিট কাৰ্ড}}</translation>
@@ -4105,6 +4104,7 @@
 <translation id="8527228059738193856">স্পীকাৰ</translation>
 <translation id="8527681393107582734">কৃষি আৰু বনপালন বিদ্যা</translation>
 <translation id="8528149813106025610">শিশুৰ পোছাক</translation>
+<translation id="8528479410903501741">IBAN ছেভ কৰক</translation>
 <translation id="853246364274116957">ব্ৰডৱে’ আৰু সাংগীতিক থিয়েটাৰ</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">অৱৰোধ কৰা URL আৰু আপোনাৰ ছিষ্টেমৰ প্ৰশাসকে বলৱৎ কৰা অন্য নীতিসমূহৰ সূচীখন চাবলৈ &lt;strong&gt;chrome://policy&lt;/strong&gt;লৈ যাওক।</translation>
@@ -4297,6 +4297,7 @@
 <translation id="8891727572606052622">প্ৰ’ক্সিৰ ম’ড অমান্য।</translation>
 <translation id="8894794286471754040">দীঘলীয়া কাষটো প্ৰথমে</translation>
 <translation id="8895334001368918465">Chromeত অন্য এটা স্বয়ংক্ৰিয়ভাৱে পূৰ হোৱাৰ সেৱা ব্যৱহাৰ কৰিবলৈ, Androidৰ ছেটিঙত আৰু ইয়াত এইটো অন কৰক</translation>
+<translation id="8897221284075091877">এই সমলটো চাবলৈ বিচাৰিবলৈ, আপোনাৰ Google একাউণ্টেৰে অব্যাহত কৰক</translation>
 <translation id="8897428486789851669">সাঁতোৰ</translation>
 <translation id="8899807382908246773">বিনা অনুমতিত দেখুওৱা বিজ্ঞাপন</translation>
 <translation id="8903921497873541725">জুম ইন কৰক</translation>

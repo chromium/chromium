@@ -1134,7 +1134,6 @@ De tilladelser, du har givet til apps, gælder muligvis for denne konto. Du kan 
 <translation id="1794212650797661990">Skjul adgangskoden til <ph name="DOMAIN" /></translation>
 <translation id="1794791083288629568">Send feedback for at hjælpe os med at løse problemet.</translation>
 <translation id="1795214765651529549">Brug Klassisk</translation>
-<translation id="1795668164971917185">Næste gang Google Beskyttet browsing registrerer en mistænkelig download, scannes den automatisk som en del af den <ph name="LINK" />, du har valgt</translation>
 <translation id="1796588414813960292">Funktioner, der skal bruge lyd, fungerer ikke</translation>
 <translation id="1797117170091578105">Spil ved hjælp af dit Chromebook-tastatur. Du kan tilpasse taster, så de tildeles bestemte handlinger.</translation>
 <translation id="1798335429200675510">Højreklik i et tekstfelt for at oprette et udkast eller justere eksisterende tekstarbejde – baseret på Google AI. Tilgængeligheden er begrænset i øjeblikket.</translation>
@@ -3950,6 +3949,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3799128412641261490">Indstillinger for kontaktadgang</translation>
 <translation id="3800828618615365228">Yderligere vilkår for Google Chrome og ChromeOS</translation>
 <translation id="3800898876950197674">Angiv din adgangskode for at tillade denne udvidelse.</translation>
+<translation id="3801449494961771207">Systemstemme for oplæsning</translation>
 <translation id="3802486193901166966">Denne udvidelse kræver ikke nogen særlige tilladelser og har ingen yderligere adgang til websites</translation>
 <translation id="380329542618494757">Navn</translation>
 <translation id="3803345858388753269">Videokvalitet</translation>
@@ -5924,7 +5924,6 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="5263656105659419083">Du kan nemt gå tilbage til sidepanelet ved at klikke på Fastgør øverst til højre</translation>
 <translation id="5264148714798105376">Dette kan tage et øjeblik.</translation>
 <translation id="5264252276333215551">Opret forbindelse til internettet for at starte din app i terminaltilstand.</translation>
-<translation id="526539328530966548">forbedrede beskyttelse</translation>
 <translation id="5265797726250773323">Der opstod en fejl ved installationen</translation>
 <translation id="5266113311903163739">Fejl under import af certificeringsautoritet</translation>
 <translation id="526622169288322445">Flere handlinger for <ph name="ADDRESS_SUMMARY" /></translation>
@@ -7306,6 +7305,7 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="628726841779494414">Administrer dine printere i printerindstillingerne</translation>
 <translation id="6287828400772161253">Android-telefon (<ph name="HOST_DEVICE_NAME" />)</translation>
 <translation id="6290613030083731160">Der er ingen enheder, som deler i nærheden. <ph name="LINK_BEGIN" />Få flere oplysninger<ph name="LINK_END" /></translation>
+<translation id="6291580570300353047">Gendannelsen mislykkedes på grund af manglende lagerplads.</translation>
 <translation id="6291741848715722067">Bekræftelseskode</translation>
 <translation id="6291953229176937411">&amp;Vis i Finder</translation>
 <translation id="6292699686837272722">Faner formindskes til medium bredde</translation>

@@ -96,6 +96,7 @@
 <translation id="2570922361219980984">位置情報へのアクセスがデバイスでもオフになっています。<ph name="BEGIN_LINK" />Android の設定<ph name="END_LINK" />でオンにしてください。</translation>
 <translation id="257931822824936280">展開されています - クリックすると折りたたまれます。</translation>
 <translation id="2586657967955657006">クリップボード</translation>
+<translation id="2588271083332682494">タブグループで整理整頓</translation>
 <translation id="2597457036804169544">ダークモードをサイトに適用しません</translation>
 <translation id="2606760465469169465">自動確認</translation>
 <translation id="2621115761605608342">特定のサイトに対して JavaScript を許可します。</translation>
@@ -232,6 +233,7 @@
 <translation id="483914009762354899">このドメインのすべてのサイトを含める</translation>
 <translation id="4883854917563148705">管理者による設定はリセットできません</translation>
 <translation id="4887024562049524730">サイトにバーチャル リアリティ デバイスとデータの使用を許可する前に確認する（推奨）</translation>
+<translation id="4936863036653376783">グループは、お使いのすべてのデバイスのタブグループ セクションに表示されます</translation>
 <translation id="4953688446973710931">オンにすると、サイトは複数のファイルの自動ダウンロードを要求できます。オフにすると、サイトは複数のファイルを自動ダウンロードできません。</translation>
 <translation id="4962975101802056554">デバイスのすべての権限を取り消します</translation>
 <translation id="497421865427891073">次に進む</translation>
@@ -378,6 +380,7 @@
 <translation id="6840760312327750441">タブをグループ化するには、タブを押しながら別のタブにドラッグします。</translation>
 <translation id="6864395892908308021">このデバイスでは NFC を読み込めません</translation>
 <translation id="6870169401250095575">安全確認カードを非表示にする</translation>
+<translation id="6900883974539674431">タブグループを作成すると、お使いのすべてのデバイスで自動的に保存され、更新されます</translation>
 <translation id="6912998170423641340">サイトによるクリップボードのテキストや画像の読み取りをブロックする</translation>
 <translation id="6945221475159498467">選択</translation>
 <translation id="6950072572526089586">アクセスしたサイトで、想定どおりに機能するよう（サイトへのログイン状態を保持する、ショッピング カートに商品を保存するなど）、行った操作に関する情報が保存されることがあります。多くの場合、こうした情報はデバイスに一時的に保存されます。</translation>

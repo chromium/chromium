@@ -495,6 +495,7 @@ Skoðaðu leiðbeiningar leitarvélarinnar um að eyða leitarferlinum ef það 
 <translation id="3435738964857648380">Öryggi</translation>
 <translation id="3443810440409579745">Flipi móttekinn.</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> mín.</translation>
+<translation id="344589138074534176">Nánar um Google-linsu</translation>
 <translation id="345348365500626747">Heimilisfang fannst</translation>
 <translation id="3464194322481586217">Ekki tókst að vakta verð.</translation>
 <translation id="3469117812148449995">Val um vistun aðgangsorðs</translation>
@@ -580,6 +581,7 @@ Skoðaðu leiðbeiningar leitarvélarinnar um að eyða leitarferlinum ef það 
 <translation id="3851938967634752633">Aðgangsorðum fyrir <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> og <ph name="NUMBER_OF_ACCOUNTS" /> í viðbót verður eytt. Reikningunum þínum verður ekki eytt.</translation>
 <translation id="3858860766373142691">Heiti</translation>
 <translation id="3861908220442487587">Þetta heimilisfang er aðeins vistað í þessu tæki. Til að nota það í öðrum tækjum skaltu færa það á Google-reikninginn þinn, <ph name="USER_EMAIL" /></translation>
+<translation id="3868495844258915202">Sjá alla vefslóðina</translation>
 <translation id="3876833929577368454">Spyrja í hvert skipti</translation>
 <translation id="3885587018298784481">Tengstu fjölskylduhópi</translation>
 <translation id="3888863481921783344">Þetta verður notað til að sýna þér hugsanlega boðsgesti á viðburðinn þinn.</translation>
@@ -867,6 +869,7 @@ Skoðaðu leiðbeiningar leitarvélarinnar um að eyða leitarferlinum ef það 
 <translation id="5210365745912300556">Loka flipa</translation>
 <translation id="5211488077761630279">Leyfa „<ph name="SITE_NAME" />“ að nota <ph name="PERMISSION" />?</translation>
 <translation id="5217245356412073535">Þú getur breytt sjálfgefinni birtingu vefsvæðis í skjáborðsútgáfu með því að fara í „Stillingar &gt; Efnisstillingar“</translation>
+<translation id="5217329997012062137">Þegar þú notar Google-linsu er skjámynd af síðunni send til Google.</translation>
 <translation id="5220945116117011963">Búa til dagatalsviðburði út frá dagsetningum</translation>
 <translation id="5222676887888702881">Skrá út</translation>
 <translation id="5228579091201413441">Kveikja á samstillingu</translation>
@@ -1641,6 +1644,7 @@ Vefsvæði geta notað fótspor til að sjá vafranotkun þína á mismunandi ve
 <translation id="8712534545803964353">Leita á síðu…</translation>
 <translation id="8712637175834984815">Ég skil</translation>
 <translation id="8722229818691036192">Reikningar í þessu tæki</translation>
+<translation id="8722649775263832315">Ýttu á eða yfirstrikaðu hvað sem er til að leita að því með Google-linsu</translation>
 <translation id="8725066075913043281">Reyna aftur</translation>
 <translation id="8728922029615312208">Loka öllu</translation>
 <translation id="8730621377337864115">Lokið</translation>

@@ -2378,6 +2378,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="5371425731340848620">Aggiorna carta</translation>
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">"L'orologio è indietro", "L'orologio è avanti" oppure "&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;"</translation>
+<translation id="5379618281582508161">Per avere questa password su tutti i tuoi dispositivi, verifica la tua identità</translation>
 <translation id="5380953781541843508">in ordine crescente</translation>
 <translation id="5381318171304904246">Se continui, si aprirà il sito web della tua banca. Dopo la verifica, ti reindirizzeremo automaticamente alla pagina per completare l'acquisto.</translation>
 <translation id="5383478552402031184">Pavimentazione</translation>
@@ -2847,7 +2848,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />, premi Invio per gestire i file che hai scaricato in Chrome</translation>
 <translation id="6254436959401408446">Impossibile aprire la pagina. Memoria insufficiente.</translation>
 <translation id="625463612687472648">Rimuovi l'autorizzazione</translation>
-<translation id="6256360366378574605">{FINANCIAL_ACCOUNT,plural, =1{Quando fai acquisti su Chrome, vedi l'opzione <ph name="FINANCIAL_ACCOUNT_TYPES" />}other{Quando fai acquisti su Chrome, vedi le opzioni <ph name="FINANCIAL_ACCOUNT_TYPES" />}}</translation>
 <translation id="6259156558325130047">&amp;Ripeti ridisposizione</translation>
 <translation id="6263376278284652872">Segnalibri di <ph name="DOMAIN" /></translation>
 <translation id="6264376385120300461">Scarica comunque</translation>
@@ -4074,7 +4074,6 @@ Ulteriori dettagli:
 <translation id="84561192812921051">L'amministratore può apportare modifiche al profilo e al browser da remoto, analizzare le informazioni sul browser tramite i report ed eseguire altre attività necessarie. L'attività svolta su questo dispositivo potrebbe essere gestita anche al di fuori di Chrome.  <ph name="BEGIN_LINK" />Scopri di più<ph name="END_LINK" /></translation>
 <translation id="8457125768502047971">Indeterminato</translation>
 <translation id="8458202188076138974">Letter Extra</translation>
-<translation id="8458605637341729751">Se continui, accetti che la posizione esatta del tuo dispositivo venga raccolta e condivisa con il titolare dell'account per finalità antifrode. Per disattivare Pix in Chrome, vai alle <ph name="BEGIN_LINK1" />impostazioni di pagamento<ph name="END_LINK1" /></translation>
 <translation id="8460854335417802511">Attiva</translation>
 <translation id="8461694314515752532">Cripta i dati sincronizzati con la tua passphrase di sincronizzazione</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 carta di credito}other{# carte di credito}}</translation>
@@ -4109,6 +4108,7 @@ Ulteriori dettagli:
 <translation id="8527228059738193856">Altoparlanti</translation>
 <translation id="8527681393107582734">Agricoltura e silvicoltura</translation>
 <translation id="8528149813106025610">Abbigliamento bambino</translation>
+<translation id="8528479410903501741">Salva IBAN</translation>
 <translation id="853246364274116957">Broadway e musical</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">Visita &lt;strong&gt;chrome://policy&lt;/strong&gt; per visualizzare l'elenco di URL bloccati e altri criteri applicati dall'amministratore di sistema.

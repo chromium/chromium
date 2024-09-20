@@ -215,6 +215,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="1703117532528082099">Fenêtre active ancrée à gauche.</translation>
 <translation id="1708345662127501511">Bureau : <ph name="DESK_NAME" /></translation>
 <translation id="1709762881904163296">Paramètres réseau</translation>
+<translation id="171610090693716835">Restez sur la bonne voie avec des listes de lecture personnalisées pour la concentration. Obtenez YouTube Music et YouTube, sans annonces, avec trois mois de YouTube Premium sans frais.</translation>
 <translation id="1719094688023114093">Les sous-titres instantanés sont activés.</translation>
 <translation id="1720011244392820496">Activer la synchronisation Wi-Fi</translation>
 <translation id="1720230731642245863">Le point d'accès sans fil est désactivé</translation>
@@ -1413,6 +1414,7 @@ Aucun appareil n'est connecté.</translation>
 <translation id="5777841717266010279">Arrêter le partage d'écran?</translation>
 <translation id="5779721926447984944">Fichiers épinglés</translation>
 <translation id="5785221443435874078">Supprimer cette suggestion</translation>
+<translation id="5787431783058088906">Obtenir l'avantage</translation>
 <translation id="5788127256798019331">Fichiers Google Play</translation>
 <translation id="5788535737706478207">Rouvrir le dernier onglet ou la dernière fenêtre que vous avez fermé</translation>
 <translation id="5790085346892983794">Opération réussie</translation>
@@ -1644,6 +1646,7 @@ Nouvelle installation</translation>
 <translation id="6574587113394758819">La notification de <ph name="APP_TITLE" /> est masquée parce que la protection de l'affichage est activée</translation>
 <translation id="6574622320167699133">Déverrouillé au moyen de votre téléphone. Touchez ou cliquez pour accéder.</translation>
 <translation id="6578407462441924264">Sans nom</translation>
+<translation id="6582012689384648647">Pour des listes de lecture personnalisées pour la concentration, autorisez l'accès à YouTube Music</translation>
 <translation id="6582034443359256692">Calcul du niveau de charge de la pile en cours…</translation>
 <translation id="6585808820553845416">Fin de la session dans <ph name="SESSION_TIME_REMAINING" />.</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
@@ -1882,6 +1885,7 @@ Nouvelle installation</translation>
 <translation id="7477793887173910789">Commandez votre musique, vos vidéos et plus encore</translation>
 <translation id="7488762544858401571">Modifié</translation>
 <translation id="7489261257412536105">Passer au mode plein écran ou le quitter</translation>
+<translation id="7490157877815329797">Pour écouter de la musique sans annonces et profiter de musique personnalisée pour la concentration, essayez YouTube Music Premium</translation>
 <translation id="7490360161041035804">Vous pouvez épingler des fichiers importants, y compris des fichiers Google Drive. Pour épingler, pointez un élément ou ouvrez Fichiers et faites un clic droit sur un élément.</translation>
 <translation id="7497767806359279797">Choisir la langue et le clavier</translation>
 <translation id="7507162824403726948">Terminer la vérification de votre identité</translation>
@@ -2157,6 +2161,7 @@ Pour éteindre l'appareil, appuyez à nouveau sur le bouton d'alimentation de l'
 <translation id="8380784334203145311">Bonne nuit,</translation>
 <translation id="8382715499079447151">Protection de l'affichage</translation>
 <translation id="8383614331548401927">Récap de bienvenue</translation>
+<translation id="838540623579162843">Obtenir Music Premium</translation>
 <translation id="8388750414311082622">Impossible de supprimer le dernier bureau.</translation>
 <translation id="8394567579869570560">Ton parent a verrouillé cet appareil</translation>
 <translation id="8401850874595457088">Entrez la langue du menu</translation>

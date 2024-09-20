@@ -2851,7 +2851,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />, tryk på Tab-tasten efterfulgt af Enter for at administrere de filer, du har downloadet i Chrome</translation>
 <translation id="6254436959401408446">Der er ikke nok hukommelse til at åbne denne side</translation>
 <translation id="625463612687472648">Tillad ikke længere</translation>
-<translation id="6256360366378574605">{FINANCIAL_ACCOUNT,plural, =1{Når du foretager køb i Chrome, kan du se <ph name="FINANCIAL_ACCOUNT_TYPES" /> som en valgmulighed}one{Når du foretager køb i Chrome, kan du se <ph name="FINANCIAL_ACCOUNT_TYPES" /> som en valgmulighed}other{Når du foretager køb i Chrome, kan du se <ph name="FINANCIAL_ACCOUNT_TYPES" /> som valgmuligheder}}</translation>
 <translation id="6259156558325130047">&amp;Annuller fortryd omarrangering</translation>
 <translation id="6263376278284652872"><ph name="DOMAIN" />-bogmærker</translation>
 <translation id="6264376385120300461">Download alligevel</translation>
@@ -3137,6 +3136,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="6767985426384634228">Vil du opdatere adressen?</translation>
 <translation id="6770747695101757579">Papir (bomuld)</translation>
 <translation id="677257480647123231">Børns sikkerhed på internettet</translation>
+<translation id="6772959465807028761">Fortsæt med din Google-konto for at bruge YouTube</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6777088782163649345">Brug YouTube med din forælders valg</translation>
 <translation id="6779348349813025131">Google Adgangs­kode­admin­istrator skal have adgang til macOS-nøgleringen</translation>
@@ -4077,7 +4077,6 @@ Yderligere oplysninger:
 <translation id="84561192812921051">Din administrator kan foretage ændringer i din profil og browser via fjernadgang, analysere oplysninger om browseren via rapportering og udføre andre nødvendige opgaver. Aktivitet på denne enhed administreres muligvis også uden for Chrome.  <ph name="BEGIN_LINK" />Få flere oplysninger<ph name="END_LINK" /></translation>
 <translation id="8457125768502047971">Ikke defineret</translation>
 <translation id="8458202188076138974">Letter Extra</translation>
-<translation id="8458605637341729751">Hvis du fortsætter, accepterer du, at din præcise enhedslokation indsamles og deles med din kontoindehaver med henblik på forebyggelse af bedrageri. Hvis du vil deaktivere Pix i Chrome, skal du gå til dine <ph name="BEGIN_LINK1" />betalingsindstillinger<ph name="END_LINK1" /></translation>
 <translation id="8460854335417802511">Aktivér det</translation>
 <translation id="8461694314515752532">Kryptér synkroniserede data med din egen adgangssætning til synkronisering</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 kreditkort}one{# kreditkort}other{# kreditkort}}</translation>
@@ -4112,6 +4111,7 @@ Yderligere oplysninger:
 <translation id="8527228059738193856">Højttalere</translation>
 <translation id="8527681393107582734">Landbrug og skovbrug</translation>
 <translation id="8528149813106025610">Børnetøj</translation>
+<translation id="8528479410903501741">Gem IBAN</translation>
 <translation id="853246364274116957">Musicals og Broadway-teater</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">Gå til &lt;strong&gt;chrome://policy&lt;/strong&gt; for at se listen over blokerede webadresser og andre politikker, der håndhæves af din systemadministrator.</translation>
@@ -4305,6 +4305,7 @@ Yderligere oplysninger:
 <translation id="8891727572606052622">Ugyldig proxytilstand.</translation>
 <translation id="8894794286471754040">Lang kant først</translation>
 <translation id="8895334001368918465">Hvis du vil bruge en anden tjeneste til autofyld i Chrome, skal du aktivere den her og i Android-indstillingerne</translation>
+<translation id="8897221284075091877">Fortsæt med din Google-konto for at bede om at se dette indhold</translation>
 <translation id="8897428486789851669">Svømning</translation>
 <translation id="8899807382908246773">Påtrængende annoncer</translation>
 <translation id="8903921497873541725">Zoom ind</translation>

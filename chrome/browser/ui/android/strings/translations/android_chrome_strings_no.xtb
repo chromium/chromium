@@ -596,6 +596,7 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="3823019343150397277">IBAN</translation>
 <translation id="38243391581572867">Lens er ikke tilgjengelig for denne kontoen.</translation>
 <translation id="3830886834687455630">Oppdater Google Play-tjenester for å sjekke passordene dine</translation>
+<translation id="3843603704176567761">Det kan hende at passord snart slutter å fungere på denne enheten. For å fortsette å bruke passordene dine, oppdater Google Play-tjenester.</translation>
 <translation id="3845098929839618392">Åpne i inkognitofane</translation>
 <translation id="3847319713229060696">Bidra til å gjøre nettet sikrere for alle</translation>
 <translation id="3856096718352044181">Verifiser at dette er en gyldig leverandør, eller prøv på nytt senere</translation>
@@ -677,6 +678,7 @@ Bare personer som har passordfrasen din, kan lese de krypterte dataene. Passordf
 <translation id="4257230861809842349">Vil du slette passord fra Google Passordlagring?</translation>
 <translation id="426652736638196239">Dette IBAN-nummeret lagres bare på denne enheten</translation>
 <translation id="4269820728363426813">Kopiér linkadressen</translation>
+<translation id="4270730597186910506">Spor eller slutt å spore et produkt.</translation>
 <translation id="4277529130885813215">Bruk en annen enhet</translation>
 <translation id="4282440837784183472">Organisasjonen din, <ph name="MANAGED_DOMAIN" />, administrerer kontoen du logger på, og hvordan Chrome kan brukes. Administratoren kan konfigurere eller begrense visse funksjoner.</translation>
 <translation id="4285846616383034558">Informasjonskapsler, buffer og andre nettstedsdata</translation>

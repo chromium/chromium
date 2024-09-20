@@ -258,7 +258,6 @@
 <translation id="2148716181193084225">Ma</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> fotó</translation>
 <translation id="2154460308960858308">Keresett kifejezés törlése</translation>
-<translation id="2156072344042480449">Az Ön két legutóbbi utasítása. Ezeket az utasításokat csak addig használhatja, amíg ezen az oldalon van.</translation>
 <translation id="2157660087437850958">emojiválasztó</translation>
 <translation id="2157959690810728433">VÁRAKOZIK</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Újra</translation>
@@ -1167,6 +1166,7 @@
 <translation id="6831043979455480757">Fordítás</translation>
 <translation id="6846843854964504403">Biztonsági visszaállítás</translation>
 <translation id="6853312040151791195">Lemerítési sebesség</translation>
+<translation id="6862228900689076919">Ezt a funkciót a rendszergazda kezelik</translation>
 <translation id="6862416241246624313">Visszajelzés elküldve</translation>
 <translation id="6866732840889595464">százszorszép</translation>
 <translation id="6871256179359663621">világoslila</translation>
@@ -1195,16 +1195,6 @@
 <translation id="6975981640379148271">koalák</translation>
 <translation id="6977381486153291903">Firmware ellenőrzése</translation>
 <translation id="6981982820502123353">Kisegítő lehetőségek</translation>
-<translation id="698242338298293034">Válasszon egy témát, majd válassza ki az aláhúzott szavakat az AI-képek személyre szabásához.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Az „Inspiráció” gombot választva egyedibb és változatosabb AI-képlehetőségeket kaphat.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Amikor AI-jal hoz létre tartalmat, a rendszer elküldi az utasítást a Google AI szervereinek a képek generálásához és a termék továbbfejlesztéséhez a <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google adatvédelmi irányelveinek<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> megfelelően.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          A generatív AI egy kísérleti szolgáltatás, korai fejlesztési fázisban van, és jelenleg korlátozottan áll rendelkezésre.</translation>
 <translation id="6982462588253070448">homokdűnék</translation>
 <translation id="7005833343836210400">Az eszköz offline állapotú</translation>
 <translation id="7028979494427204405">A(z) <ph name="MANAGER" /> kezeli ezt az eszközt, ezért hozzáfér az összes felhasználói tevékenységhez, köztük a felkeresett webhelyekhez, a jelszavakhoz és az e-mailekhez.</translation>
@@ -1450,7 +1440,6 @@ Ha szeretné használni az átiratokat, töltse le az átírási modellt (legfel
 <translation id="8208861521865154048">Előnyök</translation>
 <translation id="8226628635270268143">Kedvenc fotók és albumok kiválasztása</translation>
 <translation id="8227119283605456246">Fájl csatolása</translation>
-<translation id="8227488649450500937">Próbálkozzon a következő utasítások valamelyikével, vagy tekintse meg az <ph name="BEGIN_LINK_PROMPTING_GUIDE" />utasításírási útmutatót<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="8230672074305416752">Nem sikerült az alapértelmezett hálózati átjáró pingelése</translation>
 <translation id="8236972776513018241">Átirat</translation>
 <translation id="8238771987802558562">Válasszon APN-t</translation>

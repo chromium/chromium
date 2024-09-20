@@ -127,6 +127,7 @@
 <translation id="1567064801249837505">Alba</translation>
 <translation id="1572585716423026576">Nastavit jako tapetu</translation>
 <translation id="1578784163189013834">Vybrat pozadí spořiče obrazovky</translation>
+<translation id="1587031308639983732">Změny závislé na čase nemusí být přesné. Toto nastavení spravuje administrátor.</translation>
 <translation id="1588438908519853928">Normální</translation>
 <translation id="1591562245178063882">Tento měsíc</translation>
 <translation id="1593528591614229756">Vyberte APN, které vám poskytl mobilní operátor nebo administrátor. Výběrem APN deaktivujete všechny vlastní APN. Neplatné APN mohou narušit vaše mobilní připojení. <ph name="LINK_BEGIN" />Další informace<ph name="LINK_END" /></translation>
@@ -257,7 +258,6 @@
 <translation id="2148716181193084225">Dnes</translation>
 <translation id="2152882202543497059">Počet fotek: <ph name="NUMBER" /></translation>
 <translation id="2154460308960858308">Smazat vyhledávání</translation>
-<translation id="2156072344042480449">Vaše dva poslední pokyny. Tyto pokyny můžete použít pouze na této stránce.</translation>
 <translation id="2157660087437850958">výběr smajlíků</translation>
 <translation id="2157959690810728433">VE FRONTĚ</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Zkusit znovu</translation>
@@ -1166,6 +1166,7 @@
 <translation id="6831043979455480757">Přeložit</translation>
 <translation id="6846843854964504403">Bezpečnostní reset</translation>
 <translation id="6853312040151791195">Rychlost vybíjení</translation>
+<translation id="6862228900689076919">Tuto funkci spravuje administrátor</translation>
 <translation id="6862416241246624313">Zpětná vazba byla odeslána</translation>
 <translation id="6866732840889595464">sedmikráska</translation>
 <translation id="6871256179359663621">světle fialová</translation>
@@ -1194,16 +1195,6 @@
 <translation id="6975981640379148271">koaly</translation>
 <translation id="6977381486153291903">Revize firmwaru</translation>
 <translation id="6981982820502123353">Usnadnění</translation>
-<translation id="698242338298293034">Vyberte motiv a pak si obrázky vygenerované pomocí AI přizpůsobte výběrem podtržených slov.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Pokud chcete získat další jedinečné a rozmanité možnosti obrázků AI, vyberte Inspiruj mě.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Při vytváření pomocí AI se pokyn odesílá na servery Google AI, aby vygenerovaly obrázky a aby tuto službu bylo možné vylepšit. Platí <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />zásady ochrany soukromí společnosti Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Generativní umělá inteligence je experimentální, na počátku vývoje a v současnosti má omezenou dostupnost.</translation>
 <translation id="6982462588253070448">písečné duny</translation>
 <translation id="7005833343836210400">Zařízení je offline</translation>
 <translation id="7028979494427204405">Toto zařízení je spravováno doménou <ph name="MANAGER" />, která má přístup k veškeré uživatelské aktivitě, včetně navštívených webových stránek, hesel a e‑mailu.</translation>
@@ -1449,7 +1440,6 @@ Pokud přepisy chcete získat, stáhněte si pro ně model (až 100 MB).</trans
 <translation id="8208861521865154048">Výhody</translation>
 <translation id="8226628635270268143">Vyberte své oblíbené fotky a alba</translation>
 <translation id="8227119283605456246">Přiložit soubor</translation>
-<translation id="8227488649450500937">Zkuste některý z těchto pokynů nebo si projděte <ph name="BEGIN_LINK_PROMPTING_GUIDE" />průvodce pokyny<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="8230672074305416752">Nepodařilo se pingnout bránu výchozí sítě</translation>
 <translation id="8236972776513018241">Přepis</translation>
 <translation id="8238771987802558562">Vyberte APN</translation>

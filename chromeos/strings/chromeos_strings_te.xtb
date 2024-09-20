@@ -258,7 +258,6 @@
 <translation id="2148716181193084225">ఈ రోజు</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> ఫోటోలు</translation>
 <translation id="2154460308960858308">సెర్చ్‌ను క్లియర్ చేయండి</translation>
-<translation id="2156072344042480449">అత్యంత ఇటీవలి మీ 2 ప్రాంప్ట్‌లు. మీరు ఈ పేజీలో ఉన్నప్పుడు మాత్రమే ఈ ప్రాంప్ట్‌లను ఉపయోగించగలరు.</translation>
 <translation id="2157660087437850958">ఎమోజి సెలెక్టర్</translation>
 <translation id="2157959690810728433">క్యూలో ఉంచబడింది</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: మళ్లీ ట్రై చేయండి</translation>
@@ -1196,16 +1195,6 @@
 <translation id="6975981640379148271">కోలాలు</translation>
 <translation id="6977381486153291903">ఫర్మ్‌వేర్ పునర్విమర్శ</translation>
 <translation id="6981982820502123353">యాక్సెసిబిలిటీ</translation>
-<translation id="698242338298293034">మీ AI ఇమేజ్‌లను వ్యక్తిగతీకరించడానికి థీమ్‌ను ఎంచుకుని, అండర్‌లైన్ చేసిన పదాలను ఎంచుకోండి.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          మరింత ప్రత్యేకమైన, విభిన్నమైన AI ఇమేజ్‌ల ఆప్షన్‌లను పొందడానికి "నాలో స్ఫూర్తిని నింపండి" ఆప్షన్‌ను ఎంచుకోండి.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          మీరు AIతో క్రియేట్ చేసినప్పుడు, <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google గోప్యతా పాలసీ<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />కి లోబడి ఇమేజ్‌లు జెనరేట్ చేయడానికి, ప్రోడక్ట్‌ను మెరుగుపరచడానికి ప్రాంప్ట్ Googleకు చెందిన AI టెక్నాలజీల సర్వర్‌లకు పంపబడుతుంది.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          జెనరేటివ్ AI ప్రయోగాత్మకమైనది, ఇంకా ప్రారంభ స్థాయి అభివృద్ధి దశలోనే ఉంది, ప్రస్తుతానికి అది పరిమిత స్థాయిలో అందుబాటులో ఉంది.</translation>
 <translation id="6982462588253070448">ఇసుక తిన్నెలు</translation>
 <translation id="7005833343836210400">పరికరం ఆఫ్‌లైన్‌లో ఉంది</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> ఈ పరికరాన్ని మేనేజ్ చేస్తుంది, అలాగే సందర్శించిన వెబ్ పేజీలు, పాస్‌వర్డ్‌లు, ఈమెయిళ్లతో సహా యూజర్ యాక్టివిటీకి యాక్సెస్‌ను కలిగి ఉంటుంది.</translation>
@@ -1451,7 +1440,6 @@
 <translation id="8208861521865154048">పెర్క్‌లు</translation>
 <translation id="8226628635270268143">మీకు ఇష్టమైన ఫోటోలు, ఆల్బమ్‌లను ఎంచుకోండి</translation>
 <translation id="8227119283605456246">ఫైల్‌ను జోడించండి</translation>
-<translation id="8227488649450500937">ఈ ప్రాంప్ట్‌లలో ఒక దాన్ని ట్రై చేయండి లేదా <ph name="BEGIN_LINK_PROMPTING_GUIDE" />ప్రాంప్టింగ్ గైడ్‌<ph name="END_LINK_PROMPTING_GUIDE" />ను చూడండి</translation>
 <translation id="8230672074305416752">డిఫాల్ట్ నెట్‌వర్క్ గేట్‌వేను పింగ్ చేయడంలో విఫలమైంది</translation>
 <translation id="8236972776513018241">టైప్ చేసిన మాటల ఫైల్</translation>
 <translation id="8238771987802558562">APNను ఎంచుకోండి</translation>

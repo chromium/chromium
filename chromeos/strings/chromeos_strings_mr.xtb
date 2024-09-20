@@ -258,7 +258,6 @@
 <translation id="2148716181193084225">आज</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> फोटो</translation>
 <translation id="2154460308960858308">शोध साफ करा</translation>
-<translation id="2156072344042480449">तुमचे २ सर्वात अलीकडील प्रॉम्प्ट. हे प्रॉम्प्ट तुम्ही या पेजवर असतानाच वापरू शकता.</translation>
 <translation id="2157660087437850958">इमोजी पिकर</translation>
 <translation id="2157959690810728433">क्‍यूमध्ये आहे</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: पुन्हा प्रयत्न करा</translation>
@@ -1196,16 +1195,6 @@
 <translation id="6975981640379148271">कोआला</translation>
 <translation id="6977381486153291903">फर्मवेयर पुनरावृत्ती</translation>
 <translation id="6981982820502123353">ॲक्सेसिबिलिटी</translation>
-<translation id="698242338298293034">तुमच्या AI इमेज पर्सनलाइझ करण्यासाठी थीम निवडा आणि त्यानंतर अधोरेखित केलेले शब्द निवडा.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          आणखी युनिक आणि वैविध्यपूर्ण AI इमेजशी संबंधित पर्याय मिळवण्यासाठी "मला प्रेरणा द्या" निवडा.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          तुम्ही AI वापरून तयार करता, तेव्हा <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google चे गोपनीयता धोरण<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> याच्या अधीन इमेज जनरेट करण्यासाठी आणि उत्पादनामध्ये सुधारणा करण्यासाठी Google AI सर्व्हरला प्रॉम्प्ट पाठवला जातो.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          जनरेटिव्ह AI हे प्रायोगिक आहे, विकासाच्या सुरुवातीच्या टप्प्यात आहे आणि सध्या त्याची उपलब्धता मर्यादित आहे.</translation>
 <translation id="6982462588253070448">वाळूच्या टेकड्या</translation>
 <translation id="7005833343836210400">डिव्हाइस ऑफलाइन आहे</translation>
 <translation id="7028979494427204405">हे डिव्हाइस <ph name="MANAGER" /> व्यवस्थापित करतो आणि भेट दिलेली वेबपेज, पासवर्ड आणि ईमेलसह सर्व वापरकर्ता अ‍ॅक्टिव्हिटीचा त्याला अ‍ॅक्सेस आहे.</translation>
@@ -1451,7 +1440,6 @@
 <translation id="8208861521865154048">लाभ</translation>
 <translation id="8226628635270268143">तुमचे आवडते फोटो आणि अल्बम निवडा</translation>
 <translation id="8227119283605456246">फाइल अटॅच करा</translation>
-<translation id="8227488649450500937">यांपैकी एक प्रॉम्प्ट वापरून पहा किंवा <ph name="BEGIN_LINK_PROMPTING_GUIDE" />प्रॉम्प्टिंग मार्गदर्शक<ph name="END_LINK_PROMPTING_GUIDE" /> पहा</translation>
 <translation id="8230672074305416752">डीफॉल्ट नेटवर्क गेटवे पिंग करता आला नाही</translation>
 <translation id="8236972776513018241">ट्रान्स्क्रिप्ट</translation>
 <translation id="8238771987802558562">APN निवडा</translation>

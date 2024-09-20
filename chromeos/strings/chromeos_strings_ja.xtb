@@ -258,7 +258,6 @@
 <translation id="2148716181193084225">今日</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> 枚の写真</translation>
 <translation id="2154460308960858308">検索をクリア</translation>
-<translation id="2156072344042480449">最近使用したプロンプト 2 件です。これらのプロンプトは、このページの表示中にのみ使用できます。</translation>
 <translation id="2157660087437850958">絵文字選択ツール</translation>
 <translation id="2157959690810728433">待機中</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: 再試行</translation>
@@ -1196,16 +1195,6 @@
 <translation id="6975981640379148271">コアラ</translation>
 <translation id="6977381486153291903">ファームウェア リビジョン</translation>
 <translation id="6981982820502123353">ユーザー補助機能</translation>
-<translation id="698242338298293034">テーマを選択した後、下線付きの単語を選択して AI 画像をカスタマイズします。
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          [ひらめきがほしい] を選択すると、より個性的で多様な AI 画像オプションが表示されます。
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          AI を使用した画像作成では、<ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google のプライバシー ポリシー<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />に沿ってプロンプトが Google AI サーバーに送信され、画像の生成とサービスの改善に使用されます。
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          生成 AI は試験運用版で開発の初期段階のため、現時点では限定的にご利用いただけます。</translation>
 <translation id="6982462588253070448">砂丘</translation>
 <translation id="7005833343836210400">デバイスはオフラインです</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> はこのデバイスを管理しており、閲覧したウェブページ、パスワード、メールなど、すべてのユーザー アクティビティにアクセスできます。</translation>
@@ -1451,7 +1440,6 @@
 <translation id="8208861521865154048">特典</translation>
 <translation id="8226628635270268143">お気に入りの写真やアルバムを選択してください</translation>
 <translation id="8227119283605456246">添付ファイル</translation>
-<translation id="8227488649450500937">次のプロンプトを試すか、<ph name="BEGIN_LINK_PROMPTING_GUIDE" />プロンプト ガイド<ph name="END_LINK_PROMPTING_GUIDE" />をご覧ください</translation>
 <translation id="8230672074305416752">デフォルトのネットワーク ゲートウェイに向けた ping が失敗しました</translation>
 <translation id="8236972776513018241">文字起こし</translation>
 <translation id="8238771987802558562">APN を選択</translation>

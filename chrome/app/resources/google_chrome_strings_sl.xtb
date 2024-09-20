@@ -217,6 +217,7 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="3596080736082218006">{COUNT,plural, =0{Skrbnik zahteva, da za uveljavitev te posodobitve znova zaženete Chrome.}=1{Skrbnik zahteva, da za uveljavitev te posodobitve znova zaženete Chrome. Anonimno okno se ne bo znova odprlo.}one{Skrbnik zahteva, da za uveljavitev te posodobitve znova zaženete Chrome. # anonimno okno se ne bo znova odprlo.}two{Skrbnik zahteva, da za uveljavitev te posodobitve znova zaženete Chrome. # anonimni okni se ne bosta znova odprli.}few{Skrbnik zahteva, da za uveljavitev te posodobitve znova zaženete Chrome. # anonimna okna se ne bodo znova odprla.}other{Skrbnik zahteva, da za uveljavitev te posodobitve znova zaženete Chrome. # anonimnih oken se ne bo znova odprlo.}}</translation>
 <translation id="3597003331831379823">Nastavitve s povečanimi pravicami ni bilo mogoče izvesti. <ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3609788354808247807">Nedavno niste obiskali tega mesta. Chrome je odstranil ta dovoljenja: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> in <ph name="PERMISSION_3" />.</translation>
+<translation id="3622716124581627104">Določite stvari ali mesta in kopirajte ali prevedite besedilo. Če uporabljate Google Lens, se Googlu pošlje posnetek zaslona strani. <ph name="LEARN_MORE" /></translation>
 <translation id="3622797965165704966">Zdaj je Chrome lažje uporabljati z Google Računom in v računalnikih, ki so v skupni rabi.</translation>
 <translation id="3625345586754200168">Preizkusite Lens</translation>
 <translation id="3635073343384702370">Chrome lahko preveri gesla, če jih shranite</translation>
@@ -402,6 +403,7 @@ Google Chrome ne more obnoviti vaših nastavitev.</translation>
 <translation id="608006075545470555">Dodajanje delovnega profila v ta brskalnik</translation>
 <translation id="6097822892606850415">Pišite samozavestneje s pomočjo umetne inteligence</translation>
 <translation id="6113794647360055231">Chrome je pravkar postal še boljši</translation>
+<translation id="6116252277240876590">Ta jezik se uporablja za prikaz menijev, nastavitev, opozoril in drugega besedila v Chromu</translation>
 <translation id="6134085236017727171">Če želite uporabljati mikrofon, omogočite Chromu dostop v <ph name="BEGIN_LINK" />sistemskih nastavitvah<ph name="END_LINK" /></translation>
 <translation id="6135456723633883042">Ti zavihki porabljajo dodatna sredstva. Če želite izboljšati učinkovitost delovanja, pustite Chromu, da jih spremeni v neaktivne.</translation>
 <translation id="6145313976051292476">Odpiranje datotek PDF v Chromu</translation>
@@ -602,6 +604,7 @@ Dovoljenja, ki ste jih že odobrili spletnim mestom in aplikacijam, morda veljaj
 <translation id="8498858610309223613">Pravkar je bila nameščena posebna varnostna posodobitev za Google Chrome. Znova ga zaženite (vaše zavihke bomo obnovili).</translation>
 <translation id="8516431725144212809">Vaša zanimanja po Chromovi oceni</translation>
 <translation id="8521348052903287641">Pravilo za dohodni promet za Google Chrome Dev, ki dovoli promet mDNS.</translation>
+<translation id="852529348814672339">Prikaz Chroma v tem jeziku</translation>
 <translation id="8550334526674375523">Ta delovni profil je v celoti ločen od osebnega profila.</translation>
 <translation id="8555465886620020932">Napaka storitve: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8571790202382503603">S profili v Chromu lahko ločite vse stvari v Chromu. Tako laže ločite delo in zabavo.</translation>

@@ -2854,7 +2854,6 @@
 <translation id="6252613631861574218">‏<ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />، اضغط على مفتاح Tab ثم مفتاح Enter لإدارة الملفات التي تم تنزيلها في Chrome.</translation>
 <translation id="6254436959401408446">لا تتوفر ذاكرة كافية لفتح هذه الصفحة</translation>
 <translation id="625463612687472648">إيقاف السماح بالأذونات</translation>
-<translation id="6256360366378574605">{FINANCIAL_ACCOUNT,plural, =1{‏عند إجراء عمليات شراء على متصفّح Chrome، يمكنك استخدام <ph name="FINANCIAL_ACCOUNT_TYPES" /> كخيار للدفع}zero{‏عند إجراء عمليات شراء على متصفّح Chrome، يمكنك استخدام <ph name="FINANCIAL_ACCOUNT_TYPES" /> كخيارات للدفع}two{‏عند إجراء عمليات شراء على متصفّح Chrome، يمكنك استخدام <ph name="FINANCIAL_ACCOUNT_TYPES" /> كخيارَين للدفع}few{‏عند إجراء عمليات شراء على متصفّح Chrome، يمكنك استخدام <ph name="FINANCIAL_ACCOUNT_TYPES" /> كخيارات للدفع}many{‏عند إجراء عمليات شراء على متصفّح Chrome، يمكنك استخدام <ph name="FINANCIAL_ACCOUNT_TYPES" /> كخيارات للدفع}other{‏عند إجراء عمليات شراء على متصفّح Chrome، يمكنك استخدام <ph name="FINANCIAL_ACCOUNT_TYPES" /> كخيارات للدفع}}</translation>
 <translation id="6259156558325130047">إعادة إ&amp;جراء الترتيب</translation>
 <translation id="6263376278284652872">إشعارات <ph name="DOMAIN" /></translation>
 <translation id="6264376385120300461">التنزيل على أيّ حال</translation>
@@ -4083,7 +4082,6 @@
 <translation id="84561192812921051">‏يمكن للمشرف إجراء تغييرات على ملفك الشخصي والمتصفّح عن بُعد، وتحليل المعلومات عن المتصفّح من خلال إعداد التقارير وتنفيذ المهام الضرورية الأخرى. وقد تتم أيضًا إدارة النشاط على هذا الجهاز خارج Chrome.  <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
 <translation id="8457125768502047971">غير محدَّد</translation>
 <translation id="8458202188076138974">Letter Extra</translation>
-<translation id="8458605637341729751">‏تشير المتابعة إلى موافقتك على جمْع معلومات الموقع الجغرافي الدقيق لجهازك ومشاركته مع صاحب حسابك بهدف منع عمليات الاحتيال. لإيقاف Pix في Chrome، انتقِل إلى <ph name="BEGIN_LINK1" />إعدادات الدفع<ph name="END_LINK1" />.</translation>
 <translation id="8460854335417802511">تفعيل</translation>
 <translation id="8461694314515752532">ترميز البيانات المتزامنة باستخدام عبارة مرور المزامنة الخاصة بك</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{بطاقة ائتمان واحدة}zero{# بطاقة ائتمان}two{بطاقتا ائتمان (#)}few{# بطاقات ائتمان}many{# بطاقة ائتمان}other{# بطاقة ائتمان}}</translation>
@@ -4118,6 +4116,7 @@
 <translation id="8527228059738193856">مكبّرات الصوت</translation>
 <translation id="8527681393107582734">زراعة وحراجة</translation>
 <translation id="8528149813106025610">ملابس أطفال</translation>
+<translation id="8528479410903501741">‏حفظ رقم الحساب بصيغة IBAN</translation>
 <translation id="853246364274116957">مسرح موسيقي وبرودواي</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">‏انتقِل إلى &lt;strong&gt;chrome://policy&lt;/strong&gt; للاطّلاع على قائمة عناوين URL المحظورة والسياسات الأخرى التي يفرضها مشرف النظام.</translation>

@@ -2851,7 +2851,6 @@
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />, तुम्ही Chrome मध्ये डाउनलोड केलेल्या फाइल व्यवस्थापित करण्यासाठी, टॅब प्रेस करून एंटर प्रेस करा</translation>
 <translation id="6254436959401408446">हे पेज उघडण्‍यासाठी पुरेशी मेमरी नाही</translation>
 <translation id="625463612687472648">अनुमती देणे थांबवा</translation>
-<translation id="6256360366378574605">{FINANCIAL_ACCOUNT,plural, =1{तुम्ही Chrome वर खरेदी करता, तेव्हा <ph name="FINANCIAL_ACCOUNT_TYPES" /> पर्याय म्हणून पहा}other{तुम्ही Chrome वर खरेदी करता, तेव्हा <ph name="FINANCIAL_ACCOUNT_TYPES" /> पर्याय म्हणून पहा}}</translation>
 <translation id="6259156558325130047">&amp;पुनर्क्रमित करा पुन्हा करा</translation>
 <translation id="6263376278284652872"><ph name="DOMAIN" /> बुकमार्क</translation>
 <translation id="6264376385120300461">तरीही डाउनलोड करा</translation>
@@ -4078,7 +4077,6 @@
 <translation id="84561192812921051">तुमचा अ‍ॅडमिनिस्ट्रेटर हा तुमच्या प्रोफाइल आणि ब्राउझरमध्ये रिमोट पद्धतीने बदल करू शकतो, तक्रारीद्वारे ब्राउझरशी संबंधित माहितीचे विश्लेषण करू शकतो व इतर आवश्यक टास्क करू शकतो. या डिव्हाइसवरील अ‍ॅक्टिव्हिटी ही Chrome च्या बाहेरदेखील व्यवस्थापित केली जाऊ शकते.  <ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>
 <translation id="8457125768502047971">अनिश्चित</translation>
 <translation id="8458202188076138974">Letter Extra</translation>
-<translation id="8458605637341729751">पुढे सुरू ठेवून, घोटाळा रोखण्याच्या उद्देशाने तुम्ही तुमच्या डिव्हाइसचे नेमके स्थान गोळा केले जाण्यास आणि ते तुमच्या खातेधारकासोबत शेअर केले जाण्यास सहमती दर्शवता. Chrome मध्ये Pix बंद करण्यासाठी, तुमची <ph name="BEGIN_LINK1" />पेमेंट सेटिंग्ज<ph name="END_LINK1" /> यांवर जा</translation>
 <translation id="8460854335417802511">ते सुरू करा</translation>
 <translation id="8461694314515752532">तुमच्या स्वतःच्या सिंक पासफ्रेजसह सिंक केलेला डेटा एंक्रिप्ट करा</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 क्रेडिट कार्ड}other{# क्रेडिट कार्ड}}</translation>
@@ -4113,6 +4111,7 @@
 <translation id="8527228059738193856">स्पीकर</translation>
 <translation id="8527681393107582734">कृषिशास्त्र आणि वनशास्त्र</translation>
 <translation id="8528149813106025610">लहान मुलांचे कपडे</translation>
+<translation id="8528479410903501741">IBAN सेव्ह करा</translation>
 <translation id="853246364274116957">ब्रॉडवे आणि संगीत थिएटर</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">तुमच्या सिस्टम अ‍ॅडमिनिस्ट्रेटरद्वारे ब्लॉक केलेल्या URL आणि लागू केलेली इतर धोरणे पाहण्यासाठी &lt;strong&gt;chrome://policy&lt;/strong&gt; ला भेट द्या.</translation>

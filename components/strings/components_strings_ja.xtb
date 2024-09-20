@@ -2381,6 +2381,7 @@
 <translation id="5371425731340848620">カードを更新</translation>
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">「時計が遅れています」、「時計が進んでいます」、「&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;」</translation>
+<translation id="5379618281582508161">このパスワードをすべてのデバイスで使用するには、本人確認を行ってください</translation>
 <translation id="5380953781541843508">昇順</translation>
 <translation id="5381318171304904246">続行すると、銀行のウェブサイトに移動します。確認が完了すると、自動的に戻って購入手続きが完了します。</translation>
 <translation id="5383478552402031184">フローリング</translation>
@@ -2851,7 +2852,6 @@
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" /> です。Tab、Enter キーの順に押すと、Chrome でダウンロードしたファイルを管理します</translation>
 <translation id="6254436959401408446">メモリが不足しているため、このページを開けません</translation>
 <translation id="625463612687472648">許可を取り消す</translation>
-<translation id="6256360366378574605">{FINANCIAL_ACCOUNT,plural, =1{Chrome で購入する際のオプションとして <ph name="FINANCIAL_ACCOUNT_TYPES" /> が表示されます}other{Chrome で購入する際のオプションとして <ph name="FINANCIAL_ACCOUNT_TYPES" /> が表示されます}}</translation>
 <translation id="6259156558325130047">順序変更のやり直し（&amp;R）</translation>
 <translation id="6263376278284652872"><ph name="DOMAIN" /> のブックマーク</translation>
 <translation id="6264376385120300461">ダウンロードを続行</translation>
@@ -4079,7 +4079,6 @@
 <translation id="84561192812921051">管理者は、ユーザーのプロフィールやブラウザをリモートで変更したり、レポートを通じてブラウザに関する情報を分析したり、その他の必要なタスクを行ったりすることができます。このデバイスでのアクティビティは、Chrome 以外でも管理されている可能性があります。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
 <translation id="8457125768502047971">無期限</translation>
 <translation id="8458202188076138974">レター エクストラ</translation>
-<translation id="8458605637341729751">続行すると、不正行為を防止する目的でデバイスの正確な位置情報が収集され、アカウント所有者と共有されることに同意したことになります。Chrome で Pix をオフにするには、<ph name="BEGIN_LINK1" />お支払い設定<ph name="END_LINK1" />に移動してください</translation>
 <translation id="8460854335417802511">有効にする</translation>
 <translation id="8461694314515752532">同期データを同期パスフレーズで暗号化する</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 件のクレジット カード}other{# 件のクレジット カード}}</translation>
@@ -4114,6 +4113,7 @@
 <translation id="8527228059738193856">スピーカー</translation>
 <translation id="8527681393107582734">農業、林業</translation>
 <translation id="8528149813106025610">子供服</translation>
+<translation id="8528479410903501741">IBAN を保存</translation>
 <translation id="853246364274116957">ブロードウェイ、ミュージカル</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">&lt;strong&gt;chrome://policy&lt;/strong&gt; で、ブロックされた URL のリストとシステム管理者が設定した他のポリシーを確認できます。</translation>

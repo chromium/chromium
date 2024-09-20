@@ -213,6 +213,7 @@
 <translation id="3596080736082218006">{COUNT,plural, =0{Din administrator kræver, at du genstarter Chrome for at anvende en opdatering}=1{Din administrator kræver, at du genstarter Chrome for at anvende en opdatering. Dit inkognitovindue åbnes ikke igen.}one{Din administrator kræver, at du genstarter Chrome for at anvende en opdatering. # inkognitovindue åbnes ikke igen.}other{Din administrator kræver, at du genstarter Chrome for at anvende en opdatering. Dine # inkognitovinduer åbnes ikke igen.}}</translation>
 <translation id="3597003331831379823">Konfigurationen med udvidede adgangsrettigheder kunne ikke køres. <ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3609788354808247807">Du har ikke besøgt websitet for nylig. Chrome har fjernet <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> og <ph name="PERMISSION_3" /></translation>
+<translation id="3622716124581627104">Identificer ting eller steder, og kopiér eller oversæt tekst. Når du bruger Google Lens, sendes der et screenshot af siden til Google. <ph name="LEARN_MORE" /></translation>
 <translation id="3622797965165704966">Nu er det blevet nemmere at bruge Chrome med din Google-konto og på delte computere.</translation>
 <translation id="3625345586754200168">Prøv Lens</translation>
 <translation id="3635073343384702370">Chrome kan tjekke dine adgangskoder, når du gemmer dem</translation>
@@ -394,6 +395,7 @@
 <translation id="608006075545470555">Føj arbejdsprofilen til denne browser</translation>
 <translation id="6097822892606850415">Skriv mere selvsikkert med hjælp fra AI</translation>
 <translation id="6113794647360055231">Chrome er blevet bedre</translation>
+<translation id="6116252277240876590">Dette sprog bruges i menuer, indstillinger, underretninger og anden tekst i Chrome</translation>
 <translation id="6134085236017727171">Giv Chrome adgang i <ph name="BEGIN_LINK" />systemindstillingerne<ph name="END_LINK" /> for at bruge din mikrofon</translation>
 <translation id="6135456723633883042">Disse faner bruger ekstra ressourcer. Du kan forbedre ydeevnen ved at give Chrome tilladelse til at gøre dem inaktive.</translation>
 <translation id="6145313976051292476">Åbn PDF-filer i Chrome</translation>
@@ -594,6 +596,7 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="8498858610309223613">En særlig sikkerhedsopdatering til Google Chrome blev netop anvendt. Genstart nu, hvorefter vi gendanner dine faner.</translation>
 <translation id="8516431725144212809">Dine interesser, som de er estimeret af Chrome</translation>
 <translation id="8521348052903287641">Indgående regel for udviklerversionen af Chrome om at tillade mDNS-trafik.</translation>
+<translation id="852529348814672339">Vis Chrome på dette sprog</translation>
 <translation id="8550334526674375523">Denne arbejdsprofil er totalt adskilt fra din personlige profile.</translation>
 <translation id="8555465886620020932">Tjenestefejl: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8571790202382503603">Du kan organisere alle dine ting i Chrome ved hjælp af Chrome-profiler. Når du har flere profiler, kan du nemmere adskille arbejde og fornøjelse.</translation>

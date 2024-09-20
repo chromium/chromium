@@ -2851,7 +2851,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome'is allalaaditud failide haldamiseks vajutage tabulaatorit ja seejärel sisestusklahvi.</translation>
 <translation id="6254436959401408446">Selle lehe avamiseks pole piisavalt mälu</translation>
 <translation id="625463612687472648">Lõpeta lubamine</translation>
-<translation id="6256360366378574605">{FINANCIAL_ACCOUNT,plural, =1{Kui teete oste Chrome'is, on valikus ka <ph name="FINANCIAL_ACCOUNT_TYPES" />}other{Kui teete oste Chrome'is, on valikus ka <ph name="FINANCIAL_ACCOUNT_TYPES" />}}</translation>
 <translation id="6259156558325130047">&amp;Korrasta uuesti</translation>
 <translation id="6263376278284652872">Domeeni <ph name="DOMAIN" /> järjehoidjad</translation>
 <translation id="6264376385120300461">Laadi ikkagi alla</translation>
@@ -4078,7 +4077,6 @@ Lisateave:
 <translation id="84561192812921051">Teie administraator saab teha teie profiilil ja brauseris distantsilt muudatusi, analüüsida aruandluse kaudu brauseri teavet ning teha muid vajalikke ülesandeid. Selle seadme tegevusi võidakse hallata ka väljaspool Chrome'i.  <ph name="BEGIN_LINK" />Lisateave<ph name="END_LINK" /></translation>
 <translation id="8457125768502047971">Määramata</translation>
 <translation id="8458202188076138974">Letter Extra</translation>
-<translation id="8458605637341729751">Jätkates nõustute, et teie täpset asukohta kogutakse ja jagatakse pettuste vältimiseks konto omanikuga. Pixi väljalülitamiseks Chrome'is avage oma <ph name="BEGIN_LINK1" />makseseaded<ph name="END_LINK1" />.</translation>
 <translation id="8460854335417802511">Jah, nõustun</translation>
 <translation id="8461694314515752532">Krüpteeri sünkroonitud andmed sünkroonimisparooliga</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 krediitkaart}other{# krediitkaarti}}</translation>
@@ -4113,6 +4111,7 @@ Lisateave:
 <translation id="8527228059738193856">Kõlarid</translation>
 <translation id="8527681393107582734">Põllumajandus ja metsandus</translation>
 <translation id="8528149813106025610">Lasteriided</translation>
+<translation id="8528479410903501741">IBAN-i salvestamine</translation>
 <translation id="853246364274116957">Broadway ja muusikateater</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">Külastage saiti &lt;strong&gt;chrome://policy&lt;/strong&gt;, et näha blokeeritud URL-ide loendit ja teisi reegleid, mille teie süsteemiadministraator on jõustanud.</translation>

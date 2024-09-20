@@ -258,7 +258,6 @@
 <translation id="2148716181193084225">วันนี้</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> ภาพ</translation>
 <translation id="2154460308960858308">ล้างการค้นหา</translation>
-<translation id="2156072344042480449">พรอมต์ 2 รายการล่าสุด คุณใช้พรอมต์เหล่านี้ได้ขณะที่อยู่ในหน้านี้เท่านั้น</translation>
 <translation id="2157660087437850958">เครื่องมือเลือกอีโมจิ</translation>
 <translation id="2157959690810728433">อยู่ในคิว</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: ลองอีกครั้ง</translation>
@@ -1196,16 +1195,6 @@
 <translation id="6975981640379148271">โคอาลา</translation>
 <translation id="6977381486153291903">การแก้ไขเฟิร์มแวร์</translation>
 <translation id="6981982820502123353">การช่วยเหลือพิเศษ</translation>
-<translation id="698242338298293034">เลือกธีมแล้วเลือกคำที่ขีดเส้นใต้เพื่อปรับเปลี่ยนรูปภาพ AI ในแบบของคุณ
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          เลือก "ขอแรงบันดาลใจหน่อย" เพื่อรับตัวเลือกรูปภาพ AI ที่เป็นเอกลักษณ์และหลากหลายยิ่งขึ้น
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          เมื่อสร้างด้วย AI ระบบจะส่งพรอมต์ไปยังเซิร์ฟเวอร์ AI ของ Google เพื่อสร้างรูปภาพและปรับปรุงผลิตภัณฑ์โดยเป็นไปตาม<ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />นโยบายความเป็นส่วนตัวของ Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Generative AI เป็นเวอร์ชันทดลองที่อยู่ในช่วงการพัฒนาขั้นต้น และมีให้บริการจํากัดในขณะนี้</translation>
 <translation id="6982462588253070448">เนินทราย</translation>
 <translation id="7005833343836210400">อุปกรณ์ออฟไลน์อยู่</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> จัดการอุปกรณ์นี้และมีสิทธิ์เข้าถึงกิจกรรมทั้งหมดของผู้ใช้ ซึ่งรวมถึงหน้าเว็บที่เข้าชม รหัสผ่าน และอีเมล</translation>
@@ -1451,7 +1440,6 @@
 <translation id="8208861521865154048">สิทธิประโยชน์</translation>
 <translation id="8226628635270268143">เลือกรูปภาพและอัลบั้มที่ชื่นชอบ</translation>
 <translation id="8227119283605456246">แนบไฟล์</translation>
-<translation id="8227488649450500937">ลองใช้พรอมต์ต่อไปนี้หรือดู<ph name="BEGIN_LINK_PROMPTING_GUIDE" />คำแนะนำในการเขียนพรอมต์<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="8230672074305416752">ใช้คำสั่ง ping กับเกตเวย์เครือข่ายเริ่มต้นไม่สำเร็จ</translation>
 <translation id="8236972776513018241">ข้อความถอดเสียง</translation>
 <translation id="8238771987802558562">เลือก APN</translation>

@@ -213,6 +213,7 @@
 <translation id="3596080736082218006">{COUNT,plural, =0{El administrador necesita que reinicies Chrome para aplicar una actualización}=1{El administrador necesita que reinicies Chrome para aplicar una actualización. No se volverá a abrir la ventana de incógnito.}other{El administrador necesita que reinicies Chrome para aplicar una actualización. No se volverán a abrir las # ventanas de incógnito.}}</translation>
 <translation id="3597003331831379823">No se pudo ejecutar la configuración con privilegios elevados. <ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3609788354808247807">No lo visitaste recientemente. Chrome quitó los permisos <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> y <ph name="PERMISSION_3" /></translation>
+<translation id="3622716124581627104">Identifica objetos o lugares, y copia o traduce texto. Cuando usas Google Lens, se envía una captura de pantalla de la página a Google. <ph name="LEARN_MORE" /></translation>
 <translation id="3622797965165704966">Ahora es más sencillo utilizar Chrome con la cuenta de Google y en computadoras compartidas.</translation>
 <translation id="3625345586754200168">Probar Lens</translation>
 <translation id="3635073343384702370">Chrome puede revisar las contraseñas cuando las guardas</translation>
@@ -394,6 +395,7 @@
 <translation id="608006075545470555">Agrega un perfil de trabajo a este navegador</translation>
 <translation id="6097822892606850415">Escribe con más confianza gracias a la ayuda de la IA</translation>
 <translation id="6113794647360055231">Chrome mejorado</translation>
+<translation id="6116252277240876590">Este idioma se usa para mostrar menús, parámetros de configuración, alertas y otros textos en Chrome</translation>
 <translation id="6134085236017727171">Para usar el micrófono, otorga acceso a Chrome en la <ph name="BEGIN_LINK" />configuración del sistema<ph name="END_LINK" /></translation>
 <translation id="6135456723633883042">Estas pestañas están usando recursos adicionales. Para mejorar el rendimiento, permite que Chrome las desactive.</translation>
 <translation id="6145313976051292476">Abrir archivos PDF en Chrome</translation>
@@ -594,6 +596,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="8498858610309223613">Se acaba de instalar una actualización de seguridad especial para Google Chrome. Reinicia el navegador ahora (se restablecerán tus pestañas).</translation>
 <translation id="8516431725144212809">Tus intereses estimados por Chrome</translation>
 <translation id="8521348052903287641">Regla de entrada para que Google Chrome Dev permita el tráfico mDNS.</translation>
+<translation id="852529348814672339">Mostrar Chrome en este idioma</translation>
 <translation id="8550334526674375523">Este perfil de trabajo está totalmente separado de tu perfil personal.</translation>
 <translation id="8555465886620020932">Error del servicio: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8571790202382503603">Con los perfiles de Chrome, puedes separar todo lo que tienes en Chrome. De esta manera, es más fácil separar el trabajo del entretenimiento.</translation>

@@ -127,6 +127,7 @@
 <translation id="1567064801249837505">Albumit</translation>
 <translation id="1572585716423026576">Aseta taustakuvaksi</translation>
 <translation id="1578784163189013834">Valitse näytönsäästäjän tausta</translation>
+<translation id="1587031308639983732">Aikaan perustuvat muutokset eivät välttämättä ole tarkkoja. Järjestelmänvalvojasi ylläpitää tätä asetusta.</translation>
 <translation id="1588438908519853928">Normaali</translation>
 <translation id="1591562245178063882">Tässä kuussa</translation>
 <translation id="1593528591614229756">Muista valita mobiilioperaattorin tai järjestelmänvalvojan antamat APN:t. Jos valitset APN:n, kaikki muokatut APN:t poistetaan käytöstä. Virheelliset APN:t voivat häiritä mobiiliyhteyttä. <ph name="LINK_BEGIN" />Lue lisää<ph name="LINK_END" /></translation>
@@ -257,7 +258,6 @@
 <translation id="2148716181193084225">Tänään</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> kuvaa</translation>
 <translation id="2154460308960858308">Tyhjennä haku</translation>
-<translation id="2156072344042480449">Kaksi uusinta kehotetta. Voit käyttää näitä kehotteita vain, kun olet tällä sivulla.</translation>
 <translation id="2157660087437850958">emojivalitsin</translation>
 <translation id="2157959690810728433">JONOSSA</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Yritä uudelleen</translation>
@@ -1195,16 +1195,6 @@
 <translation id="6975981640379148271">koalat</translation>
 <translation id="6977381486153291903">Laiteohjelmiston versio</translation>
 <translation id="6981982820502123353">Saavutettavuus</translation>
-<translation id="698242338298293034">Valitse teema ja sitten alleviivatut sanat, niin voit personoida AI-kuviasi.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Valitse "Kaipaan inspiraatiota", jos haluat nähdä yksilöllisempiä ja monipuolisempia AI-kuvavaihtoehtoja.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Kun käytät tekoälyä, kehote lähetetään Googlen tekoälypalvelimille ja sitä käytetään kuvien luomiseen ja tuotteen parantamiseen <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Googlen tietosuojakäytännön<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> mukaisesti.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Generatiivinen tekoäly on kokeellinen ja se on vielä kehitysvaiheessa, ja sen saatavuus on tällä hetkellä rajoitettu.</translation>
 <translation id="6982462588253070448">hiekkadyynit</translation>
 <translation id="7005833343836210400">Laite on offline-tilassa</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> ylläpitää tätä laitetta ja pääsee näkemään kaiken käyttäjätoiminnan, esim. avatut verkkosivustot, salasanat ja sähköpostit.</translation>
@@ -1450,7 +1440,6 @@ Lataa transkriptiomalli (enintään 100 Mt), niin saat nämä transkriptiot.</t
 <translation id="8208861521865154048">Edut</translation>
 <translation id="8226628635270268143">Valitse suosikkikuvat ja ‑albumit</translation>
 <translation id="8227119283605456246">Liitä tiedosto</translation>
-<translation id="8227488649450500937">Kokeile jotakin näistä kehotteista tai tutustu <ph name="BEGIN_LINK_PROMPTING_GUIDE" />kehoteoppaaseen<ph name="END_LINK_PROMPTING_GUIDE" />.</translation>
 <translation id="8230672074305416752">Oletusarvoisen verkkoyhdyskäytävän ping epäonnistui</translation>
 <translation id="8236972776513018241">Transkriptio</translation>
 <translation id="8238771987802558562">Valitse APN</translation>

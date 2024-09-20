@@ -2851,7 +2851,6 @@
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tab을 누른 다음 Enter를 눌러 Chrome에서 다운로드한 파일 관리</translation>
 <translation id="6254436959401408446">페이지를 열기 위한 메모리가 충분하지 않음</translation>
 <translation id="625463612687472648">권한 허용 중지</translation>
-<translation id="6256360366378574605">{FINANCIAL_ACCOUNT,plural, =1{Chrome에서 구매할 때 <ph name="FINANCIAL_ACCOUNT_TYPES" /> 옵션이 표시됩니다.}other{Chrome에서 구매할 때 <ph name="FINANCIAL_ACCOUNT_TYPES" /> 옵션이 표시됩니다.}}</translation>
 <translation id="6259156558325130047">재정렬 다시 실행(&amp;R)</translation>
 <translation id="6263376278284652872"><ph name="DOMAIN" /> 북마크</translation>
 <translation id="6264376385120300461">무시하고 다운로드</translation>
@@ -4077,7 +4076,6 @@
 <translation id="84561192812921051">관리자는 프로필과 브라우저를 원격으로 변경하고, 보고를 통해 브라우저에 대한 정보를 분석하고, 기타 필요한 작업을 수행할 수 있습니다. 이 기기의 활동은 Chrome 외부에서도 관리할 수 있습니다.  <ph name="BEGIN_LINK" />자세히 알아보기<ph name="END_LINK" /></translation>
 <translation id="8457125768502047971">무기한</translation>
 <translation id="8458202188076138974">Letter Extra</translation>
-<translation id="8458605637341729751">계속 진행하면 사기 방지 목적으로 정확한 기기 위치를 수집해 계정 소유자와 공유하는 데 동의하는 것으로 간주됩니다. Chrome에서 PIX를 사용 중지하려면 <ph name="BEGIN_LINK1" />결제 설정<ph name="END_LINK1" />으로 이동하세요.</translation>
 <translation id="8460854335417802511">사용 설정</translation>
 <translation id="8461694314515752532">나만의 동기화 암호로 동기화된 데이터 암호화</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{신용카드 1개}other{신용카드 #개}}</translation>
@@ -4112,6 +4110,7 @@
 <translation id="8527228059738193856">스피커</translation>
 <translation id="8527681393107582734">농업 및 임업</translation>
 <translation id="8528149813106025610">아동 의류</translation>
+<translation id="8528479410903501741">IBAN 저장</translation>
 <translation id="853246364274116957">브로드웨이 및 뮤지컬 극장</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">차단된 URL 및 시스템 관리자가 설정한 기타 정책 목록을 확인하려면 &lt;strong&gt;chrome://policy&lt;/strong&gt;를 방문하세요.</translation>

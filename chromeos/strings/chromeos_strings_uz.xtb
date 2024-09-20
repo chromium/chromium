@@ -127,6 +127,7 @@
 <translation id="1567064801249837505">Albomlar</translation>
 <translation id="1572585716423026576">Fon rasmi sifatida belgilash</translation>
 <translation id="1578784163189013834">Ekran lavhasi uchun fon rasmini tanlash</translation>
+<translation id="1587031308639983732">Vaqt asosidagi oʻzgarishlar aniq boʻlmasligi mumkin. Bu sozlama administrator tomonidan boshqariladi.</translation>
 <translation id="1588438908519853928">Normal</translation>
 <translation id="1591562245178063882">Bu oy</translation>
 <translation id="1593528591614229756">Faqat mobil operator yoki administrator taklif qilgan APN tanlang. APN tanlanganda boshqalarini tanlash imkoni yopiladi. Yaroqsiz APN mobil internet ishlashiga xalaqit qilishi mumkin. <ph name="LINK_BEGIN" />Batafsil<ph name="LINK_END" /></translation>
@@ -257,7 +258,6 @@
 <translation id="2148716181193084225">Bugun</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> ta rasm</translation>
 <translation id="2154460308960858308">Qidiruv qatorini tozalash</translation>
-<translation id="2156072344042480449">Eng oxirgi 2 ta soʻrovlaringiz. Bu soʻrovlardan shu sahifa ichida foydalanish mumkin.</translation>
 <translation id="2157660087437850958">emoji tanlash oynasi</translation>
 <translation id="2157959690810728433">NAVBATDA</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Qayta urinish</translation>
@@ -1195,16 +1195,6 @@
 <translation id="6975981640379148271">koalalar</translation>
 <translation id="6977381486153291903">Mikrodastur versiyasi</translation>
 <translation id="6981982820502123353">Qulayliklar</translation>
-<translation id="698242338298293034">Mavzu tanlang va AI yaratgan rasmlarni tagiga chizilgan soʻzlarni tanlash orqali moslashtiring.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Yanada unikal va xilma-xil rasmlar olish uchun "Menga ilhom ber" ustiga bosing.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          AI bilan kontent yaratish vaqtida rasm yaratish va mahsulotni yaxshilash uchun soʻrovlar Google AI serverlariga yuboriladi. Bu funksiya ishlashida <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google Maxfiylik siyosati<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> amal qiladi.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Generativ AI tajribaviy funksiya hisoblanib, hali erta ishlab chiqish jarayonida va hozirda sanoqli foydalanuvchilar uchun mavjud.</translation>
 <translation id="6982462588253070448">qum tepalik</translation>
 <translation id="7005833343836210400">Qurilma ulanmagan</translation>
 <translation id="7028979494427204405">Bu qurilma va uning foydalanuvchilari harakatlari, ochilgan sahifalar, parollar va emaillar <ph name="MANAGER" /> domenida boshqariladi.</translation>
@@ -1450,7 +1440,6 @@ Mazkur transkripsiyalar uchun transkripsiya modelini (&lt;100MB) yuklab oling.</
 <translation id="8208861521865154048">Imtiyozlar</translation>
 <translation id="8226628635270268143">Sevimli suratlar va albomlaringizni tanlang</translation>
 <translation id="8227119283605456246">Fayl biriktirish</translation>
-<translation id="8227488649450500937">Bu soʻrovlardan birini sinang yoki <ph name="BEGIN_LINK_PROMPTING_GUIDE" />soʻrovlar berish qoʻllanmasi<ph name="END_LINK_PROMPTING_GUIDE" /> bilan tanishing</translation>
 <translation id="8230672074305416752">Birlamchi tarmoq shlyuzi ping qilinmadi</translation>
 <translation id="8236972776513018241">Transkripsiya</translation>
 <translation id="8238771987802558562">APN tanlash</translation>

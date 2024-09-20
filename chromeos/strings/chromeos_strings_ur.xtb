@@ -127,6 +127,7 @@
 <translation id="1567064801249837505">البمز</translation>
 <translation id="1572585716423026576">بطور وال پیپر سیٹ کریں</translation>
 <translation id="1578784163189013834">اسکرین سیور کا پس منظر منتخب کریں</translation>
+<translation id="1587031308639983732">وقت پر مبنی تبدیلیاں ممکن ہے درست نہ ہوں۔ یہ ترتیب آپ کے منتظم کے زیر انتظام ہے۔</translation>
 <translation id="1588438908519853928">حسب معمول</translation>
 <translation id="1591562245178063882">اس مہینے</translation>
 <translation id="1593528591614229756">‏اپنے موبائل فراہم کنندہ یا منتظم کے ذریعہ فراہم کردہ APNs کو منتخب کرنا یقینی بنائیں۔ APN کو منتخب کرنے سے کوئی بھی حسب ضرورت APN غیر فعال ہو جائے گا۔ غلط APNs آپ کے موبائل کنکشن میں خلل ڈال سکتے ہیں۔ <ph name="LINK_BEGIN" />مزید جانیں<ph name="LINK_END" /></translation>
@@ -257,7 +258,6 @@
 <translation id="2148716181193084225">آج</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> تصاویر</translation>
 <translation id="2154460308960858308">تلاش صاف کریں</translation>
-<translation id="2156072344042480449">آپ کے 2 حالیہ پرامپٹس۔ آپ ان پرامپٹس کو صرف اس وقت استعمال کر سکتے ہیں جب آپ اس صفحہ پر ہوں۔</translation>
 <translation id="2157660087437850958">ایموجی منتخب کنندہ</translation>
 <translation id="2157959690810728433">قطار بند</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: پھر کوشش کریں</translation>
@@ -1195,16 +1195,6 @@
 <translation id="6975981640379148271">کوالا</translation>
 <translation id="6977381486153291903">فرم ویئر نظر ثانی</translation>
 <translation id="6981982820502123353">ایکسیسبیلٹی</translation>
-<translation id="698242338298293034">‏تھیم منتخب کریں اور پھر اپنی AI تصاویر کو ذاتی نوعیت کا بنانے کے لیے انڈر لائن کردہ الفاظ کا انتخاب کریں۔
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          مزید منفرد اور متنوع AI تصاویر کے اختیارات حاصل کرنے کے لیے "مجھے آئیڈیاز فراہم کریں" کو منتخب کریں۔
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          جب آپ AI کے ذریعے تخلیق کرتے ہیں تو تصاویر بنانے اور پروڈکٹ کو بہتر بنانے کیلئے پرامپٹ Google AI سرورز کو بھیجا جاتا ہے۔ اس پر <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google کی رازداری کی پالیسی<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> لاگو ہوتی ہے۔
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          تخلیق کر سکنے والا AI تجرباتی ہے۔ ابھی ڈیولپمنٹ کے ابتدائی مرحلے میں ہے اور ابھی سب کے لیے دستیاب نہیں ہے۔</translation>
 <translation id="6982462588253070448">ریت کے ٹیلے</translation>
 <translation id="7005833343836210400">آلہ آف لائن ہے</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> اس آلے کا نظم کرتا ہے اور ملاحظہ کردہ ویب صفحات، پاس ورڈز اور ای میل سمیت صارف کی تمام سرگرمی تک رسائی حاصل کر سکتا ہے۔</translation>
@@ -1450,7 +1440,6 @@
 <translation id="8208861521865154048">فوائد</translation>
 <translation id="8226628635270268143">اپنی پسندیدہ تصاویر اور البمز منتخب کریں</translation>
 <translation id="8227119283605456246">فائل منسلک کریں</translation>
-<translation id="8227488649450500937">ان پرامپٹس میں سے ایک آزمائیں یا <ph name="BEGIN_LINK_PROMPTING_GUIDE" />پرامپٹنگ گائیڈ<ph name="END_LINK_PROMPTING_GUIDE" /> دیکھیں</translation>
 <translation id="8230672074305416752">ڈیفالٹ نیٹ ورک گیٹ وے کو پنگ کرنے میں ناکام</translation>
 <translation id="8236972776513018241">ٹرانسکرپٹ</translation>
 <translation id="8238771987802558562">‏ایک APN منتخب کریں</translation>

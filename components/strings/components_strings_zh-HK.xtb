@@ -2850,7 +2850,6 @@
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />，㩒一下 Tab 鍵，然後㩒一下 Enter 鍵就可以管理您喺 Chrome 度下載嘅檔案</translation>
 <translation id="6254436959401408446">記憶體不足，因此無法開啟此網頁</translation>
 <translation id="625463612687472648">不再授予權限</translation>
-<translation id="6256360366378574605">{FINANCIAL_ACCOUNT,plural, =1{在 Chrome 上購物時可選用 <ph name="FINANCIAL_ACCOUNT_TYPES" />}other{在 Chrome 上購物時可選用 <ph name="FINANCIAL_ACCOUNT_TYPES" />}}</translation>
 <translation id="6259156558325130047">重做重新排序(&amp;R)</translation>
 <translation id="6263376278284652872"><ph name="DOMAIN" /> 書籤</translation>
 <translation id="6264376385120300461">仍要下載</translation>
@@ -4077,7 +4076,6 @@
 <translation id="84561192812921051">管理員可遠端變更你的設定檔和瀏覽器、透過報告分析瀏覽器相關資料，以及執行其他必要工作。此裝置上的活動亦可透過 Chrome 以外的服務管理。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="8457125768502047971">無限期</translation>
 <translation id="8458202188076138974">Letter Extra</translation>
-<translation id="8458605637341729751">選擇繼續即表示你同意我們收集精確裝置位置並與帳戶持有人分享，用於防範欺詐用途。如要在 Chrome 關閉 Pix，請前往<ph name="BEGIN_LINK1" />付款設定<ph name="END_LINK1" /></translation>
 <translation id="8460854335417802511">開啟</translation>
 <translation id="8461694314515752532">使用您的同步密碼短語，加密已同步的資料</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 張信用卡}other{# 張信用卡}}</translation>
@@ -4112,6 +4110,7 @@
 <translation id="8527228059738193856">喇叭</translation>
 <translation id="8527681393107582734">農林業</translation>
 <translation id="8528149813106025610">童裝</translation>
+<translation id="8528479410903501741">儲存 IBAN</translation>
 <translation id="853246364274116957">百老匯及音樂劇場</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">請前往 &lt;strong&gt;chrome://policy&lt;/strong&gt; 查看被封鎖的網址清單，以及由系統管理員強制執行的其他政策。</translation>

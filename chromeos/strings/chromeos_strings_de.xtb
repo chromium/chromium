@@ -127,6 +127,7 @@
 <translation id="1567064801249837505">Alben</translation>
 <translation id="1572585716423026576">Als Hintergrund festlegen</translation>
 <translation id="1578784163189013834">Hintergrund für den Bildschirmschoner auswählen</translation>
+<translation id="1587031308639983732">Zeitbasierte Änderungen sind möglicherweise nicht korrekt. Diese Einstellung wird von deinem Administrator verwaltet.</translation>
 <translation id="1588438908519853928">Normal</translation>
 <translation id="1591562245178063882">Aktueller Monat</translation>
 <translation id="1593528591614229756">Lege nur APNs fest, die von deinem Mobilfunkanbieter oder Administrator bereitgestellt wurden. Wenn du einen APN festlegst, werden alle benutzerdefinierten APNs deaktiviert. Ungültige APNs können dazu führen, dass deine Mobilfunkverbindung unterbrochen wird. <ph name="LINK_BEGIN" />Weitere Informationen<ph name="LINK_END" /></translation>
@@ -257,7 +258,6 @@
 <translation id="2148716181193084225">Heute</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> Fotos</translation>
 <translation id="2154460308960858308">Suche löschen</translation>
-<translation id="2156072344042480449">Dies sind deine letzten 2 Prompts. Du kannst sie nur verwenden, solange du dich auf dieser Seite befindest.</translation>
 <translation id="2157660087437850958">Emoji-Auswahl</translation>
 <translation id="2157959690810728433">IN WARTESCHLANGE</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Wiederholen</translation>
@@ -1195,16 +1195,6 @@
 <translation id="6975981640379148271">Koalas</translation>
 <translation id="6977381486153291903">Firmware-Version</translation>
 <translation id="6981982820502123353">Bedienungshilfen</translation>
-<translation id="698242338298293034">Wähle ein Design und dann die unterstrichenen Wörter aus, um deine KI-Bilder zu personalisieren.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Du kannst „Inspiriere mich“ anklicken, um weitere einzigartige KI-Bilder erstellen zu lassen.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Wenn du Bilder mithilfe von KI erstellst, wird dein Prompt an Google AI-Server gesendet, um Inhalte zu generieren und das Produkt gemäß der <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Datenschutzerklärung von Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> zu verbessern.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Generative KI ist experimentell, befindet sich noch in einem frühen Entwicklungsstadium und ist derzeit nur eingeschränkt verfügbar.</translation>
 <translation id="6982462588253070448">Sanddünen</translation>
 <translation id="7005833343836210400">Das Gerät ist offline</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> verwaltet dieses Gerät und hat Zugriff auf alle Nutzeraktivitäten, einschließlich besuchter Webseiten, Passwörter und E-Mails.</translation>
@@ -1450,7 +1440,6 @@ Wenn du das möchtest, lade das Transkriptmodell (bis zu 100 MB) herunter.</tra
 <translation id="8208861521865154048">Vorteile</translation>
 <translation id="8226628635270268143">Hier kannst du deine bevorzugten Fotos und Alben auswählen</translation>
 <translation id="8227119283605456246">Datei anhängen</translation>
-<translation id="8227488649450500937">Probiere einen dieser Prompts aus oder sieh dir die <ph name="BEGIN_LINK_PROMPTING_GUIDE" />Anleitung zu Prompts<ph name="END_LINK_PROMPTING_GUIDE" /> an</translation>
 <translation id="8230672074305416752">Das standardmäßige Netzwerk-Gateway konnte nicht kontaktiert werden</translation>
 <translation id="8236972776513018241">Transkript</translation>
 <translation id="8238771987802558562">APN festlegen</translation>

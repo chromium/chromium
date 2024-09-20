@@ -2851,7 +2851,6 @@
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />, आपने Chrome में जो फ़ाइलें डाउनलोड की हैं उन्हें मैनेज करने के लिए, पहले Tab और फिर Enter दबाएं</translation>
 <translation id="6254436959401408446">यह पेज खोलने के लिए ज़रूरी जगह नहीं है</translation>
 <translation id="625463612687472648">ऐक्सेस करने की अनुमति वापस लें</translation>
-<translation id="6256360366378574605">{FINANCIAL_ACCOUNT,plural, =1{Chrome पर खरीदारी करते समय, विकल्प के तौर पर <ph name="FINANCIAL_ACCOUNT_TYPES" /> को जोड़ें}one{Chrome पर खरीदारी करते समय, विकल्प के तौर पर <ph name="FINANCIAL_ACCOUNT_TYPES" /> को जोड़ें}other{Chrome पर खरीदारी करते समय, विकल्पों के तौर पर <ph name="FINANCIAL_ACCOUNT_TYPES" /> को जोड़ें}}</translation>
 <translation id="6259156558325130047">&amp;पुन: क्रमित करना फिर से करें</translation>
 <translation id="6263376278284652872"><ph name="DOMAIN" /> बुकमार्क</translation>
 <translation id="6264376385120300461">फिर भी डाउनलोड करें</translation>
@@ -3137,6 +3136,7 @@
 <translation id="6767985426384634228">क्या आप पता अपडेट करना चाहते हैं?</translation>
 <translation id="6770747695101757579">पेपर (कॉटन)</translation>
 <translation id="677257480647123231">इंटरनेट पर बच्चों की सुरक्षा</translation>
+<translation id="6772959465807028761">YouTube का इस्तेमाल करने के लिए, अपने Google खाते से प्रोसेस जारी रखें</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6777088782163649345">अपने माता-पिता की चुनी गई सेटिंग के हिसाब से, YouTube का इस्तेमाल करें</translation>
 <translation id="6779348349813025131">Google Password Manager को MacOS Keychain का ऐक्सेस चाहिए</translation>
@@ -4077,7 +4077,6 @@
 <translation id="84561192812921051">प्रोफ़ाइल का एडमिन, दूर से आपकी प्रोफ़ाइल और ब्राउज़र में बदलाव कर सकता है. साथ ही, रिपोर्टिंग के ज़रिए ब्राउज़र से जुड़ी जानकारी का विश्लेषण और दूसरे ज़रूरी काम कर सकता है. इस डिवाइस में की गई गतिविधि को Chrome से बाहर भी मैनेज किया जा सकता है.  <ph name="BEGIN_LINK" />ज़्यादा जानें<ph name="END_LINK" /></translation>
 <translation id="8457125768502047971">कोई तय अवधि नहीं</translation>
 <translation id="8458202188076138974">लेटर एक्स्ट्रा</translation>
-<translation id="8458605637341729751">जारी रखने का मतलब है कि आपने अपने डिवाइस की जगह की सटीक जानकारी इकट्ठा करने और उसे खाता मालिक के साथ शेयर करने की अनुमति दी है. इस जानकारी का इस्तेमाल धोखाधड़ी रोकने के लिए किया जाता है. Chrome में Pix की सुविधा बंद करने के लिए, अपनी <ph name="BEGIN_LINK1" />पेमेंट सेटिंग<ph name="END_LINK1" /> पर जाएं</translation>
 <translation id="8460854335417802511">इसे चालू करें</translation>
 <translation id="8461694314515752532">सिंक किए गए डेटा को अपने सिंक किए गए लंबे पासवर्ड से सुरक्षित करें</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 क्रेडिट कार्ड}one{# क्रेडिट कार्ड}other{# क्रेडिट कार्ड}}</translation>
@@ -4112,6 +4111,7 @@
 <translation id="8527228059738193856">स्पीकर</translation>
 <translation id="8527681393107582734">खेती और वन विज्ञान</translation>
 <translation id="8528149813106025610">बच्चों के कपड़े</translation>
+<translation id="8528479410903501741">IBAN सेव करें</translation>
 <translation id="853246364274116957">ब्रॉडवे और म्यूज़िकल थिएटर</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">&lt;strong&gt;chrome://policy&lt;/strong&gt; पर जाकर, ब्लॉक किए गए यूआरएल की सूची और ऐसी नीतियां देखें जिन्हें आपके एडमिन ने लागू किया है.</translation>
@@ -4305,6 +4305,7 @@
 <translation id="8891727572606052622">अमान्य प्रॉक्सी मोड.</translation>
 <translation id="8894794286471754040">लॉन्ग एज फ़र्स्ट</translation>
 <translation id="8895334001368918465">Chrome में जानकारी ऑटोमैटिक भरने वाली किसी दूसरी सेवा का इस्तेमाल करने के लिए, उसे Android की सेटिंग में जाकर और यहां से चालू करें</translation>
+<translation id="8897221284075091877">इस कॉन्टेंट को देखने की अनुमति पाने के लिए, अपने Google खाते से प्रोसेस जारी रखें</translation>
 <translation id="8897428486789851669">तैराकी</translation>
 <translation id="8899807382908246773">परेशान करने वाले विज्ञापन</translation>
 <translation id="8903921497873541725">ज़ूम इन करें</translation>

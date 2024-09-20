@@ -2381,6 +2381,7 @@
 <translation id="5371425731340848620">ბარათის განახლება</translation>
 <translation id="5375686690914744327">SRA1</translation>
 <translation id="5377026284221673050">„თქვენი საათი უკანაა“, „თქვენი საათი წინაა“ ან „&lt;span class="error-code"&gt;NET::ERR_CERT_DATE_INVALID&lt;/span&gt;“</translation>
+<translation id="5379618281582508161">ამ პაროლის თქვენს ყველა მოწყობილობაში მისაღებად საჭიროა ვინაობის დადასტურება</translation>
 <translation id="5380953781541843508">ზრდადი მიმდევრობით</translation>
 <translation id="5381318171304904246">გაგრძელების შემთხვევაში გადახვალთ თქვენი ბანკის ვებსაიტზე. დადასტურების შემდეგ ავტომატურად დაბრუნდებით შეძენის დასასრულებლად.</translation>
 <translation id="5383478552402031184">იატაკი</translation>
@@ -2851,7 +2852,6 @@
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome-ის მეშვეობით ჩამოტვირთული ფაილების სამართავად დააჭირეთ კლავიშს Tab, შემდეგ კი Enter-ს</translation>
 <translation id="6254436959401408446">ამ გვერდის გასახსნელად მეხსიერება არასაკმარისია</translation>
 <translation id="625463612687472648">აღარ დაიშვას</translation>
-<translation id="6256360366378574605">{FINANCIAL_ACCOUNT,plural, =1{Chrome-ის მეშვეობით რაიმეს შეძენისას ერთ-ერთ ვარიანტად გამოჩნდეს <ph name="FINANCIAL_ACCOUNT_TYPES" />}other{Chrome-ის მეშვეობით რაიმეს შეძენისას ვარიანტებად გამოჩნდეს <ph name="FINANCIAL_ACCOUNT_TYPES" />}}</translation>
 <translation id="6259156558325130047">გადალაგების &amp;გამეორება</translation>
 <translation id="6263376278284652872"><ph name="DOMAIN" /> სანიშნე</translation>
 <translation id="6264376385120300461">მაინც ჩამოტვირთვა</translation>
@@ -4077,7 +4077,6 @@
 <translation id="84561192812921051">თქვენს ადმინისტრატორს შეუძლია, დისტანციურად შეიტანოს ცვლილებები თქვენი პროფილის და ბრაუზერის პარამეტრებში, გააანალიზოს ინფორმაცია თქვენი ბრაუზერის შესახებ ანგარიშგების მეშვეობით და შეასრულოს სხვა აუცილებელი ამოცანები. ამ მოწყობილობაზე აქტივობა შეიძლება იმართებოდეს Chrome-ს მიღმაც.  <ph name="BEGIN_LINK" />შეიტყვეთ მეტი<ph name="END_LINK" /></translation>
 <translation id="8457125768502047971">განუსაზღვრელი</translation>
 <translation id="8458202188076138974">Letter Extra</translation>
-<translation id="8458605637341729751">გაგრძელებით ეთანხმებით თქვენი მოწყობილობის ზუსტი მდებარეობის მონაცემების შეგროვებას და, თაღლითობის პრევენციის მიზნით, ანგარიშის მფლობელთან გაზიარებას. Chrome-ში Pix-ის გამოსართავად გადადით თქვენს <ph name="BEGIN_LINK1" />გადახდის პარამეტრებში<ph name="END_LINK1" /></translation>
 <translation id="8460854335417802511">ჩართვა</translation>
 <translation id="8461694314515752532">სინქრონიზებული მონაცემების დაშიფვრა თქვენი საკუთარი საიდუმლო ფრაზით</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 საკრედიტო ბარათი}other{# საკრედიტო ბარათი}}</translation>
@@ -4112,6 +4111,7 @@
 <translation id="8527228059738193856">დინამიკები</translation>
 <translation id="8527681393107582734">სოფლის და სატყეო მეურნეობა</translation>
 <translation id="8528149813106025610">ბავშვთა ტანსაცმელი</translation>
+<translation id="8528479410903501741">IBAN-ის შენახვა</translation>
 <translation id="853246364274116957">ბროდვეი და მუსიკალური თეატრი</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">ეწვიეთ გვერდს &lt;strong&gt;chrome://policy&lt;/strong&gt; დაბლოკილი URL-ების სანახავად და ადმინისტრატორის მიერ გააქტიურებული სხვა წესების დასათვალიერებლად.</translation>

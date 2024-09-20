@@ -258,7 +258,6 @@
 <translation id="2148716181193084225">დღეს</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> ფოტო</translation>
 <translation id="2154460308960858308">ძიების გასუფთავება</translation>
-<translation id="2156072344042480449">თქვენი ბოლო 2 მოთხოვნა. ამ მოთხოვნების გამოყენება მხოლოდ ამ გვერდზე ყოფნისას შეგიძლიათ.</translation>
 <translation id="2157660087437850958">emoji-ს ამომრჩევი</translation>
 <translation id="2157959690810728433">რიგშია</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: ხელახლა ცდა</translation>
@@ -1196,16 +1195,6 @@
 <translation id="6975981640379148271">კოალები</translation>
 <translation id="6977381486153291903">მიკროპროგრამის ვერსია</translation>
 <translation id="6981982820502123353">სპეციალური შესაძლებლობები</translation>
-<translation id="698242338298293034">ხელოვნური ინტელექტით შექმნილი სურათების პერსონალიზებისთვის აირჩიეთ თემა, შემდეგ კი — ხაზგასმული სიტყვები.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          ხელოვნური ინტელექტით შექმნილი სურათების უფრო უნიკალური და განსხვავებული ვარიანტების მისაღებად აირჩიეთ „შთაგონების მიღება“.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          ხელოვნური ინტელექტის დახმარებით რაიმეს შექმნისას შესაბამისი მოთხოვნა ეგზავნება Google-ის ხელოვნური ინტელექტის სერვერებს, რომლებიც შემდეგ ქმნის სურათებს და აუმჯობესებს პროდუქტს <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google-ის კონფიდენციალურობის დებულების<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> შესაბამისად.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          გენერაციული ხელოვნური ინტელექტი ექსპერიმენტული ფუნქციაა, რომელიც შემუშავების ადრეულ სტადიებზეა, ამიტომ მისი ხელმისაწვდომობა შეზღუდულია.</translation>
 <translation id="6982462588253070448">ქვიშის დიუნები</translation>
 <translation id="7005833343836210400">მოწყობილობა ხაზგარეშე რეჟიმშია</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> მართავს ამ მოწყობილობას და აქვს წვდომა მომხმარებლების ნებისმიერ აქტივობაზე, მათ შორის, მონახულებულ ვებგვერდებზე, პაროლებსა და ელფოსტაზე.</translation>
@@ -1451,7 +1440,6 @@
 <translation id="8208861521865154048">ბონუსები</translation>
 <translation id="8226628635270268143">აირჩიეთ თქვენი რჩეული ფოტოები და ალბომები</translation>
 <translation id="8227119283605456246">ფაილის მიმაგრება</translation>
-<translation id="8227488649450500937"><ph name="BEGIN_LINK_PROMPTING_GUIDE" />მოთხოვნების შექმნის სახელმძღვანელოს<ph name="END_LINK_PROMPTING_GUIDE" /> სანახავად ცადეთ ამ მოთხოვნებიდან ერთ-ერთი</translation>
 <translation id="8230672074305416752">ნაგულისხმევი ქსელის გეითვეისთან კავშირის შემოწმება ვერ მოხერხდა</translation>
 <translation id="8236972776513018241">ტრანსკრიპტი</translation>
 <translation id="8238771987802558562">აირჩიეთ APN</translation>

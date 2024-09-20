@@ -1123,7 +1123,6 @@
 <translation id="1794212650797661990"><ph name="DOMAIN" /> のパスワードを非表示にする</translation>
 <translation id="1794791083288629568">フィードバックを送信して問題解決に協力する。</translation>
 <translation id="1795214765651529549">クラシックを使用</translation>
-<translation id="1795668164971917185">Google セーフ ブラウジングで不審なダウンロードが次に検出されたときは、選択した <ph name="LINK" /> によって自動的にスキャンされます</translation>
 <translation id="1796588414813960292">音を使用する機能は動作しなくなります</translation>
 <translation id="1797117170091578105">Chromebook のキーボードを使ってプレイしましょう。特定の操作を行うキーをカスタマイズできます。</translation>
 <translation id="1798335429200675510">テキスト ボックスで右クリックすると、Google AI を活用して下書きを作成したり、既存の文章を手直ししたりできます。現在、限定的にご利用いただけます。</translation>
@@ -2212,6 +2211,7 @@
 <translation id="2546991196809436099">画面上の項目を拡大表示します。拡大鏡をオンまたはオフにするには、検索+Ctrl+M キーを使用します。</translation>
 <translation id="2548347166720081527"><ph name="PERMISSION" />を許可</translation>
 <translation id="2548545707296594436">eSIM プロファイルのキャッシュをリセット</translation>
+<translation id="2549766998450508148">1～4 個の修飾キー（Ctrl、Alt、Shift、または検索）と、もう 1 つキーを押してください。キーを 1 つだけ選択することもできます。</translation>
 <translation id="2549985041256363841">撮影を開始</translation>
 <translation id="2550212893339833758">スワップ対象メモリ</translation>
 <translation id="2550596535588364872"><ph name="EXTENSION_NAME" /> が <ph name="FILE_NAME" /> を開くことを許可しますか？</translation>
@@ -5898,7 +5898,6 @@
 <translation id="5263656105659419083">右上の固定をクリックすると、サイドパネルにすばやく戻れます</translation>
 <translation id="5264148714798105376">これには 1 分ほどかかる場合があります。</translation>
 <translation id="5264252276333215551">キオスク モードでアプリを起動するにはインターネットに接続してください。</translation>
-<translation id="526539328530966548">保護強化機能</translation>
 <translation id="5265797726250773323">インストール中にエラーが発生しました</translation>
 <translation id="5266113311903163739">認証局インポート エラー</translation>
 <translation id="526622169288322445"><ph name="ADDRESS_SUMMARY" /> に対するその他の操作</translation>
@@ -10608,6 +10607,7 @@
 <translation id="8715480913140015283">バックグラウンドのタブでカメラが使用されています</translation>
 <translation id="8716931980467311658">[Linux ファイル] フォルダのすべての Linux アプリケーションとデータをこの <ph name="DEVICE_TYPE" /> から削除しますか？</translation>
 <translation id="8717864919010420084">リンクをコピー</translation>
+<translation id="8718560545710680911">このページに基づく候補</translation>
 <translation id="8718994464069323380">タッチスクリーンが検出されました</translation>
 <translation id="8719472795285728850">拡張機能のアクティビティをリッスンしています...</translation>
 <translation id="8719665168401479425">顔の動きで操作する</translation>

@@ -258,7 +258,6 @@
 <translation id="2148716181193084225">ಇಂದು</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> ಫೋಟೋಗಳು</translation>
 <translation id="2154460308960858308">ಹುಡುಕಾಟವನ್ನು ತೆರವುಗೊಳಿಸಿ</translation>
-<translation id="2156072344042480449">ನಿಮ್ಮ 2 ಇತ್ತೀಚಿನ ಪ್ರಾಂಪ್ಟ್‌ಗಳು. ನೀವು ಈ ಪುಟದಲ್ಲಿರುವಾಗ ಮಾತ್ರ ಈ ಪ್ರಾಂಪ್ಟ್‌ಗಳನ್ನು ನೀವು ಬಳಸಬಹುದು.</translation>
 <translation id="2157660087437850958">ಎಮೋಜಿ ಪಿಕರ್‌</translation>
 <translation id="2157959690810728433">ಸರದಿಯಲ್ಲಿರಿಸಲಾಗಿದೆ</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: ಮರುಪ್ರಯತ್ನಿಸಿ</translation>
@@ -1196,16 +1195,6 @@
 <translation id="6975981640379148271">ಕೊವಾಲಾಗಳು</translation>
 <translation id="6977381486153291903">ಫರ್ಮ್‌ವೇರ್ ಮರುಪರಿಶೀಲನೆ</translation>
 <translation id="6981982820502123353">ಪ್ರವೇಶ</translation>
-<translation id="698242338298293034">ನಿಮ್ಮ AI ಚಿತ್ರಗಳನ್ನು ವೈಯಕ್ತಿಕಗೊಳಿಸಲು, ಥೀಮ್ ಅನ್ನು ಆಯ್ಕೆಮಾಡಿ, ನಂತರ ಅಂಡರ್‌ಲೈನ್ ಮಾಡಲಾದ ಪದಗಳನ್ನು ಆಯ್ಕೆಮಾಡಿ.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          ಇನ್ನಷ್ಟು ಅನನ್ಯ ಹಾಗೂ ವೈವಿಧ್ಯಮಯ AI ಚಿತ್ರಗಳ ಆಯ್ಕೆಗಳನ್ನು ಪಡೆಯಲು "ನನಗೆ ಸ್ಫೂರ್ತಿ ನೀಡಿ" ಎಂಬುದನ್ನು ಆಯ್ಕೆಮಾಡಿ.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          ನೀವು AI ಮೂಲಕ ರಚಿಸಿದಾಗ, ಚಿತ್ರಗಳನ್ನು ಜನರೇಟ್ ಮಾಡಲು ಹಾಗೂ ಉತ್ಪನ್ನವನ್ನು ಸುಧಾರಿಸಲು ಪ್ರಾಂಪ್ಟ್ ಅನ್ನು Google AI ಸರ್ವರ್‌ಗಳಿಗೆ ಕಳುಹಿಸಲಾಗುತ್ತದೆ, ಅದು <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google ನ ಗೌಪ್ಯತೆ ನೀತಿಗೆ<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> ಒಳಪಟ್ಟಿರುತ್ತದೆ.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          ಜನರೇಟಿವ್ AI ಪ್ರಾಯೋಗಿಕವಾಗಿದೆ, ಅಭಿವೃದ್ಧಿಯ ಆರಂಭಿಕ ಹಂತದಲ್ಲಿದೆ ಹಾಗೂ ಪ್ರಸ್ತುತ ಸೀಮಿತ ಲಭ್ಯತೆಯನ್ನು ಹೊಂದಿದೆ.</translation>
 <translation id="6982462588253070448">ಮರಳಿನ ದಿಬ್ಬಗಳು</translation>
 <translation id="7005833343836210400">ಸಾಧನ ಆಫ್‌ಲೈನ್ ಆಗಿದೆ</translation>
 <translation id="7028979494427204405">ಈ ಸಾಧನವನ್ನು <ph name="MANAGER" /> ನಿರ್ವಹಿಸುತ್ತದೆ ಮತ್ತು ಬಳಕೆದಾರರು ಭೇಟಿ ನೀಡಿದ ವೆಬ್‌ಪುಟಗಳು, ಪಾಸ್‌ವರ್ಡ್‌ಗಳು ಹಾಗೂ ಇಮೇಲ್ ಸೇರಿದಂತೆ ಅವರ ಎಲ್ಲಾ ಚಟುವಟಿಕೆಗಳಿಗೆ ಆ್ಯಕ್ಸೆಸ್ ಹೊಂದಿರುತ್ತದೆ.</translation>
@@ -1451,7 +1440,6 @@
 <translation id="8208861521865154048">ಪರ್ಕ್‌ಗಳು</translation>
 <translation id="8226628635270268143">ನಿಮ್ಮ ಮೆಚ್ಚಿನ ಫೋಟೋಗಳು ಮತ್ತು ಆಲ್ಬಮ್‌ಗಳನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="8227119283605456246">ಫೈಲ್‌‎ ಲಗತ್ತಿಸಿ</translation>
-<translation id="8227488649450500937">ಈ ಪ್ರಾಂಪ್ಟ್‌ಗಳಲ್ಲಿ ಒಂದನ್ನು ಪ್ರಯತ್ನಿಸಿ ಅಥವಾ <ph name="BEGIN_LINK_PROMPTING_GUIDE" />ಪ್ರಾಂಪ್ಟಿಂಗ್ ಗೈಡ್<ph name="END_LINK_PROMPTING_GUIDE" /> ಅನ್ನು ನೋಡಿ</translation>
 <translation id="8230672074305416752">ಡೀಫಾಲ್ಟ್ ನೆಟ್‌ವರ್ಕ್ ಗೇಟ್‌ವೇಗೆ ಪಿಂಗ್ ಮಾಡಲು ವಿಫಲವಾಗಿದೆ</translation>
 <translation id="8236972776513018241">ಟ್ರಾನ್ಸ್‌ಕ್ರಿಪ್ಟ್</translation>
 <translation id="8238771987802558562">APN ಆಯ್ಕೆಮಾಡಿ</translation>

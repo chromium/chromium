@@ -258,7 +258,6 @@
 <translation id="2148716181193084225">Ngayong Araw</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> (na) larawan</translation>
 <translation id="2154460308960858308">I-clear ang paghahanap</translation>
-<translation id="2156072344042480449">Ang iyong 2 pinakakamakailang prompt. Magagamit mo lang ang mga prompt na ito habang narito ka sa page na ito.</translation>
 <translation id="2157660087437850958">picker ng emoji</translation>
 <translation id="2157959690810728433">NAKA-QUEUE</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Subukan ulit</translation>
@@ -1196,16 +1195,6 @@
 <translation id="6975981640379148271">mga koala</translation>
 <translation id="6977381486153291903">Rebisyon ng firmware</translation>
 <translation id="6981982820502123353">Accessibility</translation>
-<translation id="698242338298293034">Pumili ng tema at pagkatapos ay piliin ang mga nakasalungguhit na salita para i-personalize ang iyong mga larawang binuo ng AI.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Piliin ang "Pahingi ng inspirasyon" para makakuha ng higit pang natatangi at iba't ibang opsyon para sa mga larawang binuo ng AI.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Kapag gumawa ka gamit ang AI, ipinapadala ang prompt sa mga server ng Google AI para bumuo ng mga larawan at pahusayin ang produkto, nang napapailalim sa <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Patakaran sa Privacy ng Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Pang-eksperimento ang Generative AI, na nasa unang yugto ng pag-develop, at kasalukuyang may limitadong availability.</translation>
 <translation id="6982462588253070448">mga bundok ng buhangin</translation>
 <translation id="7005833343836210400">Offline ang device</translation>
 <translation id="7028979494427204405">Pinapamahalaan ng <ph name="MANAGER" /> ang device na ito at mayroon itong access sa lahat ng aktibidad ng user, kabilang ang mga webpage na binisita, mga password, at email.</translation>
@@ -1451,7 +1440,6 @@ I-download ang modelo ng transcription (hanggang 100MB) para makuha ang mga tran
 <translation id="8208861521865154048">Mga Perk</translation>
 <translation id="8226628635270268143">Piliin ang iyong mga paboritong larawan at album</translation>
 <translation id="8227119283605456246">Mag-attach ng file</translation>
-<translation id="8227488649450500937">Subukan ang isa sa mga prompt na ito o tingnan ang <ph name="BEGIN_LINK_PROMPTING_GUIDE" />gabay sa pag-prompt<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="8230672074305416752">Hindi na-ping ang default na network gateway</translation>
 <translation id="8236972776513018241">Transcript</translation>
 <translation id="8238771987802558562">Pumili ng APN</translation>

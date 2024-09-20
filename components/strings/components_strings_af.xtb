@@ -2851,7 +2851,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />, druk Tab en dan Enter om lêers te bestuur wat jy in Chrome afgelaai het</translation>
 <translation id="6254436959401408446">Nie genoeg berging om hierdie bladsy oop te maak nie</translation>
 <translation id="625463612687472648">Hou op om toe te laat</translation>
-<translation id="6256360366378574605">{FINANCIAL_ACCOUNT,plural, =1{Sien <ph name="FINANCIAL_ACCOUNT_TYPES" /> as ’n opsie wanneer jy aankope op Chrome doen}other{Sien <ph name="FINANCIAL_ACCOUNT_TYPES" /> as opsies wanneer jy aankope op Chrome doen}}</translation>
 <translation id="6259156558325130047">Herdoen herrangskik</translation>
 <translation id="6263376278284652872"><ph name="DOMAIN" />-boekmerke</translation>
 <translation id="6264376385120300461">Laai in elk geval af</translation>
@@ -4077,7 +4076,6 @@ Bykomende besonderhede:
 <translation id="84561192812921051">Jou administrateur kan oor ’n afstand veranderinge aan jou profiel en blaaier maak, inligting oor die blaaier ontleed deur middel van verslagdoening, en ander nodige take uitvoer. Aktiwiteit op hierdie toestel kan ook buite Chrome bestuur word.  <ph name="BEGIN_LINK" />Meer inligting<ph name="END_LINK" /></translation>
 <translation id="8457125768502047971">Onbepaald</translation>
 <translation id="8458202188076138974">Brief Ekstra</translation>
-<translation id="8458605637341729751">As jy voortgaan, stem jy in dat jou presiese toestelligging ingesamel word en vir bedrogvoorkomingsdoeleindes met jou rekeninghouer gedeel word. Gaan na jou <ph name="BEGIN_LINK1" />betalinginstellings<ph name="END_LINK1" /> om Pix in Chrome af te skakel</translation>
 <translation id="8460854335417802511">Skakel dit aan</translation>
 <translation id="8461694314515752532">Enkripteer gesinkroniseerde data met jou eie sinkroniseringwagfrase</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 kredietkaart}other{# kredietkaarte}}</translation>
@@ -4112,6 +4110,7 @@ Bykomende besonderhede:
 <translation id="8527228059738193856">Luidsprekers</translation>
 <translation id="8527681393107582734">Landbou en bosbou</translation>
 <translation id="8528149813106025610">Kinderklere</translation>
+<translation id="8528479410903501741">Stoor IBAN</translation>
 <translation id="853246364274116957">Broadway en musiekteater</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">Besoek &lt;strong&gt;chrome://policy&lt;/strong&gt; om die lys geblokkeerde URL'e en ander beleide wat jou stelseladministrateur toepas te sien.</translation>

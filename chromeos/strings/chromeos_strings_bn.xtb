@@ -127,6 +127,7 @@
 <translation id="1567064801249837505">অ্যালবাম</translation>
 <translation id="1572585716423026576">ওয়ালপেপার হিসেবে সেট করুন</translation>
 <translation id="1578784163189013834">স্ক্রিন সেভারের ব্যাকগ্রাউন্ড বেছে নিন</translation>
+<translation id="1587031308639983732">সময়ের ভিত্তিতে করা পরিবর্তন সঠিক নাও হতে পারে। আপনার অ্যাডমিনিস্ট্রেটর এই সেটিং ম্যানেজ করে।</translation>
 <translation id="1588438908519853928">সাধারণ</translation>
 <translation id="1591562245178063882">এই মাস</translation>
 <translation id="1593528591614229756">শুধুমাত্র আপনার মোবাইল পরিষেবা প্রদানকারী বা অ্যাডমিনিস্ট্রেটরের দেওয়া APN বেছে নিয়েছেন কিনা দেখে নিন। APN বেছে নিলে যেকোনও কাস্টম APN বন্ধ হয়ে যাবে। ভুল APN বেছে নেওয়া হলে আপনার মোবাইল কানেকশন কাজ নাও করতে পারে। <ph name="LINK_BEGIN" />আরও জানুন<ph name="LINK_END" /></translation>
@@ -257,7 +258,6 @@
 <translation id="2148716181193084225">আজ</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" />টি ফটো</translation>
 <translation id="2154460308960858308">সার্চ মুছুন</translation>
-<translation id="2156072344042480449">আপনার ২টি সাম্প্রতিক প্রম্পট। এইসব প্রম্পট শুধুমাত্র এই পৃষ্ঠায় থাকাকালীন ব্যবহার করা যেতে পারে।</translation>
 <translation id="2157660087437850958">ইমোজি চয়নকারি</translation>
 <translation id="2157959690810728433">সারিতে আছে</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: আবার চেষ্টা করুন</translation>
@@ -1166,6 +1166,7 @@
 <translation id="6831043979455480757">অনুবাদ</translation>
 <translation id="6846843854964504403">সেফটি রিসেট</translation>
 <translation id="6853312040151791195">ডিসচার্জ হওয়ার রেট</translation>
+<translation id="6862228900689076919">এই ফিচার আপনার অ্যাডমিনিস্ট্রেটর ম্যানেজ করে</translation>
 <translation id="6862416241246624313">মতামত জমা দেওয়া হয়েছে</translation>
 <translation id="6866732840889595464">ডেইজি</translation>
 <translation id="6871256179359663621">হালকা বেগুনি</translation>
@@ -1194,16 +1195,6 @@
 <translation id="6975981640379148271">কোয়ালা</translation>
 <translation id="6977381486153291903">ফার্মওয়ের পুনর্বিবেচনাগুলি</translation>
 <translation id="6981982820502123353">ব্যবহারযোগ্যতা</translation>
-<translation id="698242338298293034">আপনার AI ছবি পছন্দমতো সেট করতে একটি থিম, তারপর নিচে দাগ দেওয়া শব্দগুলি বেছে নিন।
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          AI ছবি সংক্রান্ত আরও অনন্য ও নানারকম বিকল্প পেতে "আমাকে অনুপ্রাণিত করো" বিকল্প বেছে নিন।
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          আপনি AI ব্যবহার করে কিছু তৈরি করার সময় ছবি জেনারেট করতে ও প্রোডাক্টের উন্নতি করতে <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google-এর গোপনীয়তা নীতি<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> অনুযায়ী প্রম্পট, Google AI সার্ভারে পাঠানো হয়।
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          জেনারেটিভ AI পরীক্ষামূলক, প্রাথমিক পর্যায়ে ও বর্তমানে সীমিতভাবে উপলভ্য।</translation>
 <translation id="6982462588253070448">বালিয়াড়ি</translation>
 <translation id="7005833343836210400">ডিভাইস অফলাইন আছে</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> এই ডিভাইস ম্যানেজ করে এবং ব্যবহারকারী দেখেছেন এমন ওয়েবপেজ, পাসওয়ার্ড ও ইমেল আইডি সহ তার সব অ্যাক্টিভিটি সংক্রান্ত ডেটা অ্যাক্সেস করে।</translation>
@@ -1449,7 +1440,6 @@
 <translation id="8208861521865154048">বিশেষ সুবিধা</translation>
 <translation id="8226628635270268143">আপনার পছন্দের ফটো ও অ্যালবাম বাছুন</translation>
 <translation id="8227119283605456246">ফাইল সংযুক্ত করুন</translation>
-<translation id="8227488649450500937">এই প্রম্পটগুলির মধ্যে একটি ব্যবহার করে দেখুন অথবা <ph name="BEGIN_LINK_PROMPTING_GUIDE" />প্রম্পট করার গাইড<ph name="END_LINK_PROMPTING_GUIDE" /> দেখুন</translation>
 <translation id="8230672074305416752">ডিফল্ট নেটওয়ার্ক গেটওয়েতে পিং করা যায়নি</translation>
 <translation id="8236972776513018241">ট্রানস্ক্রিপ্ট</translation>
 <translation id="8238771987802558562">একটি APN বেছে নিন</translation>

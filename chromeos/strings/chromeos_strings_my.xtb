@@ -258,7 +258,6 @@
 <translation id="2148716181193084225">ယနေ့</translation>
 <translation id="2152882202543497059">ဓာတ်ပုံ <ph name="NUMBER" /> ပုံ</translation>
 <translation id="2154460308960858308">ရှာဖွေမှုကို ရှင်းထုတ်ရန်</translation>
-<translation id="2156072344042480449">သင်၏ နောက်ဆုံးညွှန်ကြားချက် ၂ ခု။ ဤစာမျက်နှာတွင် ရှိနေမှသာ ယင်းညွှန်ကြားချက်များကို သုံးနိုင်သည်။</translation>
 <translation id="2157660087437850958">အီမိုဂျီ ရွေးချယ်စနစ်</translation>
 <translation id="2157959690810728433">စီထားသည်</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />- ထပ်စမ်းကြည့်ရန်</translation>
@@ -1196,16 +1195,6 @@
 <translation id="6975981640379148271">ကိုအာလာဝက်ဝံ</translation>
 <translation id="6977381486153291903">ဖာမ်းဝဲ ပြန်လည်စိစစ်ခြင်း</translation>
 <translation id="6981982820502123353">ရယူအသုံးချနိုင်မှု</translation>
-<translation id="698242338298293034">သင့် AI ပုံများကို ပုဂ္ဂိုလ်ရေးသီးသန့်ပြုလုပ်ရန် အပြင်အဆင်ရွေးပြီး မျဉ်းသားထားသော စာလုံးများကို ရွေးပါ။
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          ပိုမို၍ တစ်မူထူးခြားပြီး စုံလင်သော AI ပုံရွေးစရာများ ရရန် “စိတ်ကူးစိတ်သန်းရစေရန် လှုံ့ဆော်ပါ” ကို ရွေးပါ။
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          AI ဖြင့် ပြုလုပ်သောအခါ <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google ၏ ကိုယ်ရေးအချက်အလက်လုံခြုံမှုဆိုင်ရာ မူဝါဒ<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> နှင့်အညီ ပုံများထုတ်လုပ်ပြီး ထုတ်ကုန်မွမ်းမံရန်အတွက် တိုက်တွန်းချက်ကို Google AI ဆာဗာများသို့ ပို့သည်။
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          ထုတ်လုပ်မှု AI ကို ကနဦးစမ်းသပ်ရေးဆွဲနေဆဲဖြစ်ပြီး လောလောဆယ်တွင် ရနိုင်မှုကို ကန့်သတ်ထားသည်။</translation>
 <translation id="6982462588253070448">သဲခုံ</translation>
 <translation id="7005833343836210400">စက်အော့ဖ်လိုင်းဖြစ်နေသည်</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> က ဤကိရိယာကို စီမံခန့်ခွဲပြီး ဝင်ကြည့်ထားသည့် ဝဘ်စာမျက်နှာများ၊ စကားဝှက်များနှင့် အီးမေးလ်အပါအဝင် အသုံးပြုသူ၏ လုပ်ဆောင်ချက်အားလုံးကို အသုံးပြုခွင့်ရှိပါသည်။</translation>
@@ -1451,7 +1440,6 @@
 <translation id="8208861521865154048">ခံစားခွင့်များ</translation>
 <translation id="8226628635270268143">သင့်အကြိုက်ဆုံး ဓာတ်ပုံနှင့် အယ်လ်ဘမ်များ ရွေးချယ်ရန်</translation>
 <translation id="8227119283605456246">ပူးတွဲဖိုင်</translation>
-<translation id="8227488649450500937">ဤညွှန်ကြားချက်များထဲမှ တစ်ခုကို စမ်းကြည့်ပါ (သို့) <ph name="BEGIN_LINK_PROMPTING_GUIDE" />ညွှန်ကြားချက် လမ်းညွှန်<ph name="END_LINK_PROMPTING_GUIDE" /> ကိုကြည့်ပါ</translation>
 <translation id="8230672074305416752">မူလကွန်ရက်ဂိတ်ဝကို ပင်လုပ်၍မရပါ</translation>
 <translation id="8236972776513018241">စာသားမှတ်တမ်း</translation>
 <translation id="8238771987802558562">APN ရွေးခြင်း</translation>

@@ -96,6 +96,7 @@
 <translation id="2570922361219980984">El acceso a la ubicación también está desactivado en este dispositivo. Actívalo en los <ph name="BEGIN_LINK" />ajustes de Android<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Ampliado (hacer clic para contraer)</translation>
 <translation id="2586657967955657006">Portapapeles</translation>
+<translation id="2588271083332682494">Mantén el orden con los grupos de pestañas</translation>
 <translation id="2597457036804169544">El tema oscuro no se aplica a los sitios</translation>
 <translation id="2606760465469169465">Verificación automática</translation>
 <translation id="2621115761605608342">Habilita JavaScript en un sitio específico.</translation>
@@ -232,6 +233,7 @@
 <translation id="483914009762354899">Incluir todos los sitios que pertenezcan a este dominio</translation>
 <translation id="4883854917563148705">No se pueden restablecer los ajustes gestionados</translation>
 <translation id="4887024562049524730">Preguntar antes de permitir que los sitios usen tu dispositivo y tus datos de realidad virtual (recomendado)</translation>
+<translation id="4936863036653376783">Encontrarás tus grupos en la sección de grupos de pestañas de todos tus dispositivos</translation>
 <translation id="4953688446973710931">Cuando esta opción está activada, los sitios pueden solicitar permiso para descargar varios archivos automáticamente. Si está desactivada, los sitios no pueden descargar varios archivos automáticamente.</translation>
 <translation id="4962975101802056554">Revocar todos los permisos de este dispositivo</translation>
 <translation id="497421865427891073">Avanzar</translation>
@@ -378,6 +380,7 @@
 <translation id="6840760312327750441">Para agrupar pestañas, mantén pulsada una pestaña. A continuación, arrástrala sobre otra pestaña.</translation>
 <translation id="6864395892908308021">Este dispositivo no puede leer NFC</translation>
 <translation id="6870169401250095575">Ocultar tarjeta Comprobación de seguridad</translation>
+<translation id="6900883974539674431">Crea grupos de pestañas que se guarden y actualicen automáticamente en todos tus dispositivos</translation>
 <translation id="6912998170423641340">Evitar que los sitios lean texto e imágenes del portapapeles</translation>
 <translation id="6945221475159498467">Seleccionar</translation>
 <translation id="6950072572526089586">Un sitio que visites puede guardar información sobre lo que estés haciendo para funcionar como cabría esperar; por ejemplo, para mantener tu sesión iniciada en un sitio o para guardar artículos en tu carrito de la compra. Los sitios suelen guardar esta información en tu dispositivo de forma temporal.</translation>

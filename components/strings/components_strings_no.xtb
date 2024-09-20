@@ -2851,7 +2851,6 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" /> – trykk på Tab og deretter på Enter for å administrere filer du har lastet ned i Chrome</translation>
 <translation id="6254436959401408446">Det er ikke nok minne til å åpne denne siden</translation>
 <translation id="625463612687472648">Slutt å tillate</translation>
-<translation id="6256360366378574605">{FINANCIAL_ACCOUNT,plural, =1{Når du kjøper noe i Chrome, kan du se <ph name="FINANCIAL_ACCOUNT_TYPES" /> som et alternativ}other{Når du kjøper noe i Chrome, kan du se <ph name="FINANCIAL_ACCOUNT_TYPES" /> som alternativer}}</translation>
 <translation id="6259156558325130047">&amp;Omorganiser likevel</translation>
 <translation id="6263376278284652872"><ph name="DOMAIN" />-bokmerker</translation>
 <translation id="6264376385120300461">Last ned likevel</translation>
@@ -3137,6 +3136,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="6767985426384634228">Oppdatere adresse?</translation>
 <translation id="6770747695101757579">Papir (bomull)</translation>
 <translation id="677257480647123231">Barnesikkerhet på nettet</translation>
+<translation id="6772959465807028761">For å bruke YouTube, fortsett med Google-kontoen din</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6777088782163649345">Bruk YouTube med innstillingene som forelderen din har valgt</translation>
 <translation id="6779348349813025131">Google Passordlagring trenger tilgang til macOS-nøkkelring</translation>
@@ -4076,7 +4076,6 @@ Mer informasjon:
 <translation id="84561192812921051">Administratoren din kan gjøre endringer i profilen og nettleseren eksternt, analysere informasjon om nettleseren gjennom rapportering og utføre andre nødvendige oppgaver. Aktiviteten på denne enheten kan også administreres utenfor Chrome.  <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
 <translation id="8457125768502047971">På ubestemt tid</translation>
 <translation id="8458202188076138974">Letter Extra</translation>
-<translation id="8458605637341729751">Ved å fortsette godtar du at den nøyaktige enhetsposisjonen din samles inn og deles med kontoeieren for å forebygge svindel. For å slå av Pix i Chrome, gå til <ph name="BEGIN_LINK1" />betalingsinnstillingene<ph name="END_LINK1" /></translation>
 <translation id="8460854335417802511">Slå den på</translation>
 <translation id="8461694314515752532">Kryptér synkroniserte data med din egen passordfrase for synkronisering</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 kredittkort}other{# kredittkort}}</translation>
@@ -4111,6 +4110,7 @@ Mer informasjon:
 <translation id="8527228059738193856">Høyttalere</translation>
 <translation id="8527681393107582734">Jordbruk og skogbruk</translation>
 <translation id="8528149813106025610">Barneklær</translation>
+<translation id="8528479410903501741">Lagre IBAN</translation>
 <translation id="853246364274116957">Broadway og musikaler</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">Gå til &lt;strong&gt;chrome://policy&lt;/strong&gt; for å se listen over blokkerte nettadresser og andre regler systemadministratoren din har fastsatt.</translation>
@@ -4303,6 +4303,7 @@ Mer informasjon:
 <translation id="8891727572606052622">Ugyldig modus for proxy-tjener.</translation>
 <translation id="8894794286471754040">Langsiden først</translation>
 <translation id="8895334001368918465">For å bruke en annen autofylltjeneste i Chrome, slå den på i Android-innstillingene og her</translation>
+<translation id="8897221284075091877">For å be om å se dette innholdet, fortsett med Google-kontoen din</translation>
 <translation id="8897428486789851669">Svømming</translation>
 <translation id="8899807382908246773">Forstyrrende annonser</translation>
 <translation id="8903921497873541725">Zoom inn</translation>

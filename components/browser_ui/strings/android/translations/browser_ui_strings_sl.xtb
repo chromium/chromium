@@ -96,6 +96,7 @@
 <translation id="2570922361219980984">Dostop do lokacije je tudi izklopljen za to napravo. Vklopite ga lahko v <ph name="BEGIN_LINK" />nastavitvah za Android<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Razširjeno – kliknite, če želite strniti.</translation>
 <translation id="2586657967955657006">Odložišče</translation>
+<translation id="2588271083332682494">Organizirajte s skupinami zavihkov</translation>
 <translation id="2597457036804169544">Brez uporabe temne teme na spletnih mestih.</translation>
 <translation id="2606760465469169465">Samodejno preverjanje</translation>
 <translation id="2621115761605608342">Dovoli JavaScript za določeno spletno mesto.</translation>
@@ -232,6 +233,7 @@
 <translation id="483914009762354899">Vključi vsa spletna mesta v tej domeni</translation>
 <translation id="4883854917563148705">Upravljanih nastavitev ni mogoče ponastaviti</translation>
 <translation id="4887024562049524730">Vprašaj, preden se spletnim mestom dovoli uporaba naprav in podatkov za navidezno resničnost (priporočeno)</translation>
+<translation id="4936863036653376783">Skupine najdete v razdelku skupine zavihkov v vseh napravah</translation>
 <translation id="4953688446973710931">Če je ta možnost vklopljena, spletna mesta lahko zahtevajo samodejni prenos več datotek. Če je ta možnost izklopljena, spletna mesta ne smejo samodejno prenesti več datotek.</translation>
 <translation id="4962975101802056554">Umik vseh dovoljenj za napravo</translation>
 <translation id="497421865427891073">Pojdi naprej</translation>
@@ -378,6 +380,7 @@
 <translation id="6840760312327750441">Če želite združiti zavihke v skupino, pridržite zavihek. Nato ga povlecite na drug zavihek.</translation>
 <translation id="6864395892908308021">Ta naprava ne podpira NFC-ja</translation>
 <translation id="6870169401250095575">Skrij kartico za varnostno preverjanje</translation>
+<translation id="6900883974539674431">Ustvarite skupine zavihkov, ki se samodejno shranjujejo in posodabljajo v vseh napravah.</translation>
 <translation id="6912998170423641340">Spletnim mestom prepreči branje besedila in slik v odložišču</translation>
 <translation id="6945221475159498467">Izberi</translation>
 <translation id="6950072572526089586">Spletno mesto, ki ga obiščete, lahko shranjuje podatke o tem, kaj počnete, da lahko deluje po pričakovanjih – poskrbi na primer, da ostanete prijavljeni na spletnem mestu, ali shranjuje izdelke v nakupovalni košarici. Spletna mesta te podatke pogosto začasno shranijo v vaši napravi.</translation>

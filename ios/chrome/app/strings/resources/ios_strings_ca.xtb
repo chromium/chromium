@@ -495,6 +495,7 @@ Consulta les instruccions del teu motor de cerca per suprimir l'historial de cer
 <translation id="3435738964857648380">Seguretat</translation>
 <translation id="3443810440409579745">S'ha rebut una pestanya.</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
+<translation id="344589138074534176">Més informació sobre Google Lens</translation>
 <translation id="345348365500626747">S'ha trobat l'adreça</translation>
 <translation id="3464194322481586217">No s'ha pogut fer el seguiment del preu.</translation>
 <translation id="3469117812148449995">Opcions per desar la contrasenya</translation>
@@ -580,6 +581,7 @@ Consulta les instruccions del teu motor de cerca per suprimir l'historial de cer
 <translation id="3851938967634752633">Les contrasenyes de <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> i <ph name="NUMBER_OF_ACCOUNTS" /> més se suprimiran. Els teus comptes no se suprimiran.</translation>
 <translation id="3858860766373142691">Nom</translation>
 <translation id="3861908220442487587">Aquesta adreça només es desa en aquest dispositiu. Per utilitzar-la en altres dispositius, mou-la al teu Compte de Google (<ph name="USER_EMAIL" />).</translation>
+<translation id="3868495844258915202">Mostra l'URL complet</translation>
 <translation id="3876833929577368454">Pregunta-m'ho cada vegada</translation>
 <translation id="3885587018298784481">Uneix-te a un grup familiar</translation>
 <translation id="3888863481921783344">S'utilitzarà per mostrar-te els possibles convidats al teu esdeveniment.</translation>
@@ -867,6 +869,7 @@ Consulta les instruccions del teu motor de cerca per suprimir l'historial de cer
 <translation id="5210365745912300556">Tanca la pestanya</translation>
 <translation id="5211488077761630279">Vols permetre que "<ph name="SITE_NAME" />" utilitzi <ph name="PERMISSION" /> del teu dispositiu?</translation>
 <translation id="5217245356412073535">Pots canviar la visualització predeterminada dels llocs web a la visualització per a ordinadors a Configuració &gt; Configuració del contingut</translation>
+<translation id="5217329997012062137">Quan utilitzes Google Lens, s'envia a Google una captura de pantalla de la pàgina.</translation>
 <translation id="5220945116117011963">Crea esdeveniments del calendari a partir de dates</translation>
 <translation id="5222676887888702881">Tanca la sessió</translation>
 <translation id="5228579091201413441">Activa la sincronització</translation>
@@ -1641,6 +1644,7 @@ Els llocs web poden fer servir galetes per veure la teva activitat de navegació
 <translation id="8712534545803964353">Cerca a la pàgina…</translation>
 <translation id="8712637175834984815">Entesos</translation>
 <translation id="8722229818691036192">Comptes d'aquest dispositiu</translation>
+<translation id="8722649775263832315">Toca o marca per cercar qualsevol cosa amb Google Lens</translation>
 <translation id="8725066075913043281">Torna-ho a provar</translation>
 <translation id="8728922029615312208">Tanca-ho tot</translation>
 <translation id="8730621377337864115">Fet</translation>

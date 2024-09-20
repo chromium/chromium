@@ -217,6 +217,7 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="3596080736082218006">{COUNT,plural, =0{Chrome berriro exekutatzea behar du administratzaileak, eguneratzea aplikatzeko}=1{Chrome berriro exekutatzea behar du administratzaileak, eguneratzea aplikatzeko Ezkutuko moduko leihoa ez da berriro irekiko.}other{Chrome berriro exekutatzea behar du administratzaileak, eguneratzea aplikatzeko Ezkutuko moduko # leihoak ez dira berriro irekiko.}}</translation>
 <translation id="3597003331831379823">Ezin izan da exekutatu konfigurazioa gehiegizko baimenekin. <ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3609788354808247807">Azkenaldian ez duzu bisitatu webgune hau. Chrome-k <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> eta <ph name="PERMISSION_3" /> erabiltzeko baimenak kendu dizkio.</translation>
+<translation id="3622716124581627104">Identifikatu gauzak edo tokiak eta kopiatu edo itzuli testua. Google Lens erabiltzen duzunean, orriaren pantaila-argazki bat bidaltzen zaio Google-ri. <ph name="LEARN_MORE" /></translation>
 <translation id="3622797965165704966">Errazagoa da Chrome erabiltzea Google-ko kontuarekin eta partekatutako ordenagailuetan.</translation>
 <translation id="3625345586754200168">Probatu Lens</translation>
 <translation id="3635073343384702370">Gordetzen dituzun pasahitzak egiaztatzeko gai da Chrome</translation>

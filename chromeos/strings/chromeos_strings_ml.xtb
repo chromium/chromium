@@ -258,7 +258,6 @@
 <translation id="2148716181193084225">ഇന്ന്</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> ഫോട്ടോകൾ</translation>
 <translation id="2154460308960858308">തിരയൽ മായ്ക്കുക</translation>
-<translation id="2156072344042480449">നിങ്ങളുടെ ഏറ്റവും അടുത്തിടെയുള്ള 2 പ്രോംപ്റ്റുകൾ. ഈ പേജിലുള്ളപ്പോൾ മാത്രമേ നിങ്ങൾക്ക് ഈ പ്രോംപ്റ്റുകൾ ഉപയോഗിക്കാനാകൂ.</translation>
 <translation id="2157660087437850958">ഇമോജി പിക്കർ</translation>
 <translation id="2157959690810728433">ക്യൂവിലാണ്</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: വീണ്ടും ശ്രമിക്കുക</translation>
@@ -1167,6 +1166,7 @@
 <translation id="6831043979455480757">വിവർത്തനം ചെയ്യുക</translation>
 <translation id="6846843854964504403">സുരക്ഷാ റീസെറ്റ്</translation>
 <translation id="6853312040151791195">ഡിസ്‌ചാർജ് ചെയ്യൽ റേറ്റ്</translation>
+<translation id="6862228900689076919">ഈ ആപ്പ് മാനേജ് ചെയ്യുന്നത് നിങ്ങളുടെ അഡ്‌മിൻ ആണ്</translation>
 <translation id="6862416241246624313">ഫീഡ്‌ബാക്ക് സമർപ്പിച്ചു</translation>
 <translation id="6866732840889595464">ഡെയ്‌സി</translation>
 <translation id="6871256179359663621">ഇളം പർപ്പിൾ നിറം</translation>
@@ -1195,16 +1195,6 @@
 <translation id="6975981640379148271">കോലകൾ</translation>
 <translation id="6977381486153291903">ഫേംവെയർ പുനഃപരിശോധന</translation>
 <translation id="6981982820502123353">ഉപയോഗസഹായി</translation>
-<translation id="698242338298293034">നിങ്ങളുടെ AI ചിത്രങ്ങൾ വ്യക്തിപരമാക്കാൻ ഒരു തീം തിരഞ്ഞെടുത്ത്, അടിവരയിട്ട വാക്കുകൾ തിരഞ്ഞെടുക്കുക.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          കൂടുതൽ തനതും വ്യത്യസ്‌തവുമായ AI ചിത്ര ഓപ്‌ഷനുകൾ ലഭിക്കുന്നതിന് "എന്നെ പ്രചോദിപ്പിക്കൂ" തിരഞ്ഞെടുക്കുക.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          നിങ്ങൾ AI ഉപയോഗിച്ച് സൃഷ്‌ടിക്കുമ്പോൾ, <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" /> Google-ന്റെ സ്വകാര്യതാ നയത്തിന്<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> വിധേയമായി, ചിത്രങ്ങൾ ജനറേറ്റ് ചെയ്യാനും ഉൽപ്പന്നം മെച്ചപ്പെടുത്താനും പ്രോംപ്‌റ്റ് Google AI സെർവറുകളിലേക്ക് അയയ്‌ക്കും.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          ജനറേറ്റീവ് AI പരീക്ഷണാത്മകവും പ്രാരംഭ ഘട്ടത്തിലുള്ളതുമാണ്, നിലവിൽ ഇതിന്റെ ലഭ്യത പരിമിതമാണ്.</translation>
 <translation id="6982462588253070448">മണൽക്കൂനകൾ</translation>
 <translation id="7005833343836210400">ഉപകരണം ഓഫ്‌ലൈനാണ്</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> ഈ ഉപകരണം മാനേജ് ചെയ്യുന്നു, സന്ദർശിച്ച വെബ്‌പേജുകൾ, പാസ്‌വേഡുകൾ, ഇമെയിൽ എന്നിവയുൾപ്പെടെ ഉപയോക്താവിന്റെ എല്ലാ ആക്‌റ്റിവിറ്റികളിലേക്കും ആക്‌സസും ഉണ്ടായിരിക്കും.</translation>
@@ -1450,7 +1440,6 @@
 <translation id="8208861521865154048">പെർക്കുകൾ</translation>
 <translation id="8226628635270268143">നിങ്ങളുടെ പ്രിയപ്പെട്ട ഫോട്ടോകളും ആൽബങ്ങളും തിരഞ്ഞെടുക്കുക</translation>
 <translation id="8227119283605456246">ഫയൽ അറ്റാച്ചുചെയ്യുക</translation>
-<translation id="8227488649450500937">ഈ പ്രോംപ്റ്റുകളിലൊന്ന് പരീക്ഷിക്കുക അല്ലെങ്കിൽ <ph name="BEGIN_LINK_PROMPTING_GUIDE" />പ്രോംപ്റ്റിംഗ് ഗൈഡ്<ph name="END_LINK_PROMPTING_GUIDE" /> കാണുക</translation>
 <translation id="8230672074305416752">ഡിഫോൾട്ട് നെറ്റ്‌വർക്ക് ഗേറ്റ്‍വേ പിംഗ് ചെയ്യാനായില്ല</translation>
 <translation id="8236972776513018241">ട്രാൻസ്‌ക്രിപ്റ്റ്</translation>
 <translation id="8238771987802558562">ഒരു APN തിരഞ്ഞെടുക്കുക</translation>

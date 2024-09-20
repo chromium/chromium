@@ -127,6 +127,7 @@
 <translation id="1567064801249837505">Album</translation>
 <translation id="1572585716423026576">Angiv som baggrund</translation>
 <translation id="1578784163189013834">Vælg baggrund til Pauseskærm</translation>
+<translation id="1587031308639983732">Tidsbaserede ændringer er muligvis ikke nøjagtige. Denne indstilling administreres af din administrator.</translation>
 <translation id="1588438908519853928">Normal</translation>
 <translation id="1591562245178063882">Denne måned</translation>
 <translation id="1593528591614229756">Sørg for at vælge APN'er fra dit mobilselskab eller din administrator. Når du vælger et APN, deaktiveres alle tilpassede APN'er. Ugyldige APN'er kan forstyrre din mobilforbindelse. <ph name="LINK_BEGIN" />Få flere oplysninger<ph name="LINK_END" /></translation>
@@ -257,7 +258,6 @@
 <translation id="2148716181193084225">I dag</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> billeder</translation>
 <translation id="2154460308960858308">Ryd søgning</translation>
-<translation id="2156072344042480449">Dine 2 seneste prompter. Du kan kun bruge disse prompter, mens du er på denne side.</translation>
 <translation id="2157660087437850958">emojivælger</translation>
 <translation id="2157959690810728433">SAT I KØ</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Prøv igen</translation>
@@ -1195,16 +1195,6 @@
 <translation id="6975981640379148271">koalaer</translation>
 <translation id="6977381486153291903">Firmwarerevision</translation>
 <translation id="6981982820502123353">Hjælpefunktioner</translation>
-<translation id="698242338298293034">Vælg et tema, og vælg derefter de understregede ord for at tilpasse dine AI-billeder.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Vælg "Lad mig inspirere" for at få mere unikke og varierede AI-billeder.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Når du opretter indhold ved hjælp af AI, sendes dine prompter til Google AI-servere for at generere billeder og forbedre produktet i overensstemmelse med <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Googles privatlivspolitik<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Generativ AI er eksperimentel, under udvikling og har i øjeblikket begrænset tilgængelighed.</translation>
 <translation id="6982462588253070448">sandklitter</translation>
 <translation id="7005833343836210400">Enheden er offline</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> administrerer denne enhed og har adgang til al brugeraktivitet, bl.a. besøgte websider, adgangskoder og mails.</translation>
@@ -1450,7 +1440,6 @@ Download transskriptionsmodellen (op til 100 MB) for at få disse transskription
 <translation id="8208861521865154048">Fordele</translation>
 <translation id="8226628635270268143">Vælg dine foretrukne billeder og album</translation>
 <translation id="8227119283605456246">Vedhæft fil</translation>
-<translation id="8227488649450500937">Prøv én af disse prompter, eller se <ph name="BEGIN_LINK_PROMPTING_GUIDE" />vejledningen i prompter<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="8230672074305416752">Kunne ikke pinge standardnetværkets gateway</translation>
 <translation id="8236972776513018241">Transskription</translation>
 <translation id="8238771987802558562">Vælg et APN</translation>

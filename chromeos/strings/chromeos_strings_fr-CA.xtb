@@ -127,6 +127,7 @@
 <translation id="1567064801249837505">Albums</translation>
 <translation id="1572585716423026576">Définir comme fond d'écran</translation>
 <translation id="1578784163189013834">Choisir l'arrière-plan de l'écran de veille</translation>
+<translation id="1587031308639983732">Les modifications en fonction du temps peuvent ne pas être exactes. Ce paramètre est géré par votre administrateur.</translation>
 <translation id="1588438908519853928">Normal</translation>
 <translation id="1591562245178063882">Ce mois-ci</translation>
 <translation id="1593528591614229756">Assurez-vous de sélectionner les noms de point d'accès fournis par votre fournisseur de services mobiles ou votre administrateur. La sélection d'un nom de point d'accès désactivera tous les noms du point d'accès personnalisés. Des noms de point d'accès invalides peuvent perturber votre connexion mobile. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
@@ -257,7 +258,6 @@
 <translation id="2148716181193084225">Aujourd'hui</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> photos</translation>
 <translation id="2154460308960858308">Effacer les termes de recherche</translation>
-<translation id="2156072344042480449">Vos deux requêtes les plus récentes. Vous ne pouvez utiliser ces requêtes que lorsque vous êtes sur cette page.</translation>
 <translation id="2157660087437850958">sélecteur d'emoji</translation>
 <translation id="2157959690810728433">PLACÉ EN FILE D'ATTENTE</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" /> : réessayer</translation>
@@ -1166,6 +1166,7 @@
 <translation id="6831043979455480757">Traduire</translation>
 <translation id="6846843854964504403">Réinitialisation de sécurité</translation>
 <translation id="6853312040151791195">Vitesse de décharge</translation>
+<translation id="6862228900689076919">Cette fonctionnalité est gérée par votre administrateur</translation>
 <translation id="6862416241246624313">Commentaires envoyés</translation>
 <translation id="6866732840889595464">marguerite</translation>
 <translation id="6871256179359663621">mauve clair</translation>
@@ -1194,16 +1195,6 @@
 <translation id="6975981640379148271">koalas</translation>
 <translation id="6977381486153291903">Version du micrologiciel</translation>
 <translation id="6981982820502123353">Accessibilité</translation>
-<translation id="698242338298293034">Choisissez un thème, puis sélectionnez les mots soulignés pour personnaliser vos images d'IA.
-          <ph name="LINE_BREAK" />
-<ph name="LINE_BREAK" />
-Sélectionnez « Inspire-moi » pour obtenir plus d'options d'images d'IA uniques et variées.
-          <ph name="LINE_BREAK" />
-<ph name="LINE_BREAK" />
-Lorsque vous créez avec l'IA, la requête est envoyée aux serveurs de l'IA de Google pour générer des images et améliorer le produit, conformément à la <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />politique de confidentialité de Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />.
-          <ph name="LINE_BREAK" />
-<ph name="LINE_BREAK" />
-L'IA générative est expérimentale, en début de développement et sa disponibilité est actuellement limitée.</translation>
 <translation id="6982462588253070448">dunes</translation>
 <translation id="7005833343836210400">L'appareil est hors ligne</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> gère cet appareil et a accès à toutes les activités, y compris les pages Web que vous visitez, vos mots de passe et vos courriels.</translation>
@@ -1449,7 +1440,6 @@ Téléchargez le modèle de transcription (jusqu'à 100 Mo) pour obtenir ces tr
 <translation id="8208861521865154048">Avantages</translation>
 <translation id="8226628635270268143">Sélectionner vos photos et vos albums préférés</translation>
 <translation id="8227119283605456246">Joindre un fichier</translation>
-<translation id="8227488649450500937">Essayez l'une de ces requêtes ou consultez le <ph name="BEGIN_LINK_PROMPTING_GUIDE" />guide de requête<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="8230672074305416752">Impossible d'effectuer un ping avec la passerelle réseau par défaut</translation>
 <translation id="8236972776513018241">Transcription</translation>
 <translation id="8238771987802558562">Choisir un nom de point d'accès</translation>

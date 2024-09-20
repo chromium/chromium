@@ -2851,7 +2851,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />: press Tab then Enter to manage files that you have downloaded in Chrome</translation>
 <translation id="6254436959401408446">Not enough memory to open this page</translation>
 <translation id="625463612687472648">Stop allowing</translation>
-<translation id="6256360366378574605">{FINANCIAL_ACCOUNT,plural, =1{When you make purchases on Chrome, see <ph name="FINANCIAL_ACCOUNT_TYPES" /> as an option}other{When you make purchases on Chrome, see <ph name="FINANCIAL_ACCOUNT_TYPES" /> as options}}</translation>
 <translation id="6259156558325130047">&amp;Redo Reorder</translation>
 <translation id="6263376278284652872"><ph name="DOMAIN" /> bookmarks</translation>
 <translation id="6264376385120300461">Download anyway</translation>
@@ -4078,7 +4077,6 @@ Additional details:
 <translation id="84561192812921051">Your administrator can make changes to your profile and browser remotely, analyse information about the browser through reporting and perform other necessary tasks. Activity on this device may also be managed outside of Chrome.  <ph name="BEGIN_LINK" />Learn more<ph name="END_LINK" /></translation>
 <translation id="8457125768502047971">Indefinite</translation>
 <translation id="8458202188076138974">Letter Extra</translation>
-<translation id="8458605637341729751">By continuing, you agree to have your precise device location collected and shared with your account holder for fraud prevention purposes. To turn off Pix in Chrome, go to your <ph name="BEGIN_LINK1" />payment settings<ph name="END_LINK1" /></translation>
 <translation id="8460854335417802511">Turn it on</translation>
 <translation id="8461694314515752532">Encrypt synced data with your own sync passphrase</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 credit card}other{# credit cards}}</translation>
@@ -4113,6 +4111,7 @@ Additional details:
 <translation id="8527228059738193856">Speakers</translation>
 <translation id="8527681393107582734">Agriculture and forestry</translation>
 <translation id="8528149813106025610">Children's clothing</translation>
+<translation id="8528479410903501741">Save IBAN</translation>
 <translation id="853246364274116957">Broadway and Musical Theatre</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">Visit &lt;strong&gt;chrome://policy&lt;/strong&gt; to see the list of blocked URLs and other policies enforced by your system administrator.</translation>

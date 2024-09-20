@@ -2851,7 +2851,6 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tekan tab lalu Enter untuk mengelola file yang telah Anda download di Chrome</translation>
 <translation id="6254436959401408446">Tidak cukup memori untuk membuka halaman ini</translation>
 <translation id="625463612687472648">Berhenti memberikan izin</translation>
-<translation id="6256360366378574605">{FINANCIAL_ACCOUNT,plural, =1{Saat Anda melakukan pembelian di Chrome, lihat <ph name="FINANCIAL_ACCOUNT_TYPES" /> sebagai opsi}other{Saat Anda melakukan pembelian di Chrome, lihat <ph name="FINANCIAL_ACCOUNT_TYPES" /> sebagai opsi}}</translation>
 <translation id="6259156558325130047">&amp;Ulangi Pengaturan Ulang</translation>
 <translation id="6263376278284652872">Bookmark <ph name="DOMAIN" /></translation>
 <translation id="6264376385120300461">Tetap download</translation>
@@ -4074,7 +4073,6 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="84561192812921051">Administrator dapat melakukan perubahan pada profil dan browser Anda dari jarak jauh, menganalisis informasi tentang browser melalui pelaporan, dan melakukan tugas lain yang diperlukan. Aktivitas di perangkat ini juga dapat dikelola di luar Chrome.  <ph name="BEGIN_LINK" />Pelajari lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="8457125768502047971">Tak terbatas</translation>
 <translation id="8458202188076138974">Surat Ekstra</translation>
-<translation id="8458605637341729751">Dengan melanjutkan, Anda setuju untuk mengumpulkan dan membagikan lokasi akurat perangkat Anda kepada pemegang akun Anda untuk tujuan pencegahan penipuan. Untuk menonaktifkan Pix di Chrome, buka <ph name="BEGIN_LINK1" />setelan pembayaran<ph name="END_LINK1" /></translation>
 <translation id="8460854335417802511">Aktifkan</translation>
 <translation id="8461694314515752532">Enkripsikan data yang disinkronkan dengan frasa sandi sinkronisasi Anda sendiri</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 kartu kredit}other{# kartu kredit}}</translation>
@@ -4109,6 +4107,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="8527228059738193856">Speaker</translation>
 <translation id="8527681393107582734">Pertanian &amp; Kehutanan</translation>
 <translation id="8528149813106025610">Pakaian Anak</translation>
+<translation id="8528479410903501741">Simpan IBAN</translation>
 <translation id="853246364274116957">Teater Broadway &amp; Musik</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">Buka &lt;strong&gt;chrome://policy&lt;/strong&gt; untuk melihat daftar URL yang diblokir dan kebijakan lainnya yang diterapkan oleh administrator sistem Anda.</translation>

@@ -50,6 +50,7 @@
 <translation id="1219674500290482172">Não foi possível se conectar à Internet.</translation>
 <translation id="1227113644794103810">Guias inativas</translation>
 <translation id="1231733316453485619">Ativar sincronização?</translation>
+<translation id="1253032109800629289">Ocultar "Receber notificações de acompanhamento de preço"</translation>
 <translation id="1258491128795710625">O que há de novo</translation>
 <translation id="1263231323834454256">Lista de leitura</translation>
 <translation id="1263433075299269530">Sua última guia aberta</translation>
@@ -395,6 +396,7 @@ Seu mecanismo de pesquisa é o <ph name="DSE_NAME" />. Confira as instruções p
 <translation id="2870560284913253234">Site</translation>
 <translation id="2876369937070532032">Quando há risco de segurança, envia para o Google os URLs de algumas páginas que você visita</translation>
 <translation id="2883151425485251736">Ver e editar temas que você ocultou da sua conta</translation>
+<translation id="2888631381369839306">Notificações de monitoramento de preços ativadas</translation>
 <translation id="288902476966286676">Devolver ao remetente</translation>
 <translation id="2894757982205307093">Nova guia no grupo</translation>
 <translation id="2905479111267140204">Você tem <ph name="NUMBER_OF_PASSWORDS" /> senhas reutilizadas que podem colocar sua segurança em risco.</translation>
@@ -880,6 +882,7 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="5271265092610673171">{count,plural, =1{Um campo obrigatório está em branco. Preencha antes de salvar.}one{Um campo obrigatório está em branco. Preencha antes de salvar.}other{Alguns campos obrigatórios estão em branco. Preencha antes de salvar.}}</translation>
 <translation id="5271549068863921519">Salvar senha</translation>
 <translation id="5279600392753459966">Bloquear todas</translation>
+<translation id="5282340693022193851">Para receber notificações de monitoramento de preços, ative-as nos Ajustes do iOS.</translation>
 <translation id="5294624619177114121">Notificações no dispositivo móvel</translation>
 <translation id="5295239312320826323">Remover conta <ph name="USER_EMAIL" />?</translation>
 <translation id="5300589172476337783">Mostrar</translation>

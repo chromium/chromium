@@ -127,6 +127,7 @@
 <translation id="1567064801249837505">Альбомы</translation>
 <translation id="1572585716423026576">Усталяваць як шпалеры</translation>
 <translation id="1578784163189013834">Выбраць фон застаўкі</translation>
+<translation id="1587031308639983732">Змяненні, заснаваныя на часе сутак, могуць быць недакладнымі. Гэта налада знаходзіцца пад кіраваннем адміністратара.</translation>
 <translation id="1588438908519853928">Звычайны</translation>
 <translation id="1591562245178063882">Гэты месяц</translation>
 <translation id="1593528591614229756">Выберыце APN, прапанаваныя аператарам мабільнай сувязі або адміністратарам. Пасля гэтага ўсе карыстальніцкія APN будуць адключаны. Пры выкарыстанні недапушчальных APN мабільнае падключэнне можа быць страчана. <ph name="LINK_BEGIN" />Даведацца больш<ph name="LINK_END" /></translation>
@@ -257,7 +258,6 @@
 <translation id="2148716181193084225">Сёння</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> фота</translation>
 <translation id="2154460308960858308">Ачысціць поле пошуку</translation>
-<translation id="2156072344042480449">Вашы два апошнія запыты. Іх можна выкарыстоўваць толькі на гэтай старонцы.</translation>
 <translation id="2157660087437850958">акно выбару эмодзі</translation>
 <translation id="2157959690810728433">У ЧАРЗЕ</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Паўтарыць спробу</translation>
@@ -1166,6 +1166,7 @@
 <translation id="6831043979455480757">Перакласці</translation>
 <translation id="6846843854964504403">Скід да бяспечных налад</translation>
 <translation id="6853312040151791195">Хуткасць разрадкі</translation>
+<translation id="6862228900689076919">Гэта функцыя знаходзіцца пад кіраваннем адміністратара</translation>
 <translation id="6862416241246624313">Водгук адпраўлены</translation>
 <translation id="6866732840889595464">стакротка</translation>
 <translation id="6871256179359663621">светла-фіялетавы</translation>
@@ -1194,16 +1195,6 @@
 <translation id="6975981640379148271">каалы</translation>
 <translation id="6977381486153291903">Версія ўбудаванага ПЗ</translation>
 <translation id="6981982820502123353">Спец. магчымасці</translation>
-<translation id="698242338298293034">Выберыце тэму, а потым націсніце на падкрэсленыя словы, каб персаналізаваць відарысы, створаныя з дапамогай AI.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Націсніце "Натхні мяне", каб атрымаць яшчэ больш унікальных і разнастайных відарысаў ад AI.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Калі вы выкарыстоўваеце штучны інтэлект, ваш запыт адпраўляецца на серверы Google, каб згенерыраваць відарысы і палепшыць прадукт. Гэта робіцца ў адпаведнасці з <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Палітыкай прыватнасці Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Генератыўны штучны інтэлект – гэта эксперыментальная функцыя, якая знаходзіцца на раннім этапе распрацоўкі і пакуль даступная не ўсім.</translation>
 <translation id="6982462588253070448">пясчаныя дзюны</translation>
 <translation id="7005833343836210400">Прылада па-за сеткай</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> кіруе гэтай прыладай і мае доступ да ўсіх дзеянняў карыстальніка, у тым ліку да гісторыі наведаных вэб-старонак, да пароляў і электроннай пошты.</translation>
@@ -1447,7 +1438,6 @@
 <translation id="8208861521865154048">Бонусы</translation>
 <translation id="8226628635270268143">Выберыце любімыя фота і альбомы</translation>
 <translation id="8227119283605456246">Далучыць файл</translation>
-<translation id="8227488649450500937">Паспрабуйце адзін з гэтых запытаў ці паглядзіце <ph name="BEGIN_LINK_PROMPTING_GUIDE" />дапаможнік па запытах<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="8230672074305416752">Не ўдалося праверыць сувязь са стандартным сеткавым шлюзам</translation>
 <translation id="8236972776513018241">Расшыфроўка</translation>
 <translation id="8238771987802558562">Выберыце APN</translation>

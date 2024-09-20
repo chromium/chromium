@@ -96,6 +96,7 @@
 <translation id="2570922361219980984">Pristup lokaciji isključen je i za ovaj uređaj. Uključite ga u <ph name="BEGIN_LINK" />postavkama Androida<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Prošireno – kliknite za sažimanje.</translation>
 <translation id="2586657967955657006">Međuspremnik</translation>
+<translation id="2588271083332682494">Organizirajte se pomoću grupa kartica</translation>
 <translation id="2597457036804169544">Ne primjenjuj tamnu temu na web-lokacije</translation>
 <translation id="2606760465469169465">Automatska potvrda</translation>
 <translation id="2621115761605608342">Dopuštanje JavaScripta za određenu web-lokaciju.</translation>
@@ -232,6 +233,7 @@
 <translation id="483914009762354899">Uključi sve web-lokacije pod ovom domenom</translation>
 <translation id="4883854917563148705">Upravljane postavke ne mogu se vratiti na zadano</translation>
 <translation id="4887024562049524730">Web-lokacije moraju tražiti dopuštenje za upotrebu uređaja i podataka virtualne stvarnosti (preporučeno)</translation>
+<translation id="4936863036653376783">Grupe ćete pronaći u odjeljku grupe kartica na svim svojim uređajima</translation>
 <translation id="4953688446973710931">Kad je ta postavka uključena, web-lokacije mogu tražiti dopuštenje za automatsko preuzimanje više datoteka. Kad je ta postavka isključena, web-lokacije ne mogu automatski preuzimati više datoteka.</translation>
 <translation id="4962975101802056554">Opoziv svih dopuštenja za uređaj</translation>
 <translation id="497421865427891073">Idi naprijed</translation>
@@ -378,6 +380,7 @@
 <translation id="6840760312327750441">Da biste grupirali kartice, dodirnite i držite karticu. Zatim je povucite na drugu karticu.</translation>
 <translation id="6864395892908308021">Ovaj uređaj ne može čitati NFC</translation>
 <translation id="6870169401250095575">Sakrij karticu Sigurnosna provjera</translation>
+<translation id="6900883974539674431">Izradite grupe kartica koje se automatski spremaju i ažuriraju na svim vašim uređajima</translation>
 <translation id="6912998170423641340">Blokiraj web-lokacijama čitanje teksta i slika iz međuspremnika</translation>
 <translation id="6945221475159498467">Odaberi</translation>
 <translation id="6950072572526089586">Web-lokacija koju posjećujete može spremiti podatke o tome što radite kako bi funkcionirala kako treba, na primjer kako biste ostali prijavljeni na web-lokaciju ili spremili artikle u košaricu. Web-lokacije često spremaju te podatke na vaš uređaj privremeno.</translation>

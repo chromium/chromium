@@ -2851,7 +2851,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />: prem Tab i després Retorn per gestionar els fitxers que has baixat a Chrome</translation>
 <translation id="6254436959401408446">No hi ha prou memòria per obrir aquesta pàgina</translation>
 <translation id="625463612687472648">Deixa de permetre</translation>
-<translation id="6256360366378574605">{FINANCIAL_ACCOUNT,plural, =1{Quan facis compres a Chrome, consulta<ph name="FINANCIAL_ACCOUNT_TYPES" /> com a opció}other{Quan facis compres a Chrome, consulta<ph name="FINANCIAL_ACCOUNT_TYPES" /> com a opcions}}</translation>
 <translation id="6259156558325130047">&amp;Refés el canvi d'ordre</translation>
 <translation id="6263376278284652872">Adreces d'interès de <ph name="DOMAIN" /></translation>
 <translation id="6264376385120300461">Baixa igualment</translation>
@@ -3137,6 +3136,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="6767985426384634228">Vols actualitzar l'adreça?</translation>
 <translation id="6770747695101757579">Paper (cotó)</translation>
 <translation id="677257480647123231">Seguretat infantil a Internet</translation>
+<translation id="6772959465807028761">Per utilitzar YouTube, continua amb el teu Compte de Google</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6777088782163649345">Utilitza YouTube amb la selecció feta pel teu pare o mare</translation>
 <translation id="6779348349813025131">El gestor de contrasenyes de Google necessita accés al clauer de macOS</translation>
@@ -4077,7 +4077,6 @@ Detalls addicionals:
 <translation id="84561192812921051">L'administrador pot fer canvis al perfil i al navegador de manera remota, analitzar informació sobre el navegador mitjançant informes i dur a terme altres tasques necessàries. És possible que l'activitat d'aquest dispositiu també es gestioni fora de Chrome.  <ph name="BEGIN_LINK" />Més informació<ph name="END_LINK" /></translation>
 <translation id="8457125768502047971">Indefinit</translation>
 <translation id="8458202188076138974">Letter Extra</translation>
-<translation id="8458605637341729751">En continuar, acceptes que es reculli i es comparteixi la ubicació precisa del teu dispositiu amb el titular del compte per prevenir fraus. Per desactivar Pix a Chrome, ves a la <ph name="BEGIN_LINK1" />configuració de pagament<ph name="END_LINK1" />.</translation>
 <translation id="8460854335417802511">Activa</translation>
 <translation id="8461694314515752532">Encripta les dades sincronitzades amb la teva frase de contrasenya de sincronització</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 targeta de crèdit}other{# targetes de crèdit}}</translation>
@@ -4112,6 +4111,7 @@ Detalls addicionals:
 <translation id="8527228059738193856">Altaveus</translation>
 <translation id="8527681393107582734">Agricultura i silvicultura</translation>
 <translation id="8528149813106025610">Moda infantil</translation>
+<translation id="8528479410903501741">Desa l'IBAN</translation>
 <translation id="853246364274116957">Teatre musical i de Broadway</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">Ves a &lt;strong&gt;chrome://policy&lt;/strong&gt; per veure la llista d'URL bloquejats i altres polítiques aplicades per l'administrador del sistema.</translation>
@@ -4304,6 +4304,7 @@ Detalls addicionals:
 <translation id="8891727572606052622">El mode de servidor intermediari no és vàlid.</translation>
 <translation id="8894794286471754040">La vora llarga primer</translation>
 <translation id="8895334001368918465">Per utilitzar un altre servei d'emplenament automàtic a Chrome, activa'l a la configuració d'Android i aquí</translation>
+<translation id="8897221284075091877">Per demanar veure aquest contingut, continua amb el teu Compte de Google</translation>
 <translation id="8897428486789851669">Natació</translation>
 <translation id="8899807382908246773">Anuncis intrusius</translation>
 <translation id="8903921497873541725">Amplia</translation>

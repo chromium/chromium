@@ -258,7 +258,6 @@
 <translation id="2148716181193084225">Today</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> photos</translation>
 <translation id="2154460308960858308">Clear search</translation>
-<translation id="2156072344042480449">Your two most recent prompts. You can only use these prompts while you're on this page.</translation>
 <translation id="2157660087437850958">emoji picker</translation>
 <translation id="2157959690810728433">QUEUED</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Retry</translation>
@@ -1196,16 +1195,6 @@
 <translation id="6975981640379148271">koalas</translation>
 <translation id="6977381486153291903">Firmware revision</translation>
 <translation id="6981982820502123353">Accessibility</translation>
-<translation id="698242338298293034">Choose a theme and then select the underlined words to personalise your AI images.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Select 'Inspire me' to get more unique and varied AI images options.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          When you create with AI, the prompt is sent to Google AI servers to generate images and improve the product, subject to <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google's Privacy Policy<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Generative AI is experimental, in early development and currently has limited availability.</translation>
 <translation id="6982462588253070448">sand dunes</translation>
 <translation id="7005833343836210400">Device is offline</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> manages this device and has access to all user activity, including web pages visited, passwords and email.</translation>
@@ -1451,7 +1440,6 @@ Download the transcription model (up to 100 MB) to get these transcriptions.</tr
 <translation id="8208861521865154048">Perks</translation>
 <translation id="8226628635270268143">Choose your favourite photos and albums</translation>
 <translation id="8227119283605456246">Attach file</translation>
-<translation id="8227488649450500937">Try one of these prompts or see the <ph name="BEGIN_LINK_PROMPTING_GUIDE" />prompting guide<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="8230672074305416752">Failed to ping the default network gateway</translation>
 <translation id="8236972776513018241">Transcript</translation>
 <translation id="8238771987802558562">Choose an APN</translation>

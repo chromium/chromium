@@ -127,6 +127,7 @@
 <translation id="1567064801249837505">ଆଲବମ</translation>
 <translation id="1572585716423026576">ୱାଲ୍‌‌ପେପର୍‌ ଭାବରେ ସେଟ୍‍ କରନ୍ତୁ</translation>
 <translation id="1578784163189013834">ସ୍କ୍ରିନ୍ ସେଭରର ବ୍ୟାକଗ୍ରାଉଣ୍ଡ ବାଛନ୍ତୁ</translation>
+<translation id="1587031308639983732">ସମୟ ଆଧାରିତ ପରିବର୍ତ୍ତନଗୁଡ଼ିକ ସଠିକ ହୋଇନପାରେ। ଏହି ସେଟିଂ ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟରଙ୍କ ଦ୍ୱାରା ପରିଚାଳିତ ହୁଏ।</translation>
 <translation id="1588438908519853928">ସାଧାରଣ</translation>
 <translation id="1591562245178063882">ଏହି ମାସ</translation>
 <translation id="1593528591614229756">ଆପଣଙ୍କ ମୋବାଇଲ ସେବା ପ୍ରଦାନକାରୀ କିମ୍ବା ଆଡମିନିଷ୍ଟ୍ରେଟରଙ୍କ ଦ୍ୱାରା ପ୍ରଦାନ କରାଯାଇଥିବା APNଗୁଡ଼ିକୁ ଚୟନ କରିବା ସୁନିଶ୍ଚିତ କରନ୍ତୁ। ଏକ APNକୁ ଚୟନ କରିବା ଫଳରେ ଏହା ଯେ କୌଣସି କଷ୍ଟମ APNକୁ ଅକ୍ଷମ କରିଦେବ। ଅବୈଧ APNଗୁଡ଼ିକ ଆପଣଙ୍କ ମୋବାଇଲ କନେକ୍ସନରେ ବାଧା ସୃଷ୍ଟି କରିପାରେ। <ph name="LINK_BEGIN" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="LINK_END" /></translation>
@@ -257,7 +258,6 @@
 <translation id="2148716181193084225">ଆଜି</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" />ଟି ଫଟୋ</translation>
 <translation id="2154460308960858308">ସର୍ଚ୍ଚ ଖାଲି କରନ୍ତୁ</translation>
-<translation id="2156072344042480449">ଆପଣଙ୍କର 2 ବର୍ତ୍ତମାନର ପ୍ରମ୍ପ୍ଟ। ଆପଣ ଏହି ପୃଷ୍ଠାରେ ଥିବା ସମୟରେ କେବଳ ଏହି ପ୍ରମ୍ପ୍ଟଗୁଡ଼ିକୁ ବ୍ୟବହାର କରିପାରିବେ।</translation>
 <translation id="2157660087437850958">ଇମୋଜି ପିକର୍</translation>
 <translation id="2157959690810728433">ଧାଡ଼ିରେ ରଖାଯାଇଛି</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ</translation>
@@ -1166,6 +1166,7 @@
 <translation id="6831043979455480757">Translate</translation>
 <translation id="6846843854964504403">ସେଫ୍ଟି ରିସେଟ</translation>
 <translation id="6853312040151791195">ଡିସଚାର୍ଜିଂ ରେଟ୍</translation>
+<translation id="6862228900689076919">ଏହି ଫିଚର ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟରଙ୍କ ଦ୍ୱାରା ପରିଚାଳିତ ହୁଏ</translation>
 <translation id="6862416241246624313">ମତାମତ ଦାଖଲ କରାଯାଇଛି</translation>
 <translation id="6866732840889595464">ଡେଇଜି</translation>
 <translation id="6871256179359663621">ହାଲୁକା ବାଇଗଣୀ</translation>
@@ -1194,16 +1195,6 @@
 <translation id="6975981640379148271">କୋଆଲା</translation>
 <translation id="6977381486153291903">ଫାର୍ମୱେର୍ ପୁନରାବୃତ୍ତି</translation>
 <translation id="6981982820502123353">ଆକ୍ସେସିବିଲିଟୀ</translation>
-<translation id="698242338298293034">ଏକ ଥିମ ବାଛନ୍ତୁ ଏବଂ ତା'ପରେ ଆପଣଙ୍କର AI ଇମେଜଗୁଡ଼ିକୁ ପର୍ସନାଲାଇଜ କରିବା ପାଇଁ ଅଣ୍ଡରଲାଇନ କରାଯାଇଥିବା ଶବ୍ଦଗୁଡ଼ିକୁ ଚୟନ କରନ୍ତୁ।
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          ଅଧିକ ସ୍ୱତନ୍ତ୍ର ଏବଂ ବିଭିନ୍ନ AI ଇମେଜ ବିକଳ୍ପ ପାଇବା ପାଇଁ "ମୋତେ ପ୍ରେରଣା ଦିଅନ୍ତୁ"କୁ ଚୟନ କରନ୍ତୁ।
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          ଆପଣ AI ମାଧ୍ୟମରେ ତିଆରି କରିବା ସମୟରେ ଇମେଜ ଜେନେରେଟ କରିବା ଏବଂ ପ୍ରଡକ୍ଟକୁ ଉନ୍ନତ କରିବା ପାଇଁ <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Googleର ଗୋପନୀୟତା ନୀତି<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> ଅଧୀନରେ Google AI ସର୍ଭରଗୁଡ଼ିକୁ ପ୍ରମ୍ପ୍ଟ ପଠାଯାଏ।
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          ଜେନେରେଟିଭ AI ପରୀକ୍ଷାମୂଳକ ଅଟେ, ଏହା ପ୍ରାରମ୍ଭିକ ବିକାଶରେ ଅଛି ଏବଂ ବର୍ତ୍ତମାନ ଏହାର ସୀମିତ ଉପଲବ୍ଧତା ଅଛି।</translation>
 <translation id="6982462588253070448">ବାଲିର ସ୍ତୂପ</translation>
 <translation id="7005833343836210400">ଡିଭାଇସ ଅଫଲାଇନ ଅଛି</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> ଏହି ଡିଭାଇସକୁ ପରିଚାଳନା କରେ ଏବଂ ଏହା ପାଖରେ ଭିଜିଟ କରାଯାଇଥିବା ୱେବପୃଷ୍ଠା, ପାସୱାର୍ଡ ଏବଂ ଇମେଲ ସମେତ ସମସ୍ତ ୟୁଜର କାର୍ଯ୍ୟକଳାପକୁ ଆକ୍ସେସ ଅଛି।</translation>
@@ -1449,7 +1440,6 @@
 <translation id="8208861521865154048">ପର୍କଗୁଡ଼ିକ</translation>
 <translation id="8226628635270268143">ଆପଣଙ୍କ ପସନ୍ଦର ଫଟୋ ଏବଂ ଆଲବମଗୁଡ଼ିକ ବାଛନ୍ତୁ</translation>
 <translation id="8227119283605456246">ଫାଇଲ୍ ସଂଲଗ୍ନ କରନ୍ତୁ</translation>
-<translation id="8227488649450500937">ଏହି ପ୍ରମ୍ପ୍ଟଗୁଡ଼ିକ ମଧ୍ୟରୁ ଗୋଟିଏକୁ ବ୍ୟବହାର କରି ଦେଖନ୍ତୁ କିମ୍ବା <ph name="BEGIN_LINK_PROMPTING_GUIDE" />ପ୍ରମ୍ପ୍ଟିଂ ଗାଇଡ<ph name="END_LINK_PROMPTING_GUIDE" /> ଦେଖନ୍ତୁ</translation>
 <translation id="8230672074305416752">ଡିଫଲ୍ଟ ନେଟୱାର୍କ ଗେଟୱେକୁ ପିଙ୍ଗ୍ କରିବାରେ ବିଫଳ ହୋଇଛି</translation>
 <translation id="8236972776513018241">ଟ୍ରାନ୍ସକ୍ରିପ୍ଟ</translation>
 <translation id="8238771987802558562">ଏକ APN ବାଛନ୍ତୁ</translation>

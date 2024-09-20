@@ -127,6 +127,7 @@
 <translation id="1567064801249837505">Albymau</translation>
 <translation id="1572585716423026576">Gosod fel papur wal</translation>
 <translation id="1578784163189013834">Dewis cefndir yr arbedydd sgrîn</translation>
+<translation id="1587031308639983732">Mae'n bosib na fydd newidiadau ar sail amser yn gywir. Mae'r gosodiad hwn yn cael ei reoli gan eich gweinyddwr.</translation>
 <translation id="1588438908519853928">Normal</translation>
 <translation id="1591562245178063882">Y mis hwn</translation>
 <translation id="1593528591614229756">Gwnewch yn siŵr eich bod yn dewis APNs a ddarperir gan eich darparwr ffôn symudol neu weinyddwr. Bydd dewis APN yn analluogi unrhyw APNs personol. Gall APNs annilys amharu ar eich cysylltiad symudol. <ph name="LINK_BEGIN" />Dysgu rhagor<ph name="LINK_END" /></translation>
@@ -257,7 +258,6 @@
 <translation id="2148716181193084225">Heddiw</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> o luniau</translation>
 <translation id="2154460308960858308">Clirio'r blwch chwilio</translation>
-<translation id="2156072344042480449">Eich 2 neges annog ddiweddaraf. Dim ond tra byddwch ar y dudalen hon y gallwch chi ddefnyddio'r negeseuon annog hyn.</translation>
 <translation id="2157660087437850958">dewisydd emoji</translation>
 <translation id="2157959690810728433">MEWN CIW</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Rhoi cynnig arall arni</translation>
@@ -1166,6 +1166,7 @@
 <translation id="6831043979455480757">Cyfieithu</translation>
 <translation id="6846843854964504403">Ailosod diogelwch</translation>
 <translation id="6853312040151791195">Cyfradd dadwefru</translation>
+<translation id="6862228900689076919">Mae'r nodwedd hon yn cael ei reoli gan eich gweinyddwr</translation>
 <translation id="6862416241246624313">Wedi cyflwyno'r adborth</translation>
 <translation id="6866732840889595464">llygad y dydd</translation>
 <translation id="6871256179359663621">porffor golau</translation>
@@ -1194,16 +1195,6 @@
 <translation id="6975981640379148271">coalas</translation>
 <translation id="6977381486153291903">Adolygiad cadarnwedd</translation>
 <translation id="6981982820502123353">Hygyrchedd</translation>
-<translation id="698242338298293034">Dewiswch thema ac yna dewiswch y geiriau sydd wedi'u tanlinellu i bersonoleiddio'ch lluniau AI.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Dewiswch "Ysbrydolwch fi" i gael opsiynau lluniau AI mwy unigryw ac amrywiol.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Pan fyddwch yn creu gydag AI, anfonir y neges annog at weinyddion AI Google i gynhyrchu lluniau a gwella'r cynnyrch, yn amodol ar <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Bolisi Preifatrwydd Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Mae AI cynhyrchiol yn arbrofol, yn ei ddatblygiad cynnar, ac mae ganddo argaeledd cyfyngedig ar hyn o bryd.</translation>
 <translation id="6982462588253070448">twyni tywod</translation>
 <translation id="7005833343836210400">Mae'r ddyfais all-lein</translation>
 <translation id="7028979494427204405">Mae <ph name="MANAGER" /> yn rheoli'r ddyfais hon ac mae ganddo fynediad at holl weithgarwch y defnyddiwr, gan gynnwys tudalennau gwe yr ymwelwyd â nhw, cyfrineiriau, ac e-byst.</translation>
@@ -1449,7 +1440,6 @@ Lawrlwythwch y model trawsgrifio (hyd at 100MB) i gael y trawsgrifiadau hyn.</tr
 <translation id="8208861521865154048">Manteision</translation>
 <translation id="8226628635270268143">Dewiswch eich hoff luniau ac albymau</translation>
 <translation id="8227119283605456246">Atodi ffeil</translation>
-<translation id="8227488649450500937">Rhowch gynnig ar un o'r anogwyr hyn neu gweler y <ph name="BEGIN_LINK_PROMPTING_GUIDE" />canllaw anogwyr<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="8230672074305416752">Wedi methu â phingio porth y rhwydwaith diofyn</translation>
 <translation id="8236972776513018241">Trawsgrifiad</translation>
 <translation id="8238771987802558562">Dewis APN</translation>

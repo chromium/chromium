@@ -2851,7 +2851,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />: tryck på Tabb och sedan på Retur om du vill hantera filer som laddats ned i Chrome</translation>
 <translation id="6254436959401408446">Det finns inte tillräckligt med minne för att öppna den här sidan</translation>
 <translation id="625463612687472648">Dra tillbaka behörigheten</translation>
-<translation id="6256360366378574605">{FINANCIAL_ACCOUNT,plural, =1{Visa <ph name="FINANCIAL_ACCOUNT_TYPES" /> som alternativ när du gör köp i Chrome}other{Visa <ph name="FINANCIAL_ACCOUNT_TYPES" /> som alternativ när du gör köp i Chrome}}</translation>
 <translation id="6259156558325130047">&amp;Gör om Ändra ordning</translation>
 <translation id="6263376278284652872">Bokmärken för <ph name="DOMAIN" /></translation>
 <translation id="6264376385120300461">Ladda ned ändå</translation>
@@ -4078,7 +4077,6 @@ Mer information:
 <translation id="84561192812921051">Administratören kan göra ändringar i din profil och webbläsare på distans, analysera information om webbläsaren genom rapportering och utföra andra nödvändiga uppgifter. Aktivitet på den här enheten kan även hanteras utanför Chrome.  <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
 <translation id="8457125768502047971">Obestämd</translation>
 <translation id="8458202188076138974">Letter Extra</translation>
-<translation id="8458605637341729751">Genom att fortsätta godkänner du att din exakta enhetsplats samlas in och delas med kontoinnehavaren i syfte att förhindra bedrägeri. Om du vill inaktivera Pix i Chrome öppnar du <ph name="BEGIN_LINK1" />betalningsinställningarna<ph name="END_LINK1" /></translation>
 <translation id="8460854335417802511">Aktivera</translation>
 <translation id="8461694314515752532">Kryptera synkroniserad data med en egen lösenfras för synkronisering</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 kreditkort}other{# kreditkort}}</translation>
@@ -4113,6 +4111,7 @@ Mer information:
 <translation id="8527228059738193856">Högtalare</translation>
 <translation id="8527681393107582734">Lant- och skogsbruk</translation>
 <translation id="8528149813106025610">Barnkläder</translation>
+<translation id="8528479410903501741">Spara IBAN</translation>
 <translation id="853246364274116957">Broadway och musikaler</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">Besök &lt;strong&gt;chrome://policy&lt;/strong&gt; om du vill visa listan med blockerade webbadresser och andra policyer som angetts av systemadministratören.</translation>

@@ -2851,7 +2851,6 @@
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />, притиснете го копчето Tab, а потоа Enter за да управувате со датотеките што сте ги презеле во Chrome</translation>
 <translation id="6254436959401408446">Нема доволно меморија за да се отвори страницава</translation>
 <translation id="625463612687472648">Сопри ја дозволата</translation>
-<translation id="6256360366378574605">{FINANCIAL_ACCOUNT,plural, =1{Кога купувате на Chrome, погледнете ја сметката на <ph name="FINANCIAL_ACCOUNT_TYPES" /> како опција}one{Кога купувате на Chrome, погледнете ги сметките на <ph name="FINANCIAL_ACCOUNT_TYPES" /> како опции}other{Кога купувате на Chrome, погледнете ги сметките на <ph name="FINANCIAL_ACCOUNT_TYPES" /> како опции}}</translation>
 <translation id="6259156558325130047">&amp;Повтори прередување</translation>
 <translation id="6263376278284652872"><ph name="DOMAIN" /> обележувачи</translation>
 <translation id="6264376385120300461">Сепак преземи</translation>
@@ -3137,6 +3136,7 @@
 <translation id="6767985426384634228">Да се ажурира адресата?</translation>
 <translation id="6770747695101757579">Хартија (памук)</translation>
 <translation id="677257480647123231">Безбедност на децата на интернет</translation>
+<translation id="6772959465807028761">За да користите YouTube, продолжете со вашата сметка на Google</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6777088782163649345">Користи YouTube со поставките што ги избрал твојот родител</translation>
 <translation id="6779348349813025131">Google Password Manager бара пристап до macOS Keychain</translation>
@@ -4076,7 +4076,6 @@
 <translation id="84561192812921051">Администраторот може да врши промени во вашиот профил и прелистувач далечински, да ги анализира информациите за прелистувачот преку извештаите и да извршува други неопходни задачи. Со активноста на уредов може да се управува и надвор од Chrome.  <ph name="BEGIN_LINK" />Дознајте повеќе<ph name="END_LINK" /></translation>
 <translation id="8457125768502047971">Неодредено</translation>
 <translation id="8458202188076138974">Писмо екстра</translation>
-<translation id="8458605637341729751">Ако продолжите, се согласувате вашата прецизна локација да се прибере и сподели со сопственикот на сметката за да се спречат измами. За да исклучите Pix во Chrome, одете во <ph name="BEGIN_LINK1" />поставките за плаќање<ph name="END_LINK1" /></translation>
 <translation id="8460854335417802511">Вклучи</translation>
 <translation id="8461694314515752532">Шифрирајте ги синхронизираните податоци со сопствената лозинка за синхронизација</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 кредитна картичка}one{# кредитна картичка}other{# кредитни картички}}</translation>
@@ -4111,6 +4110,7 @@
 <translation id="8527228059738193856">Звучници</translation>
 <translation id="8527681393107582734">Земјоделство и шумарство</translation>
 <translation id="8528149813106025610">Детска облека</translation>
+<translation id="8528479410903501741">Зачувајте го IBAN</translation>
 <translation id="853246364274116957">Бродвеј и музички театар</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">Одете на &lt;strong&gt;chrome://policy&lt;/strong&gt; за да го видите списокот со блокирани URL-адреси, како и други правила што ги наметнал системскиот администратор.</translation>
@@ -4303,6 +4303,7 @@
 <translation id="8891727572606052622">Неважечки режим на прокси.</translation>
 <translation id="8894794286471754040">Прво долгиот раб</translation>
 <translation id="8895334001368918465">За да користите друга услуга за автоматско пополнување во Chrome, вклучете ја во поставките за Android и овде</translation>
+<translation id="8897221284075091877">За да побарате да ги видите содржиниве, продолжете со вашата сметка на Google</translation>
 <translation id="8897428486789851669">Пливање</translation>
 <translation id="8899807382908246773">Нападни реклами</translation>
 <translation id="8903921497873541725">Зумирај</translation>

@@ -2850,7 +2850,6 @@
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome браузеріндегі жүктеп алған файлдарыңызды басқару үшін Tab, содан кейін Enter пернесін басыңыз.</translation>
 <translation id="6254436959401408446">Бұл бетті ашу үшін жад жеткіліксіз</translation>
 <translation id="625463612687472648">Рұқсат беруді тоқтату</translation>
-<translation id="6256360366378574605">{FINANCIAL_ACCOUNT,plural, =1{Chrome-да тауар сатып алатын кезде, <ph name="FINANCIAL_ACCOUNT_TYPES" /> опция ретінде көрсетіледі}other{Chrome-да тауар сатып алатын кезде, <ph name="FINANCIAL_ACCOUNT_TYPES" /> опциялар ретінде көрсетіледі}}</translation>
 <translation id="6259156558325130047">&amp;Қайта ретке келтіру әрекетін қайталау</translation>
 <translation id="6263376278284652872"><ph name="DOMAIN" /> бетбелгілері</translation>
 <translation id="6264376385120300461">Сонда да жүктеп алу</translation>
@@ -4076,7 +4075,6 @@
 <translation id="84561192812921051">Әкімші профиль мен браузерге қашықтан өзгеріс енгізе алады, есеп беру арқылы браузер туралы ақпаратты талдай алады және басқа қажетті тапсырмаларды орындай алады. Бұл құрылғыдағы әрекеттерді Chrome браузерінен тыс та басқаруға болады.  <ph name="BEGIN_LINK" />Толық ақпарат<ph name="END_LINK" /></translation>
 <translation id="8457125768502047971">Белгісіз</translation>
 <translation id="8458202188076138974">Letter Extra</translation>
-<translation id="8458605637341729751">Жалғастырсаңыз, алаяқтықтың алдын алу мақсатында құрылғыңыздың нақты орны жиналып, шот иесіне жіберілетініне келісесіз. Chrome-дағы Pix қызметін өшіру үшін <ph name="BEGIN_LINK1" />төлем параметрлеріне<ph name="END_LINK1" /> өтіңіз.</translation>
 <translation id="8460854335417802511">Қосу</translation>
 <translation id="8461694314515752532">Синхрондалған деректерді өзіңіздің синхрондау құпия фразаңызбен шифрлау</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 несие картасы}other{# несие картасы}}</translation>
@@ -4111,6 +4109,7 @@
 <translation id="8527228059738193856">Динамиктер</translation>
 <translation id="8527681393107582734">Ауыл және орман шаруашылығы</translation>
 <translation id="8528149813106025610">Балалар киімі</translation>
+<translation id="8528479410903501741">IBAN нөмірін сақтау</translation>
 <translation id="853246364274116957">Бродвей және музыкалық театр</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">Тыйым салынған URL мекенжайларын және жүйе әкімшісі енгізген басқа саясаттар тізімін қарау үшін &lt;strong&gt;chrome://policy&lt;/strong&gt; бетіне кіріңіз.</translation>

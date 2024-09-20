@@ -215,6 +215,7 @@
 <translation id="1703117532528082099">Ակտիվ պատուհանն ամրացված է ձախ կողմում։</translation>
 <translation id="1708345662127501511">Աշխատասեղան՝ <ph name="DESK_NAME" /></translation>
 <translation id="1709762881904163296">Ցանցի կարգավորումներ</translation>
+<translation id="171610090693716835">Պահպանեք կենտրոնացումը անհատականացված երգացանկերի օգնությամբ։ Օգտվեք YouTube Music-ից և YouTube-ից առանց գովազդի՝ ստանալով 3 ամիս անվճար YouTube Premium-ից օգտվելու հնարավորություն։</translation>
 <translation id="1719094688023114093">Կենդանի ենթագրերը միացված են։</translation>
 <translation id="1720011244392820496">Միացրեք Wi-Fi համաժամացումը</translation>
 <translation id="1720230731642245863">Թեժ կետն անջատված է</translation>
@@ -1414,6 +1415,7 @@
 <translation id="5777841717266010279">Դադարեցնե՞լ էկրանի համօգտագործումը:</translation>
 <translation id="5779721926447984944">Ամրացված ֆայլեր</translation>
 <translation id="5785221443435874078">Հեռացնել այս առաջարկը</translation>
+<translation id="5787431783058088906">Ստանալ բոնուսը</translation>
 <translation id="5788127256798019331">Play-ի ֆայլեր</translation>
 <translation id="5788535737706478207">Նորից բացել վերջին փակած ներդիրը կամ պատուհանը</translation>
 <translation id="5790085346892983794">Հաջողվեց</translation>
@@ -1645,6 +1647,7 @@
 <translation id="6574587113394758819"><ph name="APP_TITLE" /> հավելվածի ծանուցումները թաքցված են, քանի որ միացված է ապահով դիտումը։</translation>
 <translation id="6574622320167699133">Սարքն ապակողպվել է ձեր հեռախոսի միջոցով։ Հպեք կամ սեղմեք՝ մուտքագրելու համար։</translation>
 <translation id="6578407462441924264">Անանուն</translation>
+<translation id="6582012689384648647">Ուշադրությունը կենտրոնացնելու համար անհատականացված երգացանկերից օգտվելու համար տրամադրեք հասանելիություն YouTube Music-ին</translation>
 <translation id="6582034443359256692">Մարտկոցի լիցքի մակարդակի հաշվարկ։</translation>
 <translation id="6585808820553845416">Աշխատաշրջանն ավարտվում է <ph name="SESSION_TIME_REMAINING" />-ից:</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
@@ -1883,6 +1886,7 @@
 <translation id="7477793887173910789">Վերահսկեք երաժշտությունը, տեսանյութերը և այլն</translation>
 <translation id="7488762544858401571">Փոփոխված</translation>
 <translation id="7489261257412536105">Մտնել լիաէկրան ռեժիմ կամ դուրս գալ դրանից</translation>
+<translation id="7490157877815329797">Առանց գովազդի երաժշտություն լսելու և ուշադրությունը կենտրոնացնելու համար անհատականացված երաժշտություն վայելելու համար փորձեք YouTube Music Premium-ը</translation>
 <translation id="7490360161041035804">Դուք կարող եք ամրացնել կարևոր ֆայլերը, այդ թվում՝ Google Drive-ի ֆայլերը։ Ամրացնելու համար պահեք մկնիկի նշորդը տարրի վրա կամ բացեք «Ֆայլեր» հավելվածը և սեղմեք մկնիկի աջ կոճակը տարրի վրա։</translation>
 <translation id="7497767806359279797">Ընտրել լեզու և ստեղնաշար</translation>
 <translation id="7507162824403726948">Ավարտեք ինքնության հաստատումը</translation>
@@ -2158,6 +2162,7 @@
 <translation id="8380784334203145311">Բարի գիշեր,</translation>
 <translation id="8382715499079447151">Ապահով դիտում</translation>
 <translation id="8383614331548401927">Բարի վերադարձ</translation>
+<translation id="838540623579162843">Բաժանորդագրվել Music Premium-ին</translation>
 <translation id="8388750414311082622">Վերջին աշխատասեղանը չի կարող հեռացվել:</translation>
 <translation id="8394567579869570560">Ձեր ծնողը կողպել է սարքը</translation>
 <translation id="8401850874595457088">Բացել լեզվի ընտրացանկը</translation>

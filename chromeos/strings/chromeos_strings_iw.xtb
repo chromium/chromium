@@ -258,7 +258,6 @@
 <translation id="2148716181193084225">היום</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> תמונות</translation>
 <translation id="2154460308960858308">ניקוי החיפוש</translation>
-<translation id="2156072344042480449">שתי ההנחיות האחרונות שלך. אפשר להשתמש בהנחיות האלה רק כשנמצאים בדף הזה.</translation>
 <translation id="2157660087437850958">בוחר אמוג'י</translation>
 <translation id="2157959690810728433">נמצאת בתור</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: ניסיון נוסף</translation>
@@ -1196,16 +1195,6 @@
 <translation id="6975981640379148271">קואלות</translation>
 <translation id="6977381486153291903">שכתוב קושחה</translation>
 <translation id="6981982820502123353">נגישות</translation>
-<translation id="698242338298293034">‏כדי להתאים אישית את התמונות שנוצרו על ידי AI, בוחרים עיצוב ואז בוחרים את המילים שמסומנות בקו תחתון.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          כדי לקבל אפשרויות ייחודיות ומגוונות יותר לתמונות ה-AI, בוחרים באפשרות 'אני רוצה לקבל השראה'.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          כשיוצרים באמצעות AI, ההנחיה נשלחת לשרתים של AI‏ מבית Google כדי ליצור תמונות ולשפר את המוצר, בכפוף ל<ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />מדיניות הפרטיות של Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          ה-AI הגנרטיבי הוא מערכת ניסיונית שנמצאת בשלבי פיתוח ראשוניים וכרגע הזמינות שלה מוגבלת.</translation>
 <translation id="6982462588253070448">דיונות חול</translation>
 <translation id="7005833343836210400">המכשיר במצב אופליין</translation>
 <translation id="7028979494427204405">הניהול של המכשיר הזה מתבצע מהדומיין <ph name="MANAGER" /> ואפשר לגשת ממנו אל כל המידע על הפעילות של המשתמשים, כולל דפי אינטרנט שנכנסת אליהם, סיסמאות ואימייל.</translation>
@@ -1451,7 +1440,6 @@
 <translation id="8208861521865154048">הטבות</translation>
 <translation id="8226628635270268143">בחירת התמונות והאלבומים האהובים עליך</translation>
 <translation id="8227119283605456246">צירוף קובץ</translation>
-<translation id="8227488649450500937">אפשר לנסות אחת מההנחיות האלה או לעיין <ph name="BEGIN_LINK_PROMPTING_GUIDE" />במדריך ליצירת הנחיות<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="8230672074305416752">לא ניתן היה לבצע פינג לשער הרשת המוגדרת כברירת מחדל</translation>
 <translation id="8236972776513018241">תמליל</translation>
 <translation id="8238771987802558562">‏בחירת APN</translation>

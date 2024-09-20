@@ -2851,7 +2851,6 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome'da indirdiğiniz dosyaları yönetmek için Sekme'ye, ardından Enter'a basın</translation>
 <translation id="6254436959401408446">Bu sayfayı açmaya yetecek kadar bellek yok</translation>
 <translation id="625463612687472648">İzin vermeyi durdur</translation>
-<translation id="6256360366378574605">{FINANCIAL_ACCOUNT,plural, =1{Chrome'da alışveriş yaparken <ph name="FINANCIAL_ACCOUNT_TYPES" /> seçeneği gösterilir}other{Chrome'da alışveriş yaparken <ph name="FINANCIAL_ACCOUNT_TYPES" /> seçenekleri gösterilir}}</translation>
 <translation id="6259156558325130047">Sıralama Değişikliğini &amp;Yeniden Yap</translation>
 <translation id="6263376278284652872"><ph name="DOMAIN" /> yer işaretleri</translation>
 <translation id="6264376385120300461">Yine de indir</translation>
@@ -3137,6 +3136,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="6767985426384634228">Adres Güncellensin mi?</translation>
 <translation id="6770747695101757579">Kağıt (Pamuk)</translation>
 <translation id="677257480647123231">Çocuklar İçin İnternet Güvenliği</translation>
+<translation id="6772959465807028761">YouTube'u kullanmak için Google Hesabınızla devam edin</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6777088782163649345">YouTube'u ebeveyninizin seçimlerine göre kullanın</translation>
 <translation id="6779348349813025131">Google Şifre Yöneticisi'nin MacOS Anahtar Zinciri'ne erişmesi gerekiyor</translation>
@@ -4077,7 +4077,6 @@ Ek ayrıntılar:
 <translation id="84561192812921051">Yöneticiniz profilinizde ve tarayıcınızda uzaktan değişiklik yapabilir, raporlama aracılığıyla tarayıcı hakkındaki bilgileri analiz edebilir ve diğer gerekli görevleri yerine getirebilir. Bu cihazdaki etkinlikler Chrome dışında da yönetilebilir.  <ph name="BEGIN_LINK" />Daha fazla bilgi<ph name="END_LINK" /></translation>
 <translation id="8457125768502047971">Süresiz</translation>
 <translation id="8458202188076138974">Letter Extra</translation>
-<translation id="8458605637341729751">Devam ederek cihazınızın tam konumunun, sahtekarlığı önleme ile ilgili amaçlar doğrultusunda hesabınızın sahibiyle paylaşılmasını kabul etmiş olursunuz. Chrome'da PIX'i devre dışı bırakmak için <ph name="BEGIN_LINK1" />ödeme ayarlarınıza<ph name="END_LINK1" /> gidin.</translation>
 <translation id="8460854335417802511">Etkinleştir</translation>
 <translation id="8461694314515752532">Senkronize edilen verileri kendi senkronizasyon parolanızla şifreleyin</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 kredi kartı}other{# kredi kartı}}</translation>
@@ -4112,6 +4111,7 @@ Ek ayrıntılar:
 <translation id="8527228059738193856">Hoparlörler</translation>
 <translation id="8527681393107582734">Tarım Ve Ormancılık</translation>
 <translation id="8528149813106025610">Çocuk Giyim</translation>
+<translation id="8528479410903501741">IBAN'ı kaydedin</translation>
 <translation id="853246364274116957">Broadway Gösterileri ve Müzikaller</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">Engellenen URL'lerin ve sistem yöneticinizin zorunlu tuttuğu diğer politikaların listesini görmek için &lt;strong&gt;chrome://policy&lt;/strong&gt; adresini ziyaret edin.</translation>
@@ -4305,6 +4305,7 @@ Ek ayrıntılar:
 <translation id="8891727572606052622">Geçersiz proxy modu.</translation>
 <translation id="8894794286471754040">Önce uzun kenar</translation>
 <translation id="8895334001368918465">Chrome'da başka bir otomatik doldurma hizmeti kullanmak için Android Ayarları'nda ve burada ilgili hizmeti etkinleştirin</translation>
+<translation id="8897221284075091877">Bu içeriği görmek için Google Hesabınızla devam edin</translation>
 <translation id="8897428486789851669">Yüzme</translation>
 <translation id="8899807382908246773">Araya giren reklamlar</translation>
 <translation id="8903921497873541725">Yakınlaştır</translation>

@@ -2845,7 +2845,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chromeda yuklab olingan fayllarni boshqarish uchun avval Tab, keyin Enter tugmasini bosing</translation>
 <translation id="6254436959401408446">Sahifani ochish uchun xotira yetishmayapti</translation>
 <translation id="625463612687472648">Ruxsat bekor qilinsin</translation>
-<translation id="6256360366378574605">{FINANCIAL_ACCOUNT,plural, =1{Chrome orqali xarid qilish vaqtida <ph name="FINANCIAL_ACCOUNT_TYPES" /> tanlovi chiqsin}other{Chrome orqali xarid qilish vaqtida <ph name="FINANCIAL_ACCOUNT_TYPES" /> tanlovlari chiqsin}}</translation>
 <translation id="6259156558325130047">&amp;Qayta tartiblashni qaytarish</translation>
 <translation id="6263376278284652872"><ph name="DOMAIN" /> xatcho‘plari</translation>
 <translation id="6264376385120300461">Baribir yuklab olish</translation>
@@ -3131,6 +3130,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="6767985426384634228">Manzil yangilansinmi?</translation>
 <translation id="6770747695101757579">Qogʻoz (paxta)</translation>
 <translation id="677257480647123231">Bolalar uchun xavfsiz internet</translation>
+<translation id="6772959465807028761">YouTubedan foydalanish uchun Google hisobiga kiring</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6777088782163649345">YouTubedan ota-onangiz belgilagan tartibda foydalaning</translation>
 <translation id="6779348349813025131">Google Parollar menejeriga MacOS Keychain ishlatishi uchun ruxsat berish kerak</translation>
@@ -4070,7 +4070,6 @@ Batafsil axborot:
 <translation id="84561192812921051">Administrator profil va brauzer sozlamalarini masofadan oʻzgartirishi, brauzer maʼlumotlaridan iborat hisobotlarni tahlil qilishi hamda boshqa vazifalarni bajarishi mumkin. Bu qurilmadagi amallar Chrome tashqarisidan boshqarilishi mumkin.  <ph name="BEGIN_LINK" />Batafsil<ph name="END_LINK" /></translation>
 <translation id="8457125768502047971">Noaniq</translation>
 <translation id="8458202188076138974">Letter Extra</translation>
-<translation id="8458605637341729751">Davom etish orqali siz qurilmaning aniq joylashuvi jamlanishi va firibgarlikdan himoyalash maqsadida hisob egasiga ulashilishiga rozilik bildirasiz. Chromeda Pix xizmatini <ph name="BEGIN_LINK1" />toʻlov sozlamalari<ph name="END_LINK1" /> orqali oʻchirish mumkin.</translation>
 <translation id="8460854335417802511">Yoqish</translation>
 <translation id="8461694314515752532">Sinxronlangan ma’lumotlarni kodli ibora bilan shifrlash</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 ta kredit karta}other{# ta kredit karta}}</translation>
@@ -4105,6 +4104,7 @@ Batafsil axborot:
 <translation id="8527228059738193856">Karnaylar</translation>
 <translation id="8527681393107582734">Qishloq xoʻjaligi va oʻrmon xoʻjaligi</translation>
 <translation id="8528149813106025610">Bolalar kiyimlari</translation>
+<translation id="8528479410903501741">IBAN hisobini saqlash</translation>
 <translation id="853246364274116957">Brodvey va musiqa teatri</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">Administrator tomonidan tuzilgan URL manzillar qora roʻyxati va boshqa parametrlarni &lt;strong&gt;chrome://policy&lt;/strong&gt; sahifasi orqali koʻrish mumkin.</translation>
@@ -4297,6 +4297,7 @@ Batafsil axborot:
 <translation id="8891727572606052622">Yaroqsiz proksi-server rejimi.</translation>
 <translation id="8894794286471754040">Avval uzunasiga</translation>
 <translation id="8895334001368918465">Chrome orqali boshqa avtomatik kiritish xizmatidan foydalanish uchun uni Android sozlamalari va shu yerda yoqing</translation>
+<translation id="8897221284075091877">Bu kontentni koʻrishga ruxsat soʻrash uchun Google hisobiga kiring</translation>
 <translation id="8897428486789851669">Suzish</translation>
 <translation id="8899807382908246773">Asabga teguvchi reklamalar</translation>
 <translation id="8903921497873541725">Kattalashtirish</translation>

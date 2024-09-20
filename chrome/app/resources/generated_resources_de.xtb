@@ -1121,7 +1121,6 @@ Berechtigungen, die du Apps bereits gewährt hast, gelten möglicherweise für d
 <translation id="1794212650797661990">Passwort für <ph name="DOMAIN" /> ausblenden</translation>
 <translation id="1794791083288629568">Hilf uns, dieses Problem zu beheben, indem du uns Feedback sendest.</translation>
 <translation id="1795214765651529549">Klassisches Design verwenden</translation>
-<translation id="1795668164971917185">Wenn Google Safe Browsing das nächste Mal einen verdächtigen Download findet, wird dieser automatisch als Teil des von dir ausgewählten <ph name="LINK" /> gescannt</translation>
 <translation id="1796588414813960292">Funktionen, die Ton erfordern, funktionieren dann nicht</translation>
 <translation id="1797117170091578105">Du kannst zum Spielen deine Chromebook-Tastatur verwenden und Tasten bestimmte Aktionen zuweisen.</translation>
 <translation id="1798335429200675510">Klicke mit der rechten Maustaste in ein Textfeld, um Vorschläge zu erstellen oder vorhandene Texte zu optimieren, die auf Google AI basieren. Derzeit nur eingeschränkt verfügbar.</translation>
@@ -3931,6 +3930,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3799128412641261490">Einstellungen für Schalterzugriff</translation>
 <translation id="3800828618615365228">Google Chrome und Chrome OS – zusätzliche Nutzungsbedingungen</translation>
 <translation id="3800898876950197674">Gib dein Passwort ein, um diese Erweiterung zuzulassen.</translation>
+<translation id="3801449494961771207">Standardstimme für die Sprachausgabe</translation>
 <translation id="3802486193901166966">Diese Erweiterung erfordert keine speziellen Berechtigungen und ermöglicht keinen zusätzlichen Websitezugriff</translation>
 <translation id="380329542618494757">Name</translation>
 <translation id="3803345858388753269">Videoqualität</translation>
@@ -5904,7 +5904,6 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="5263656105659419083">Klicke rechts oben auf „Anpinnen“, um ganz einfach zur Seitenleiste zurückzukehren</translation>
 <translation id="5264148714798105376">Dies kann etwa eine Minute dauern.</translation>
 <translation id="5264252276333215551">Stelle eine Internetverbindung her, um die App im Kioskmodus zu starten.</translation>
-<translation id="526539328530966548">erweiterten Schutzes</translation>
 <translation id="5265797726250773323">Fehler bei der Installation</translation>
 <translation id="5266113311903163739">Zertifizierungsstelle - Fehler beim Import</translation>
 <translation id="526622169288322445">Weitere Aktionen für <ph name="ADDRESS_SUMMARY" /></translation>
@@ -7282,6 +7281,7 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="628726841779494414">Du kannst deine Drucker in den Druckereinstellungen verwalten</translation>
 <translation id="6287828400772161253">Android-Smartphone (<ph name="HOST_DEVICE_NAME" />)</translation>
 <translation id="6290613030083731160">Keine Geräte in der Nähe verfügbar, die Daten teilen. <ph name="LINK_BEGIN" />Weitere Informationen<ph name="LINK_END" /></translation>
+<translation id="6291580570300353047">Die Wiederherstellung ist nicht möglich, da nicht genügend Speicherplatz verfügbar ist.</translation>
 <translation id="6291741848715722067">Bestätigungscode</translation>
 <translation id="6291953229176937411">Im Finder &amp;zeigen</translation>
 <translation id="6292699686837272722">Tabs werden auf eine mittlere Breite verkleinert</translation>

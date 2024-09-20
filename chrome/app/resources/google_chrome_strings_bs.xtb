@@ -217,6 +217,7 @@ Neke funkcije možda neće biti dostupne i promjene postavki se neće sačuvati.
 <translation id="3596080736082218006">{COUNT,plural, =0{Administrator traži da ponovo pokrenete Chrome radi primjene ažuriranja}=1{Administrator traži da ponovo pokrenete Chrome radi primjene ažuriranja. Vaš anonimni prozor se neće ponovo otvoriti.}one{Administrator traži da ponovo pokrenete Chrome radi primjene ažuriranja. Vaš # anonimni prozor se neće ponovo otvoriti.}few{Administrator traži da ponovo pokrenete Chrome radi primjene ažuriranja. Vaša # anonimna prozora se neće ponovo otvoriti.}other{Administrator traži da ponovo pokrenete Chrome radi primjene ažuriranja. Vaših # anonimnih prozora se neće ponovo otvoriti.}}</translation>
 <translation id="3597003331831379823">Pokretanje postavljanja s dodatnim ovlastima nije uspjelo. <ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3609788354808247807">Niste je posjetili već neko vrijeme. Chrome je uklonio odobrenja "<ph name="PERMISSION_1" />", "<ph name="PERMISSION_2" />" i "<ph name="PERMISSION_3" />"</translation>
+<translation id="3622716124581627104">Identificirajte stvari ili mjesta i kopirajte ili prevedite tekst. Kada koristite Google Objektiv, snimak ekrana stranice se šalje Googleu. <ph name="LEARN_MORE" /></translation>
 <translation id="3622797965165704966">Sada je lakše koristiti Chrome s vašim Google računom i na dijeljenim računarima.</translation>
 <translation id="3625345586754200168">Isprobajte Objektiv</translation>
 <translation id="3635073343384702370">Chrome može provjeravati vaše lozinke kada ih sačuvate</translation>
@@ -301,6 +302,7 @@ Neke funkcije možda neće biti dostupne i promjene postavki se neće sačuvati.
 <translation id="4680828127924988555">Otkaži instalaciju</translation>
 <translation id="469553575393225953">Ekstenzije, aplikacije i teme iz nepoznatih izvora mogu naštetiti vašem uređaju. Chrome preporučuje da ih instalirate samo iz Chrome Web trgovine</translation>
 <translation id="4710245680469034439">Personalizirajte preglednik temama inspiriranim prirodom, kolekcijama umjetnika i drugim motivima</translation>
+<translation id="4720851490453439956">Google Updater Internal Service</translation>
 <translation id="4724676981607797757">Instalacija nije uspjela zbog greške s nepodržanim protokolom.</translation>
 <translation id="4728575227883772061">Instalacija nije uspjela zbog neodređene greške. Ako je Google Chrome trenutno pokrenut, zatvorite ga i pokušajte ponovo.</translation>
 <translation id="4741235124132242877">Zakačeno! Ponovo koristite Google Objektiv putem alatne trake</translation>
@@ -402,6 +404,7 @@ Google Chrome ne može vratiti vaše postavke.</translation>
 <translation id="608006075545470555">Dodajte radni profil na ovaj preglednik</translation>
 <translation id="6097822892606850415">Pišite s više samopouzdanja uz pomoć AI-ja</translation>
 <translation id="6113794647360055231">Chrome je upravo postao još bolji</translation>
+<translation id="6116252277240876590">Taj se jezik koristi za prikazivanje izbornika, postavki, upozorenja i drugog teksta u Chromeu</translation>
 <translation id="6134085236017727171">Da koristite mikrofon, odobrite Chromeu pristup u <ph name="BEGIN_LINK" />postavkama sistema<ph name="END_LINK" /></translation>
 <translation id="6135456723633883042">Ove kartice koriste dodatne izvore. Da poboljšate performanse, dozvolite Chromeu da ih učini neaktivnima.</translation>
 <translation id="6145313976051292476">Otvaraj PDF dokumente u Chromeu</translation>
@@ -463,6 +466,7 @@ Google Chrome ne može vratiti vaše postavke.</translation>
 <translation id="6885412569789873916">Aplikacije za Chrome Beta</translation>
 <translation id="6893363893008038481">Ukloni račun iz Chromea</translation>
 <translation id="6896758677409633944">Kopiraj</translation>
+<translation id="6930294499209825">Održava Googleov softver ažurnim. Ako se ta usluga onemogući ili zaustavi, Googleov softver neće se ažurirati, što znači da se mogu pojaviti sigurnosne ranjivosti koje se neće moći popraviti, pa značajke možda neće funkcionirati. Ova se usluga sama deinstalira kada ne postoji Googleov softver koji je koristi.</translation>
 <translation id="6933858244219479645">Sistem ChromeOS</translation>
 <translation id="6938166777909186039">Da primate buduća ažuriranja za Google Chrome, trebat će vam Windows 10 ili novija verzija. Računar koristi Windows 8.1.</translation>
 <translation id="6943584222992551122">Podaci pregledanja ove osobe će se izbrisati s uređaja. Da vratite podatke, prijavite se u Chrome kao <ph name="USER_EMAIL" />.</translation>
@@ -512,6 +516,7 @@ Odobrenja koja ste već dali web lokacijama i aplikacijama se mogu primjenjivati
 <translation id="7477130805345743099">Chrome će vas upozoriti prije učitavanja bilo koje web lokacije putem nesigurne veze</translation>
 <translation id="7481213027396403996">Odaberite maksimalnu sigurnost koju nudi Chrome</translation>
 <translation id="749228101751499733">Dok ste prijavljeni, lozinke i drugo s Google računa možete koristiti u Chromeu. Pritiskom na <ph name="SHORTCUT" /> možete mijenjati postavke Googleovih usluga.</translation>
+<translation id="7514258452813684157">Google Updater Service</translation>
 <translation id="7515191208480168435">Možete zakačiti Google Objektiv da mu lako pristupate</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
 <translation id="7572537927358445944">Isključeno • Chrome ne može potvrditi odakle dolazi ova ekstenzija</translation>
@@ -602,6 +607,7 @@ Odobrenja koja ste već dali web lokacijama i aplikacijama se mogu primjenjivati
 <translation id="8498858610309223613">Upravo je izvršeno posebno sigurnosno ažuriranje za Google Chrome. Sada ga ponovo pokrenite i vratićemo vaše kartice.</translation>
 <translation id="8516431725144212809">Vaša interesovanja prema Chromeovoj procjeni</translation>
 <translation id="8521348052903287641">Ulazno pravilo da Google Chrome Dev dozvoli mDNS saobraćaj.</translation>
+<translation id="852529348814672339">Prikaži Chrome na tom jeziku</translation>
 <translation id="8550334526674375523">Ovaj radni profil je u potpunosti odvojen od vašeg ličnog profila.</translation>
 <translation id="8555465886620020932">Greška usluge: <ph name="SERVICE_ERROR" />.</translation>
 <translation id="8571790202382503603">S Chrome profilima možete odvojiti sve svoje Chrome stvari. Tako ćete lakše razdvojiti posao i zabavu.</translation>

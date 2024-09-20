@@ -50,6 +50,7 @@
 <translation id="1219674500290482172">ইন্টারনেটের সাথে সংযোগ করতে অক্ষম৷</translation>
 <translation id="1227113644794103810">ইনঅ্যাক্টিভ ট্যাব</translation>
 <translation id="1231733316453485619">সিঙ্ক চালু করবেন?</translation>
+<translation id="1253032109800629289">"প্রাইস ট্র্যাকিং সম্পর্কিত বিজ্ঞপ্তি পান" বিকল্প লুকান</translation>
 <translation id="1258491128795710625">নতুন কী আছে</translation>
 <translation id="1263231323834454256">পড়ার তালিকা</translation>
 <translation id="1263433075299269530">শেষবার যে ট্যাব খুলেছিলেন</translation>
@@ -395,6 +396,7 @@
 <translation id="2870560284913253234">সাইট</translation>
 <translation id="2876369937070532032">নিরাপত্তা সংক্রান্ত কোনও ঝুঁকি থাকলে, আপনার দেখা কিছু পৃষ্ঠার ইউআরএল Google-কে পাঠায়</translation>
 <translation id="2883151425485251736">আপনার অ্যাকাউন্ট থেকে লুকিয়ে রাখা বিষয়গুলি দেখুন ও এডিট করুন</translation>
+<translation id="2888631381369839306">প্রাইস ট্র্যাকিং সম্পর্কিত বিজ্ঞপ্তি চালু করা আছে</translation>
 <translation id="288902476966286676">প্রেরকে ফেরত পাঠিয়ে দিন</translation>
 <translation id="2894757982205307093">গ্রুপে নতুন ট্যাব যোগ করুন</translation>
 <translation id="2905479111267140204">আপনার <ph name="NUMBER_OF_PASSWORDS" />টি একই পাসওয়ার্ড আছে যা আবার ব্যবহার করা হয়েছে এবং এগুলি আপনার সুরক্ষাকে ঝুঁকির মুখে ফেলতে পারে।</translation>
@@ -493,6 +495,7 @@
 <translation id="3435738964857648380">নিরাপত্তা</translation>
 <translation id="3443810440409579745">ট্যাব পাওয়া গেছে।</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> মিনিট</translation>
+<translation id="344589138074534176">Google Lens সম্পর্কে আরও জানুন</translation>
 <translation id="345348365500626747">ঠিকানা পাওয়া গেছে</translation>
 <translation id="3464194322481586217">দাম ট্র্যাক করা যায়নি।</translation>
 <translation id="3469117812148449995">পাসওয়ার্ড সেভ করার বিকল্প</translation>
@@ -578,6 +581,7 @@
 <translation id="3851938967634752633"><ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" />-এর পাসওয়ার্ড এবং অন্য <ph name="NUMBER_OF_ACCOUNTS" />টি পাসওয়ার্ড মুছে ফেলা হবে। আপনার অ্যাকাউন্ট মুছে ফেলা হবে না।</translation>
 <translation id="3858860766373142691">নাম</translation>
 <translation id="3861908220442487587">এই ঠিকানা শুধুমাত্র এই ডিভাইসে সেভ করা আছে। এটি আপনার অন্য ডিভাইসে ব্যবহার করতে, নিজের Google অ্যাকাউন্ট, <ph name="USER_EMAIL" />-এ সরান</translation>
+<translation id="3868495844258915202">সম্পূর্ণ URL দেখুন</translation>
 <translation id="3876833929577368454">আমাকে প্রত্যেকবার জিজ্ঞাসা করুন</translation>
 <translation id="3885587018298784481">ফ্যামিলি গ্রুপে যোগ দিন</translation>
 <translation id="3888863481921783344">এটি আপনার ইভেন্টে সম্ভাব্য আমন্ত্রিতদের দেখানোর জন্য ব্যবহার করা হবে।</translation>
@@ -865,6 +869,7 @@
 <translation id="5210365745912300556">ট্যাব বন্ধ করুন</translation>
 <translation id="5211488077761630279">আপনার <ph name="PERMISSION" /> ব্যবহার করতে "<ph name="SITE_NAME" />"-কে অনুমতি দেবেন?</translation>
 <translation id="5217245356412073535">আপনি 'সেটিংস &gt; কন্টেন্ট সেটিংস' বিকল্প থেকে ডিফল্ট সাইট ভিউ পরিবর্তন করে 'ডেস্কটপ' হিসেবে সেট করতে পারবেন</translation>
+<translation id="5217329997012062137">আপনি Google Lens ব্যবহার করার সময়, পৃষ্ঠার স্ক্রিনশট Google-এ পাঠানো হয়।</translation>
 <translation id="5220945116117011963">তারিখ থেকে ক্যালেন্ডার ইভেন্ট তৈরি করুন</translation>
 <translation id="5222676887888702881">সাইন-আউট করুন</translation>
 <translation id="5228579091201413441">সিঙ্ক সক্ষম করুন</translation>
@@ -877,6 +882,7 @@
 <translation id="5271265092610673171">{count,plural, =1{ফাঁকা রাখা যাবে না এমন ফিল্ড খালি আছে। সেভ করার আগে এটি পূরণ করুন।}one{ফাঁকা রাখা যাবে না এমন কিছু ফিল্ড খালি আছে। সেভ করার আগে সেগুলি পূরণ করুন।}other{ফাঁকা রাখা যাবে না এমন কিছু ফিল্ড খালি আছে। সেভ করার আগে সেগুলি পূরণ করুন।}}</translation>
 <translation id="5271549068863921519">পাসওয়ার্ড সেভ করুন</translation>
 <translation id="5279600392753459966">সকল অবরোধ করুন</translation>
+<translation id="5282340693022193851">প্রাইস ট্র্যাকিং সম্পর্কিত বিজ্ঞপ্তি পেতে, আপনার iOS সেটিংস থেকে বিজ্ঞপ্তি চালু করুন।</translation>
 <translation id="5294624619177114121">মোবাইল বিজ্ঞপ্তি</translation>
 <translation id="5295239312320826323"><ph name="USER_EMAIL" /> অ্যাকাউন্ট সরাবেন?</translation>
 <translation id="5300589172476337783">দেখান</translation>
@@ -1639,6 +1645,7 @@
 <translation id="8712534545803964353">পৃষ্ঠাতে খুঁজুন…</translation>
 <translation id="8712637175834984815">বুঝেছি</translation>
 <translation id="8722229818691036192">এই ডিভাইসে থাকা অ্যাকাউন্ট</translation>
+<translation id="8722649775263832315">Google Lens-এর সাহায্যে কোনও কিছু খুঁজতে ট্যাপ বা হাইলাইট করুন</translation>
 <translation id="8725066075913043281">আবার চেষ্টা করুন</translation>
 <translation id="8728922029615312208">সব বন্ধ করুন</translation>
 <translation id="8730621377337864115">হয়ে গেছে</translation>

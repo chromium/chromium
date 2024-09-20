@@ -258,7 +258,6 @@
 <translation id="2148716181193084225">Hari ini</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> foto</translation>
 <translation id="2154460308960858308">Hapus penelusuran</translation>
-<translation id="2156072344042480449">2 perintah terbaru Anda. Anda hanya dapat menggunakan perintah tersebut saat berada di halaman ini.</translation>
 <translation id="2157660087437850958">alat pemilih emoji</translation>
 <translation id="2157959690810728433">DALAM ANTREAN</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Coba lagi</translation>
@@ -1196,16 +1195,6 @@
 <translation id="6975981640379148271">koala</translation>
 <translation id="6977381486153291903">Revisi firmware</translation>
 <translation id="6981982820502123353">Aksesibilitas</translation>
-<translation id="698242338298293034">Pilih tema, lalu pilih kata yang digarisbawahi untuk mempersonalisasi gambar AI Anda.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Pilih "Beri saya inspirasi" untuk mendapatkan opsi gambar AI yang lebih unik dan beragam.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Saat Anda berkreasi dengan AI, perintah akan dikirim ke server AI Google untuk membuat gambar dan meningkatkan kualitas produk, yang tunduk pada <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Kebijakan Privasi Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          AI generatif bersifat eksperimental, dalam pengembangan awal, dan saat ini memiliki ketersediaan terbatas.</translation>
 <translation id="6982462588253070448">bukit pasir</translation>
 <translation id="7005833343836210400">Perangkat sedang offline</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> akan mengelola perangkat ini dan memiliki akses ke semua aktivitas pengguna, termasuk halaman yang dikunjungi, sandi, dan email.</translation>
@@ -1451,7 +1440,6 @@ Download model transkripsi (hingga 100 MB) untuk mendapatkan transkripsi ini.</t
 <translation id="8208861521865154048">Keuntungan</translation>
 <translation id="8226628635270268143">Pilih foto dan album favorit</translation>
 <translation id="8227119283605456246">Lampirkan file</translation>
-<translation id="8227488649450500937">Coba salah satu perintah ini atau lihat <ph name="BEGIN_LINK_PROMPTING_GUIDE" />panduan menulis perintah<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="8230672074305416752">Gagal melakukan ping ke gateway jaringan default</translation>
 <translation id="8236972776513018241">Transkrip</translation>
 <translation id="8238771987802558562">Pilih APN</translation>

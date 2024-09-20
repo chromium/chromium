@@ -1136,7 +1136,6 @@ Dovoljenja, ki ste jih že odobrili aplikacijam, morda veljajo za ta račun. Dov
 <translation id="1794212650797661990">Skrij geslo za <ph name="DOMAIN" /></translation>
 <translation id="1794791083288629568">Pošiljanje povratnih informacij zaradi odpravljanja te težave.</translation>
 <translation id="1795214765651529549">Uporabi klasično</translation>
-<translation id="1795668164971917185">Ko bo Google Varno brskanje naslednjič našlo sumljiv prenos, ga bo samodejno pregledalo v okviru <ph name="LINK" />.</translation>
 <translation id="1796588414813960292">Funkcije, ki potrebujejo zvok, ne bodo delovale.</translation>
 <translation id="1797117170091578105">Igrajte s tipkovnico Chromebooka. Tipke lahko prilagodite določenim dejanjem.</translation>
 <translation id="1798335429200675510">Z desnim gumbom kliknite besedilno polje, da ustvarite osnutek ali izboljšate obstoječe delo, ki uporablja Googlovo umetno inteligenco. Trenutno je omejena razpoložljivost.</translation>
@@ -5927,7 +5926,6 @@ Za pomanjšavo pritisnite Ctrl + Alt + tipko za zmanjšanje svetlosti.</translat
 <translation id="5263656105659419083">Če se želite preprosto vrniti v stransko podokno, v zgornjem desnem kotu kliknite »Pripni«</translation>
 <translation id="5264148714798105376">To lahko traja kakšno minuto.</translation>
 <translation id="5264252276333215551">Če želite aplikacijo zagnati v načinu kioska, se povežite z internetom.</translation>
-<translation id="526539328530966548">izboljšane zaščite</translation>
 <translation id="5265797726250773323">Napaka pri nameščanju</translation>
 <translation id="5266113311903163739">Napaka pri uvozu overitelja potrdil</translation>
 <translation id="526622169288322445">Več dejanj za <ph name="ADDRESS_SUMMARY" /></translation>

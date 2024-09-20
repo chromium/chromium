@@ -258,7 +258,6 @@
 <translation id="2148716181193084225">Leo</translation>
 <translation id="2152882202543497059">Picha <ph name="NUMBER" /></translation>
 <translation id="2154460308960858308">Futa utafutaji</translation>
-<translation id="2156072344042480449">Vidokezo vyako 2 vya hivi majuzi. Unaweza tu kutumia vidokezo hivi unapokuwa kwenye ukurasa huu.</translation>
 <translation id="2157660087437850958">kiteua emoji</translation>
 <translation id="2157959690810728433">IMEWEKWA KWENYE FOLENI</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Jaribu tena</translation>
@@ -1196,16 +1195,6 @@
 <translation id="6975981640379148271">koala</translation>
 <translation id="6977381486153291903">Sahihisho la programu dhibiti</translation>
 <translation id="6981982820502123353">Ufikivu</translation>
-<translation id="698242338298293034">Chagua mada kisha uchague maneno yaliyopigiwa mistari ili uwekee picha zako zinazotayarishwa kwa AI mapendeleo.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Chagua 'Nihamasishe' ili upate chaguo za picha za kipekee zaidi na tofauti za AI.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Unapotayarisha ukitumia AI, kidokezo hutumwa kwenye seva za Google AI ili kuzalisha picha na kuboresha bidhaa, hatua inayosimamiwa na <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Sera ya Faragha ya Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          AI Zalishi inafanyiwa majaribio, iko katika hatua za mwanzo za kubuniwa na kwa sasa upatikanaji wake unadhibitiwa.</translation>
 <translation id="6982462588253070448">milima ya mchanga</translation>
 <translation id="7005833343836210400">Kifaa hakipo mtandaoni</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> hudhibiti kifaa hiki na ina idhini ya kufikia shughuli zote za mtumiaji, zikiwemo kurasa za wavuti alizotembelea, manenosiri na anwani za barua pepe.</translation>
@@ -1451,7 +1440,6 @@ Pakua mfumo wa unukuzi (hadi MB 100) ili upate manukuu haya.</translation>
 <translation id="8208861521865154048">Manufaa</translation>
 <translation id="8226628635270268143">Chagua picha na albamu uzipendazo zaidi</translation>
 <translation id="8227119283605456246">Ambatisha faili</translation>
-<translation id="8227488649450500937">Jaribu mojawapo ya vidokezo hivi au uangalie <ph name="BEGIN_LINK_PROMPTING_GUIDE" />mwongozo wa kuweka vidokezo<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="8230672074305416752">Imeshindwa kuita lango la mtandao chaguomsingi</translation>
 <translation id="8236972776513018241">Manukuu</translation>
 <translation id="8238771987802558562">Chagua APN</translation>

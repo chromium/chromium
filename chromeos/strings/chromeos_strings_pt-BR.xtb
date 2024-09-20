@@ -258,7 +258,6 @@
 <translation id="2148716181193084225">Hoje</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> fotos</translation>
 <translation id="2154460308960858308">Limpar pesquisa</translation>
-<translation id="2156072344042480449">Seus 2 comandos mais recentes. Você só pode usar esses comandos enquanto estiver nesta página.</translation>
 <translation id="2157660087437850958">seletor de emojis</translation>
 <translation id="2157959690810728433">EM FILA</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: tentar novamente</translation>
@@ -1167,6 +1166,7 @@
 <translation id="6831043979455480757">Traduzir</translation>
 <translation id="6846843854964504403">Redefinição de segurança</translation>
 <translation id="6853312040151791195">Taxa de descarregamento</translation>
+<translation id="6862228900689076919">Este recurso é gerenciado pelo seu administrador</translation>
 <translation id="6862416241246624313">Feedback enviado</translation>
 <translation id="6866732840889595464">margarida</translation>
 <translation id="6871256179359663621">roxo-clara</translation>
@@ -1195,16 +1195,6 @@
 <translation id="6975981640379148271">coalas</translation>
 <translation id="6977381486153291903">Revisão do firmware</translation>
 <translation id="6981982820502123353">Acessibilidade</translation>
-<translation id="698242338298293034">Escolha um tema e selecione as palavras sublinhadas para personalizar suas imagens de IA.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Selecione "Buscar inspiração" para receber opções de imagens de IA mais exclusivas e variadas.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Quando você cria com IA, o comando é enviado aos servidores da IA do Google para gerar imagens e melhorar o produto, sujeito à <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Política de Privacidade do Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          A IA generativa é uma tecnologia experimental e está nos estágios iniciais de desenvolvimento. No momento, ela tem disponibilidade limitada.</translation>
 <translation id="6982462588253070448">dunas</translation>
 <translation id="7005833343836210400">O dispositivo está off-line</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> gerencia este dispositivo e tem acesso a todas as atividades do usuário, incluindo páginas visitadas, senhas e e-mail.</translation>
@@ -1450,7 +1440,6 @@ Baixe o modelo de transcrição (até 100 MB) para receber esses arquivos.</tran
 <translation id="8208861521865154048">Benefícios</translation>
 <translation id="8226628635270268143">Escolher seus álbuns e fotos favoritos</translation>
 <translation id="8227119283605456246">Anexar arquivo</translation>
-<translation id="8227488649450500937">Tente usar um desses comandos ou consulte o <ph name="BEGIN_LINK_PROMPTING_GUIDE" />Guia para a criação de comandos<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="8230672074305416752">Falha no ping do gateway de rede padrão</translation>
 <translation id="8236972776513018241">Transcrição</translation>
 <translation id="8238771987802558562">Escolher um APN</translation>

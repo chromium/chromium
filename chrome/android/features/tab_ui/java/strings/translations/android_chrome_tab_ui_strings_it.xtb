@@ -129,6 +129,7 @@
 <translation id="6549021453810473782">Visualizza informazioni sul negozio</translation>
 <translation id="6557858706263317126">+<ph name="HIDDEN_TABS_COUNT" /></translation>
 <translation id="6562820390860419811">Sposta scheda a sinistra</translation>
+<translation id="6590332670428149473">Apri il menu Azioni del gruppo di schede condiviso <ph name="TITLE_OF_GROUP" />, colore <ph name="COLOR_NAME" />.</translation>
 <translation id="6615455863669487791">Mostrami</translation>
 <translation id="6668311240800004911">{NUMBER_OF_TABS_CHANGED,plural, =1{<ph name="ONE_CHANGED" /> scheda modificata}other{<ph name="MANY_CHANGED" /> schede modificate}}</translation>
 <translation id="6694634756612002311">Gestisci condivisione</translation>
@@ -189,6 +190,7 @@
 <translation id="8993967613304721520">{NUMBER_OF_TABS,plural, =1{Espandi il gruppo di schede con <ph name="TABS_COUNT_ONE" /> scheda.}other{Espandi il gruppo di schede con <ph name="TABS_COUNT_MANY" /> schede.}}</translation>
 <translation id="9090098097337832354">Informazioni su questo negozio chiuse</translation>
 <translation id="9111228330448174435">Mostra la finestra di dialogo alla creazione di un nuovo gruppo di schede</translation>
+<translation id="9114502155681725011">Apri il menu Azioni del gruppo di schede <ph name="TITLE_OF_GROUP" />, colore <ph name="COLOR_NAME" />.</translation>
 <translation id="9150694013019234766">Passa da una scheda all'altra del gruppo di schede nella parte inferiore dello schermo</translation>
 <translation id="9169594135889675189">Aggiungi una nuova scheda al gruppo</translation>
 <translation id="9216898458513705996">Le schede rimarranno aperte su questo dispositivo, ma il gruppo verrà eliminato da tutti i dispositivi su cui è stato eseguito l'accesso a <ph name="USER_EMAIL" /></translation>

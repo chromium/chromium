@@ -2850,7 +2850,6 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Shtyp "Tab" dhe më pas "Enter" për të menaxhuar skedarët që ke shkarkuar në Chrome</translation>
 <translation id="6254436959401408446">Nuk ka memorie të mjaftueshme për të hapur këtë faqe</translation>
 <translation id="625463612687472648">Ndalo lejimin</translation>
-<translation id="6256360366378574605">{FINANCIAL_ACCOUNT,plural, =1{Kur bën blerje në Chrome, shiko <ph name="FINANCIAL_ACCOUNT_TYPES" /> si opsion}other{Kur bën blerje në Chrome, shiko <ph name="FINANCIAL_ACCOUNT_TYPES" /> si opsione}}</translation>
 <translation id="6259156558325130047">&amp;Ribëj riporosinë</translation>
 <translation id="6263376278284652872">Faqeshënuesit e <ph name="DOMAIN" /></translation>
 <translation id="6264376385120300461">Shkarkoje gjithsesi</translation>
@@ -3136,6 +3135,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6767985426384634228">Të përditësohet adresa?</translation>
 <translation id="6770747695101757579">Letër (pambuk)</translation>
 <translation id="677257480647123231">Siguria e fëmijëve në internet</translation>
+<translation id="6772959465807028761">Për të përdorur YouTube, vazhdo me "Llogarinë tënde të Google"</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6777088782163649345">Përdor YouTube me zgjedhjet e prindit tënd</translation>
 <translation id="6779348349813025131">"Menaxheri i fjalëkalimeve i Google" ka nevojë për qasje te MacOS Keychain</translation>
@@ -4075,7 +4075,6 @@ Detaje shtesë:
 <translation id="84561192812921051">Administratori yt mund të bëjë ndryshime në profilin dhe shfletuesin tënd në distancë, mund të analizojë informacionet rreth shfletuesit nëpërmjet raportimit dhe mund të kryejë detyra të tjera të nevojshme. Aktiviteti në këtë pajisje mund të menaxhohet edhe jashtë Chrome.  <ph name="BEGIN_LINK" />Mëso më shumë<ph name="END_LINK" /></translation>
 <translation id="8457125768502047971">E papërcaktuar</translation>
 <translation id="8458202188076138974">Letër shtesë</translation>
-<translation id="8458605637341729751">Duke vazhduar, ti pranon që vendndodhja e saktë e pajisjes të mblidhet dhe të ndahet me mbajtësin e llogarisë për qëllime të parandalimit të mashtrimeve. Për të çaktivizuar Pix në Chrome, shko te <ph name="BEGIN_LINK1" />cilësimet e pagesës<ph name="END_LINK1" /></translation>
 <translation id="8460854335417802511">Aktivizoje</translation>
 <translation id="8461694314515752532">Enkripto të dhënat e sinkronizuara me frazën tënde të kalimit për sinkronizimin</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 kartë krediti}other{# karta krediti}}</translation>
@@ -4110,6 +4109,7 @@ Detaje shtesë:
 <translation id="8527228059738193856">Altoparlantët</translation>
 <translation id="8527681393107582734">Agrikultura dhe pylltaria</translation>
 <translation id="8528149813106025610">Rroba për fëmijë</translation>
+<translation id="8528479410903501741">Ruaj numrin IBAN</translation>
 <translation id="853246364274116957">Shfaqje teatrale muzikore</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">Vizito &lt;strong&gt;chrome://policy&lt;/strong&gt; për të parë listën e URL-ve të bllokuara dhe politika të tjera të detyruara nga administratori i sistemit tënd.</translation>
@@ -4302,6 +4302,7 @@ Detaje shtesë:
 <translation id="8891727572606052622">Modalitet i pavlefshëm përfaqësuesi.</translation>
 <translation id="8894794286471754040">Ana e gjatë në fillim</translation>
 <translation id="8895334001368918465">Për të përdorur një shërbim tjetër të plotësimit automatik në Chrome, aktivizoje atë te cilësimet e Android dhe këtu</translation>
+<translation id="8897221284075091877">Për të kërkuar të shikosh këtë përmbajtje, vazhdo me "Llogarinë tënde të Google"</translation>
 <translation id="8897428486789851669">Noti</translation>
 <translation id="8899807382908246773">Reklamat ndërhyrëse</translation>
 <translation id="8903921497873541725">Zmadho</translation>

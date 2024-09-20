@@ -2850,7 +2850,6 @@
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Нажмите Tab, а затем Ввод, чтобы управлять скачанными файлами в Chrome.</translation>
 <translation id="6254436959401408446">Недостаточно памяти для загрузки страницы</translation>
 <translation id="625463612687472648">Отозвать разрешение</translation>
-<translation id="6256360366378574605">{FINANCIAL_ACCOUNT,plural, =1{При совершении покупок в Chrome вам доступен вариант "<ph name="FINANCIAL_ACCOUNT_TYPES" />"}one{При совершении покупок в Chrome вам доступно несколько вариантов (<ph name="FINANCIAL_ACCOUNT_TYPES" />)}few{При совершении покупок в Chrome вам доступно несколько вариантов (<ph name="FINANCIAL_ACCOUNT_TYPES" />)}many{При совершении покупок в Chrome вам доступно несколько вариантов (<ph name="FINANCIAL_ACCOUNT_TYPES" />)}other{При совершении покупок в Chrome вам доступно несколько вариантов (<ph name="FINANCIAL_ACCOUNT_TYPES" />)}}</translation>
 <translation id="6259156558325130047">&amp;Повторить изменение порядка</translation>
 <translation id="6263376278284652872">Закладки <ph name="DOMAIN" /></translation>
 <translation id="6264376385120300461">Все равно скачать</translation>
@@ -4077,7 +4076,6 @@
 <translation id="84561192812921051">Администратор может удаленно изменять настройки вашего профиля и браузера, анализировать отчеты с информацией о браузере и выполнять другие задачи, а также управлять действиями на этом устройстве вне браузера Chrome.  <ph name="BEGIN_LINK" />Подробнее…<ph name="END_LINK" /></translation>
 <translation id="8457125768502047971">Бессрочно</translation>
 <translation id="8458202188076138974">Letter Extra</translation>
-<translation id="8458605637341729751">Продолжая, вы даете разрешение на сбор данных о точном местоположении своего устройства и их передачу владельцу этого аккаунта в целях борьбы с мошенничеством. Чтобы отключить Pix в Chrome, перейдите в <ph name="BEGIN_LINK1" />платежные настройки<ph name="END_LINK1" />.</translation>
 <translation id="8460854335417802511">Включить</translation>
 <translation id="8461694314515752532">Задать кодовую фразу для шифрования синхронизированных данных</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 банковская карта}one{# банковская карта}few{# банковские карты}many{# банковских карт}other{# банковской карты}}</translation>
@@ -4112,6 +4110,7 @@
 <translation id="8527228059738193856">Колонки</translation>
 <translation id="8527681393107582734">Сельское хозяйство и лесоводство</translation>
 <translation id="8528149813106025610">Детская одежда</translation>
+<translation id="8528479410903501741">Сохранить код IBAN</translation>
 <translation id="853246364274116957">Бродвей и музыкальные театры</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">Чтобы посмотреть список заблокированных URL и узнать, какие ещё правила заданы системным администратором, перейдите на страницу &lt;strong&gt;chrome://policy&lt;/strong&gt;.</translation>

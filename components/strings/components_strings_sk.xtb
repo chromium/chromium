@@ -2846,7 +2846,6 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />, po stlačení klávesov Tab a Enter môžete spravovať súbory stiahnuté v Chrome</translation>
 <translation id="6254436959401408446">Na otvorenie stránky nie je dostatok pamäte</translation>
 <translation id="625463612687472648">Prestať povoľovať</translation>
-<translation id="6256360366378574605">{FINANCIAL_ACCOUNT,plural, =1{Pri nákupoch v Chrome uvidíte možnosť <ph name="FINANCIAL_ACCOUNT_TYPES" />}few{Pri nákupoch v Chrome uvidíte možnosti <ph name="FINANCIAL_ACCOUNT_TYPES" />}many{When you make purchases on Chrome, see <ph name="FINANCIAL_ACCOUNT_TYPES" /> as options}other{Pri nákupoch v Chrome uvidíte možnosti <ph name="FINANCIAL_ACCOUNT_TYPES" />}}</translation>
 <translation id="6259156558325130047">&amp;Znova zmeniť poradie</translation>
 <translation id="6263376278284652872">Záložky domény <ph name="DOMAIN" /></translation>
 <translation id="6264376385120300461">Napriek tomu stiahnuť</translation>
@@ -3132,6 +3131,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="6767985426384634228">Chcete adresu aktualizovať?</translation>
 <translation id="6770747695101757579">Papier (bavlna)</translation>
 <translation id="677257480647123231">Bezpečnosť detí na internete</translation>
+<translation id="6772959465807028761">Ak chceš používať YouTube, pokračuj pomocou svojho účtu Google</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6777088782163649345">Používanie služby YouTube s voľbami tvojho rodiča</translation>
 <translation id="6779348349813025131">Správca hesiel Google potrebuje prístup ku Kľúčenke systému MacOS</translation>
@@ -4072,7 +4072,6 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="84561192812921051">Správca môže vzdialene vykonávať zmeny v profile a prehliadači, analyzovať informácie o prehliadači na základe reportov a vykonávať ďalšie potrebné úlohy. Aktivita v tomto zariadení môže byť spravovaná aj mimo Chromu.  <ph name="BEGIN_LINK" />Ďalšie informácie<ph name="END_LINK" /></translation>
 <translation id="8457125768502047971">Bez časového obmedzenia</translation>
 <translation id="8458202188076138974">List (Extra)</translation>
-<translation id="8458605637341729751">Pokračovaním vyjadrujete súhlas so zhromažďovaním údajov o presnej polohe vášho zariadenia a jej zdieľaním s majiteľom účtu na účely prevencie podvodov. Ak chcete vypnúť Pix v Chrome, prejdite do <ph name="BEGIN_LINK1" />nastavení platieb<ph name="END_LINK1" /></translation>
 <translation id="8460854335417802511">Zapnutie</translation>
 <translation id="8461694314515752532">Šifrovať synchronizované údaje pomocou vlastnej prístupovej frázy synchronizácie</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 kreditná karta}few{# kreditné karty}many{# kreditnej karty}other{# kreditných kariet}}</translation>
@@ -4107,6 +4106,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="8527228059738193856">Reproduktory</translation>
 <translation id="8527681393107582734">Poľnohospodárstvo a lesníctvo</translation>
 <translation id="8528149813106025610">Detská móda</translation>
+<translation id="8528479410903501741">Uložiť číslo IBAN</translation>
 <translation id="853246364274116957">Divadlo a hudba</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">Na stránke &lt;strong&gt;chrome://policy&lt;/strong&gt; nájdete zoznam zakázaných webových adries a ďalšie pravidlá presadzované vaším správcom systému.</translation>
@@ -4300,6 +4300,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="8891727572606052622">Neplatný režim proxy.</translation>
 <translation id="8894794286471754040">Dlhým okrajom</translation>
 <translation id="8895334001368918465">Ak chcete v Chrome používať inú službu automatického dopĺňania, zapnite ju v nastaveniach Androidu a tu</translation>
+<translation id="8897221284075091877">Ak chceš požiadať o zobrazenie tohto obsahu, pokračuj pomocou svojho účtu Google</translation>
 <translation id="8897428486789851669">Plávanie</translation>
 <translation id="8899807382908246773">Obťažujúce reklamy</translation>
 <translation id="8903921497873541725">Priblížiť</translation>

@@ -1124,7 +1124,6 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse all
 <translation id="1794212650797661990">Nascondi password per <ph name="DOMAIN" /></translation>
 <translation id="1794791083288629568">Invia feedback per aiutarci a risolvere questo problema.</translation>
 <translation id="1795214765651529549">Usa classico</translation>
-<translation id="1795668164971917185">La prossima volta che Google Navigazione sicura rileva un download sospetto, lo analizzerà automaticamente come parte della <ph name="LINK" /> che hai scelto</translation>
 <translation id="1796588414813960292">Le funzionalità che richiedono l'audio non funzioneranno</translation>
 <translation id="1797117170091578105">Gioca usando la tastiera di Chromebook. Puoi personalizzare i tasti assegnando loro azioni specifiche.</translation>
 <translation id="1798335429200675510">Fai clic con il tasto destro del mouse in una casella di testo per creare una bozza o perfezionare il lavoro esistente con IA di Google integrata. Al momento la disponibilità è limitata.</translation>
@@ -2218,6 +2217,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2546991196809436099">Aumenta lo zoom per ingrandire gli elementi sullo schermo. Premi il tasto per la ricerca + Ctrl + M per attivare e disattivare l'ingrandimento.</translation>
 <translation id="2548347166720081527">Autorizzazione <ph name="PERMISSION" /> consentita</translation>
 <translation id="2548545707296594436">Reimposta la cache del profilo eSIM</translation>
+<translation id="2549766998450508148">Premi da 1 a 4 tasti di modifica (Ctrl, Alt, Maiusc o Ricerca) e 1 altro tasto. Puoi anche selezionare un singolo tasto.</translation>
 <translation id="2549985041256363841">Avvia registrazione</translation>
 <translation id="2550212893339833758">Memoria sostituita</translation>
 <translation id="2550596535588364872">Vuoi consentire a <ph name="EXTENSION_NAME" /> di aprire <ph name="FILE_NAME" />?</translation>
@@ -5910,7 +5910,6 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="5263656105659419083">Per tornare facilmente al riquadro laterale, fai clic su Fissa in alto a destra</translation>
 <translation id="5264148714798105376">L'operazione potrebbe richiedere un minuto circa.</translation>
 <translation id="5264252276333215551">Connettiti a Internet per avviare l'app in modalità kiosk.</translation>
-<translation id="526539328530966548">Protezione avanzata</translation>
 <translation id="5265797726250773323">Errore durante l'installazione</translation>
 <translation id="5266113311903163739">Errore di importazione dell'autorità di certificazione</translation>
 <translation id="526622169288322445">Altre azioni per <ph name="ADDRESS_SUMMARY" /></translation>
@@ -10623,6 +10622,7 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8715480913140015283">Una scheda in secondo piano sta usando la videocamera</translation>
 <translation id="8716931980467311658">Vuoi eliminare tutti i dati e le applicazioni Linux della cartella File di Linux da questo dispositivo <ph name="DEVICE_TYPE" />?</translation>
 <translation id="8717864919010420084">Copia link</translation>
+<translation id="8718560545710680911">Chiedi di usare questa pagina</translation>
 <translation id="8718994464069323380">Touchscreen rilevato</translation>
 <translation id="8719472795285728850">In ascolto di attività estensione…</translation>
 <translation id="8719665168401479425">Usa le espressioni facciali per eseguire azioni</translation>

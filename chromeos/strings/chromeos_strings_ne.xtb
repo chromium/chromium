@@ -258,7 +258,6 @@
 <translation id="2148716181193084225">आज</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> वटा फोटो</translation>
 <translation id="2154460308960858308">सर्च बक्समा भएको टेक्स्ट हटाउनुहोस्</translation>
-<translation id="2156072344042480449">तपाईंले हालसालै प्रयोग गर्नुभएका २ वटा प्रम्प्ट। तपाईं यो पेजमा भएका बेला मात्र यी प्रम्प्टहरू प्रयोग गर्न सक्नुहुन्छ।</translation>
 <translation id="2157660087437850958">"इमोजी पिकर" जनाउने आइकन</translation>
 <translation id="2157959690810728433">लाइनमा राखिएको छ</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: फेरि प्रयास गर्नुहोस्</translation>
@@ -1167,6 +1166,7 @@
 <translation id="6831043979455480757">अनुवाद गर्नुहोस्</translation>
 <translation id="6846843854964504403">सुरक्षाका निम्ति सेटिङ रिसेट गर्ने प्रक्रिया</translation>
 <translation id="6853312040151791195">डिस्चार्ज हुने दर</translation>
+<translation id="6862228900689076919">तपाईंका एड्मिन यो सुविधा व्यवस्थापन गर्नुहुन्छ</translation>
 <translation id="6862416241246624313">प्रतिक्रिया पेस गरियो</translation>
 <translation id="6866732840889595464">डेजी</translation>
 <translation id="6871256179359663621">हल्का बैजनी</translation>
@@ -1195,16 +1195,6 @@
 <translation id="6975981640379148271">कोआलाहरू</translation>
 <translation id="6977381486153291903">फर्मवेयरको पुनरावृत्ति</translation>
 <translation id="6981982820502123353">पहुँच</translation>
-<translation id="698242338298293034">आफ्ना AI फोटोहरू पर्सनलाइज गर्न कुनै थिम रोज्नुहोस् अनि अन्डरलाइन गरिएका शब्दहरू चयन गर्नुहोस्।
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          AI फोटोका अझ धेरै अद्वितीय तथा विविधतायुक्त विकल्पहरू प्राप्त गर्न "मलाई कुनै प्रेरणादायी कुरा बताऊ" चयन गर्नुहोस्।
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          तपाईंले AI प्रयोग गरी फोटो बनाउँदा फोटोहरू बनाउने र उत्पादनको गुणस्तर सुधार गर्ने प्रयोजनका लागि तपाईंको प्रम्प्ट <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google को गोपनीयता नीति<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />बमोजिम Google AI का सर्भरमा पठाइन्छ।
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          जेनेरेटिभ AI परीक्षणकै क्रममा छ, पूर्ण रूपमा तयार भइसकेको छैन र हाल सीमित रूपमा उपलब्ध छ।</translation>
 <translation id="6982462588253070448">बालुवाका स्तूपहरू</translation>
 <translation id="7005833343836210400">डिभाइस अफलाइन छ</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> ले यो डिभाइस व्यवस्थापन गर्छ र यसले हेरिएका वेबपेज, पासवर्ड र इमेललगायत प्रयोगकर्ताले गर्ने सबै क्रियाकलाप हेर्न सक्छ।</translation>
@@ -1450,7 +1440,6 @@
 <translation id="8208861521865154048">लाभहरू</translation>
 <translation id="8226628635270268143">आफूलाई मन पर्ने फोटो र एल्बमहरू छनौट गर्नुहोस्</translation>
 <translation id="8227119283605456246">फाइल समावेश गर्नुहोस्</translation>
-<translation id="8227488649450500937">यीमध्ये कुनै प्रम्प्ट प्रयोग गर्नुहोस् वा <ph name="BEGIN_LINK_PROMPTING_GUIDE" />प्रम्प्ट लेख्ने तरिकाका बारेमा जानकारी दिने गाइड<ph name="END_LINK_PROMPTING_GUIDE" /> हेर्नुहोस्</translation>
 <translation id="8230672074305416752">डिफल्ट नेटवर्कको गेटवे पिङ गर्न सकिएन</translation>
 <translation id="8236972776513018241">ट्रान्स्क्रिप्ट</translation>
 <translation id="8238771987802558562">कुनै APN छनौट गर्नुहोस्</translation>

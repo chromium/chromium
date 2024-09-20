@@ -215,6 +215,7 @@ Pääset alkuun esimerkiksi näillä tavoilla.</translation>
 <translation id="1703117532528082099">Aktiivinen ikkuna kiinnitetty vasemmalle</translation>
 <translation id="1708345662127501511">Työpöytä: <ph name="DESK_NAME" /></translation>
 <translation id="1709762881904163296">Verkkoasetukset</translation>
+<translation id="171610090693716835">Pidä tilanne hallussa personoitujen, keskittymiseen tarkoitettujen soittolistojen avulla. YouTube Music ja YouTube ilman mainoksia – 3 kuukautta YouTube Premiumia maksutta.</translation>
 <translation id="1719094688023114093">Livetekstitys on päällä.</translation>
 <translation id="1720011244392820496">Laita Wi-Fin synkronointi päälle</translation>
 <translation id="1720230731642245863">Hotspot on pois päältä</translation>
@@ -1414,6 +1415,7 @@ Ei liitettyjä laitteita.</translation>
 <translation id="5777841717266010279">Lopetetaanko näytön jakaminen?</translation>
 <translation id="5779721926447984944">Kiinnitetyt tiedostot</translation>
 <translation id="5785221443435874078">Poista tämä ehdotus</translation>
+<translation id="5787431783058088906">Lunasta etu</translation>
 <translation id="5788127256798019331">Play-tiedostot</translation>
 <translation id="5788535737706478207">Avaa viimeisin suljettu välilehti tai ikkuna</translation>
 <translation id="5790085346892983794">Onnistui</translation>
@@ -1645,6 +1647,7 @@ Uusi asennus</translation>
 <translation id="6574587113394758819">Ilmoitus (<ph name="APP_TITLE" />) on piilotettu, koska urkinnan esto on päällä</translation>
 <translation id="6574622320167699133">Lukitus avattu puhelimella. Avaa napauttamalla tai klikkaamalla.</translation>
 <translation id="6578407462441924264">Nimetön</translation>
+<translation id="6582012689384648647">Salli pääsy YouTube Musiciin, niin saat personoituja keskittymiseen tarkoitettuja soittolistoja</translation>
 <translation id="6582034443359256692">Lasketaan akun varaustasoa.</translation>
 <translation id="6585808820553845416">Istunnon loppumiseen on <ph name="SESSION_TIME_REMAINING" />.</translation>
 <translation id="6593850935013518327"><ph name="PRIMARY_TEXT" />, <ph name="SECONDARY_TEXT" /></translation>
@@ -1883,6 +1886,7 @@ Uusi asennus</translation>
 <translation id="7477793887173910789">Ohjaa musiikkia, videoita ja muuta</translation>
 <translation id="7488762544858401571">Muokattu</translation>
 <translation id="7489261257412536105">Koko näytön tila päälle/pois</translation>
+<translation id="7490157877815329797">YouTube Music Premiumilla saat musiikin ilman mainoksia ja personoitua keskittymismusiikkia</translation>
 <translation id="7490360161041035804">Voit kiinnittää tärkeitä tiedostoja, mukaan lukien Google Drive ‐tiedostoja. Voit kiinnittää kohteen viemällä hiiren kohteen päälle tai avaamalla Tiedostot ja klikkaamalla kohdetta hiiren kakkospainikkeella.</translation>
 <translation id="7497767806359279797">Valitse kieli ja näppäimistö</translation>
 <translation id="7507162824403726948">Viimeistele henkilöllisyyden vahvistaminen</translation>
@@ -2158,6 +2162,7 @@ Sammuta laite painamalla sen virtapainiketta pitkään uudelleen.</translation>
 <translation id="8380784334203145311">Hyvää yötä</translation>
 <translation id="8382715499079447151">Urkinnan esto</translation>
 <translation id="8383614331548401927">Tervetuloa taas</translation>
+<translation id="838540623579162843">Tilaa Music Premium</translation>
 <translation id="8388750414311082622">Viimeistä työpöytää ei voi poistaa.</translation>
 <translation id="8394567579869570560">Vanhempasi lukitsi tämän laitteen</translation>
 <translation id="8401850874595457088">Avaa kielivalikko</translation>

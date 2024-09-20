@@ -2844,7 +2844,6 @@ Je kunt ook contact opnemen met de site-eigenaar en voorstellen dat die upgradet
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />, druk op Tab en daarna op Enter om bestanden te beheren die je in Chrome hebt gedownload</translation>
 <translation id="6254436959401408446">Onvoldoende geheugen om deze pagina te openen</translation>
 <translation id="625463612687472648">Niet meer toestaan</translation>
-<translation id="6256360366378574605">{FINANCIAL_ACCOUNT,plural, =1{Als je aankopen doet in Chrome, zie je <ph name="FINANCIAL_ACCOUNT_TYPES" /> als optie}other{Als je aankopen doet in Chrome, zie je <ph name="FINANCIAL_ACCOUNT_TYPES" /> als opties}}</translation>
 <translation id="6259156558325130047">&amp;Opnieuw volgorde wijzigen</translation>
 <translation id="6263376278284652872">Bookmarks voor <ph name="DOMAIN" /></translation>
 <translation id="6264376385120300461">Toch downloaden</translation>
@@ -4071,7 +4070,6 @@ Aanvullende informatie:
 <translation id="84561192812921051">Je beheerder kan op afstand wijzigingen aanbrengen in je profiel en browser, informatie over de browser analyseren via rapportage en andere nodige taken uitvoeren. Activiteit op dit apparaat kan ook buiten Chrome worden beheerd.  <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
 <translation id="8457125768502047971">Onbepaalde tijd</translation>
 <translation id="8458202188076138974">Letter Extra</translation>
-<translation id="8458605637341729751">Door verder te gaan, ga je ermee akkoord dat de exacte locatie van je apparaat wordt verzameld en gedeeld met de accounthouder om fraude te voorkomen. Als je Pix in Chrome wilt uitzetten, ga je naar je <ph name="BEGIN_LINK1" />betaalinstellingen<ph name="END_LINK1" /></translation>
 <translation id="8460854335417802511">Aanzetten</translation>
 <translation id="8461694314515752532">Gesynchroniseerde gegevens versleutelen met een eigen wachtwoordzin</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 creditcard}other{# creditcards}}</translation>
@@ -4106,6 +4104,7 @@ Aanvullende informatie:
 <translation id="8527228059738193856">Speakers</translation>
 <translation id="8527681393107582734">Landbouw en bosbouw</translation>
 <translation id="8528149813106025610">Kinderkleding</translation>
+<translation id="8528479410903501741">IBAN opslaan</translation>
 <translation id="853246364274116957">Broadway en musicals</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">Ga naar &lt;strong&gt;chrome://policy&lt;/strong&gt; om de lijst met geblokkeerde URL's en andere beleidsregels te bekijken die worden afgedwongen door je systeembeheerder.</translation>

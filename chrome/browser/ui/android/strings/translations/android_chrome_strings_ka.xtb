@@ -297,6 +297,7 @@
 <translation id="2450083983707403292">გსურთ, ხელახლა ჩამოიტვირთოს <ph name="FILE_NAME" />?</translation>
 <translation id="2451607499823206582">მიმდინარეობს თვალის მიდევნება</translation>
 <translation id="2453860139492968684">დასრულება</translation>
+<translation id="2461378706168271257">თქვენს ჩანართებში ძიება</translation>
 <translation id="2461822463642141190">ამჟამინდელი</translation>
 <translation id="2468444275314013497">თქვენ ბრაუზერი წესრიგშია</translation>
 <translation id="2472163211318554013">Chrome-ის შესაძლებლობები მაქსიმალურად რომ გამოიყენოთ, შედით სისტემაში</translation>
@@ -601,6 +602,7 @@
 <translation id="3847319713229060696">ხელი შეუწყვეთ ვების უსაფრთხოების ყველასთვის გაუმჯობესებას</translation>
 <translation id="3856096718352044181">დაადასტურეთ პროვაიდერის სისწორე ან ცადეთ მოგვიანებით</translation>
 <translation id="3858860766373142691">სახელი</translation>
+<translation id="3873174561423636563">გასაგრძელებლად <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ამ საიტს გაუზიარებს თქვენს შემდეგ მონაცემებს: <ph name="FIELDS_STRING" />. გაეცანით ამ საიტის <ph name="BEGIN_LINK1" />მომსახურების პირობებს<ph name="END_LINK1" />.</translation>
 <translation id="3892148308691398805">ტექსტის კოპირება</translation>
 <translation id="3899682235662194879">ყველა ინკოგნიტო ჩანართის დახურვა</translation>
 <translation id="3900966090527141178">პაროლების ექსპორტი</translation>
@@ -1458,6 +1460,7 @@
 <translation id="7656721520530864426">საიტები არ არის</translation>
 <translation id="7656862631699126784">ინკოგნიტოს ჩაკეტვის ჩართვა</translation>
 <translation id="7658239707568436148">გაუქმება</translation>
+<translation id="7663320421139257046">გასაგრძელებლად <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ამ საიტს გაუზიარებს თქვენს შემდეგ მონაცემებს: <ph name="FIELDS_STRING" />. გაეცანით ამ საიტის <ph name="BEGIN_LINK1" />კონფიდენციალურობის დებულებას<ph name="END_LINK1" />.</translation>
 <translation id="7665369617277396874">ანგარიშის დამატება</translation>
 <translation id="766587987807204883">აქ გამოჩნდება სტატიები, რომელთა წაკითხვაც ხაზგარეშე რეჟიმშიც შეგიძლიათ</translation>
 <translation id="7666185984446444960"><ph name="TAB_GROUPS_AND_TABS_PART" /> დაიხურა</translation>

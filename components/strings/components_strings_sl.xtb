@@ -2851,7 +2851,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite tabulatorko, nato Enter, če želite upravljati datoteke, ki ste jih prenesli v Chromu</translation>
 <translation id="6254436959401408446">Ni dovolj pomnilnika za odpiranje te strani</translation>
 <translation id="625463612687472648">Ne dovoli več</translation>
-<translation id="6256360366378574605">{FINANCIAL_ACCOUNT,plural, =1{Za nakupe v Chromu prikaži <ph name="FINANCIAL_ACCOUNT_TYPES" /> kot možnost}one{Za nakupe v Chromu prikaži <ph name="FINANCIAL_ACCOUNT_TYPES" /> kot možnosti}two{Za nakupe v Chromu prikaži <ph name="FINANCIAL_ACCOUNT_TYPES" /> kot možnosti}few{Za nakupe v Chromu prikaži <ph name="FINANCIAL_ACCOUNT_TYPES" /> kot možnosti}other{Za nakupe v Chromu prikaži <ph name="FINANCIAL_ACCOUNT_TYPES" /> kot možnosti}}</translation>
 <translation id="6259156558325130047">&amp;Uveljavi razvrstitev</translation>
 <translation id="6263376278284652872">Zaznamki <ph name="DOMAIN" /></translation>
 <translation id="6264376385120300461">Vseeno prenesi</translation>
@@ -4078,7 +4077,6 @@ Dodatne podrobnosti:
 <translation id="84561192812921051">Skrbnik lahko na daljavo spreminja vaš profil in brskalnik, analizira podatke o brskalniku prek poročanja in izvaja druga potrebna opravila. Dejavnost v tej napravi morda tudi upravljajo zunaj Chroma.  <ph name="BEGIN_LINK" />Več o tem<ph name="END_LINK" /></translation>
 <translation id="8457125768502047971">Neomejeno</translation>
 <translation id="8458202188076138974">Letter Extra</translation>
-<translation id="8458605637341729751">Če nadaljujete, se strinjate, da se natančna lokacija naprave zbira in deli z imetnikom računa za namene preprečevanja prevar. Če želite izklopiti Pix v Chromu, odprite <ph name="BEGIN_LINK1" />nastavitve plačil<ph name="END_LINK1" />.</translation>
 <translation id="8460854335417802511">Vklopi</translation>
 <translation id="8461694314515752532">Šifriranje sinhroniziranih podatkov z vašim geslom za sinhronizacijo</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 kreditna kartica}one{# kreditna kartica}two{# kreditni kartici}few{# kreditne kartice}other{# kreditnih kartic}}</translation>
@@ -4113,6 +4111,7 @@ Dodatne podrobnosti:
 <translation id="8527228059738193856">Zvočniki</translation>
 <translation id="8527681393107582734">Kmetijstvo in gozdarstvo</translation>
 <translation id="8528149813106025610">Otroška oblačila</translation>
+<translation id="8528479410903501741">Shranjevanje številke IBAN</translation>
 <translation id="853246364274116957">Broadway in muzikali</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">Na &lt;strong&gt;chrome://policy&lt;/strong&gt; si lahko ogledate seznam blokiranih URL-jev in drugih pravilnikov, ki jih uveljavlja skrbnik sistema.</translation>

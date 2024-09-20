@@ -2850,7 +2850,6 @@
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />፣ ከዚያ በChrome ውስጥ ያወረዷቸውን ፋይሎች ለማቀናበር ትርን ከዚያ አስገባን ይጫኑ</translation>
 <translation id="6254436959401408446">ይህን ገፅ ለመክፈት በቂ ማህደረ ትውስታ የለም</translation>
 <translation id="625463612687472648">መፍቀድ አቁም</translation>
-<translation id="6256360366378574605">{FINANCIAL_ACCOUNT,plural, =1{በChrome ላይ ግዢዎችን ሲፈጽሙ <ph name="FINANCIAL_ACCOUNT_TYPES" /> የሚለውን እንደ አማራጭ ይመልከቱ}one{በChrome ላይ ግዢዎችን ሲፈጽሙ <ph name="FINANCIAL_ACCOUNT_TYPES" /> የሚለውን እንደ አማራጭ ይመልከቱ}other{በChrome ላይ ግዢዎችን ሲፈጽሙ <ph name="FINANCIAL_ACCOUNT_TYPES" /> የሚሉትን እንደ አማራጭ ይመልከቱ}}</translation>
 <translation id="6259156558325130047">&amp;ዳግም ደርድርን ድገም</translation>
 <translation id="6263376278284652872"><ph name="DOMAIN" /> እልባቶች</translation>
 <translation id="6264376385120300461">ለማንኛውም አውርድ</translation>
@@ -4077,7 +4076,6 @@
 <translation id="84561192812921051">አስተዳዳሪዎ በመገለጫዎ ላይ በርቀት ለውጦችን ማድረግ፣ ሪፖርት በማድረግ ስለአሳሹ መረጃን መተንተን እና ሌሎች አስፈላጊ ተግባራትን ማከናወን ይችላል። በዚህ መሣሪያ ላይ ያለ እንቅስቃሴ ከChrome ውጭም ሊስተዳደር ይችላል።  <ph name="BEGIN_LINK" />የበለጠ ለመረዳት<ph name="END_LINK" /></translation>
 <translation id="8457125768502047971">ያልተወሰነ</translation>
 <translation id="8458202188076138974">ደብዳቤ ኤክስትራ</translation>
-<translation id="8458605637341729751">በመቀጠልዎ ከመለያ ባለቤትዎ ጋር ከመጭበርበር የመከላከል ዓላማዎች የመሣሪያዎ ትክክለኛ ቦታ እንዲሰበሰብ እና እንዲጋራ ይስማማሉ። Chrome ውስጥ Pixን ለማጥፋት ወደ የእርስዎ <ph name="BEGIN_LINK1" />የክፍያ ቅንብሮች<ph name="END_LINK1" /> ይሂዱ</translation>
 <translation id="8460854335417802511">አብራው</translation>
 <translation id="8461694314515752532">የሰመረ ውሂብ በራስዎ የስምረት ይለፍ ሐረግ ያመሣጥሩ</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 ክሬዲት ካርድ}one{# ክሬዲት ካርዶች}other{# ክሬዲት ካርዶች}}</translation>
@@ -4112,6 +4110,7 @@
 <translation id="8527228059738193856">ድምፅ ማውጫዎች</translation>
 <translation id="8527681393107582734">ግብርና እና የደን ልማት</translation>
 <translation id="8528149813106025610">የልጆች አልባሳት</translation>
+<translation id="8528479410903501741">አይቢኤኤንን ያስቀምጡ</translation>
 <translation id="853246364274116957">ብሮድዌይ እና ሙዚቃዊ ቲያትር</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">የታገዱ የዩአርኤሎች ዝርዝር እና ሌሎች በሥርዓት አስተዳዳሪዎ አስገዳጅነት የተሰጣቸው መመሪያዎችን ለማየት &lt;strong&gt;chrome://policy&lt;/strong&gt;ን ይጎብኙ።</translation>

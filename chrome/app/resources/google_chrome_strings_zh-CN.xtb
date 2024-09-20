@@ -213,6 +213,7 @@
 <translation id="3596080736082218006">{COUNT,plural, =0{您的管理员要求您重新启动 Chrome 以应用一项更新}=1{您的管理员要求您重新启动 Chrome 以应用一项更新。您的无痕式窗口不会重新打开。}other{您的管理员要求您重新启动 Chrome 以应用一项更新。您的 # 个无痕式窗口不会重新打开。}}</translation>
 <translation id="3597003331831379823">未能以提升的权限运行设置。<ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3609788354808247807">您近期未访问过该网站。Chrome 移除了<ph name="PERMISSION_1" />、<ph name="PERMISSION_2" />和<ph name="PERMISSION_3" />权限</translation>
+<translation id="3622716124581627104">识别事物或地点，并复制或翻译文本。当您使用 Google 智能镜头时，系统会将相关页面的屏幕截图发送给 Google。<ph name="LEARN_MORE" /></translation>
 <translation id="3622797965165704966">现在，无论是通过Google账号还是在共用的计算机上，您都可以更轻松地使用Chrome。</translation>
 <translation id="3625345586754200168">试用智能镜头</translation>
 <translation id="3635073343384702370">您需要先保存密码，然后才能使用 Chrome 的密码检查功能</translation>
@@ -393,6 +394,7 @@
 <translation id="608006075545470555">向此浏览器添加工作资料</translation>
 <translation id="6097822892606850415">借助 AI 更自信地撰写内容</translation>
 <translation id="6113794647360055231">Chrome现在更好用了</translation>
+<translation id="6116252277240876590">使用此语言显示 Chrome 中的菜单、设置、提醒和其他文字</translation>
 <translation id="6134085236017727171">如需使用麦克风，请在<ph name="BEGIN_LINK" />系统设置<ph name="END_LINK" />中授予 Chrome 访问权限</translation>
 <translation id="6135456723633883042">这些标签页正在使用额外的资源。为了提升性能，请让 Chrome 将它们设为非活跃状态。</translation>
 <translation id="6145313976051292476">在 Chrome 中打开 PDF 文件</translation>
@@ -593,6 +595,7 @@
 <translation id="8498858610309223613">Google Chrome 刚刚应用了一项特殊的安全更新。请立即重启，以便系统恢复您的标签页。</translation>
 <translation id="8516431725144212809">Chrome 推测出的您的兴趣</translation>
 <translation id="8521348052903287641">Google Chrome 开发者版的入站规则，允许 mDNS 流量。</translation>
+<translation id="852529348814672339">以此语言显示 Chrome 界面内容</translation>
 <translation id="8550334526674375523">此工作资料与您的个人资料是完全分开的。</translation>
 <translation id="8555465886620020932">发生了服务错误：<ph name="SERVICE_ERROR" />。</translation>
 <translation id="8571790202382503603">通过使用多份 Chrome 个人资料，您可将自己的所有 Chrome 信息分门别类，从而更轻松地将工作和娱乐分开。</translation>

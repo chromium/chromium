@@ -258,7 +258,6 @@
 <translation id="2148716181193084225">I dag</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> foton</translation>
 <translation id="2154460308960858308">Rensa sökning</translation>
-<translation id="2156072344042480449">Dina två senaste promptar. Du kan bara använda dessa promptar när du befinner dig på den här sidan.</translation>
 <translation id="2157660087437850958">emojiväljare</translation>
 <translation id="2157959690810728433">I KÖ</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Försök igen</translation>
@@ -1196,16 +1195,6 @@
 <translation id="6975981640379148271">koalor</translation>
 <translation id="6977381486153291903">Revision av firmware</translation>
 <translation id="6981982820502123353">Tillgänglighet</translation>
-<translation id="698242338298293034">Välj ett tema och välj sedan de understrukna orden för att anpassa AI-bilderna.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Välj Inspirera mig för att få mer unika och varierade AI-bildalternativ.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          När du skapar med AI skickas uppmaningen till Googles AI-servrar för att generera bilder och förbättra produkten i enlighet med <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Googles integritetspolicy<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Generativ AI är experimentell, under utveckling och har för närvarande begränsad tillgänglighet.</translation>
 <translation id="6982462588253070448">sanddyner</translation>
 <translation id="7005833343836210400">Enheten är offline</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> hanterar den här enheten och har tillgång till all användaraktivitet, inklusive besökta webbsidor, lösenord och e-post.</translation>
@@ -1451,7 +1440,6 @@ Ladda ned transkriptionsmodellen (upp till 100 MB) för att få transkriptioner
 <translation id="8208861521865154048">Förmåner</translation>
 <translation id="8226628635270268143">Välj favoritfoton och favoritalbum</translation>
 <translation id="8227119283605456246">Bifoga fil</translation>
-<translation id="8227488649450500937">Testa någon av dessa promptar eller läs <ph name="BEGIN_LINK_PROMPTING_GUIDE" />promptguiden<ph name="END_LINK_PROMPTING_GUIDE" />.</translation>
 <translation id="8230672074305416752">Det gick inte att pinga standardnätverkets gateway</translation>
 <translation id="8236972776513018241">Transkription</translation>
 <translation id="8238771987802558562">Välj ett APN</translation>

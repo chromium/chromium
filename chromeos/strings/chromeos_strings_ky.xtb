@@ -258,7 +258,6 @@
 <translation id="2148716181193084225">Бүгүн</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> сүрөт</translation>
 <translation id="2154460308960858308">Изделип жаткан нерсени өчүрүү</translation>
-<translation id="2156072344042480449">Эң акыркы 2 кеңеш. Бул кеңештерди ушул баракта болгондо гана колдоно аласыз.</translation>
 <translation id="2157660087437850958">быйтыкча тандагыч</translation>
 <translation id="2157959690810728433">КЕЗЕККЕ КОЮЛДУ</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Кайталоо</translation>
@@ -1167,6 +1166,7 @@
 <translation id="6831043979455480757">Которуу</translation>
 <translation id="6846843854964504403">Коопсуздукту баштапкы абалга келтирүү</translation>
 <translation id="6853312040151791195">Батареянын кубатынын түгөнүү көрсөткүчү</translation>
+<translation id="6862228900689076919">Бул функцияны администраторуңуз башкарат</translation>
 <translation id="6862416241246624313">Пикир жөнөтүлдү</translation>
 <translation id="6866732840889595464">ромашка</translation>
 <translation id="6871256179359663621">ачык кызгылт көгүш</translation>
@@ -1195,16 +1195,6 @@
 <translation id="6975981640379148271">коалалар</translation>
 <translation id="6977381486153291903">Орнотулган программаны оңдоо</translation>
 <translation id="6981982820502123353">Атайын мүмкүн-төр</translation>
-<translation id="698242338298293034">Тема тандап, асты сызылган сөздөрдүн жардамы менен ЖИ түзгөн сүрөттөрдү жекечелештириңиз.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Өзгөчө жана түрдүү сүрөттөрдү алуу үчүн "Мени шыктандыр" дегенди тандаңыз.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          ЖИ аркылуу контент түзсөңүз, сурам Google ЖИ серверлерине жөнөтүлүп, <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google'дун Купуялык эрежелерине<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" /> ылайык сүрөттөрдү түзүү жана кызматты жакшыртуу үчүн колдонулат.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Жаратуучу жасалма интеллект сынамык функция жана иштеп чыгуунун алгачкы баскычында болгондуктан, учурда жеткиликтүүлүгү чектелген.</translation>
 <translation id="6982462588253070448">кум дөбөлөр</translation>
 <translation id="7005833343836210400">Түзмөк офлайн режиминде</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> бул түзмөктү башкарып, андагы колдонуучунун бардык аракеттерине, анын ичинде баш баккан веб-барактарга, сырсөздөргө жана электрондук каттарга кирүү мүмкүнчүлүгү бар.</translation>
@@ -1450,7 +1440,6 @@
 <translation id="8208861521865154048">Бонустар</translation>
 <translation id="8226628635270268143">Сүйүктүү сүрөттөр менен альбомдорду тандоо</translation>
 <translation id="8227119283605456246">Файл тиркөө</translation>
-<translation id="8227488649450500937">Бул кеңештердин бирин колдонуп көрүп же <ph name="BEGIN_LINK_PROMPTING_GUIDE" />кеңештер боюнча жетектемени<ph name="END_LINK_PROMPTING_GUIDE" /> караңыз</translation>
 <translation id="8230672074305416752">Демейки тармактын шлюзуна ping сурамы жөнөтүлгөн жок</translation>
 <translation id="8236972776513018241">Транскрипция</translation>
 <translation id="8238771987802558562">APN'ди тандоо</translation>

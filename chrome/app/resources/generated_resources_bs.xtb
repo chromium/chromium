@@ -1132,7 +1132,6 @@ da li    proksi server funkcionira. Ako smatrate da ne trebate koristiti
 <translation id="1794212650797661990">Sakrivanje lozinke za domenu <ph name="DOMAIN" /></translation>
 <translation id="1794791083288629568">Šaljite nam povratne informacije kako bismo riješili ovaj problem.</translation>
 <translation id="1795214765651529549">Koristite klasičnu verziju</translation>
-<translation id="1795668164971917185">Kada sljedeći put Sigurno pregledanje na Googleu pronađe sumnjivo preuzimanje, automatski će ga skenirati u sklopu <ph name="LINK" /> koju ste odabrali</translation>
 <translation id="1796588414813960292">Funkcije za koje je potreban zvuk neće funkcionirati</translation>
 <translation id="1797117170091578105">Igrajte pomoću Chromebookove tastature. Tipke možete prilagoditi određenim radnjama.</translation>
 <translation id="1798335429200675510">Kliknite desnim klikom u okvir za tekst da kreirate nedovršenu verziju ili poboljšate postojeću, što vam omogućava Google AI. Trenutno je njegova dostupnost ograničena.</translation>
@@ -2230,6 +2229,7 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="2546991196809436099">Uvećajte da stavke na ekranu budu veće. Koristite tipku za pretraživanje + Ctrl + M da uključite i isključite povećalo.</translation>
 <translation id="2548347166720081527">Dato je odobrenje za <ph name="PERMISSION" /></translation>
 <translation id="2548545707296594436">Poništi keš memoriju profila eSIM-a</translation>
+<translation id="2549766998450508148">Pritisnite 1 – 4 modifikatorske tipke (ctrl, alt, shift ili pretraživanje) i još jednu tipku. Možete odabrati i samo jednu tipku.</translation>
 <translation id="2549985041256363841">Započni snimanje</translation>
 <translation id="2550212893339833758">Zamijenjena memorija</translation>
 <translation id="2550596535588364872">Dozvoliti ekstenziji <ph name="EXTENSION_NAME" /> da otvori <ph name="FILE_NAME" />?</translation>
@@ -5923,7 +5923,6 @@ Koristite Ctrl + Alt + Smanjivanje osvjetljenja da umanjite.</translation>
 <translation id="5263656105659419083">Da se lako vratite na bočnu ploču, kliknite na Zakači u gornjem desnom uglu</translation>
 <translation id="5264148714798105376">Ovo može potrajati minut ili više.</translation>
 <translation id="5264252276333215551">Povežite se na internet da pokrenete aplikaciju u načinu rada kioska.</translation>
-<translation id="526539328530966548">poboljšane zaštite</translation>
 <translation id="5265797726250773323">Greška prilikom instalacije</translation>
 <translation id="5266113311903163739">Greška prilikom uvoza organa za izdavanje potvrde</translation>
 <translation id="526622169288322445">Više radnji za adresu <ph name="ADDRESS_SUMMARY" /></translation>
@@ -10643,6 +10642,7 @@ Fajl ključa: <ph name="KEY_FILE" />
 <translation id="8715480913140015283">Kartica u pozadini koristi vašu kameru</translation>
 <translation id="8716931980467311658">Izbrisati sve Linux aplikacije i podatke u Linux folderima fajlova s ovog uređaja <ph name="DEVICE_TYPE" />?</translation>
 <translation id="8717864919010420084">Kopiraj link</translation>
+<translation id="8718560545710680911">Pitaj pomoću ove stranice</translation>
 <translation id="8718994464069323380">Otkriven je ekran na dodir</translation>
 <translation id="8719472795285728850">Osluškivanje aktivnosti ekstenzije…</translation>
 <translation id="8719665168401479425">Korištenje pokreta licem za izvršavanje radnji</translation>

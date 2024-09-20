@@ -2850,7 +2850,6 @@
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome'до жүктөлүп алынган файлдарды башкаруу үчүн Tab, андан кийин Enter баскычын басыңыз</translation>
 <translation id="6254436959401408446">Бул баракчаны ачууга эстутум жетишсиз</translation>
 <translation id="625463612687472648">Төмөнкүнү колдонууга тыюу салуу:</translation>
-<translation id="6256360366378574605">{FINANCIAL_ACCOUNT,plural, =1{Chrome'до нерселерди сатып алганда, <ph name="FINANCIAL_ACCOUNT_TYPES" /> эсебин мүмкүнчүлүк катары караңыз}other{Chrome'до нерселерди сатып алганда, <ph name="FINANCIAL_ACCOUNT_TYPES" /> эсебин мүмкүнчүлүк катары караңыз}}</translation>
 <translation id="6259156558325130047">Иреттештирүүнү &amp;кайталоо</translation>
 <translation id="6263376278284652872"><ph name="DOMAIN" /> кыстармалар</translation>
 <translation id="6264376385120300461">Баары бир жүктөп алуу</translation>
@@ -4076,7 +4075,6 @@
 <translation id="84561192812921051">Администратор профилиңизге жана серепчиге алыстан өзгөртүүлөрдү киргизип, отчёттор аркылуу серепчи тууралуу маалыматты талдап жана башка тапшырмаларды аткара алат. Бул түзмөктө аткарылган аракеттер Chrome'дон тышкары да башкарылышы мүмкүн.  <ph name="BEGIN_LINK" />Кеңири маалымат<ph name="END_LINK" /></translation>
 <translation id="8457125768502047971">Белгисиз</translation>
 <translation id="8458202188076138974">Letter Extra</translation>
-<translation id="8458605637341729751">Улантуу менен, шылуундуктун алдын алуу максатында түзмөгүңүздүн турган жери жөнүндө так маалыматты чогултуп, аккаунттун ээси менен бөлүшүүгө макулдугуңузду билдиресиз. Chrome'до Pix'ти өчүрүү үчүн <ph name="BEGIN_LINK1" />төлөм параметрлерине<ph name="END_LINK1" /> өтүңүз</translation>
 <translation id="8460854335417802511">Аны күйгүзүү</translation>
 <translation id="8461694314515752532">Шайкештирилген дайындарды өзүңүздүн шайкештирүүчү купуя сөз айкашыңыз менен шифрлеңиз</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 насыя карта}other{# насыя карта}}</translation>
@@ -4111,6 +4109,7 @@
 <translation id="8527228059738193856">Динамиктер</translation>
 <translation id="8527681393107582734">Айыл чарба жана токойчулук</translation>
 <translation id="8528149813106025610">Балдардын кийим-кечеси</translation>
+<translation id="8528479410903501741">IBAN кодун сактоо</translation>
 <translation id="853246364274116957">Бродвей жана музыкалык театр</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">Бөгөттөлгөн URL'дерди жана тутум администраторуңуз ишке киргизген эрежелерди көрүү үчүн &lt;strong&gt;chrome://policy&lt;/strong&gt; дарегине кириңиз.</translation>

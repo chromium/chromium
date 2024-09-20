@@ -217,6 +217,7 @@
 <translation id="3596080736082218006">{COUNT,plural, =0{管理員要求您重新啟動 Chrome，以套用更新}=1{管理員要求您重新啟動 Chrome，以套用更新。您的無痕式視窗不會重新開啟。}other{管理員要求您重新啟動 Chrome，以套用更新。您的 # 個無痕式視窗不會重新開啟。}}</translation>
 <translation id="3597003331831379823">無法按更高權限執行設定。<ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3609788354808247807">由於最近沒有瀏覽記錄，Chrome 已移除<ph name="PERMISSION_1" />、<ph name="PERMISSION_2" />和、<ph name="PERMISSION_3" />權限</translation>
+<translation id="3622716124581627104">識別物件或地點，並複製或翻譯文字。使用「Google 智能鏡頭」時，系統會向 Google 傳送頁面的螢幕截圖。<ph name="LEARN_MORE" /></translation>
 <translation id="3622797965165704966">無論是登入 Google 帳戶使用 Chrome，還是以 Google 帳戶使用共用電腦，現在都更輕而易舉。</translation>
 <translation id="3625345586754200168">試用「智能鏡頭」</translation>
 <translation id="3635073343384702370">儲存密碼時，Chrome 可檢查你的密碼</translation>
@@ -401,6 +402,7 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="608006075545470555">將工作設定檔新增至此瀏覽器</translation>
 <translation id="6097822892606850415">AI 可讓你在撰寫內容時更有自信</translation>
 <translation id="6113794647360055231">Chrome 變得更好用了</translation>
+<translation id="6116252277240876590">此語言用於顯示 Chrome 中的選單、設定、快訊和其他文字</translation>
 <translation id="6134085236017727171">如要使用麥克風，請在<ph name="BEGIN_LINK" />系統設定<ph name="END_LINK" />中向 Chrome 授予存取權</translation>
 <translation id="6135456723633883042">這些分頁正在使用額外的資源。為提升效能，請讓 Chrome 將其設定為閒置分頁。</translation>
 <translation id="6145313976051292476">在 Chrome 中開啟 PDF</translation>
@@ -601,6 +603,7 @@ Google Chrome 無法復原您的設定。</translation>
 <translation id="8498858610309223613">Google Chrome 剛套用了特別的安全性更新。請立即重新啟動，我們將會還原您的分頁。</translation>
 <translation id="8516431725144212809">Chrome 推測您有以下興趣</translation>
 <translation id="8521348052903287641">允許 mDNS 流量的 Google Chrome 開發人員版輸入規則。</translation>
+<translation id="852529348814672339">使用此語言顯示 Chrome 的使用者介面</translation>
 <translation id="8550334526674375523">此工作設定檔與個人設定檔是完全分開。</translation>
 <translation id="8555465886620020932">服務錯誤：<ph name="SERVICE_ERROR" />。</translation>
 <translation id="8571790202382503603">透過 Chrome 設定檔，您可將所有 Chrome 內容分門別類，從而更輕易劃分工作和娛樂內容。</translation>

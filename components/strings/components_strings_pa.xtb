@@ -2847,7 +2847,6 @@
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome ਵਿੱਚ ਤੁਹਾਡੇ ਵੱਲੋਂ ਡਾਊਨਲੋਡ ਕੀਤੀਆਂ ਫ਼ਾਈਲਾਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰਨ ਲਈ Tab ਅਤੇ ਫਿਰ Enter ਦਬਾਓ</translation>
 <translation id="6254436959401408446">ਇਸ ਪੰਨੇ ਨੂੰ ਖੋਲ੍ਹਣ ਲਈ ਲੋੜੀਂਦੀ ਮੈਮੋਰੀ ਨਹੀਂ ਹੈ</translation>
 <translation id="625463612687472648">ਆਗਿਆ ਬੰਦ ਕਰੋ</translation>
-<translation id="6256360366378574605">{FINANCIAL_ACCOUNT,plural, =1{ਜਦੋਂ ਤੁਸੀਂ Chrome 'ਤੇ ਖਰੀਦਦਾਰੀਆਂ ਕਰਦੇ ਹੋ, ਤਾਂ <ph name="FINANCIAL_ACCOUNT_TYPES" /> ਨੂੰ ਇੱਕ ਵਿਕਲਪ ਵਜੋਂ ਸ਼ਾਮਲ ਕਰੋ}one{ਜਦੋਂ ਤੁਸੀਂ Chrome 'ਤੇ ਖਰੀਦਦਾਰੀਆਂ ਕਰਦੇ ਹੋ, ਤਾਂ <ph name="FINANCIAL_ACCOUNT_TYPES" /> ਨੂੰ ਇੱਕ ਵਿਕਲਪ ਵਜੋਂ ਸ਼ਾਮਲ ਕਰੋ}other{ਜਦੋਂ ਤੁਸੀਂ Chrome 'ਤੇ ਖਰੀਦਦਾਰੀਆਂ ਕਰਦੇ ਹੋ, ਤਾਂ <ph name="FINANCIAL_ACCOUNT_TYPES" /> ਨੂੰ ਵਿਕਲਪਾਂ ਵਜੋਂ ਸ਼ਾਮਲ ਕਰੋ}}</translation>
 <translation id="6259156558325130047">&amp;ਦੁਬਾਰਾ ਕ੍ਰਮ ਦੇਣ ਨੂੰ ਰੀਡੂ ਕਰੋ</translation>
 <translation id="6263376278284652872"><ph name="DOMAIN" /> ਬੁੱਕਮਾਰਕਸ</translation>
 <translation id="6264376385120300461">ਫਿਰ ਵੀ ਡਾਊਨਲੋਡ ਕਰੋ</translation>
@@ -4073,7 +4072,6 @@
 <translation id="84561192812921051">ਤੁਹਾਡਾ ਪ੍ਰਸ਼ਾਸਕ ਦੂਰ-ਦੁਰਾਡੇ ਤੋਂ ਤੁਹਾਡੇ ਪ੍ਰੋਫਾਈਲ ਅਤੇ ਬ੍ਰਾਊਜ਼ਰ ਵਿੱਚ ਤਬਦੀਲੀਆਂ ਕਰ ਸਕਦਾ ਹੈ, ਰਿਪੋਰਟਿੰਗ ਰਾਹੀਂ ਬ੍ਰਾਊਜ਼ਰ ਬਾਰੇ ਜਾਣਕਾਰੀ ਦਾ ਵਿਸ਼ਲੇਸ਼ਣ ਕਰ ਸਕਦਾ ਹੈ ਅਤੇ ਹੋਰ ਜ਼ਰੂਰੀ ਕਾਰਜ ਕਰ ਸਕਦਾ ਹੈ। ਇਸ ਡੀਵਾਈਸ ਦੀ ਸਰਗਰਮੀ ਦਾ ਪ੍ਰਬੰਧਨ Chrome ਤੋਂ ਬਾਹਰ ਵੀ ਕੀਤਾ ਜਾ ਸਕਦਾ ਹੈ।  <ph name="BEGIN_LINK" />ਹੋਰ ਜਾਣੋ<ph name="END_LINK" /></translation>
 <translation id="8457125768502047971">ਅਨਿਸ਼ਚਿਤ</translation>
 <translation id="8458202188076138974">ਲੈਟਰ ਐਕਸਟਰਾ</translation>
-<translation id="8458605637341729751">ਜਾਰੀ ਰੱਖ ਕੇ, ਤੁਸੀਂ ਧੋਖਾਧੜੀ ਦੀ ਰੋਕਥਾਮ ਸੰਬੰਧੀ ਉਦੇਸ਼ਾਂ ਲਈ ਆਪਣੇ ਡੀਵਾਈਸ ਦੇ ਸਹੀ ਟਿਕਾਣੇ ਸੰਬੰਧੀ ਜਾਣਕਾਰੀ ਨੂੰ ਇਕੱਤਰ ਕੀਤੇ ਜਾਣ ਅਤੇ ਆਪਣੇ ਖਾਤਾ ਧਾਰਕ ਨਾਲ ਸਾਂਝਾ ਕੀਤੇ ਜਾਣ ਲਈ ਸਹਿਮਤ ਹੁੰਦੇ ਹੋ। Chrome ਵਿੱਚ Pix ਨੂੰ ਬੰਦ ਕਰਨ ਲਈ, ਆਪਣੀਆਂ <ph name="BEGIN_LINK1" />ਭੁਗਤਾਨ ਸੈਟਿੰਗਾਂ<ph name="END_LINK1" /> ਵਿੱਚ ਜਾਓ</translation>
 <translation id="8460854335417802511">ਇਸਨੂੰ ਚਾਲੂ ਕਰੋ</translation>
 <translation id="8461694314515752532">ਆਪਣੇ ਖੁਦ ਦੇ ਸਿੰਕ ਪਾਸਫਰੇਜ਼ ਨਾਲ ਸਿੰਕ ਕੀਤੇ ਡਾਟੇ ਨੂੰ ਇਨਕ੍ਰਿਪਟ ਕਰੋ</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 ਕ੍ਰੈਡਿਟ ਕਾਰਡ}one{# ਕ੍ਰੈਡਿਟ ਕਾਰਡ}other{ # ਕ੍ਰੈਡਿਟ ਕਾਰਡ}}</translation>
@@ -4108,6 +4106,7 @@
 <translation id="8527228059738193856">ਸਪੀਕਰ</translation>
 <translation id="8527681393107582734">ਖੇਤੀਬਾੜੀ ਅਤੇ ਵਣ ਵਿਗਿਆਨ</translation>
 <translation id="8528149813106025610">ਬੱਚਿਆਂ ਦੇ ਕੱਪੜੇ</translation>
+<translation id="8528479410903501741">IBAN ਰੱਖਿਅਤ ਕਰੋ</translation>
 <translation id="853246364274116957">ਬ੍ਰੌਡਵੇਅ ਅਤੇ ਸੰਗੀਤਕ ਥੀਏਟਰ</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">ਬਲਾਕ ਕੀਤੇ URL ਅਤੇ ਤੁਹਾਡੇ ਸਿਸਟਮ ਪ੍ਰਸ਼ਾਸਕ ਵੱਲੋਂ ਲਾਗੂ ਕੀਤੀਆਂ ਹੋਰ ਨੀਤੀਆਂ ਦੀ ਸੂਚੀ ਦੇਖਣ ਲਈ &lt;strong&gt;chrome://policy&lt;/strong&gt; 'ਤੇ ਜਾਓ।</translation>

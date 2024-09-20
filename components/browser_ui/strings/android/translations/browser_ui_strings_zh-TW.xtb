@@ -96,6 +96,7 @@
 <translation id="2570922361219980984">此外，這部裝置的位置資訊存取權已關閉。請在 <ph name="BEGIN_LINK" />Android 設定<ph name="END_LINK" />中予以開啟。</translation>
 <translation id="257931822824936280">已展開 - 按一下即可收合。</translation>
 <translation id="2586657967955657006">剪貼簿</translation>
+<translation id="2588271083332682494">使用分頁群組，分頁有條不紊</translation>
 <translation id="2597457036804169544">不要對網站套用深色主題</translation>
 <translation id="2606760465469169465">自動驗證</translation>
 <translation id="2621115761605608342">允許特定網站執行 JavaScript。</translation>
@@ -232,6 +233,7 @@
 <translation id="483914009762354899">包括這個網域中的所有網站</translation>
 <translation id="4883854917563148705">無法重設受管理的設定</translation>
 <translation id="4887024562049524730">系統必須先詢問你，才能允許網站使用你的虛擬實境裝置和資料 (建議設定)</translation>
+<translation id="4936863036653376783">你可以在「分頁群組」專區中查看所有裝置中的群組</translation>
 <translation id="4953688446973710931">如果啟用，網站就可以要求自動下載多個檔案。如果停用，網站將無法自動下載多個檔案。</translation>
 <translation id="4962975101802056554">撤銷裝置的所有權限</translation>
 <translation id="497421865427891073">往前</translation>
@@ -378,6 +380,7 @@
 <translation id="6840760312327750441">如要將分頁加入群組，請輕觸並按住分頁，然後將其拖曳到其他分頁上。</translation>
 <translation id="6864395892908308021">這部裝置無法讀取 NFC</translation>
 <translation id="6870169401250095575">隱藏「安全檢查」資訊卡</translation>
+<translation id="6900883974539674431">建立分頁群組後，系統會自動儲存群組，並同步到所有裝置</translation>
 <translation id="6912998170423641340">禁止網站讀取剪貼簿中的文字和圖片</translation>
 <translation id="6945221475159498467">選取</translation>
 <translation id="6950072572526089586">你造訪的網站可儲存使用者的活動資訊，協助正常運作，例如在網站上保持登入狀態或儲存購物車內的項目。網站通常會暫時在裝置上儲存這項資訊。</translation>

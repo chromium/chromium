@@ -2851,7 +2851,6 @@
 <translation id="6252613631861574218">‏<ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />؛ برای مدیریت فایل‌هایی که در Chrome بارگیری کرده‌اید، کلید «جهش» و سپس «ورود» را فشار دهید</translation>
 <translation id="6254436959401408446">حافظه کافی برای باز کردن این صفحه وجود ندارد</translation>
 <translation id="625463612687472648">توقف دسترسی</translation>
-<translation id="6256360366378574605">{FINANCIAL_ACCOUNT,plural, =1{‏هنگام خرید در Chrome، <ph name="FINANCIAL_ACCOUNT_TYPES" /> را به‌عنوان یکی از گزینه‌های پرداخت می‌بینید}one{‏هنگام خرید در Chrome، <ph name="FINANCIAL_ACCOUNT_TYPES" /> را به‌عنوان یکی از گزینه‌های پرداخت می‌بینید}other{‏هنگام خرید در Chrome، <ph name="FINANCIAL_ACCOUNT_TYPES" /> را به‌عنوان گزینه‌های پرداخت می‌بینید}}</translation>
 <translation id="6259156558325130047">&amp;انجام مجدد ترتیب‌بندی مجدد</translation>
 <translation id="6263376278284652872">نشانک‌های <ph name="DOMAIN" /></translation>
 <translation id="6264376385120300461">به‌هرحال بارگیری شود</translation>
@@ -4078,7 +4077,6 @@
 <translation id="84561192812921051">‏سرپرست شما می‌تواند تنظیمات نمایه و مرورگرتان را از دور تغییر دهد، اطلاعات مربوط به مرورگر را ازطریق گزارش گرفتن تجزیه‌وتحلیل کند، و دیگر اقدامات ضروری را انجام دهد. ممکن است فعالیت‌های انجام‌شده در این دستگاه از خارج از Chrome هم مدیریت شود.  <ph name="BEGIN_LINK" />بیشتر بدانید<ph name="END_LINK" /></translation>
 <translation id="8457125768502047971">نامشخص</translation>
 <translation id="8458202188076138974">نامه بزرگ</translation>
-<translation id="8458605637341729751">‏درصورت ادامه دادن، موافقت می‌کنید مکان دقیق دستگاهتان به‌منظور پیشگیری از کلاهبرداری جمع‌آوری شود و با دارنده حسابتان هم‌رسانی شود. برای خاموش کردن Pix در Chrome، به <ph name="BEGIN_LINK1" />تنظیمات پرداخت<ph name="END_LINK1" /> بروید.</translation>
 <translation id="8460854335417802511">روشن شود</translation>
 <translation id="8461694314515752532">رمزگذاری داده‌های همگام‌سازی‌شده با گذرعبارت همگام‌سازی خودتان</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{۱ کارت اعتباری}one{# کارت اعتباری}other{# کارت اعتباری}}</translation>
@@ -4113,6 +4111,7 @@
 <translation id="8527228059738193856">بلندگوها</translation>
 <translation id="8527681393107582734">کشاورزی و جنگل‌داری</translation>
 <translation id="8528149813106025610">لباس کودکانه</translation>
+<translation id="8528479410903501741">‏ذخیره IBAN</translation>
 <translation id="853246364274116957">برادوی و تئاتر موزیکال</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">‏برای دیدن فهرست نشانی‌های وب مسدودشده و دیگر خط‌مشی‌های اعمال‌شده توسط سرپرست سیستم، از &lt;strong&gt;chrome://policy&lt;/strong&gt; بازدید کنید.</translation>

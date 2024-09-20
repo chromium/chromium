@@ -297,6 +297,7 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="2450083983707403292">Vuoi avviare di nuovo il download di <ph name="FILE_NAME" />?</translation>
 <translation id="2451607499823206582">Monitoraggio</translation>
 <translation id="2453860139492968684">Termina</translation>
+<translation id="2461378706168271257">Cerca nelle schede</translation>
 <translation id="2461822463642141190">Attuale</translation>
 <translation id="2468444275314013497">Il tuo browser è protetto</translation>
 <translation id="2472163211318554013">Accedi per usare al meglio Chrome</translation>
@@ -601,6 +602,7 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="3847319713229060696">Contribuisci ad aumentare la sicurezza sul Web per tutti gli utenti</translation>
 <translation id="3856096718352044181">Verifica che questo fornitore sia valido e riprova più tardi</translation>
 <translation id="3858860766373142691">Nome</translation>
+<translation id="3873174561423636563">Per continuare, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> condividerà il tuo <ph name="FIELDS_STRING" /> con questo sito. Vedi i <ph name="BEGIN_LINK1" />Termini di servizio<ph name="END_LINK1" /> del sito.</translation>
 <translation id="3892148308691398805">Copia testo</translation>
 <translation id="3899682235662194879">Chiudi tutte le schede di navigazione in incognito</translation>
 <translation id="3900966090527141178">Esportazione delle password</translation>
@@ -1458,6 +1460,7 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />elimina i dati di Ch
 <translation id="7656721520530864426">Nessun sito</translation>
 <translation id="7656862631699126784">Attiva il blocco delle schede di navigazione in incognito</translation>
 <translation id="7658239707568436148">Annulla</translation>
+<translation id="7663320421139257046">Per continuare, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> condividerà il tuo <ph name="FIELDS_STRING" /> con questo sito. Leggi le <ph name="BEGIN_LINK1" />norme sulla privacy<ph name="END_LINK1" /> del sito.</translation>
 <translation id="7665369617277396874">Aggiungi account</translation>
 <translation id="766587987807204883">Qui vengono visualizzati gli articoli che potrai leggere anche offline</translation>
 <translation id="7666185984446444960">Chiusi: <ph name="TAB_GROUPS_AND_TABS_PART" /></translation>

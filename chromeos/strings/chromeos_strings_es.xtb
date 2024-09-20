@@ -258,7 +258,6 @@
 <translation id="2148716181193084225">Hoy</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> fotos</translation>
 <translation id="2154460308960858308">Borrar búsqueda</translation>
-<translation id="2156072344042480449">Tus 2 peticiones más recientes. Solo puedes usar estas peticiones mientras estás en esta página.</translation>
 <translation id="2157660087437850958">selector de emojis</translation>
 <translation id="2157959690810728433">EN COLA</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Reintentar</translation>
@@ -1196,16 +1195,6 @@
 <translation id="6975981640379148271">koalas</translation>
 <translation id="6977381486153291903">Revisión del firmware</translation>
 <translation id="6981982820502123353">Accesibilidad</translation>
-<translation id="698242338298293034">Elige un tema y selecciona las palabras subrayadas para personalizar tus imágenes generadas con IA.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Selecciona Inspírame para ver opciones de imágenes generadas con IA más singulares y variadas.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Cuando creas contenido con IA, la petición se envía a los servidores de IA de Google para generar imágenes y mejorar el producto de acuerdo con la <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Política de Privacidad de Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          La IA generativa es experimental, se encuentra en sus primeras fases de desarrollo y, por el momento, tiene una disponibilidad limitada.</translation>
 <translation id="6982462588253070448">dunas</translation>
 <translation id="7005833343836210400">El dispositivo no tiene conexión</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> gestiona este dispositivo y tiene acceso a toda la actividad del usuario, incluidas las páginas web visitadas, las contraseñas y el correo electrónico.</translation>
@@ -1451,7 +1440,6 @@ Descarga el modelo de transcripción (hasta 100 MB) para obtener estas transcrip
 <translation id="8208861521865154048">Ventajas</translation>
 <translation id="8226628635270268143">Elige tus fotos y álbumes favoritos</translation>
 <translation id="8227119283605456246">Adjuntar archivo</translation>
-<translation id="8227488649450500937">Prueba una de estas peticiones o consulta la <ph name="BEGIN_LINK_PROMPTING_GUIDE" />guía sobre redacción de peticiones<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="8230672074305416752">Se ha producido un error al hacer ping en la puerta de enlace de red predeterminada</translation>
 <translation id="8236972776513018241">Transcripción</translation>
 <translation id="8238771987802558562">Elige un APN</translation>

@@ -1125,7 +1125,6 @@ Les autorisations que vous avez déjà accordées à des applications peuvent s'
 <translation id="1794212650797661990">Masquer le mot de passe pour <ph name="DOMAIN" /></translation>
 <translation id="1794791083288629568">Envoyer des commentaires pour nous aider à résoudre ce problème.</translation>
 <translation id="1795214765651529549">Utiliser le thème classique</translation>
-<translation id="1795668164971917185">La prochaine fois que la Navigation sécurisée Google détectera un téléchargement suspect, elle l'analysera automatiquement dans le cadre de la <ph name="LINK" /> que vous avez choisie.</translation>
 <translation id="1796588414813960292">Les fonctionnalités qui utilisent des sons ne fonctionneront pas</translation>
 <translation id="1797117170091578105">Jouez à l'aide de votre clavier Chromebook. Vous pouvez affecter des touches à des actions particulières.</translation>
 <translation id="1798335429200675510">Faites un clic droit dans une zone de texte pour créer un brouillon ou affiner un travail existant grâce à l'IA de Google. Disponibilité actuellement limitée.</translation>
@@ -3939,6 +3938,7 @@ l'<ph name="BEGIN_LINK" />
 <translation id="3799128412641261490">Paramètres de Switch Access</translation>
 <translation id="3800828618615365228">Conditions supplémentaires pour Google Chrome et Chrome OS</translation>
 <translation id="3800898876950197674">Entrez votre mot de passe pour autoriser cette extension.</translation>
+<translation id="3801449494961771207">Voix de la synthèse vocale du système</translation>
 <translation id="3802486193901166966">Cette extension ne nécessite pas d'autorisation spéciale et n'a pas d'accès de site supplémentaire</translation>
 <translation id="380329542618494757">Nom</translation>
 <translation id="3803345858388753269">Qualité de la vidéo</translation>
@@ -4529,7 +4529,7 @@ Cela peut inclure des renseignements sur les fichiers, les logiciels installés,
 <translation id="4235976607074422892">Vitesse de défilement</translation>
 <translation id="4236163961381003811">Découvrir plus d'extensions</translation>
 <translation id="4237282663517880406">Afficher les suggestions de Google Drive</translation>
-<translation id="4241140145060464825">Contenu de l'application</translation>
+<translation id="4241140145060464825">Contenu de l'appli</translation>
 <translation id="4241182343707213132">Redémarrer pour mettre à jour les applications de votre organisation</translation>
 <translation id="4242145785130247982">Plusieurs certificats clients ne sont pas pris en charge</translation>
 <translation id="4242533952199664413">Ouvrir les paramètres</translation>
@@ -5912,7 +5912,6 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="5263656105659419083">Pour revenir facilement au panneau latéral, cliquez sur Épingler en haut à droite</translation>
 <translation id="5264148714798105376">Cette opération peut prendre environ une minute.</translation>
 <translation id="5264252276333215551">Veuillez vous connecter à Internet pour lancer l'application en mode kiosque.</translation>
-<translation id="526539328530966548">protection renforcée</translation>
 <translation id="5265797726250773323">Erreur lors de l'installation</translation>
 <translation id="5266113311903163739">Erreur d'importation de l'autorité de certification</translation>
 <translation id="526622169288322445">Autres actions pour <ph name="ADDRESS_SUMMARY" /></translation>
@@ -7293,6 +7292,7 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="628726841779494414">Gérez vos imprimantes dans les paramètres d'impression</translation>
 <translation id="6287828400772161253">Téléphone Android (<ph name="HOST_DEVICE_NAME" />)</translation>
 <translation id="6290613030083731160">Aucun appareil à proximité avec qui partager du contenu. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
+<translation id="6291580570300353047">Impossible d'effectuer la restauration en raison d'un manque d'espace de stockage.</translation>
 <translation id="6291741848715722067">Code de confirmation</translation>
 <translation id="6291953229176937411">&amp;Afficher dans le Finder</translation>
 <translation id="6292699686837272722">Les onglets sont réduits à une largeur moyenne</translation>
@@ -11374,6 +11374,7 @@ Les autorisations que vous avez déjà accordées à des sites Web et à des app
 <translation id="949807244219288032">Cet onglet est connecté à un appareil HID</translation>
 <translation id="950079950995628542">De « <ph name="PHONE_NAME" /> »</translation>
 <translation id="950307215746360464">Guide de configuration</translation>
+<translation id="950728747178241190">Appliquez la suppression du bruit et les améliorations audio. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
 <translation id="951273949038779544"><ph name="SITE_ACCESS" />. Installée par votre administrateur</translation>
 <translation id="951991426597076286">Refuser</translation>
 <translation id="952471655966876828">L'appareil se connecte automatiquement lorsqu'il est allumé et utilisé</translation>

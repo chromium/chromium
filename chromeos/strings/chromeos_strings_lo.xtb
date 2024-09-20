@@ -258,7 +258,6 @@
 <translation id="2148716181193084225">ມື້​ນີ້</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> ຮູບ</translation>
 <translation id="2154460308960858308">ລຶບລ້າງການຊອກຫາ</translation>
-<translation id="2156072344042480449">prompt 2 ລາຍການຫຼ້າສຸດຂອງທ່ານ. ທ່ານສາມາດໃຊ້ prompt ເຫຼົ່ານີ້ໄດ້ໃນລະຫວ່າງທີ່ທ່ານຢູ່ໃນໜ້ານີ້ເທົ່ານັ້ນ.</translation>
 <translation id="2157660087437850958">ຕົວເລືອກອີໂມຈິ</translation>
 <translation id="2157959690810728433">ເຂົ້າຄິວແລ້ວ</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: ລອງໃໝ່</translation>
@@ -1196,16 +1195,6 @@
 <translation id="6975981640379148271">ໂຄອາລາ</translation>
 <translation id="6977381486153291903">ການດັດແກ້ເຟີມແວ</translation>
 <translation id="6981982820502123353">ການເຂົ້າ​​ເຖິງ​ໄດ້</translation>
-<translation id="698242338298293034">ເລືອກຮູບແບບສີສັນ ແລະ ຈາກນັ້ນເລືອກຄຳທີ່ຂີດກ້ອງໄວ້ເພື່ອປັບແຕ່ງຮູບ AI ຂອງທ່ານໃຫ້ເປັນແບບສ່ວນຕົວ.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          ເລືອກ "ຂໍແຮງບັນດານໃຈໃຫ້ຂ້ອຍແດ່" ເພື່ອຮັບຕົວເລືອກຮູບ AI ທີ່ເປັນເອກະລັກ ແລະ ຫຼາກຫຼາຍຍິ່ງຂຶ້ນ.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          ເມື່ອທ່ານສ້າງດ້ວຍ AI, ລະບົບຈະສົ່ງ prompt ໄປຫາເຊີບເວີ Google AI ເພື່ອສ້າງຮູບ ແລະ ປັບປຸງຜະລິດຕະພັນ, ໂດຍເປັນໄປຕາມ <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />ນະໂຍບາຍຄວາມເປັນສ່ວນຕົວຂອງ Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          AI ສ້າງເນື້ອຫາແມ່ນເວີຊັນທົດລອງ, ທີ່ຢູ່ໃນຊ່ວງການພັດທະນາຂັ້ນຕົ້ນ ແລະ ມີໃຫ້ບໍລິການແບບຈຳກັດໃນຕອນນີ້.</translation>
 <translation id="6982462588253070448">ເນີນຊາຍ</translation>
 <translation id="7005833343836210400">ອຸປະກອນອອບລາຍຢູ່</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> ຈັດການອຸປະກອນນີ້ ແລະ ເຂົ້າເຖິງການເຄື່ອນໄຫວຜູ້ໃຊ້ທັງໝົດ, ຮວມທັງໜ້າເວັບທີ່ເຂົ້າເບິ່ງ, ລະຫັດຜ່ານ ແລະ ອີເມວ.</translation>
@@ -1452,7 +1441,6 @@
 <translation id="8208861521865154048">ສິດທິປະໂຫຍດຕ່າງໆ</translation>
 <translation id="8226628635270268143">ເລືອກຮູບພາບ ແລະ ອະລະບໍ້າທີ່ທ່ານມັກ</translation>
 <translation id="8227119283605456246">ຄັດ​ຕິດ​ໄຟລ໌</translation>
-<translation id="8227488649450500937">ລອງໃຊ້ໜຶ່ງໃນຂໍ້ຄວາມເຫຼົ່ານີ້ ຫຼື ເບິ່ງ <ph name="BEGIN_LINK_PROMPTING_GUIDE" />ຄຳແນະນຳໃນການຂຽນຂໍ້ຄວາມ<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="8230672074305416752">ໃຊ້ຄຳສັ່ງ ping ກັບເກດເວເຄືອຂ່າຍຄ່າເລີ່ມຕົ້ນບໍ່ໄດ້</translation>
 <translation id="8236972776513018241">ຖອດຂໍ້ຄວາມຈາກສຽງ</translation>
 <translation id="8238771987802558562">ເລືອກ APN</translation>

@@ -96,6 +96,7 @@
 <translation id="2570922361219980984">Location access is also off for this device. Turn it on in <ph name="BEGIN_LINK" />Android Settings<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">Expanded – click to collapse.</translation>
 <translation id="2586657967955657006">Clipboard</translation>
+<translation id="2588271083332682494">Tidy up with tab groups</translation>
 <translation id="2597457036804169544">Don’t apply Dark theme to sites</translation>
 <translation id="2606760465469169465">Auto-verify</translation>
 <translation id="2621115761605608342">Allow JavaScript for a specific site.</translation>
@@ -232,6 +233,7 @@
 <translation id="483914009762354899">Include all sites under this domain</translation>
 <translation id="4883854917563148705">Managed settings cannot be reset</translation>
 <translation id="4887024562049524730">Ask before allowing sites to use your virtual reality device and data (recommended)</translation>
+<translation id="4936863036653376783">You'll find your groups in the tab group section across all your devices</translation>
 <translation id="4953688446973710931">When on, sites can ask to download multiple files automatically. When off, sites can't download multiple files automatically.</translation>
 <translation id="4962975101802056554">Revoke all permissions for device</translation>
 <translation id="497421865427891073">go forward</translation>
@@ -378,6 +380,7 @@
 <translation id="6840760312327750441">To group tabs, touch and hold a tab. Then, drag it onto another tab.</translation>
 <translation id="6864395892908308021">This device can't read NFC</translation>
 <translation id="6870169401250095575">Hide safety check card</translation>
+<translation id="6900883974539674431">Create tab groups that automatically save and update across all your devices</translation>
 <translation id="6912998170423641340">Block sites from reading text and images from the clipboard</translation>
 <translation id="6945221475159498467">Select</translation>
 <translation id="6950072572526089586">A site you visit can save info about what you’re doing so that it works as expected – for example, to keep you signed in to a site or to save items in your shopping cart. Often sites save this info temporarily on your device.</translation>

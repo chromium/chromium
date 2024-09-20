@@ -127,6 +127,7 @@
 <translation id="1567064801249837505">Albumet</translation>
 <translation id="1572585716423026576">Vendose si imazh sfondi</translation>
 <translation id="1578784163189013834">Zgjidh imazhin e sfondit të mbrojtësit të ekranit</translation>
+<translation id="1587031308639983732">Ndryshimet e bazuara tek ora mund të mos jenë të sakta. Ky cilësim menaxhohet nga administratori yt.</translation>
 <translation id="1588438908519853928">Normal</translation>
 <translation id="1591562245178063882">Këtë muaj</translation>
 <translation id="1593528591614229756">Sigurohu që të zgjedhë sh APN-të e ofruara nga operatori celular ose administratori. Zgjedhja e një APN-je do të çaktivizojë çdo APN të personalizuar. APN-të e pavlefshme mund të ndërpresin lidhjen e rrjetit celular. <ph name="LINK_BEGIN" />Mëso më shumë<ph name="LINK_END" /></translation>
@@ -257,7 +258,6 @@
 <translation id="2148716181193084225">Sot</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> fotografi</translation>
 <translation id="2154460308960858308">Pastro kërkimin</translation>
-<translation id="2156072344042480449">2 kërkesat e tua më të fundit. Mund t'i përdorësh këto kërkesa vetëm kur je në këtë faqe.</translation>
 <translation id="2157660087437850958">zgjedhësi për emoji</translation>
 <translation id="2157959690810728433">NË RADHË</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Riprovo</translation>
@@ -1166,6 +1166,7 @@
 <translation id="6831043979455480757">Përkthe</translation>
 <translation id="6846843854964504403">Rivendosja e sigurisë</translation>
 <translation id="6853312040151791195">Shpejtësia e shkarkimit</translation>
+<translation id="6862228900689076919">Kjo veçori menaxhohet nga administratori yt</translation>
 <translation id="6862416241246624313">Komentet u dërguan</translation>
 <translation id="6866732840889595464">luledele</translation>
 <translation id="6871256179359663621">vjollcë e çelur</translation>
@@ -1194,16 +1195,6 @@
 <translation id="6975981640379148271">koala</translation>
 <translation id="6977381486153291903">Rishikimi i firmuerit</translation>
 <translation id="6981982820502123353">Qasja</translation>
-<translation id="698242338298293034">Zgjidh një temë dhe më pas zgjidh fjalët e nënvizuara për të personalizuar imazhet e IA-së.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Zgjidh "Më frymëzo" për të marrë opsione më të larmishme dhe më unike për imazhet e IA-së.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Kur krijon me IA-në, kërkesa dërgohet te serverët e IA-së së Google për të gjeneruar imazhe dhe për të përmirësuar produktin, sipas <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />"Politikës së privatësisë" të Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          IA-ja gjeneruese është eksperimentale, në fazë të hershme zhvillimi dhe ka aktualisht disponueshmëri të kufizuar.</translation>
 <translation id="6982462588253070448">duna rëre</translation>
 <translation id="7005833343836210400">Pajisja është offline</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> menaxhon këtë pajisje dhe ka qasje te i gjithë aktiviteti i përdoruesit, duke përfshirë faqet e uebit të vizituara, fjalëkalimet dhe email-i.</translation>
@@ -1449,7 +1440,6 @@ Shkarko modelin e transkriptimit (deri në 100 MB) për të marrë këto transk
 <translation id="8208861521865154048">Avantazhet</translation>
 <translation id="8226628635270268143">Zgjidh fotografitë dhe albumet e tua të preferuara</translation>
 <translation id="8227119283605456246">Bashkëngjit skedarin</translation>
-<translation id="8227488649450500937">Provo një nga këto kërkesa ose shiko <ph name="BEGIN_LINK_PROMPTING_GUIDE" />udhëzuesin për kërkesat<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="8230672074305416752">Dështoi verifikimi "ping" për portën e parazgjedhur të kalimit</translation>
 <translation id="8236972776513018241">Transkripti</translation>
 <translation id="8238771987802558562">Zgjidh një APN</translation>

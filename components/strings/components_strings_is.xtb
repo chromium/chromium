@@ -2851,7 +2851,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />, ýttu á dálkalykilinn (Tab) og svo á Enter til að stjórna skrám sem þú hefur sótt í Chrome</translation>
 <translation id="6254436959401408446">Ekki nóg minni til að birta þessa síðu</translation>
 <translation id="625463612687472648">Hætta að leyfa</translation>
-<translation id="6256360366378574605">{FINANCIAL_ACCOUNT,plural, =1{Sjáðu <ph name="FINANCIAL_ACCOUNT_TYPES" /> sem valkost þegar þú gengur frá kaupum á Chrome}one{Sjáðu <ph name="FINANCIAL_ACCOUNT_TYPES" /> sem valkosti þegar þú gengur frá kaupum á Chrome}other{Sjáðu <ph name="FINANCIAL_ACCOUNT_TYPES" /> sem valkosti þegar þú gengur frá kaupum á Chrome}}</translation>
 <translation id="6259156558325130047">Endu&amp;rtaka nýja röðun</translation>
 <translation id="6263376278284652872"><ph name="DOMAIN" /> bókamerki</translation>
 <translation id="6264376385120300461">Sækja samt</translation>
@@ -3137,6 +3136,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="6767985426384634228">Uppfæra heimilisfang?</translation>
 <translation id="6770747695101757579">Pappír (bómull)</translation>
 <translation id="677257480647123231">Netöryggi barna</translation>
+<translation id="6772959465807028761">Haltu áfram af Google-reikningnum þínum til að nota YouTube.</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6777088782163649345">Notaðu YouTube með valkostunum sem foreldri þitt valdi</translation>
 <translation id="6779348349813025131">Google-aðgangsorðastjórnun þarf aðgang að MacOS Keychain</translation>
@@ -4076,7 +4076,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="84561192812921051">Kerfisstjórinn þinn getur breytt prófíl- og vafrastillingunum þínum með fjaraðgangi, greint upplýsingar um vafrann í gegnum tilkynningar og innt önnur nauðsynleg verkefni af hendi. Virkni þinni í þessu tæki er einnig hægt að stjórna utan Chrome.  <ph name="BEGIN_LINK" />Nánar<ph name="END_LINK" /></translation>
 <translation id="8457125768502047971">Ótiltekið</translation>
 <translation id="8458202188076138974">Letter Extra</translation>
-<translation id="8458605637341729751">Með því að halda áfram samþykkirðu að upplýsingum um nákvæma staðsetningu tækisins sé safnað og þeim deilt með eiganda reikningsins í þeim tilgangi að komast hjá svikum. Til að slökkva á Pix í Chrome skaltu opna <ph name="BEGIN_LINK1" />greiðslustillingarnar<ph name="END_LINK1" /></translation>
 <translation id="8460854335417802511">Kveikja</translation>
 <translation id="8461694314515752532">Dulkóða samstillt gögn með eigin aðgangsorði samstillingar</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{Eitt kreditkort}one{# kreditkort}other{# kreditkort}}</translation>
@@ -4111,6 +4110,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="8527228059738193856">Hátalarar</translation>
 <translation id="8527681393107582734">Landbúnaður og skógrækt</translation>
 <translation id="8528149813106025610">Barnafatnaður</translation>
+<translation id="8528479410903501741">Vista IBAN</translation>
 <translation id="853246364274116957">Broadway-sýningar og söngleikir</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">Opnaðu &lt;strong&gt;chrome://policy&lt;/strong&gt; til að sjá vefslóðir á bannlista og aðrar reglur sem kerfisstjórinn þinn setur.</translation>
@@ -4303,6 +4303,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="8891727572606052622">Ógild proxy-stilling.</translation>
 <translation id="8894794286471754040">Langhlið fyrst</translation>
 <translation id="8895334001368918465">Til að nota aðra sjálfvirka útfyllingarþjónustu í Chrome skaltu kveikja á henni hér og í stillingum Android</translation>
+<translation id="8897221284075091877">Haltu áfram af Google-reikningnum þínum til að óska eftir því að sjá þetta efni.</translation>
 <translation id="8897428486789851669">Sund</translation>
 <translation id="8899807382908246773">Ágengar auglýsingar</translation>
 <translation id="8903921497873541725">Auka aðdrátt</translation>

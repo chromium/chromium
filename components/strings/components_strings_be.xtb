@@ -2850,7 +2850,6 @@
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Каб кіраваць файламі, якія вы спампавалі ў браўзеры Chrome, націсніце Tab, затым Enter</translation>
 <translation id="6254436959401408446">Недастаткова памяці, каб адкрыць гэту старонку</translation>
 <translation id="625463612687472648">Адклікаць дазвол</translation>
-<translation id="6256360366378574605">{FINANCIAL_ACCOUNT,plural, =1{Пры ажыццяўленні купляў у Chrome вы можаце дадаць <ph name="FINANCIAL_ACCOUNT_TYPES" /> у якасці спосабу аплаты}one{Пры ажыццяўленні купляў у Chrome вы можаце дадаць <ph name="FINANCIAL_ACCOUNT_TYPES" /> у якасці спосабаў аплаты}few{Пры ажыццяўленні купляў у Chrome вы можаце дадаць <ph name="FINANCIAL_ACCOUNT_TYPES" /> у якасці спосабаў аплаты}many{Пры ажыццяўленні купляў у Chrome вы можаце дадаць <ph name="FINANCIAL_ACCOUNT_TYPES" /> у якасці спосабаў аплаты}other{Пры ажыццяўленні купляў у Chrome вы можаце дадаць <ph name="FINANCIAL_ACCOUNT_TYPES" /> у якасці спосабаў аплаты}}</translation>
 <translation id="6259156558325130047">&amp;Паўтарыць змяненне парадку</translation>
 <translation id="6263376278284652872">Закладкі <ph name="DOMAIN" /></translation>
 <translation id="6264376385120300461">Усё роўна спампаваць</translation>
@@ -3136,6 +3135,7 @@
 <translation id="6767985426384634228">Абнавіць адрас?</translation>
 <translation id="6770747695101757579">Баваўняная папера</translation>
 <translation id="677257480647123231">Бяспека дзяцей у інтэрнэце</translation>
+<translation id="6772959465807028761">Каб выкарыстоўваць YouTube, увайдзі ва Уліковы запіс Google</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6777088782163649345">Выкарыстоўвай YouTube з параметрамі, наладжанымі тваімі бацькамі</translation>
 <translation id="6779348349813025131">Менеджару пароляў Google патрабуецца доступ да звязка ключоў macOS</translation>
@@ -4076,7 +4076,6 @@
 <translation id="84561192812921051">Ваш адміністратар можа аддалена змяняць налады профілю і браўзера, аналізаваць інфармацыю пра браўзер з дапамогай справаздач і выконваць іншыя неабходныя задачы. Сама прылада таксама можа быць пад знешнім кіраваннем.  <ph name="BEGIN_LINK" />Даведацца больш<ph name="END_LINK" /></translation>
 <translation id="8457125768502047971">Бясконца</translation>
 <translation id="8458202188076138974">Letter Extra</translation>
-<translation id="8458605637341729751">Працягваючы, вы згаджаецеся, каб даныя пра дакладнае месцазнаходжанне прылады збіраліся і абагульваліся з уладальнікам вашага ўліковага запісу ў мэтах прадухілення махлярства. Каб выключыць Pix у Chrome, перайдзіце ў <ph name="BEGIN_LINK1" />налады аплаты<ph name="END_LINK1" /></translation>
 <translation id="8460854335417802511">Уключыць</translation>
 <translation id="8461694314515752532">Зашыфраваць сінхранізаваныя даныя з дапамогай фразы-пароля.</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 крэдытная картка}one{# крэдытная картка}few{# крэдытныя карткі}many{# крэдытных картак}other{# крэдытнай карткі}}</translation>
@@ -4111,6 +4110,7 @@
 <translation id="8527228059738193856">Дынамікі</translation>
 <translation id="8527681393107582734">Сельская і лясная гаспадарка</translation>
 <translation id="8528149813106025610">Дзіцячае адзенне</translation>
+<translation id="8528479410903501741">Захаваць нумар IBAN</translation>
 <translation id="853246364274116957">Брадвей і музычныя тэатры</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">Каб прагледзець спіс заблакіраваных URL-адрасоў і іншыя палітыкі, якімі кіруе сістэмны адміністратар, наведайце &lt;strong&gt;chrome://policy&lt;/strong&gt;.</translation>
@@ -4303,6 +4303,7 @@
 <translation id="8891727572606052622">Няправільны рэжым проксі-сервера.</translation>
 <translation id="8894794286471754040">Спачатку доўгі край</translation>
 <translation id="8895334001368918465">Каб карыстацца іншай службай аўтазапаўнення ў Chrome, уключыце яе ў наладах Android і тут</translation>
+<translation id="8897221284075091877">Каб папрасіць у бацькоў дазвол паглядзець гэта змесціва, увайдзі ва Уліковы запіс Google</translation>
 <translation id="8897428486789851669">Плаванне</translation>
 <translation id="8899807382908246773">Назойлівая рэклама</translation>
 <translation id="8903921497873541725">Павялічыць маштаб</translation>

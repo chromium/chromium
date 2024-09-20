@@ -258,7 +258,6 @@
 <translation id="2148716181193084225">Täna</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> fotot</translation>
 <translation id="2154460308960858308">Otsingu tühjendamine</translation>
-<translation id="2156072344042480449">Teie kaks kõige hiljutisemat päringut. Saate neid päringuid kasutada ainult sellel lehel olles.</translation>
 <translation id="2157660087437850958">emotikonide valija</translation>
 <translation id="2157959690810728433">JÄRJEKORRAS</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: proovige uuesti</translation>
@@ -1167,6 +1166,7 @@
 <translation id="6831043979455480757">Tõlgi</translation>
 <translation id="6846843854964504403">Ohutuseesmärgil lähtestamine</translation>
 <translation id="6853312040151791195">Tühjenemise kiirus</translation>
+<translation id="6862228900689076919">Seda funktsiooni haldab administraator</translation>
 <translation id="6862416241246624313">Tagasiside on saadetud</translation>
 <translation id="6866732840889595464">karikakar</translation>
 <translation id="6871256179359663621">helelilla</translation>
@@ -1195,16 +1195,6 @@
 <translation id="6975981640379148271">koaalad</translation>
 <translation id="6977381486153291903">Püsivara redaktsioon</translation>
 <translation id="6981982820502123353">Juurdepääsetavus</translation>
-<translation id="698242338298293034">Valige teema ja seejärel allajoonitud sõnad, et oma AI pilte isikupärastada.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Ainulaadsemate ja mitmekesisemate AI-piltide saamiseks valige „Inspireeri mind”.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Kui loote AI-ga, saadetakse Google'i AI serveritele päring, et genereerida pilte ja täiustada toodet kooskõlas<ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Google'i privaatsuseeskirjadega<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Generative AI on katseline ja varajases arendusjärgus ning sellel on praegu piiratud saadavus.</translation>
 <translation id="6982462588253070448">liivaluited</translation>
 <translation id="7005833343836210400">Seade on võrguühenduseta</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> haldab seda seadet ja sellel on juurdepääs kogu kasutaja tegevusele. sealhulgas külastatud veebilehed, paroolid ja e-post.</translation>
@@ -1450,7 +1440,6 @@ Laadige nende transkriptsioonide hankimiseks alla transkriptsiooni mudel (kuni 1
 <translation id="8208861521865154048">Hüved</translation>
 <translation id="8226628635270268143">Valige oma lemmikfotod ja -albumid</translation>
 <translation id="8227119283605456246">Manusta fail</translation>
-<translation id="8227488649450500937">Proovige mõnda nendest päringutest või vaadake <ph name="BEGIN_LINK_PROMPTING_GUIDE" />päringujuhendit<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="8230672074305416752">Vaikevõrgulüüsi pingimine ebaõnnestus</translation>
 <translation id="8236972776513018241">Transkriptsioon</translation>
 <translation id="8238771987802558562">Valige APN</translation>

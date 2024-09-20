@@ -258,7 +258,6 @@
 <translation id="2148716181193084225">Hari ini</translation>
 <translation id="2152882202543497059"><ph name="NUMBER" /> foto</translation>
 <translation id="2154460308960858308">Kosongkan carian</translation>
-<translation id="2156072344042480449">2 gesaan terkini anda. Anda hanya boleh menggunakan gesaan ini semasa anda berada pada halaman ini.</translation>
 <translation id="2157660087437850958">pemilih emoji</translation>
 <translation id="2157959690810728433">BERBARIS GILIR</translation>
 <translation id="2158971754079422508"><ph name="DESC_TEXT" />: Cuba lagi</translation>
@@ -1196,16 +1195,6 @@
 <translation id="6975981640379148271">koala</translation>
 <translation id="6977381486153291903">Semakan perisian tegar</translation>
 <translation id="6981982820502123353">Kebolehcapaian</translation>
-<translation id="698242338298293034">Pilih tema, kemudian pilih perkataan bergaris untuk memeribadikan imej AI anda.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Pilih "Beri saya inspirasi" untuk mendapatkan lebih banyak pilihan imej AI yang unik dan berbeza-beza.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          Apabila anda mencipta dengan AI, gesaan akan dihantar kepada pelayan Google AI untuk menjana imej dan meningkatkan produk, tertakluk pada <ph name="BEGIN_LINK_GOOGLE_PRIVACY_POLICY" />Dasar Privasi Google<ph name="END_LINK_GOOGLE_PRIVACY_POLICY" />.
-          <ph name="LINE_BREAK" />
-          <ph name="LINE_BREAK" />
-          AI generatif ialah ciri percubaan dan dalam pembangunan awal dengan ketersediaan terhad pada masa ini.</translation>
 <translation id="6982462588253070448">gumuk pasir</translation>
 <translation id="7005833343836210400">Peranti di luar talian</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> mengurus peranti ini dan mempunyai akses kepada semua aktiviti pengguna, termasuk halaman web yang dilawati, kata laluan dan e-mel.</translation>
@@ -1451,7 +1440,6 @@ Muat turun model transkripsi (hingga 100MB) untuk mendapatkan transkripsi ini.</
 <translation id="8208861521865154048">Kelebihan</translation>
 <translation id="8226628635270268143">Pilih foto dan album kegemaran anda</translation>
 <translation id="8227119283605456246">Lampirkan fail</translation>
-<translation id="8227488649450500937">Cuba salah satu gesaan ini atau lihat <ph name="BEGIN_LINK_PROMPTING_GUIDE" />panduan membuat gesaan<ph name="END_LINK_PROMPTING_GUIDE" /></translation>
 <translation id="8230672074305416752">Gagal untuk ping get laluan rangkaian lalai</translation>
 <translation id="8236972776513018241">Transkrip</translation>
 <translation id="8238771987802558562">Pilih APN</translation>

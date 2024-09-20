@@ -2850,7 +2850,6 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="6252613631861574218"><ph name="MANAGE_CHROME_DOWNLOADS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Pwyswch Tab yna Enter i reoli ffeiliau rydych wedi'u lawrlwytho yn Chrome</translation>
 <translation id="6254436959401408446">Dim digon o gof i agor y dudalen hon</translation>
 <translation id="625463612687472648">Stopio caniatáu</translation>
-<translation id="6256360366378574605">{FINANCIAL_ACCOUNT,plural, =1{Pan fyddwch yn prynu ar Chrome, gwelwch <ph name="FINANCIAL_ACCOUNT_TYPES" /> fel opsiwn}zero{Pan fyddwch yn prynu ar Chrome, gwelwch <ph name="FINANCIAL_ACCOUNT_TYPES" /> fel opsiynau}two{Pan fyddwch yn prynu ar Chrome, gwelwch <ph name="FINANCIAL_ACCOUNT_TYPES" /> fel opsiynau}few{Pan fyddwch yn prynu ar Chrome, gwelwch <ph name="FINANCIAL_ACCOUNT_TYPES" /> fel opsiynau}many{Pan fyddwch yn prynu ar Chrome, gwelwch <ph name="FINANCIAL_ACCOUNT_TYPES" /> fel opsiynau}other{Pan fyddwch yn prynu ar Chrome, gwelwch <ph name="FINANCIAL_ACCOUNT_TYPES" /> fel opsiynau}}</translation>
 <translation id="6259156558325130047">&amp;Ailwneud Aildrefnu</translation>
 <translation id="6263376278284652872">Nodau tudalen <ph name="DOMAIN" /></translation>
 <translation id="6264376385120300461">Lawrlwytho beth bynnag</translation>
@@ -3136,6 +3135,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="6767985426384634228">Diweddaru'r Cyfeiriad?</translation>
 <translation id="6770747695101757579">Papur (Cotwm)</translation>
 <translation id="677257480647123231">Diogelwch Plant ar y Rhyngrwyd</translation>
+<translation id="6772959465807028761">I ddefnyddio YouTube, parhewch â'ch Cyfrif Google</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6777088782163649345">Defnyddiwch YouTube gyda dewisiadau eich rhiant</translation>
 <translation id="6779348349813025131">Mae angen mynediad at MacOS Keychain ar Reolwr Cyfrineiriau Google</translation>
@@ -4075,7 +4075,6 @@ Manylion ychwanegol:
 <translation id="84561192812921051">Gall eich gweinyddwr wneud newidiadau i'ch proffil a'ch porwr o bell, dadansoddi gwybodaeth am y porwr trwy adrodd, a chyflawni tasgau angenrheidiol eraill. Gellir rheoli gweithgarwch ar y ddyfais hon y tu allan i Chrome hefyd.  <ph name="BEGIN_LINK" />Dysgu rhagor<ph name="END_LINK" /></translation>
 <translation id="8457125768502047971">Amhenodol</translation>
 <translation id="8458202188076138974">Llythyren Ychwanegol</translation>
-<translation id="8458605637341729751">Trwy barhau, rydych yn cytuno i union leoliad eich dyfais gael ei gasglu a'i rannu â deiliad eich cyfrif at ddibenion atal twyll. I ddiffodd Pix yn Chrome, ewch i'ch <ph name="BEGIN_LINK1" />gosodiadau talu<ph name="END_LINK1" /></translation>
 <translation id="8460854335417802511">Troi ymlaen</translation>
 <translation id="8461694314515752532">Amgryptio data sydd wedi'u cysoni gyda'ch cyfrinymadrodd cysoni eich hun</translation>
 <translation id="8466379296835108687">{COUNT,plural, =1{1 cerdyn credyd}zero{# cerdyn credyd}two{# gerdyn credyd}few{# cherdyn credyd}many{# cherdyn credyd}other{# cerdyn credyd}}</translation>
@@ -4110,6 +4109,7 @@ Manylion ychwanegol:
 <translation id="8527228059738193856">Seinyddion</translation>
 <translation id="8527681393107582734">Amaethyddiaeth a Choedwigaeth</translation>
 <translation id="8528149813106025610">Dillad Plant</translation>
+<translation id="8528479410903501741">Cadw IBAN</translation>
 <translation id="853246364274116957">Broadway a Theatr Gerddorol</translation>
 <translation id="8533411848724153701">Gemini</translation>
 <translation id="8533619373899488139">Ewch i &lt;strong&gt;chrome://policy&lt;/strong&gt; i weld y rhestr o gyfeiriadau URL sydd wedi'u rhwystro a pholisïau eraill sy'n cael eu gweithredu gan eich gweinyddwr system.</translation>
@@ -4302,6 +4302,7 @@ Manylion ychwanegol:
 <translation id="8891727572606052622">Modd dirprwy annilys.</translation>
 <translation id="8894794286471754040">Ymyl hir yn gyntaf</translation>
 <translation id="8895334001368918465">I ddefnyddio gwasanaeth awtolenwi arall yn Chrome, trowch ef ymlaen yn y gosodiadau Android ac yma</translation>
+<translation id="8897221284075091877">I ofyn am weld y cynnwys hwn, parhewch â'ch Cyfrif Google</translation>
 <translation id="8897428486789851669">Nofio</translation>
 <translation id="8899807382908246773">Hysbysebion ymwthiol</translation>
 <translation id="8903921497873541725">Chwyddo</translation>
