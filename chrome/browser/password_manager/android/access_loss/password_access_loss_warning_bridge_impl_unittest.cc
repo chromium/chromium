@@ -21,8 +21,8 @@ class PasswordAccessLossWarningBridgeImplTest : public testing::Test {
   PasswordAccessLossWarningBridgeImplTest() {
     // The access loss warning should not be shown to users without passwords in
     // the profile store.
-    pref_service_.registry()->RegisterIntegerPref(
-        password_manager::prefs::kTotalPasswordsAvailableForProfile, 1);
+    pref_service_.registry()->RegisterBooleanPref(
+        password_manager::prefs::kEmptyProfileStoreLoginDatabase, false);
     pref_service_.registry()->RegisterTimePref(
         password_manager::prefs::
             kPasswordAccessLossWarningShownAtStartupTimestamp,

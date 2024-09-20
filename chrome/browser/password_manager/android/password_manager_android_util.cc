@@ -342,10 +342,9 @@ void MaybeDeactivateSplitStoresAndLocalUpm(
                            static_cast<int>(kOff));
 }
 
-bool HasPasswordsInProfileStore(PrefService* pref_service) {
-  int total_passwords_in_profile_store = pref_service->GetInteger(
-      password_manager::prefs::kTotalPasswordsAvailableForProfile);
-  return total_passwords_in_profile_store > 0;
+bool EmptyProfileStore(PrefService* pref_service) {
+  return pref_service->GetBoolean(
+      password_manager::prefs::kEmptyProfileStoreLoginDatabase);
 }
 
 }  // namespace
@@ -422,7 +421,7 @@ PasswordAccessLossWarningType GetPasswordAccessLossWarningType(
     PrefService* pref_service) {
   // No warning should be displayed to the users, who don't have any passwords
   // in the profile store.
-  if (!HasPasswordsInProfileStore(pref_service)) {
+  if (EmptyProfileStore(pref_service)) {
     return PasswordAccessLossWarningType::kNone;
   }
 
