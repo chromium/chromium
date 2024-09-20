@@ -237,5 +237,5 @@ std::wstring ChromeCrashReporterClient::GetWerRuntimeExceptionModule() {
     return std::wstring();
 
   // file_start points to the start of the filename in the elf_dir buffer.
-  return std::wstring(elf_dir, file_start).append(chrome::kWerDll);
+  return std::wstring(elf_dir, file_start).append(kWerDll);
 }
