@@ -3814,17 +3814,5 @@
     ],
     "expires": "Jan 1, 2025",
     "owners": ["moonira@google.com"]
-  },
-  {
-    "prefix": "bfcache-broadcastchannel",
-    "platforms": ["Linux", "Mac", "Win"],
-    "bases": [
-      "external/wpt/html/browsers/browsing-the-web/back-forward-cache/eligibility/broadcast-channel.html",
-      "external/wpt/html/browsers/browsing-the-web/back-forward-cache/broadcastchannel/dedicatedworker.tentative.window.html",
-      "external/wpt/html/browsers/browsing-the-web/back-forward-cache/broadcastchannel/evict-on-message.tentative.window.html"
-    ],
-    "args": ["--enable-features=BFCacheOpenBroadcastChannel"],
-    "owners": ["yuzus@chromium.org"],
-    "expires": "Jan 1, 2025"
   }
 ]
