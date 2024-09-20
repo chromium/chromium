@@ -1138,12 +1138,12 @@ public class StripLayoutHelper
 
     /**
      * Called when a tab get selected.
-     * @param time   The current time of the app in ms.
-     * @param id     The id of the selected tab.
+     *
+     * @param time The current time of the app in ms.
+     * @param id The id of the selected tab.
      * @param prevId The id of the previously selected tab.
-     * @param skipAutoScroll Whether autoscroll to bring selected tab to view can be skipped.
      */
-    public void tabSelected(long time, int id, int prevId, boolean skipAutoScroll) {
+    public void tabSelected(long time, int id, int prevId) {
         StripLayoutTab stripTab = findTabById(id);
         if (stripTab == null) {
             tabCreated(time, id, prevId, true, false, false);
@@ -1156,7 +1156,7 @@ public class StripLayoutHelper
                 mTabGroupModelFilter.deleteTabGroupCollapsed(tab.getRootId());
             }
 
-            if (!skipAutoScroll && !mInReorderMode) {
+            if (!mInReorderMode) {
                 // If the tab was selected through a method other than the user tapping on the
                 // strip, it may not be currently visible. Scroll if necessary.
                 bringSelectedTabToVisibleArea(time, true);

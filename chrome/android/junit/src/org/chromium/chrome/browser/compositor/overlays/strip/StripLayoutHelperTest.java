@@ -546,7 +546,7 @@ public class StripLayoutHelperTest {
         // Non-last tab not overlapping strip fade:
         // drawX(530) + tabWidth(140 - 28) < width(800) - offsetXRight(20) - longRightFadeWidth(136)
         when(tabs[3].getDrawX()).thenReturn(530.f);
-        mStripLayoutHelper.tabSelected(TIMESTAMP, 3, Tab.INVALID_TAB_ID, false);
+        mStripLayoutHelper.tabSelected(TIMESTAMP, 3, Tab.INVALID_TAB_ID);
 
         // Close btn is visible on the selected tab.
         verify(tabs[3]).setCanShowCloseButton(true, false);
@@ -568,7 +568,7 @@ public class StripLayoutHelperTest {
         // Non-last tab overlapping strip fade:
         // drawX(600) + tabWidth(140 - 28) > width(800) - offsetXRight(20) - longRightFadeWidth(136)
         when(tabs[3].getDrawX()).thenReturn(600.f);
-        mStripLayoutHelper.tabSelected(TIMESTAMP, 3, Tab.INVALID_TAB_ID, false);
+        mStripLayoutHelper.tabSelected(TIMESTAMP, 3, Tab.INVALID_TAB_ID);
 
         // Close btn is hidden on the selected tab.
         verify(tabs[3]).setCanShowCloseButton(false, false);
@@ -591,7 +591,7 @@ public class StripLayoutHelperTest {
         // Last tab not overlapping NTB:
         // drawX(550) > NTB_X(700) + tabOverlapWidth(28) - tabWidth(140)
         when(tabs[4].getDrawX()).thenReturn(550.f);
-        mStripLayoutHelper.tabSelected(TIMESTAMP, 4, Tab.INVALID_TAB_ID, false);
+        mStripLayoutHelper.tabSelected(TIMESTAMP, 4, Tab.INVALID_TAB_ID);
 
         // Close btn is visible on the selected last tab.
         verify(tabs[4]).setCanShowCloseButton(true, false);
@@ -614,7 +614,7 @@ public class StripLayoutHelperTest {
         // Last tab overlapping NTB:
         // drawX(600) > NTB_X(700) + tabOverlapWidth(28) - tabWidth(140)
         when(tabs[4].getDrawX()).thenReturn(600.f);
-        mStripLayoutHelper.tabSelected(TIMESTAMP, 4, Tab.INVALID_TAB_ID, false);
+        mStripLayoutHelper.tabSelected(TIMESTAMP, 4, Tab.INVALID_TAB_ID);
 
         // Close btn is hidden on the selected last tab.
         verify(tabs[4]).setCanShowCloseButton(false, false);
@@ -637,7 +637,7 @@ public class StripLayoutHelperTest {
         // drawX(630) + tabWidth(140 - 28) > width(800) - offsetXRight(20) -
         // mediumRightFadeWidth(72)
         when(tabs[3].getDrawX()).thenReturn(630.f);
-        mStripLayoutHelper.tabSelected(TIMESTAMP, 3, Tab.INVALID_TAB_ID, false);
+        mStripLayoutHelper.tabSelected(TIMESTAMP, 3, Tab.INVALID_TAB_ID);
 
         // Close button is hidden for selected tab.
         verify(tabs[3]).setCanShowCloseButton(false, false);
@@ -660,7 +660,7 @@ public class StripLayoutHelperTest {
         // drawX(580) + tabWidth(140 - 28) > width(800) - offsetXRight(20) -
         // mediumRightFadeWidth(72)
         when(tabs[3].getDrawX()).thenReturn(580.f);
-        mStripLayoutHelper.tabSelected(TIMESTAMP, 3, Tab.INVALID_TAB_ID, false);
+        mStripLayoutHelper.tabSelected(TIMESTAMP, 3, Tab.INVALID_TAB_ID);
 
         // Close button is visible for selected tab
         verify(tabs[3]).setCanShowCloseButton(true, false);
@@ -683,7 +683,7 @@ public class StripLayoutHelperTest {
         // Last tab overlapping NTB:
         // drawX(100) + tabOverlapWidth(28) < NTB_X(100) + NTB_WIDTH(100)
         when(tabs[4].getDrawX()).thenReturn(100.f);
-        mStripLayoutHelper.tabSelected(TIMESTAMP, 4, Tab.INVALID_TAB_ID, false);
+        mStripLayoutHelper.tabSelected(TIMESTAMP, 4, Tab.INVALID_TAB_ID);
 
         // Close button is hidden for the selected last tab.
         verify(tabs[4]).setCanShowCloseButton(false, false);
@@ -706,7 +706,7 @@ public class StripLayoutHelperTest {
         // Last tab not overlapping NTB:
         // drawX(200) + tabOverlapWidth(28) > NTB_X(100) + NTB_WIDTH(100)
         when(tabs[4].getDrawX()).thenReturn(200.f);
-        mStripLayoutHelper.tabSelected(TIMESTAMP, 4, Tab.INVALID_TAB_ID, false);
+        mStripLayoutHelper.tabSelected(TIMESTAMP, 4, Tab.INVALID_TAB_ID);
 
         // Close button is visible for selected last tab.
         verify(tabs[4]).setCanShowCloseButton(true, false);
@@ -728,7 +728,7 @@ public class StripLayoutHelperTest {
         // Non-last tab overlapping strip fade:
         // drawX(50) + tabOverlapWidth(28) < offsetXRight(20) + mediumRightFadeWidth(72)
         when(tabs[3].getDrawX()).thenReturn(50.f);
-        mStripLayoutHelper.tabSelected(TIMESTAMP, 3, Tab.INVALID_TAB_ID, false);
+        mStripLayoutHelper.tabSelected(TIMESTAMP, 3, Tab.INVALID_TAB_ID);
 
         // Close btn is hidden for selected tab.
         verify(tabs[3]).setCanShowCloseButton(false, false);
@@ -751,7 +751,7 @@ public class StripLayoutHelperTest {
         // Non-last tab not overlapping strip fade:
         // drawX(70) + tabOverlapWidth(28) > offsetXRight(20) + mediumRightFadeWidth(72)
         when(tabs[3].getDrawX()).thenReturn(70.f);
-        mStripLayoutHelper.tabSelected(TIMESTAMP, 3, Tab.INVALID_TAB_ID, false);
+        mStripLayoutHelper.tabSelected(TIMESTAMP, 3, Tab.INVALID_TAB_ID);
 
         // Close button is visible for the selected tab.
         verify(tabs[3]).setCanShowCloseButton(true, false);
@@ -3547,7 +3547,7 @@ public class StripLayoutHelperTest {
         mStripLayoutHelper.setTabModel(mModel, null, true);
         mStripLayoutHelper.setTabGroupModelFilter(mTabGroupModelFilter);
         mStripLayoutHelper.setLayerTitleCache(mLayerTitleCache);
-        mStripLayoutHelper.tabSelected(0, tabIndex, 0, false);
+        mStripLayoutHelper.tabSelected(0, tabIndex, 0);
         // Flush UI updated
     }
 
@@ -3688,7 +3688,7 @@ public class StripLayoutHelperTest {
         initializeTest(false, false, false, 5, 10);
         StripLayoutTab[] tabs = getMockedStripLayoutTabs(TAB_WIDTH_1, 150f, 10);
         mStripLayoutHelper.setStripLayoutTabsForTesting(tabs);
-        mStripLayoutHelper.tabSelected(1, 5, 0, false);
+        mStripLayoutHelper.tabSelected(1, 5, 0);
         // Trigger update to set foreground container visibility.
         mStripLayoutHelper.updateLayout(TIMESTAMP);
         StripLayoutTab theClickedTab = tabs[5];
@@ -4347,7 +4347,7 @@ public class StripLayoutHelperTest {
         when(mTabGroupModelFilter.getTabGroupCollapsed(groupId)).thenReturn(true);
 
         // Select the first tab.
-        mStripLayoutHelper.tabSelected(TIMESTAMP, groupId, startIndex, /* skipAutoScroll= */ false);
+        mStripLayoutHelper.tabSelected(TIMESTAMP, groupId, startIndex);
 
         // Verify we auto-expand.
         verify(mTabGroupModelFilter).deleteTabGroupCollapsed(groupId);
