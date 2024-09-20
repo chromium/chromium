@@ -30,6 +30,7 @@ source_set("configs") {
     "//chrome/browser/ui",
     "//components/compose:buildflags",
     "//components/lens:buildflags",
+    "//components/security_interstitials/content:security_interstitial_page",
     "//content/public/browser",
     "//extensions/buildflags:buildflags",
     "//printing/buildflags",

@@ -34395,6 +34395,8 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="703814809" label="chrome://intro/"/>
   <int value="705531796" label="chrome://webxr-internals/"/>
   <int value="709341402" label="chrome://omnibox-popup.top-chrome/"/>
+  <int value="717537230" label="chrome://internals/"/>
+  <int value="733891637" label="chrome://connection-monitoring-detected/"/>
   <int value="742272091" label="chrome://extensions/"/>
   <int value="745470397" label="chrome://parent-access/"/>
   <int value="748142712" label="chrome://crostini-upgrader/"/>

@@ -25,6 +25,10 @@
 #include "content/public/browser/web_ui_data_source.h"
 #include "content/public/browser/web_ui_message_handler.h"
 
+GCMInternalsUIConfig::GCMInternalsUIConfig()
+    : DefaultWebUIConfig(content::kChromeUIScheme,
+                         chrome::kChromeUIGCMInternalsHost) {}
+
 namespace {
 
 // Class acting as a controller of the chrome://gcm-internals WebUI.

@@ -36,6 +36,10 @@
 #include "chrome/browser/ui/webui/internals/sessions/session_service_internals_handler.h"
 #endif
 
+InternalsUIConfig::InternalsUIConfig()
+    : DefaultWebUIConfig(content::kChromeUIScheme,
+                         chrome::kChromeUIInternalsHost) {}
+
 namespace {
 
 bool ShouldHandleWebUIRequestCallback(const std::string& path) {

@@ -34,14 +34,10 @@
 #include "chrome/browser/ui/webui/about/about_ui.h"
 #include "chrome/browser/ui/webui/components/components_ui.h"
 #include "chrome/browser/ui/webui/crashes_ui.h"
-#include "chrome/browser/ui/webui/device_log/device_log_ui.h"
 #include "chrome/browser/ui/webui/download_internals/download_internals_ui.h"
 #include "chrome/browser/ui/webui/engagement/site_engagement_ui.h"
 #include "chrome/browser/ui/webui/family_link_user_internals/family_link_user_internals_ui.h"
 #include "chrome/browser/ui/webui/flags/flags_ui.h"
-#include "chrome/browser/ui/webui/gcm_internals_ui.h"
-#include "chrome/browser/ui/webui/internals/internals_ui.h"
-#include "chrome/browser/ui/webui/interstitials/interstitial_ui.h"
 #include "chrome/browser/ui/webui/intro/intro_ui.h"
 #include "chrome/browser/ui/webui/media/media_engagement_ui.h"
 #include "chrome/browser/ui/webui/media/webrtc_logs_ui.h"
@@ -76,7 +72,6 @@
 #include "components/safe_browsing/content/browser/web_ui/safe_browsing_ui.h"
 #include "components/safe_browsing/core/common/web_ui_constants.h"
 #include "components/security_interstitials/content/connection_help_ui.h"
-#include "components/security_interstitials/content/known_interception_disclosure_ui.h"
 #include "components/security_interstitials/content/urls.h"
 #include "components/site_engagement/content/site_engagement_service.h"
 #include "content/public/browser/web_contents.h"
@@ -369,18 +364,6 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
 
   if (url.host_piece() == commerce::kChromeUICommerceInternalsHost) {
     return &NewWebUI<commerce::CommerceInternalsUI>;
-  }
-  if (url.host_piece() == chrome::kChromeUIDeviceLogHost)
-    return &NewWebUI<chromeos::DeviceLogUI>;
-  if (url.host_piece() == chrome::kChromeUIGCMInternalsHost)
-    return &NewWebUI<GCMInternalsUI>;
-  if (url.host_piece() == chrome::kChromeUIInternalsHost)
-    return &NewWebUI<InternalsUI>;
-  if (url.host_piece() == chrome::kChromeUIInterstitialHost)
-    return &NewWebUI<InterstitialUI>;
-  if (url.host_piece() ==
-      security_interstitials::kChromeUIConnectionMonitoringDetectedHost) {
-    return &NewWebUI<security_interstitials::KnownInterceptionDisclosureUI>;
   }
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (url.host_piece() ==

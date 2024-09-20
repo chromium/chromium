@@ -78,6 +78,10 @@
 
 using security_interstitials::TestSafeBrowsingBlockingPageQuiet;
 
+InterstitialUIConfig::InterstitialUIConfig()
+    : DefaultWebUIConfig(content::kChromeUIScheme,
+                         chrome::kChromeUIInterstitialHost) {}
+
 namespace {
 
 // NSS requires that serial numbers be unique even for the same issuer;
