@@ -1685,7 +1685,9 @@ bool SourceBuffer::InitializationSegmentReceived(
       // 5.2.7 TODO(servolk): Implement track kind processing.
       // 5.2.8.2 Let new audio track be a new AudioTrack object.
       auto* audio_track = MakeGarbageCollected<AudioTrack>(
-          track_info.id, kind, std::move(label), std::move(language), false);
+          track_info.id, kind, std::move(label), std::move(language),
+          /*enabled=*/false,
+          /*exclusive=*/false);
       SourceBufferTrackBaseSupplement::SetSourceBuffer(*audio_track, this);
       // 5.2.8.7 If audioTracks.length equals 0, then run the following steps:
       if (audioTracks().length() == 0) {

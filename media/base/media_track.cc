@@ -70,7 +70,8 @@ MediaTrack MediaTrack::CreateVideoTrack(const std::string& id,
                     VideoKindToString(kind),
                     Label{label},
                     Language{language},
-                    enabled};
+                    enabled,
+                    true};
 }
 
 // static
@@ -78,14 +79,16 @@ MediaTrack MediaTrack::CreateAudioTrack(const std::string& id,
                                         AudioKind kind,
                                         const std::string& label,
                                         const std::string& language,
-                                        bool enabled) {
+                                        bool enabled,
+                                        bool exclusive) {
   return MediaTrack{MediaTrack::Type::kAudio,
                     0,
                     MediaTrack::Id{id},
                     AudioKindToString(kind),
                     Label{label},
                     Language{language},
-                    enabled};
+                    enabled,
+                    exclusive};
 }
 
 MediaTrack::MediaTrack(MediaTrack::Type type,
@@ -94,9 +97,11 @@ MediaTrack::MediaTrack(MediaTrack::Type type,
                        const MediaTrack::Kind& kind,
                        const MediaTrack::Label& label,
                        const MediaTrack::Language& language,
-                       bool enabled)
+                       bool enabled,
+                       bool exclusive)
     : type_(type),
       enabled_(enabled),
+      exclusive_(exclusive),
       stream_id_(stream_id),
       track_id_(track_id),
       kind_(kind),
@@ -106,6 +111,7 @@ MediaTrack::MediaTrack(MediaTrack::Type type,
 MediaTrack::MediaTrack(const MediaTrack& track)
     : type_(track.type()),
       enabled_(track.enabled()),
+      exclusive_(track.exclusive()),
       stream_id_(track.stream_id()),
       track_id_(track.track_id()),
       kind_(track.kind()),

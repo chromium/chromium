@@ -3210,7 +3210,12 @@ AudioTrackList& HTMLMediaElement::audioTracks() {
 void HTMLMediaElement::AudioTrackChanged(AudioTrack* track) {
   DVLOG(3) << "audioTrackChanged(" << *this
            << ") trackId= " << String(track->id())
-           << " enabled=" << BoolString(track->enabled());
+           << " enabled=" << BoolString(track->enabled())
+           << " exclusive=" << BoolString(track->IsExclusive());
+
+  if (track->enabled()) {
+    audioTracks().TrackEnabled(track->id(), track->IsExclusive());
+  }
 
   audioTracks().ScheduleChangeEvent();
 
@@ -3271,7 +3276,8 @@ void HTMLMediaElement::AddMediaTrack(const media::MediaTrack& track) {
           String::FromUTF8(track.track_id().value()),
           WebString::FromUTF8(track.kind().value()),
           WebString::FromUTF8(track.label().value()),
-          WebString::FromUTF8(track.language().value()), track.enabled()));
+          WebString::FromUTF8(track.language().value()), track.enabled(),
+          track.exclusive()));
       break;
     }
   }

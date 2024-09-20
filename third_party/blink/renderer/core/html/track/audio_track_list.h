@@ -20,6 +20,11 @@ class CORE_EXPORT AudioTrackList final : public TrackListBase<AudioTrack> {
 
   bool HasEnabledTrack() const;
 
+  // If we are enabling a track in exclusive mode, clear the enabled flag for
+  // any other enabled tracks. Also clear the enabled flag for any other
+  // exclusive tracks that are enabled.
+  void TrackEnabled(const String& track_id, bool exclusive);
+
   // EventTarget
   const AtomicString& InterfaceName() const override;
 
