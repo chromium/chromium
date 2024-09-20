@@ -37,6 +37,8 @@
 namespace autofill {
 namespace {
 
+using ::testing::NotNull;
+
 const ui::AXPlatformNodeDelegate* FindNode(
     const ui::AXPlatformNodeDelegate* root,
     const std::string& class_name) {
@@ -58,6 +60,15 @@ const ui::AXPlatformNodeDelegate* FindNode(
   }
 
   return nullptr;
+}
+
+void CheckViewAccessibilitySelected(
+    const views::ViewAccessibility& view_accessibility,
+    bool selected) {
+  ui::AXNodeData node_data;
+  view_accessibility.GetAccessibleNodeData(&node_data);
+  EXPECT_EQ(node_data.GetBoolAttribute(ax::mojom::BoolAttribute::kSelected),
+            selected);
 }
 
 }  // namespace
@@ -190,15 +201,29 @@ IN_PROC_BROWSER_TEST_F(PasswordGenerationPopupViewTest,
   PasswordGenerationPopupViewViews* popup_view =
       static_cast<PasswordGenerationPopupViewViews*>(controller->view());
 
-  SetPasswordSelected(controller);
-  ui::AXNodeData node_data;
-  GetPasswordViewAccessibility(popup_view).GetAccessibleNodeData(&node_data);
-  EXPECT_TRUE(node_data.GetBoolAttribute(ax::mojom::BoolAttribute::kSelected));
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::kPasswordGenerationSoftNudge)) {
+    controller->Show(PasswordGenerationPopupController::kOfferGeneration);
+    controller->SelectAcceptButtonForTesting();
+    const views::ViewAccessibility& accept_button =
+        popup_view->GetAcceptButtonViewAccessibilityForTest();
+    const views::ViewAccessibility& cancel_button =
+        popup_view->GetCancelButtonViewAccessibilityForTest();
+    CheckViewAccessibilitySelected(accept_button, /*selected=*/true);
+    CheckViewAccessibilitySelected(cancel_button, /*selected=*/false);
 
-  ClearSelection(controller);
-  node_data = ui::AXNodeData();
-  GetPasswordViewAccessibility(popup_view).GetAccessibleNodeData(&node_data);
-  EXPECT_FALSE(node_data.GetBoolAttribute(ax::mojom::BoolAttribute::kSelected));
+    controller->SelectCancelButtonForTesting();
+    CheckViewAccessibilitySelected(accept_button, /*selected=*/false);
+    CheckViewAccessibilitySelected(cancel_button, /*selected=*/true);
+  } else {
+    SetPasswordSelected(controller);
+    const views::ViewAccessibility& password_view =
+        GetPasswordViewAccessibility(popup_view);
+    CheckViewAccessibilitySelected(password_view, /*selected=*/true);
+
+    ClearSelection(controller);
+    CheckViewAccessibilitySelected(password_view, /*selected=*/false);
+  }
 }
 
 IN_PROC_BROWSER_TEST_F(PasswordGenerationPopupViewTest,
@@ -269,22 +294,30 @@ IN_PROC_BROWSER_TEST_F(PasswordGenerationPopupViewTest, PopupInAxTree) {
 #endif
   ASSERT_TRUE(client->generation_popup_controller());
 
+  bool soft_nudge_enabled = base::FeatureList::IsEnabled(
+      password_manager::features::kPasswordGenerationSoftNudge);
   ui::AXPlatformNode* root_node = ui::AXPlatformNode::FromNativeWindow(window);
   ui::AXPlatformNodeDelegate* root_node_delegate = root_node->GetDelegate();
   const ui::AXPlatformNodeDelegate* node_delegate =
       FindNode(root_node_delegate,
-               "PasswordGenerationPopupViewViews::GeneratedPasswordBox");
+               soft_nudge_enabled
+                   ? "MdTextButton"
+                   : "PasswordGenerationPopupViewViews::GeneratedPasswordBox");
 
-  ASSERT_THAT(node_delegate, ::testing::NotNull());
+  ASSERT_THAT(node_delegate, NotNull());
   EXPECT_FALSE(
       node_delegate->GetBoolAttribute(ax::mojom::BoolAttribute::kSelected));
 
   // Set the screen reader focus by calling a method on the controller directly,
   // it normally is triggered by UI events when the screen reader is on,
   // screen reader presence is hard/expensive to emulate.
-  static_cast<PasswordGenerationPopupController*>(
-      client->generation_popup_controller().get())
-      ->SetSelected();
+  if (soft_nudge_enabled) {
+    client->generation_popup_controller()->SelectCancelButtonForTesting();
+  } else {
+    static_cast<PasswordGenerationPopupController*>(
+        client->generation_popup_controller().get())
+        ->SetSelected();
+  }
 
   EXPECT_TRUE(
       node_delegate->GetBoolAttribute(ax::mojom::BoolAttribute::kSelected));
