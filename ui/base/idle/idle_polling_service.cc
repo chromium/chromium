@@ -102,9 +102,7 @@ void IdlePollingService::PollIdleState() {
   last_state_.locked = provider_->CheckIdleStateIsLocked();
 
   // TODO(crbug.com/41445751): Only notify observers on change.
-  for (Observer& observer : observers_) {
-    observer.OnIdleStateChange(last_state_);
-  }
+  observers_.Notify(&Observer::OnIdleStateChange, last_state_);
 }
 
 }  // namespace ui

@@ -51,8 +51,7 @@ void CursorFactory::RemoveObserver(CursorFactoryObserver* observer) {
 }
 
 void CursorFactory::NotifyObserversOnThemeLoaded() {
-  for (auto& observer : observers_)
-    observer.OnThemeLoaded();
+  observers_.Notify(&CursorFactoryObserver::OnThemeLoaded);
 }
 
 scoped_refptr<PlatformCursor> CursorFactory::GetDefaultCursor(

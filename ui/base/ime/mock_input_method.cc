@@ -23,8 +23,7 @@ MockInputMethod::MockInputMethod(
     : ime_key_event_dispatcher_(ime_key_event_dispatcher) {}
 
 MockInputMethod::~MockInputMethod() {
-  for (InputMethodObserver& observer : observer_list_)
-    observer.OnInputMethodDestroyed(this);
+  observer_list_.Notify(&InputMethodObserver::OnInputMethodDestroyed, this);
 }
 
 void MockInputMethod::SetImeKeyEventDispatcher(
@@ -61,13 +60,11 @@ ui::EventDispatchDetails MockInputMethod::DispatchKeyEvent(
 }
 
 void MockInputMethod::OnFocus() {
-  for (InputMethodObserver& observer : observer_list_)
-    observer.OnFocus();
+  observer_list_.Notify(&InputMethodObserver::OnFocus);
 }
 
 void MockInputMethod::OnBlur() {
-  for (InputMethodObserver& observer : observer_list_)
-    observer.OnBlur();
+  observer_list_.Notify(&InputMethodObserver::OnBlur);
 }
 
 #if BUILDFLAG(IS_WIN)
@@ -88,13 +85,11 @@ void MockInputMethod::OnUrlChanged() {}
 #endif
 
 void MockInputMethod::OnTextInputTypeChanged(TextInputClient* client) {
-  for (InputMethodObserver& observer : observer_list_)
-    observer.OnTextInputStateChanged(client);
+  observer_list_.Notify(&InputMethodObserver::OnTextInputStateChanged, client);
 }
 
 void MockInputMethod::OnCaretBoundsChanged(const TextInputClient* client) {
-  for (InputMethodObserver& observer : observer_list_)
-    observer.OnCaretBoundsChanged(client);
+  observer_list_.Notify(&InputMethodObserver::OnCaretBoundsChanged, client);
 }
 
 void MockInputMethod::CancelComposition(const TextInputClient* client) {
@@ -109,8 +104,9 @@ bool MockInputMethod::IsCandidatePopupOpen() const {
 }
 
 void MockInputMethod::SetVirtualKeyboardVisibilityIfEnabled(bool should_show) {
-  for (InputMethodObserver& observer : observer_list_)
-    observer.OnVirtualKeyboardVisibilityChangedIfEnabled(should_show);
+  observer_list_.Notify(
+      &InputMethodObserver::OnVirtualKeyboardVisibilityChangedIfEnabled,
+      should_show);
 }
 
 void MockInputMethod::AddObserver(InputMethodObserver* observer) {

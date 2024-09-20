@@ -1468,18 +1468,14 @@ class TestObservable {
  public:
   explicit TestObservable(T value) : value_(value) {}
   ~TestObservable() {
-    for (auto& observer : observers_) {
-      observer.OnObservableDestroying(this);
-    }
+    observers_.Notify(&TestObserver<T>::OnObservableDestroying, this);
   }
 
   T value() const { return value_; }
 
   void SetValue(T value) {
     value_ = value;
-    for (auto& observer : observers_) {
-      observer.OnObservableValueChanged(this, value);
-    }
+    observers_.Notify(&TestObserver<T>::OnObservableValueChanged, this, value);
   }
 
   void AddObserver(TestObserver<T>* observer) {

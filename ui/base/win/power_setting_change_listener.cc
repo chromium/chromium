@@ -96,18 +96,16 @@ void PowerSettingChangeObserver::OnWndProc(HWND hwnd,
 }
 
 void PowerSettingChangeObserver::OnResume() {
-  for (PowerSettingChangeListener& observer : listeners_)
-    observer.OnResume();
+  listeners_.Notify(&PowerSettingChangeListener::OnResume);
 }
 
 void PowerSettingChangeObserver::OnSuspend() {
-  for (PowerSettingChangeListener& observer : listeners_)
-    observer.OnSuspend();
+  listeners_.Notify(&PowerSettingChangeListener::OnSuspend);
 }
 
 void PowerSettingChangeObserver::OnDisplayStateChanged(bool display_on) {
-  for (PowerSettingChangeListener& observer : listeners_)
-    observer.OnDisplayStateChanged(display_on);
+  listeners_.Notify(&PowerSettingChangeListener::OnDisplayStateChanged,
+                    display_on);
 }
 
 HPOWERNOTIFY PowerSettingChangeObserver::RegisterNotification(
