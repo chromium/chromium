@@ -1,14 +1,9 @@
 include_rules = [
+  "+ios/chrome/browser/content_notification/model",
+  "+ios/chrome/browser/metrics/model",
+  "+ios/chrome/browser/ntp/shared/metrics",
+  "+ios/chrome/browser/push_notification/model",
   "+ios/chrome/browser/search_engines/model",
   "+ios/chrome/browser/signin/model",
-  "+ios/chrome/browser/metrics/model",
   "+ios/chrome/browser/sync/model",
 ]
-
-specific_include_rules = {
-  # TODO(crbug.com/40820398): Remove this dependency.
-  "^discover_feed_service_factory.mm": [
-    "+ios/chrome/browser/ntp/shared/metrics/feed_metrics_recorder.h",
-  ],
-}
-

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/app/feed_app_agent.h"
+#import "ios/chrome/browser/discover_feed/model/discover_feed_app_agent.h"
 
 #import <BackgroundTasks/BackgroundTasks.h>
 #import <UserNotifications/UserNotifications.h>
@@ -271,8 +271,8 @@
 
 // Record refresh trigger for warm start.
 - (void)recordWarmStartMetrics {
-    [FeedMetricsRecorder
-        recordFeedRefreshTrigger:FeedRefreshTrigger::kBackgroundWarmStart];
+  [FeedMetricsRecorder
+      recordFeedRefreshTrigger:FeedRefreshTrigger::kBackgroundWarmStart];
 }
 
 #pragma mark - Refresh Completion Notifications (only enabled by Experimental Settings)

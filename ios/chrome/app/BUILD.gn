@@ -463,39 +463,6 @@ source_set("search_engine_choice_app_agent") {
   ]
 }
 
-source_set("feed_app_agent") {
-  sources = [
-    "feed_app_agent.h",
-    "feed_app_agent.mm",
-  ]
-  deps = [
-    ":constants",
-    "//base",
-    "//components/metrics",
-    "//components/search_engines",
-    "//components/signin/public/identity_manager",
-    "//ios/chrome/app/application_delegate:app_state_header",
-    "//ios/chrome/app/application_delegate:observing_app_state_agent",
-    "//ios/chrome/app/profile",
-    "//ios/chrome/browser/content_notification/model:util",
-    "//ios/chrome/browser/discover_feed/model",
-    "//ios/chrome/browser/discover_feed/model:discover_feed_factory",
-    "//ios/chrome/browser/ntp/shared/metrics",
-    "//ios/chrome/browser/push_notification/model:push_notification_client_id",
-    "//ios/chrome/browser/push_notification/model:push_notification_service",
-    "//ios/chrome/browser/search_engines/model:template_url_service_factory",
-    "//ios/chrome/browser/shared/model/application_context",
-    "//ios/chrome/browser/shared/model/profile",
-    "//ios/chrome/browser/shared/model/utils",
-    "//ios/chrome/browser/shared/public/features",
-    "//ios/chrome/browser/signin/model",
-  ]
-  frameworks = [
-    "BackgroundTasks.framework",
-    "UserNotifications.framework",
-  ]
-}
-
 source_set("app_internal") {
   sources = [
     "application_storage_metrics.h",
@@ -529,7 +496,6 @@ source_set("app_internal") {
     ":docking_promo_app_agent",
     ":enterprise_app_agent",
     ":fast_app_terminate_buildflags",
-    ":feed_app_agent",
     ":first_run_app_state_agent",
     ":identity_confirmation_app_agent",
     ":launch_screen_ui",
@@ -595,6 +561,7 @@ source_set("app_internal") {
     "//ios/chrome/browser/crash_report/model/breadcrumbs",
     "//ios/chrome/browser/credential_provider/model:buildflags",
     "//ios/chrome/browser/default_browser/model:utils",
+    "//ios/chrome/browser/discover_feed/model:discover_feed_app_agent",
     "//ios/chrome/browser/download/model",
     "//ios/chrome/browser/download/model/background_service:background_service",
     "//ios/chrome/browser/download/ui_bundled",

@@ -59,6 +59,40 @@ source_set("discover_feed_factory") {
   ]
 }
 
+source_set("discover_feed_app_agent") {
+  sources = [
+    "discover_feed_app_agent.h",
+    "discover_feed_app_agent.mm",
+  ]
+  deps = [
+    ":constants",
+    ":discover_feed_factory",
+    ":model",
+    "//base",
+    "//components/metrics",
+    "//components/search_engines",
+    "//components/signin/public/identity_manager",
+    "//ios/chrome/app:constants",
+    "//ios/chrome/app/application_delegate:app_state_header",
+    "//ios/chrome/app/application_delegate:observing_app_state_agent",
+    "//ios/chrome/app/profile",
+    "//ios/chrome/browser/content_notification/model:util",
+    "//ios/chrome/browser/ntp/shared/metrics",
+    "//ios/chrome/browser/push_notification/model:push_notification_client_id",
+    "//ios/chrome/browser/push_notification/model:push_notification_service",
+    "//ios/chrome/browser/search_engines/model:template_url_service_factory",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/utils",
+    "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/signin/model",
+  ]
+  frameworks = [
+    "BackgroundTasks.framework",
+    "UserNotifications.framework",
+  ]
+}
+
 source_set("constants") {
   sources = [
     "feed_constants.h",
