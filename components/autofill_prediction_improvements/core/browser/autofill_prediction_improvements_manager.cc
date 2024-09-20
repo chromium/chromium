@@ -164,7 +164,8 @@ AutofillPredictionImprovementsManager::
 
 std::vector<autofill::Suggestion>
 AutofillPredictionImprovementsManager::CreateFillingSuggestions(
-    const autofill::FormFieldData& field) {
+    const autofill::FormFieldData& field,
+    const std::vector<autofill::Suggestion>& address_suggestions) {
   if (!cache_) {
     return {};
   }
@@ -219,8 +220,8 @@ AutofillPredictionImprovementsManager::CreateFillingSuggestions(
 
   std::vector<autofill::Suggestion> filling_suggestions = {suggestion};
   filling_suggestions.insert(filling_suggestions.end(),
-                             address_suggestions_.begin(),
-                             address_suggestions_.end());
+                             address_suggestions.begin(),
+                             address_suggestions.end());
   return filling_suggestions;
 }
 
@@ -270,7 +271,7 @@ bool AutofillPredictionImprovementsManager::MaybeUpdateSuggestions(
   // Show a cached prediction improvements filling suggestion for `field` if
   // it exists.
   if (HasImprovedPredictionsForField(field)) {
-    address_suggestions = CreateFillingSuggestions(field);
+    address_suggestions = CreateFillingSuggestions(field, address_suggestions);
     return true;
   }
   // Add prediction improvements trigger suggestion.
@@ -322,7 +323,8 @@ void AutofillPredictionImprovementsManager::OnReceivedPredictions(
   cache_ = prediction_improvements.value();
   feedback_id_ = feedback_id;
 
-  UpdateSuggestions(CreateFillingSuggestions(trigger_field));
+  UpdateSuggestions(
+      CreateFillingSuggestions(trigger_field, address_suggestions_));
 }
 
 void AutofillPredictionImprovementsManager::UserFeedbackReceived(

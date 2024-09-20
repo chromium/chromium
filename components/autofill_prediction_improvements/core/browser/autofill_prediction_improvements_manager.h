@@ -106,9 +106,10 @@ class AutofillPredictionImprovementsManager
   std::vector<autofill::Suggestion> CreateTriggerSuggestion();
 
   // Creates filling suggestions listing the ones for prediction improvements
-  // first and `address_suggestions_` afterwards.
+  // first and `address_suggestions` afterwards.
   std::vector<autofill::Suggestion> CreateFillingSuggestions(
-      const autofill::FormFieldData& field);
+      const autofill::FormFieldData& field,
+      const std::vector<autofill::Suggestion>& address_suggestions);
 
   // Returns values to fill based on the `cache_`.
   base::flat_map<autofill::FieldGlobalId, std::u16string> GetValuesToFill();
