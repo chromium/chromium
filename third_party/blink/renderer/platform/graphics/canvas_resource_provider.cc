@@ -1177,18 +1177,16 @@ CanvasResourceProvider::CreatePassThroughProvider(
     return nullptr;
   }
 
+  // Note: Unlike other CanvasResourceProvider subclasses, a
+  // CanvasResourceProviderPassThrough instance is always valid and does not
+  // require clearing as part of initialization (both of these being due to the
+  // fact that it simply delegates the internal parts of the resource to other
+  // classes).
   auto provider = std::make_unique<CanvasResourceProviderPassThrough>(
       info, filter_quality, context_provider_wrapper, resource_dispatcher,
       is_origin_top_left, resource_host);
-  if (provider->IsValid()) {
-    // All the other type of resources are doing a clear here. As a
-    // CanvasResourceProvider of type PassThrough is used to delegate the
-    // internal parts of the resource and provider to other classes, we should
-    // not attempt to do a clear here. clear is not needed here.
-    return provider;
-  }
-
-  return nullptr;
+  CHECK(provider->IsValid());
+  return provider;
 }
 
 std::unique_ptr<CanvasResourceProvider>
