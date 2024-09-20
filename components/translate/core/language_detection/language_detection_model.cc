@@ -42,11 +42,15 @@ LanguageDetectionModel::LanguageDetectionModel(
 
 LanguageDetectionModel::~LanguageDetectionModel() = default;
 
-#if !BUILDFLAG(IS_IOS)
 void LanguageDetectionModel::UpdateWithFile(base::File model_file) {
   tflite_model_->UpdateWithFile(std::move(model_file));
 }
-#endif
+
+void LanguageDetectionModel::UpdateWithFileAsync(base::File model_file,
+                                                 base::OnceClosure callback) {
+  tflite_model_->UpdateWithFileAsync(std::move(model_file),
+                                     std::move(callback));
+}
 
 bool LanguageDetectionModel::IsAvailable() const {
   return tflite_model_ && tflite_model_->IsAvailable();

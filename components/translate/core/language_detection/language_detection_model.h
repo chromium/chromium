@@ -25,11 +25,18 @@ class LanguageDetectionModel {
       language_detection::LanguageDetectionModel* tflite_model_);
   ~LanguageDetectionModel();
 
-#if !BUILDFLAG(IS_IOS)
   // Updates the language detection model for use by memory-mapping
   // |model_file| used to detect the language of the page.
+  //
+  // This method is blocking and should only be called in context where
+  // it is valid to block the current thread. If this is not the case,
+  // use UpdateWithFileAsync(...) instead.
   void UpdateWithFile(base::File model_file);
-#endif
+
+  // Asynchronously updates the language detection model for use by
+  // memory-mapping |model_file| used to detect the language of the
+  // page and invokes |callback| when the update is done.
+  void UpdateWithFileAsync(base::File model_file, base::OnceClosure callback);
 
   // Returns whether |this| is initialized and is available to handle requests
   // to determine the language of the page.

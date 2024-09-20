@@ -57,6 +57,7 @@ class TsModel final : public on_device_model::mojom::TextSafetyModel {
 
   const raw_ref<const ChromeML> chrome_ml_;
   ChromeMLTSModel model_ = 0;
+  std::unique_ptr<language_detection::LanguageDetectionModel> tflite_model_;
   std::unique_ptr<translate::LanguageDetectionModel> language_detector_;
   base::MemoryMappedFile data_;
   base::MemoryMappedFile sp_model_;
@@ -89,18 +90,14 @@ std::unique_ptr<TsModel> TsModel::Create(
 
 bool TsModel::InitLanguageDetection(
     on_device_model::mojom::LanguageModelAssetsPtr assets) {
-#if BUILDFLAG(IS_IOS)
-  // TODO(crbug.com/356380874): UpdateWithFile does not exist for iOS there is
-  // an async version but its not clear how we get this to work with the
-  // sequence bound object.
-  NOTIMPLEMENTED();
-  return {};
-#else
-  language_detector_ = std::make_unique<translate::LanguageDetectionModel>(
-      &language_detection::GetLanguageDetectionModel());
-  language_detector_->UpdateWithFile(std::move(assets->model));
+  tflite_model_ =
+      std::make_unique<language_detection::LanguageDetectionModel>();
+  tflite_model_->UpdateWithFile(std::move(assets->model));
+  tflite_model_->DetachFromSequence();
+
+  language_detector_ =
+      std::make_unique<translate::LanguageDetectionModel>(tflite_model_.get());
   return language_detector_->IsAvailable();
-#endif
 }
 
 DISABLE_CFI_DLSYM

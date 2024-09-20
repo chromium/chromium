@@ -39,13 +39,7 @@ LanguageDetectionModel& GetLanguageDetectionModel() {
       LOG(ERROR) << model_file_path;
       LOG(ERROR) << "error_details: " << model_file.error_details();
     }
-#if BUILDFLAG(IS_IOS)
-    // TODO(crbug.com/356380874): UpdateWithFile is unsafe and does not exist
-    // for iOS.
-    NOTREACHED();
-#else
     instance->UpdateWithFile(std::move(model_file));
-#endif
   }
   return *instance;
 }

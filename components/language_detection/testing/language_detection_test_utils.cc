@@ -32,13 +32,7 @@ std::unique_ptr<LanguageDetectionModel> GetValidLanguageModel() {
   auto instance = std::make_unique<LanguageDetectionModel>();
   if (!instance->IsAvailable()) {
     base::File file = GetValidModelFile();
-#if !BUILDFLAG(IS_IOS)
     instance->UpdateWithFile(std::move(file));
-#else
-    base::RunLoop run_loop;
-    instance->UpdateWithFileAsync(std::move(file), run_loop.QuitClosure());
-    run_loop.Run();
-#endif
   }
   EXPECT_TRUE(instance->IsAvailable());
   return instance;
