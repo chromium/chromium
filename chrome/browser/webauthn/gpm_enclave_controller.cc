@@ -313,7 +313,7 @@ constexpr char kICloudKeychainRecoveryKeyAccessGroup[] =
 // Pick an enclave user verification method for a specific request.
 EnclaveUserVerificationMethod PickEnclaveUserVerificationMethod(
     device::UserVerificationRequirement uv,
-    bool have_added_device,
+    bool have_entered_pin_for_recovery,
     bool has_pin,
     EnclaveManager::UvKeyState uv_key_state,
     bool platform_has_biometrics,
@@ -324,7 +324,7 @@ EnclaveUserVerificationMethod PickEnclaveUserVerificationMethod(
   constexpr bool kIsMac = false;
 #endif
 
-  if (have_added_device) {
+  if (have_entered_pin_for_recovery) {
     return EnclaveUserVerificationMethod::kImplicit;
   }
 
@@ -560,7 +560,8 @@ void GPMEnclaveController::OnEnclaveLoaded() {
   if (request_type_ == device::FidoRequestType::kGetAssertion) {
     if (enclave_manager_->is_ready()) {
       switch (PickEnclaveUserVerificationMethod(
-          user_verification_requirement_, /*have_added_device=*/false,
+          user_verification_requirement_,
+          /*have_entered_pin_for_recovery=*/false,
           enclave_manager_->has_wrapped_pin(),
           enclave_manager_->uv_key_state(/*platform_has_biometrics=*/false),
           /*platform_has_biometrics=*/false, BrowserIsApp())) {
@@ -781,7 +782,6 @@ void GPMEnclaveController::OnKeysStored() {
     // iCloud keychain recovery.
     device::enclave::RecordEvent(
         device::enclave::Event::kICloudRecoverySuccessful);
-    recovered_with_icloud_keychain_ = false;
   } else if (model_->step() == Step::kRecoverSecurityDomain) {
     // MagicArch recovery.
     webauthn::user_actions::RecordRecoverySucceeded();
@@ -941,16 +941,34 @@ void GPMEnclaveController::OnEnclaveAccountSetUpComplete() {
   SetFailedPINAttemptCount(0);
 
   uv_method_ = PickEnclaveUserVerificationMethod(
-      user_verification_requirement_, have_added_device_,
+      user_verification_requirement_,
+      have_added_device_ && !recovered_with_icloud_keychain_,
       enclave_manager_->has_wrapped_pin(),
       enclave_manager_->uv_key_state(*model_->platform_has_biometrics),
       *model_->platform_has_biometrics, BrowserIsApp());
-  // `have_added_device_` is set, which satisfies UV, so we must have picked
-  // "implicit" UV.
-  CHECK_EQ(*uv_method_, EnclaveUserVerificationMethod::kImplicit);
+  switch (*uv_method_) {
+    case EnclaveUserVerificationMethod::kUVKeyWithSystemUI:
+    case EnclaveUserVerificationMethod::kDeferredUVKeyWithSystemUI:
+    case EnclaveUserVerificationMethod::kNone:
+    case EnclaveUserVerificationMethod::kImplicit:
+      model_->DisableUiOrShowLoadingDialog();
+      StartTransaction();
+      break;
 
-  model_->DisableUiOrShowLoadingDialog();
-  StartTransaction();
+    case EnclaveUserVerificationMethod::kUVKeyWithChromeUI:
+      model_->SetStep(Step::kGPMTouchID);
+      break;
+
+    case EnclaveUserVerificationMethod::kUnsatisfiable:
+      // TODO(crbug.com/367985619): it's possible to get to this state if a user
+      // recovers from iCloud keychain and does not have a usable PIN.
+      model_->SetStep(Step::kGPMError);
+      break;
+
+    case EnclaveUserVerificationMethod::kPIN:
+      PromptForPin();
+      break;
+  }
 }
 
 void GPMEnclaveController::SetAccountStateReady() {
@@ -972,7 +990,8 @@ void GPMEnclaveController::OnGPMSelected() {
 
     case AccountState::kReady:
       uv_method_ = PickEnclaveUserVerificationMethod(
-          user_verification_requirement_, have_added_device_,
+          user_verification_requirement_,
+          have_added_device_ && !recovered_with_icloud_keychain_,
           enclave_manager_->has_wrapped_pin(),
           enclave_manager_->uv_key_state(*model_->platform_has_biometrics),
           *model_->platform_has_biometrics, BrowserIsApp());
@@ -1025,7 +1044,8 @@ void GPMEnclaveController::OnGPMPasskeySelected(
   switch (account_state_) {
     case AccountState::kReady:
       uv_method_ = PickEnclaveUserVerificationMethod(
-          user_verification_requirement_, have_added_device_,
+          user_verification_requirement_,
+          have_added_device_ && !recovered_with_icloud_keychain_,
           enclave_manager_->has_wrapped_pin(),
           enclave_manager_->uv_key_state(*model_->platform_has_biometrics),
           *model_->platform_has_biometrics, BrowserIsApp());
