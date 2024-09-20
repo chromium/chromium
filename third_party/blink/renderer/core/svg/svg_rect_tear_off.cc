@@ -46,7 +46,7 @@ void SVGRectTearOff::setX(float f, ExceptionState& exception_state) {
     return;
   }
   Target()->SetX(f);
-  CommitChange();
+  CommitChange(SVGPropertyCommitReason::kUpdated);
 }
 
 void SVGRectTearOff::setY(float f, ExceptionState& exception_state) {
@@ -55,7 +55,7 @@ void SVGRectTearOff::setY(float f, ExceptionState& exception_state) {
     return;
   }
   Target()->SetY(f);
-  CommitChange();
+  CommitChange(SVGPropertyCommitReason::kUpdated);
 }
 
 void SVGRectTearOff::setWidth(float f, ExceptionState& exception_state) {
@@ -64,7 +64,7 @@ void SVGRectTearOff::setWidth(float f, ExceptionState& exception_state) {
     return;
   }
   Target()->SetWidth(f);
-  CommitChange();
+  CommitChange(SVGPropertyCommitReason::kUpdated);
 }
 
 void SVGRectTearOff::setHeight(float f, ExceptionState& exception_state) {
@@ -73,7 +73,7 @@ void SVGRectTearOff::setHeight(float f, ExceptionState& exception_state) {
     return;
   }
   Target()->SetHeight(f);
-  CommitChange();
+  CommitChange(SVGPropertyCommitReason::kUpdated);
 }
 
 SVGRectTearOff* SVGRectTearOff::CreateDetached(const gfx::RectF& r) {

@@ -46,10 +46,6 @@ class SVGRectElement final : public SVGGeometryElement {
   void Trace(Visitor*) const override;
 
  private:
-  void CollectStyleForPresentationAttribute(
-      const QualifiedName&,
-      const AtomicString&,
-      MutableCSSPropertyValueSet*) override;
   void SvgAttributeChanged(const SvgAttributeChangedParams&) override;
 
   bool SelfHasRelativeLengths() const override;

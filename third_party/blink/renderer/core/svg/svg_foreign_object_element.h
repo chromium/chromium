@@ -41,10 +41,6 @@ class SVGForeignObjectElement final : public SVGGraphicsElement {
   void Trace(Visitor*) const override;
 
  private:
-  void CollectStyleForPresentationAttribute(
-      const QualifiedName&,
-      const AtomicString&,
-      MutableCSSPropertyValueSet*) override;
   void SvgAttributeChanged(const SvgAttributeChangedParams&) override;
 
   LayoutObject* CreateLayoutObject(const ComputedStyle&) override;

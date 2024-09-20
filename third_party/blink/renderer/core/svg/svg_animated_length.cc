@@ -34,6 +34,16 @@
 
 namespace blink {
 
+namespace {
+
+bool RequireNonNegative(CSSPropertyID property_id) {
+  // This should include more properties ('r', 'rx' and 'ry').
+  return property_id == CSSPropertyID::kWidth ||
+         property_id == CSSPropertyID::kHeight;
+}
+
+}  // namespace
+
 SVGParsingError SVGAnimatedLength::AttributeChanged(const String& value) {
   SVGParsingError parse_status =
       SVGAnimatedProperty<SVGLength>::AttributeChanged(value);
@@ -48,6 +58,22 @@ SVGParsingError SVGAnimatedLength::AttributeChanged(const String& value) {
   }
 
   return parse_status;
+}
+
+const CSSValue* SVGAnimatedLength::CssValue() const {
+  DCHECK(HasPresentationAttributeMapping());
+  // SVG allows negative numbers for these attributes but CSS doesn't allow
+  // negative <length> values for the corresponding CSS properties. So remove
+  // negative values here.
+  if (RequireNonNegative(CssPropertyId())) {
+    // TODO(fs): This doesn't handle calc expressions. For that, we'd probably
+    // need to rewrap the CSSMathExpressionNode with a kValueRangeNonNegative
+    // range specification.
+    if (CurrentValue()->IsNegativeNumericLiteral()) {
+      return nullptr;
+    }
+  }
+  return &CurrentValue()->AsCSSPrimitiveValue();
 }
 
 void SVGAnimatedLength::Trace(Visitor* visitor) const {

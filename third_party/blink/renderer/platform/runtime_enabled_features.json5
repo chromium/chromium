@@ -4032,6 +4032,12 @@
       status: "stable",
     },
     {
+      // Feature for updating SVG presentation attribute style eagerly. This is
+      // a kill switch in case we encounter issues with this optimization.
+      name: "SvgEagerPresAttrStyleUpdate",
+      status: "stable",
+    },
+    {
       name: "SvgFilterUserSpaceViewportForNonSvg",
       status: "stable",
     },

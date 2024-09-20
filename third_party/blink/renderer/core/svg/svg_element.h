@@ -177,8 +177,6 @@ class CORE_EXPORT SVGElement : public Element {
 
   void SynchronizeSVGAttribute(const QualifiedName&) const;
   virtual void SynchronizeAllSVGAttributes() const;
-  void CollectExtraStyleForPresentationAttribute(
-      MutableCSSPropertyValueSet*) override;
 
   const ComputedStyle* CustomStyleForLayoutObject(
       const StyleRecalcContext&) final;
@@ -262,10 +260,26 @@ class CORE_EXPORT SVGElement : public Element {
   void ParseAttribute(const AttributeModificationParams&) override;
   void AttributeChanged(const AttributeModificationParams&) override;
 
+  void UpdatePresentationAttributeStyle(const QualifiedName&);
+  void UpdatePresentationAttributeStyle(const SVGAnimatedPropertyBase&);
+  void UpdatePresentationAttributeStyle(CSSPropertyID,
+                                        const QualifiedName&,
+                                        const AtomicString& value);
+  MutableCSSPropertyValueSet* GetPresentationAttributeStyleForDirectUpdate();
   void CollectStyleForPresentationAttribute(
       const QualifiedName&,
       const AtomicString&,
       MutableCSSPropertyValueSet*) override;
+  void AddPropertyToPresentationAttributeStyleWithCache(
+      MutableCSSPropertyValueSet*,
+      CSSPropertyID,
+      const AtomicString& value);
+  void AddAnimatedPropertyToPresentationAttributeStyle(
+      const SVGAnimatedPropertyBase& property,
+      MutableCSSPropertyValueSet* style);
+  void AddAnimatedPropertiesToPresentationAttributeStyle(
+      const base::span<const SVGAnimatedPropertyBase*> properties,
+      MutableCSSPropertyValueSet* style);
 
   InsertionNotificationRequest InsertedInto(ContainerNode&) override;
   void RemovedFrom(ContainerNode&) override;

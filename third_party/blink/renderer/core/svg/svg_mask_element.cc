@@ -23,7 +23,6 @@
 
 #include "third_party/blink/renderer/core/svg/svg_mask_element.h"
 
-#include "third_party/blink/renderer/core/css/style_change_reason.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_resource_masker.h"
 #include "third_party/blink/renderer/core/svg/svg_animated_length.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -83,28 +82,6 @@ void SVGMaskElement::Trace(Visitor* visitor) const {
   SVGTests::Trace(visitor);
 }
 
-void SVGMaskElement::CollectStyleForPresentationAttribute(
-    const QualifiedName& name,
-    const AtomicString& value,
-    MutableCSSPropertyValueSet* style) {
-  SVGAnimatedPropertyBase* property = PropertyFromAttribute(name);
-  if (property == x_) {
-    AddPropertyToPresentationAttributeStyle(style, CSSPropertyID::kX,
-                                            x_->CssValue());
-  } else if (property == y_) {
-    AddPropertyToPresentationAttributeStyle(style, CSSPropertyID::kY,
-                                            y_->CssValue());
-  } else if (property == width_) {
-    AddPropertyToPresentationAttributeStyle(style, CSSPropertyID::kWidth,
-                                            width_->CssValue());
-  } else if (property == height_) {
-    AddPropertyToPresentationAttributeStyle(style, CSSPropertyID::kHeight,
-                                            height_->CssValue());
-  } else {
-    SVGElement::CollectStyleForPresentationAttribute(name, value, style);
-  }
-}
-
 void SVGMaskElement::SvgAttributeChanged(
     const SvgAttributeChangedParams& params) {
   const QualifiedName& attr_name = params.name;
@@ -118,10 +95,7 @@ void SVGMaskElement::SvgAttributeChanged(
     SVGElement::InvalidationGuard invalidation_guard(this);
 
     if (is_length_attr) {
-      InvalidateSVGPresentationAttributeStyle();
-      SetNeedsStyleRecalc(
-          kLocalStyleChange,
-          StyleChangeReasonForTracing::FromAttribute(attr_name));
+      UpdatePresentationAttributeStyle(attr_name);
       UpdateRelativeLengthsInformation();
     }
 
@@ -191,14 +165,9 @@ void SVGMaskElement::SynchronizeAllSVGAttributes() const {
 
 void SVGMaskElement::CollectExtraStyleForPresentationAttribute(
     MutableCSSPropertyValueSet* style) {
-  for (auto* property : (SVGAnimatedPropertyBase*[]){
-           x_.Get(), y_.Get(), width_.Get(), height_.Get()}) {
-    DCHECK(property->HasPresentationAttributeMapping());
-    if (property->IsAnimating()) {
-      CollectStyleForPresentationAttribute(property->AttributeName(),
-                                           g_empty_atom, style);
-    }
-  }
+  auto pres_attrs = std::to_array<const SVGAnimatedPropertyBase*>(
+      {x_.Get(), y_.Get(), width_.Get(), height_.Get()});
+  AddAnimatedPropertiesToPresentationAttributeStyle(pres_attrs, style);
   SVGElement::CollectExtraStyleForPresentationAttribute(style);
 }
 

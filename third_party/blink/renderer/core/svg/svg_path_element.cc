@@ -110,24 +110,6 @@ void SVGPathElement::SvgAttributeChanged(
   SVGGeometryElement::SvgAttributeChanged(params);
 }
 
-void SVGPathElement::CollectStyleForPresentationAttribute(
-    const QualifiedName& name,
-    const AtomicString& value,
-    MutableCSSPropertyValueSet* style) {
-  SVGAnimatedPropertyBase* property = PropertyFromAttribute(name);
-  if (property == path_) {
-    SVGAnimatedPath* path = GetPath();
-    // If this is a <use> instance, return the referenced path to maximize
-    // geometry sharing.
-    if (const SVGElement* element = CorrespondingElement())
-      path = To<SVGPathElement>(element)->GetPath();
-    AddPropertyToPresentationAttributeStyle(style, CSSPropertyID::kD,
-                                            path->CssValue());
-    return;
-  }
-  SVGGeometryElement::CollectStyleForPresentationAttribute(name, value, style);
-}
-
 void SVGPathElement::InvalidateMPathDependencies() {
   // <mpath> can only reference <path> but this dependency is not handled in
   // markForLayoutAndParentResourceInvalidation so we update any mpath
@@ -174,11 +156,7 @@ void SVGPathElement::SynchronizeAllSVGAttributes() const {
 
 void SVGPathElement::CollectExtraStyleForPresentationAttribute(
     MutableCSSPropertyValueSet* style) {
-  DCHECK(path_->HasPresentationAttributeMapping());
-  if (path_->IsAnimating()) {
-    CollectStyleForPresentationAttribute(svg_names::kDAttr, g_empty_atom,
-                                         style);
-  }
+  AddAnimatedPropertyToPresentationAttributeStyle(*path_, style);
   SVGGeometryElement::CollectExtraStyleForPresentationAttribute(style);
 }
 

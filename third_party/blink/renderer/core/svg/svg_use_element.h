@@ -68,11 +68,6 @@ class SVGUseElement final : public SVGGraphicsElement,
  private:
   gfx::RectF GetBBox() override;
 
-  void CollectStyleForPresentationAttribute(
-      const QualifiedName&,
-      const AtomicString&,
-      MutableCSSPropertyValueSet*) override;
-
   bool IsStructurallyExternal() const override;
 
   InsertionNotificationRequest InsertedInto(ContainerNode&) override;

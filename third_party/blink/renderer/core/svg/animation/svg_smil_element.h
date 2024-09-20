@@ -157,6 +157,8 @@ class CORE_EXPORT SVGSMILElement : public SVGElement, public SVGTests {
       const QualifiedName&,
       const AtomicString&,
       MutableCSSPropertyValueSet*) override;
+  SVGAnimatedPropertyBase* PropertyFromAttribute(
+      const QualifiedName& attribute_name) const override;
 
   void AddedEventListener(const AtomicString& event_type,
                           RegisteredEventListener&) final;

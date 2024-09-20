@@ -49,7 +49,7 @@ void SVGPointTearOff::setX(float f, ExceptionState& exception_state) {
     return;
   }
   Target()->SetX(f);
-  CommitChange();
+  CommitChange(SVGPropertyCommitReason::kUpdated);
 }
 
 void SVGPointTearOff::setY(float f, ExceptionState& exception_state) {
@@ -58,7 +58,7 @@ void SVGPointTearOff::setY(float f, ExceptionState& exception_state) {
     return;
   }
   Target()->SetY(f);
-  CommitChange();
+  CommitChange(SVGPropertyCommitReason::kUpdated);
 }
 
 SVGPointTearOff* SVGPointTearOff::matrixTransform(SVGMatrixTearOff* matrix) {

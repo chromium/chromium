@@ -595,6 +595,15 @@ void SVGSMILElement::CollectStyleForPresentationAttribute(
   SVGElement::CollectStyleForPresentationAttribute(attr_name, value, style);
 }
 
+SVGAnimatedPropertyBase* SVGSMILElement::PropertyFromAttribute(
+    const QualifiedName& attribute_name) const {
+  if (SVGAnimatedPropertyBase* property =
+          SVGTests::PropertyFromAttribute(attribute_name)) {
+    return property;
+  }
+  return SVGElement::PropertyFromAttribute(attribute_name);
+}
+
 void SVGSMILElement::ConnectConditions() {
   if (conditions_connected_)
     DisconnectConditions();
