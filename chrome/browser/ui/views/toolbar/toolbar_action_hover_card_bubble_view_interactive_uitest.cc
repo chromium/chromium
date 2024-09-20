@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 #include "chrome/browser/extensions/permissions/scripting_permissions_modifier.h"
 #include "chrome/browser/extensions/permissions/site_permissions_helper.h"
-#include "chrome/browser/policy/policy_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
@@ -212,8 +211,6 @@ IN_PROC_BROWSER_TEST_F(ToolbarActionHoverCardBubbleViewUITest,
 // since such class computes the hover card state.
 IN_PROC_BROWSER_TEST_F(ToolbarActionHoverCardBubbleViewUITest,
                        WidgetUpdatedWhenHoveringBetweenActionViews) {
-  // Mark as enterprise managed.
-  policy::ScopedDomainEnterpriseManagement scoped_domain;
   ASSERT_TRUE(embedded_test_server()->Start());
 
   // Install four extensions with different policy and site access permissions
