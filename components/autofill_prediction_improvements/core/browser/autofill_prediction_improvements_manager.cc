@@ -95,7 +95,6 @@ autofill::Suggestion CreateFeedbackSuggestion() {
 // Creates a suggestion shown when retrieving prediction improvements wasn't
 // successful.
 std::vector<autofill::Suggestion> CreateErrorSuggestion() {
-  // TODO(crbug.com/361434879): Add hardcoded string to an appropriate grd file.
   autofill::Suggestion error_suggestion(
       autofill::SuggestionType::kPredictionImprovementsError);
   error_suggestion.main_text = autofill::Suggestion::Text(
@@ -239,6 +238,7 @@ AutofillPredictionImprovementsManager::CreateTriggerSuggestion() {
   autofill::Suggestion details_suggestion(
       autofill::SuggestionType::kPredictionImprovementsDetails);
   details_suggestion.is_acceptable = false;
+  details_suggestion.highlight_on_select = false;
   details_suggestion.voice_over = l10n_util::GetStringUTF16(
       IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_DETAILS_SUGGESTION_A11Y_HINT);
   suggestions.emplace_back(details_suggestion);

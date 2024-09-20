@@ -12,6 +12,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/views/controls/menu/menu_config.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/view.h"
 #include "ui/views/view_utils.h"
@@ -25,11 +26,16 @@ namespace {
 std::unique_ptr<PopupRowContentView> CreateContentsView(
     base::RepeatingClosure learn_more_callback) {
   auto details_container = std::make_unique<PopupRowContentView>();
+  // TODO(crbug.com/357026771): Possibly move `touchable_menu_height` inside the
+  // `ChromeLayoutProvider`.
+  details_container->SetMinimumCrossAxisSize(
+      views::MenuConfig::instance().touchable_menu_height);
 
   std::vector<size_t> replacement_offsets;
   views::StyledLabel::RangeStyleInfo style_info =
       views::StyledLabel::RangeStyleInfo::CreateForLink(
           std::move(learn_more_callback));
+  style_info.text_style = views::style::TextStyle::STYLE_LINK_5;
   const std::u16string manage_prediction_improvements_text_link =
       l10n_util::GetStringUTF16(
           IDS_AUTOFILL_PREDICTION_IMPROVEMENTS_MANAGE_PREDICTION_IMPROVEMENTS);
@@ -40,7 +46,7 @@ std::unique_ptr<PopupRowContentView> CreateContentsView(
   details_container->AddChildView(
       views::Builder<views::StyledLabel>()
           .SetText(formatted_text)
-          .SetDefaultTextStyle(views::style::STYLE_SECONDARY)
+          .SetDefaultTextStyle(views::style::STYLE_BODY_5)
           .SetHorizontalAlignment(gfx::ALIGN_LEFT)
           .AddStyleRange(
               gfx::Range(replacement_offsets[0],

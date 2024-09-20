@@ -47,7 +47,7 @@ constexpr int kButtonRadius = 12;
 std::unique_ptr<PopupRowContentView> CreateFeedbackContentView(
     base::RepeatingClosure manage_prediction_improvements_clicked) {
   auto feedback_container = std::make_unique<PopupRowContentView>();
-  // TODO(crbug.com/345170058): Possibly move `touchable_menu_height` inside the
+  // TODO(crbug.com/357026771): Possibly move `touchable_menu_height` inside the
   // `ChromeLayoutProvider`.
   feedback_container->SetMinimumCrossAxisSize(
       views::MenuConfig::instance().touchable_menu_height);
@@ -55,6 +55,8 @@ std::unique_ptr<PopupRowContentView> CreateFeedbackContentView(
   views::StyledLabel::RangeStyleInfo style_info =
       views::StyledLabel::RangeStyleInfo::CreateForLink(
           std::move(manage_prediction_improvements_clicked));
+  style_info.text_style = views::style::TextStyle::STYLE_LINK_5;
+
   std::vector<size_t> replacement_offsets;
   const std::u16string manage_prediction_improvements_link_text =
       l10n_util::GetStringUTF16(
@@ -69,6 +71,7 @@ std::unique_ptr<PopupRowContentView> CreateFeedbackContentView(
           views::Builder<views::StyledLabel>()
               .SetText(formatted_text)
               .SetHorizontalAlignment(gfx::ALIGN_LEFT)
+              .SetDefaultTextStyle(views::style::STYLE_BODY_5)
               .AddStyleRange(
                   gfx::Range(
                       replacement_offsets[0],
