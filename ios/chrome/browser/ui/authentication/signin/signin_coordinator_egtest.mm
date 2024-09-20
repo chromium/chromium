@@ -305,7 +305,8 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
   [SigninEarlGreyUI signOut];
 }
 
-- (void)testSignInDisconnectFromChromeManaged_ClearDataFeatureEnabled {
+// TODO(crbug.com/368595150): Disabled due to flakiness.
+- (void)DISABLED_testSignInDisconnectFromChromeManaged_ClearDataFeatureEnabled {
   // Sign-in with a managed account.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeManagedIdentity];
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
