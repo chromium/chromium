@@ -293,6 +293,30 @@ void DefaultSearchManager::OnOverridesPrefChanged() {
   }
 }
 
+std::pair<std::u16string, bool>
+DefaultSearchManager::GetSearchEngineKeywordFromPrefsData() const {
+  std::u16string keyword = prefs_default_search_->keyword();
+
+  if (keyword != u"yahoo.com" ||
+      !prefs_default_search_->created_from_play_api) {
+    return {std::move(keyword), false};
+  }
+
+  // The domain name prefix specifies the regional version of Yahoo's search
+  // engine requests. Until 08.2024 Android EEA Yahoo keywords all pointed
+  // to Yahoo US. See go/chrome:template-url-reconciliation for more
+  // information.
+  // Extract the Country Code from the Yahoo domain name and use it to
+  // construct a keyword that we may find in PrepopulatedEngines.
+  GURL yahoo_search_url(prefs_default_search_->url());
+  std::string_view yahoo_search_host = yahoo_search_url.host_piece();
+  std::string_view country_code =
+      yahoo_search_host.substr(0, yahoo_search_host.find('.'));
+  keyword = base::UTF8ToUTF16(country_code) + u".yahoo.com";
+
+  return {std::move(keyword), true};
+}
+
 void DefaultSearchManager::MergePrefsDataWithPrepopulated() {
   enum class ReconciliationType {
     kNone,
@@ -329,24 +353,8 @@ void DefaultSearchManager::MergePrefsDataWithPrepopulated() {
   auto matching_engine = prepopulated_urls.end();
 
   if (reconcile_by_keyword) {
-    bool is_by_domain_based_keyword = false;
-
-    std::u16string keyword = prefs_default_search_->keyword();
-
-    if (prefs_default_search_->keyword() == u"yahoo.com") {
-      // The domain name prefix specifies the regional version of Yahoo's search
-      // engine requests. Until 08.2024 Android EEA Yahoo keywords all pointed
-      // to Yahoo US. See go/chrome:template-url-reconciliation for more
-      // information.
-      // Extract the Country Code from the Yahoo domain name and use it to
-      // construct a keyword that we may find in PrepopulatedEngines.
-      GURL yahoo_search_url(prefs_default_search_->url());
-      std::string_view yahoo_search_host = yahoo_search_url.host_piece();
-      std::string_view country_code =
-          yahoo_search_host.substr(0, yahoo_search_host.find('.'));
-      keyword = base::UTF8ToUTF16(country_code) + u".yahoo.com";
-      is_by_domain_based_keyword = true;
-    }
+    auto [keyword, is_by_domain_based_keyword] =
+        GetSearchEngineKeywordFromPrefsData();
 
     // Match by keyword.
     matching_engine = base::ranges::find(prepopulated_urls, keyword,

@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/functional/callback.h"
+#include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
@@ -152,6 +153,15 @@ class DefaultSearchManager {
   void ClearUserSelectedDefaultSearchEngine();
 
  private:
+  FRIEND_TEST_ALL_PREFIXES(
+      DefaultSearchManagerTest,
+      GetSearchEngineKeywordFromPrefsData_Direct_NonEligiblePlayKeyword);
+  FRIEND_TEST_ALL_PREFIXES(
+      DefaultSearchManagerTest,
+      GetSearchEngineKeywordFromPrefsData_Direct_NonEligibleNotFromPlay);
+  FRIEND_TEST_ALL_PREFIXES(
+      DefaultSearchManagerTest,
+      GetSearchEngineKeywordFromPrefsData_Computed_EligibleFromPlay);
   // Handles changes to kDefaultSearchProviderData pref. This includes sync and
   // policy changes. Calls LoadDefaultSearchEngineFromPrefs() and
   // NotifyObserver() if the effective DSE might have changed.
@@ -165,6 +175,15 @@ class DefaultSearchManager {
   // Updates |prefs_default_search_| with values from its corresponding
   // pre-populated search provider record, if any.
   void MergePrefsDataWithPrepopulated();
+
+  // Returns the keyword associated with currently selected default search
+  // engine. If the search engine comes from Play API, applies necessary changes
+  // to compute keyword equivalent that can be matched with prepopulated
+  // engines. Returns a pair of values:
+  // - a string - keyword that can be matched with prepopulated_engines, and
+  // - a boolean - indicating whether returned value had to be computed from
+  //   engine's Search URL.
+  std::pair<std::u16string, bool> GetSearchEngineKeywordFromPrefsData() const;
 
   // Reads default search provider data from |pref_service_|, updating
   // |prefs_default_search_|, |default_search_mandatory_by_policy_|, and

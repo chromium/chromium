@@ -471,3 +471,45 @@ TEST_F(DefaultSearchManagerTest,
   expected_engine.created_from_play_api = true;
   ExpectSimilar(&expected_engine, result);
 }
+
+TEST_F(DefaultSearchManagerTest,
+       GetSearchEngineKeywordFromPrefsData_Direct_NonEligiblePlayKeyword) {
+  auto manager = create_manager();
+
+  auto supplied_engine = GenerateDummyTemplateURLData("searchengine.com");
+  supplied_engine->created_from_play_api = true;
+  supplied_engine->SetURL("https://de.yahoo.com");
+  manager->prefs_default_search_ = std::move(supplied_engine);
+
+  auto [keyword, is_generated] = manager->GetSearchEngineKeywordFromPrefsData();
+  ASSERT_EQ(keyword, u"searchengine.com");
+  ASSERT_FALSE(is_generated);
+}
+
+TEST_F(DefaultSearchManagerTest,
+       GetSearchEngineKeywordFromPrefsData_Direct_NonEligibleNotFromPlay) {
+  auto manager = create_manager();
+
+  auto supplied_engine = GenerateDummyTemplateURLData("yahoo.com");
+  supplied_engine->created_from_play_api = false;
+  supplied_engine->SetURL("https://de.yahoo.com");
+  manager->prefs_default_search_ = std::move(supplied_engine);
+
+  auto [keyword, is_generated] = manager->GetSearchEngineKeywordFromPrefsData();
+  ASSERT_EQ(keyword, u"yahoo.com");
+  ASSERT_FALSE(is_generated);
+}
+
+TEST_F(DefaultSearchManagerTest,
+       GetSearchEngineKeywordFromPrefsData_Computed_EligibleFromPlay) {
+  auto manager = create_manager();
+
+  auto supplied_engine = GenerateDummyTemplateURLData("yahoo.com");
+  supplied_engine->created_from_play_api = true;
+  supplied_engine->SetURL("https://de.yahoo.com");
+  manager->prefs_default_search_ = std::move(supplied_engine);
+
+  auto [keyword, is_generated] = manager->GetSearchEngineKeywordFromPrefsData();
+  ASSERT_EQ(keyword, u"de.yahoo.com");
+  ASSERT_TRUE(is_generated);
+}
