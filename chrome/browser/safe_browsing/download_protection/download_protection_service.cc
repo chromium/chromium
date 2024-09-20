@@ -488,39 +488,6 @@ DownloadProtectionService::GetDownloadProtectionTailoredVerdict(
     return ClientDownloadResponse::TailoredVerdict();
 }
 
-// static
-bool DownloadProtectionService::ShouldSendDangerousDownloadReport(
-    download::DownloadItem* item) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  content::BrowserContext* browser_context =
-      content::DownloadItemUtils::GetBrowserContext(item);
-  Profile* profile = Profile::FromBrowserContext(browser_context);
-  if (!profile || !IsExtendedReportingEnabled(*profile->GetPrefs())) {
-    return false;
-  }
-
-  // When users are in incognito mode, no report will be sent and no
-  // |onDangerousDownloadOpened| extension API will be called.
-  if (browser_context->IsOffTheRecord()) {
-    return false;
-  }
-
-  // Only report downloads that are known to be dangerous or was dangerous but
-  // was validated by the user.
-  if (!item->IsDangerous() &&
-      item->GetDangerType() != download::DOWNLOAD_DANGER_TYPE_USER_VALIDATED) {
-    return false;
-  }
-
-  std::string token = GetDownloadPingToken(item);
-  // Only dangerous downloads have token stored.
-  if (token.empty()) {
-    return false;
-  }
-
-  return true;
-}
-
 void DownloadProtectionService::MaybeSendDangerousDownloadOpenedReport(
     download::DownloadItem* item,
     bool show_download_in_folder) {

@@ -7,8 +7,15 @@
 #include "base/hash/sha1.h"
 #include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
+#include "chrome/browser/safe_browsing/download_protection/download_protection_service.h"
 #include "chrome/browser/safe_browsing/download_protection/download_protection_unittest_util.h"
+#include "chrome/test/base/testing_profile.h"
+#include "components/download/public/common/mock_download_item.h"
+#include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/content/common/file_type_policies_test_util.h"
+#include "components/safe_browsing/core/common/safe_browsing_prefs.h"
+#include "content/public/browser/download_item_utils.h"
+#include "content/public/test/browser_task_environment.h"
 #include "net/cert/x509_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -16,6 +23,8 @@
 namespace safe_browsing {
 
 using ::testing::ElementsAre;
+using ::testing::NiceMock;
+using ::testing::Return;
 
 TEST(DownloadProtectionUtilTest, GetCertificateAllowlistStrings) {
   // We'll pass this cert in as the "issuer", even though it isn't really
@@ -323,5 +332,76 @@ TEST(DownloadProtectionUtilTest, NonWildcardEntryDeterministic) {
               selected_binaries[0].file_path() == "evil12.exe")
       << "Wilcard entry is " << selected_binaries[0].file_path();
 }
+
+#if BUILDFLAG(FULL_SAFE_BROWSING)
+TEST(DownloadProtectionUtilTest, ShouldSendDangerousDownloadReport) {
+  content::BrowserTaskEnvironment task_environment;
+  auto setup = [](Profile* profile,
+                  NiceMock<download::MockDownloadItem>* item) {
+    content::DownloadItemUtils::AttachInfoForTesting(item, profile,
+                                                     /*web_contents=*/nullptr);
+    DownloadProtectionService::SetDownloadProtectionData(
+        item, "download_token", ClientDownloadResponse::DANGEROUS_HOST,
+        ClientDownloadResponse::TailoredVerdict());
+    SetExtendedReportingPrefForTests(profile->GetPrefs(), true);
+    ON_CALL(*item, GetDangerType)
+        .WillByDefault(Return(download::DOWNLOAD_DANGER_TYPE_DANGEROUS_HOST));
+    ON_CALL(*item, IsDangerous).WillByDefault(Return(true));
+  };
+  {
+    // Report should be sent.
+    TestingProfile profile;
+    NiceMock<download::MockDownloadItem> download_item;
+    setup(&profile, &download_item);
+    EXPECT_TRUE(ShouldSendDangerousDownloadReport(&download_item));
+  }
+  {
+    // Report should not be sent because extended reporting is disabled.
+    TestingProfile profile;
+    NiceMock<download::MockDownloadItem> download_item;
+    setup(&profile, &download_item);
+    SetExtendedReportingPrefForTests(profile.GetPrefs(), false);
+    EXPECT_FALSE(ShouldSendDangerousDownloadReport(&download_item));
+  }
+  {
+    // Report should not be sent because off the record.
+    TestingProfile profile;
+    TestingProfile::Builder profile_builder;
+    TestingProfile* otr_profile = profile_builder.BuildIncognito(&profile);
+    NiceMock<download::MockDownloadItem> download_item;
+    setup(otr_profile, &download_item);
+    EXPECT_FALSE(ShouldSendDangerousDownloadReport(&download_item));
+  }
+  {
+    // Report should not be sent because not dangerous.
+    TestingProfile profile;
+    NiceMock<download::MockDownloadItem> download_item;
+    setup(&profile, &download_item);
+    ON_CALL(download_item, IsDangerous).WillByDefault(Return(false));
+    EXPECT_FALSE(ShouldSendDangerousDownloadReport(&download_item));
+  }
+  {
+    // Report should be sent because it was dangerous and is now validated by
+    // user.
+    TestingProfile profile;
+    NiceMock<download::MockDownloadItem> download_item;
+    setup(&profile, &download_item);
+    ON_CALL(download_item, IsDangerous).WillByDefault(Return(false));
+    ON_CALL(download_item, GetDangerType)
+        .WillByDefault(Return(download::DOWNLOAD_DANGER_TYPE_USER_VALIDATED));
+    EXPECT_TRUE(ShouldSendDangerousDownloadReport(&download_item));
+  }
+  {
+    // Report should not be sent because no token.
+    TestingProfile profile;
+    NiceMock<download::MockDownloadItem> download_item;
+    setup(&profile, &download_item);
+    DownloadProtectionService::SetDownloadProtectionData(
+        &download_item, "", ClientDownloadResponse::DANGEROUS_HOST,
+        ClientDownloadResponse::TailoredVerdict());
+    EXPECT_FALSE(ShouldSendDangerousDownloadReport(&download_item));
+  }
+}
+#endif
 
 }  // namespace safe_browsing

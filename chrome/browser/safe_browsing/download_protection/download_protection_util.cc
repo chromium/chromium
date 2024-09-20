@@ -12,12 +12,17 @@
 #include "chrome/browser/download/download_item_warning_data.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/safe_browsing_navigation_observer_manager_factory.h"
+#include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/content/common/file_type_policies.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/sessions/content/session_tab_helper.h"
 #include "content/public/browser/download_item_utils.h"
 #include "net/cert/x509_util.h"
 #include "url/gurl.h"
+
+#if BUILDFLAG(FULL_SAFE_BROWSING)
+#include "chrome/browser/safe_browsing/download_protection/download_protection_service.h"
+#endif
 
 namespace safe_browsing {
 
@@ -381,5 +386,37 @@ std::unique_ptr<ReferrerChainData> IdentifyReferrerChain(
                                              referrer_chain_length,
                                              recent_navigations_to_collect);
 }
+
+#if BUILDFLAG(FULL_SAFE_BROWSING)
+bool ShouldSendDangerousDownloadReport(download::DownloadItem* item) {
+  content::BrowserContext* browser_context =
+      content::DownloadItemUtils::GetBrowserContext(item);
+  Profile* profile = Profile::FromBrowserContext(browser_context);
+  if (!profile || !IsExtendedReportingEnabled(*profile->GetPrefs())) {
+    return false;
+  }
+
+  // When users are in incognito mode, no report will be sent and no
+  // |onDangerousDownloadOpened| extension API will be called.
+  if (browser_context->IsOffTheRecord()) {
+    return false;
+  }
+
+  // Only report downloads that are known to be dangerous or was dangerous but
+  // was validated by the user.
+  if (!item->IsDangerous() &&
+      item->GetDangerType() != download::DOWNLOAD_DANGER_TYPE_USER_VALIDATED) {
+    return false;
+  }
+
+  std::string token = DownloadProtectionService::GetDownloadPingToken(item);
+  // Only dangerous downloads have token stored.
+  if (token.empty()) {
+    return false;
+  }
+
+  return true;
+}
+#endif
 
 }  // namespace safe_browsing
