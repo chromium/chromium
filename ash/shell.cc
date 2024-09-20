@@ -1454,9 +1454,7 @@ void Shell::Init(
 
   // `SnapGroupController` has dependencies on `OverviewController` and
   // `TabletModeController`.
-  if (features::IsSnapGroupEnabled()) {
-    snap_group_controller_ = std::make_unique<SnapGroupController>();
-  }
+  snap_group_controller_ = std::make_unique<SnapGroupController>();
 
   screen_position_controller_ = std::make_unique<ScreenPositionController>();
 

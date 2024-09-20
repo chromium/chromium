@@ -2277,20 +2277,7 @@ TEST_F(GameDashboardContextTest, TabNavigationToolbar) {
   EXPECT_TRUE(test_api_->GetToolbarScreenshotButton()->HasFocus());
 }
 
-class SnapGroupGameDashboardContextTest : public GameDashboardContextTest {
- public:
-  SnapGroupGameDashboardContextTest()
-      : scoped_feature_list_(features::kSnapGroup) {}
-
-  SnapGroupGameDashboardContextTest(const SnapGroupGameDashboardContextTest&) =
-      delete;
-  SnapGroupGameDashboardContextTest& operator=(
-      const SnapGroupGameDashboardContextTest&) = delete;
-  ~SnapGroupGameDashboardContextTest() override = default;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
+using SnapGroupGameDashboardContextTest = GameDashboardContextTest;
 
 // Tests no crash when the game window in a snap group is fullscreen'ed then
 // forces a work area change. Regression test for http://b/348668590.

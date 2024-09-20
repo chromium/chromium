@@ -73,8 +73,6 @@ class ShelfTest : public AshTestBase {
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_{features::kSnapGroup};
-
   raw_ptr<ShelfView, DanglingUntriaged> shelf_view_ = nullptr;
   raw_ptr<ShelfModel, DanglingUntriaged> shelf_model_ = nullptr;
   std::unique_ptr<ShelfViewTestAPI> test_;

@@ -3324,20 +3324,7 @@ IN_PROC_BROWSER_TEST_F(SaveAndRecallBrowserTest,
 }
 // TODO(crbug.com/40228006): Add some tests to launch LaCros browser.
 
-class SnapGroupDesksClientTest : public DesksClientTest {
- public:
-  SnapGroupDesksClientTest() {
-    scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{ash::features::kSnapGroup},
-        /*disabled_features=*/{});
-  }
-  SnapGroupDesksClientTest(const SnapGroupDesksClientTest&) = delete;
-  SnapGroupDesksClientTest& operator=(const SnapGroupDesksClientTest&) = delete;
-  ~SnapGroupDesksClientTest() override = default;
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
+using SnapGroupDesksClientTest = DesksClientTest;
 
 IN_PROC_BROWSER_TEST_F(SnapGroupDesksClientTest, DesksTemplates) {
   // Create 1 other window to create a snap group.

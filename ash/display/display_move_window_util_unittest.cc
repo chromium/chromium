@@ -72,8 +72,7 @@ class DisplayMoveWindowUtilTest : public AshTestBase {
  public:
   DisplayMoveWindowUtilTest() {
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kSnapGroup,
-                              features::kOsSettingsRevampWayfinding},
+        /*enabled_features=*/{features::kOsSettingsRevampWayfinding},
         /*disabled_features=*/{});
   }
   DisplayMoveWindowUtilTest(const DisplayMoveWindowUtilTest&) = delete;

@@ -267,8 +267,7 @@ class SnapGroupBrowserTest : public InProcessBrowserTest {
  public:
   SnapGroupBrowserTest() {
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{ash::features::kSnapGroup,
-                              ash::features::kForestFeature,
+        /*enabled_features=*/{ash::features::kForestFeature,
                               ash::features::kSavedDeskUiRevamp},
         /*disabled_features=*/{});
   }

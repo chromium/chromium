@@ -37,9 +37,7 @@ class SnapGroupPixelTest : public AshTestBase {
  public:
   SnapGroupPixelTest() {
     scoped_feature_list_.InitWithFeatures(
-        {features::kSnapGroup, features::kForestFeature,
-         features::kSavedDeskUiRevamp},
-        {});
+        {features::kForestFeature, features::kSavedDeskUiRevamp}, {});
   }
   SnapGroupPixelTest(const SnapGroupPixelTest&) = delete;
   SnapGroupPixelTest& operator=(const SnapGroupPixelTest&) = delete;

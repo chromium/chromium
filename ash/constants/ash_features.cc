@@ -2945,9 +2945,6 @@ BASE_FEATURE(kSmartLockSignInRemoved,
              "SmartLockSignInRemoved",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Controls whether the snap group feature is enabled or not.
-BASE_FEATURE(kSnapGroup, "SnapGroup", base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables or disables using the system input engine for physical typing in
 // Japanese.
 BASE_FEATURE(kSystemJapanesePhysicalTyping,
@@ -4778,10 +4775,6 @@ bool IsShowSharingUserInLauncherContinueSectionEnabled() {
 
 bool IsSmartReaderEnabled() {
   return base::FeatureList::IsEnabled(kSmartReader);
-}
-
-bool IsSnapGroupEnabled() {
-  return base::FeatureList::IsEnabled(kSnapGroup);
 }
 
 bool IsSunfishFeatureEnabled() {

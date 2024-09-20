@@ -1053,8 +1053,7 @@ bool CanStartSplitViewOverviewSessionInClamshell(
 }
 
 bool IsSnapGroupEnabledInClamshellMode() {
-  return features::IsSnapGroupEnabled() &&
-         !display::Screen::GetScreen()->InTabletMode();
+  return !display::Screen::GetScreen()->InTabletMode();
 }
 
 int GetWindowComponentForResize(aura::Window* window) {

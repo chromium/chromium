@@ -188,9 +188,6 @@ class TabletModeWindowManagerTest : public AshTestBase {
   SplitViewController* split_view_controller() {
     return SplitViewController::Get(Shell::GetPrimaryRootWindow());
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_{features::kSnapGroup};
 };
 
 // Test that creating the object and destroying it without any windows should

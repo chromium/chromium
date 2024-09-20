@@ -39,8 +39,7 @@ class OverviewGridTest : public AshTestBase {
  public:
   OverviewGridTest() {
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kSnapGroup,
-                              features::kOsSettingsRevampWayfinding},
+        /*enabled_features=*/{features::kOsSettingsRevampWayfinding},
         /*disabled_features=*/{features::kForestFeature});
   }
 

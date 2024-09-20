@@ -73,8 +73,7 @@ class WindowRestoreControllerTest : public AshTestBase,
 
   WindowRestoreControllerTest() {
     scoped_feature_list_.InitWithFeatures(
-        /*enabled_features=*/{features::kSnapGroup,
-                              features::kOsSettingsRevampWayfinding},
+        /*enabled_features=*/{features::kOsSettingsRevampWayfinding},
         /*disabled_features=*/{});
   }
   WindowRestoreControllerTest(const WindowRestoreControllerTest&) = delete;
