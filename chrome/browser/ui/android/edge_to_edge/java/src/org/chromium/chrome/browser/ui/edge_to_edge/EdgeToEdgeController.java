@@ -28,6 +28,13 @@ public interface EdgeToEdgeController extends Destroyable, EdgeToEdgeSupplier {
     int getBottomInsetPx();
 
     /**
+     * @return the inset in pixels needed for the bottom UI to adjust views to draw below the Bottom
+     *     Nav Bar. This value will persist even if the controller is not drawing the page ToEdge.
+     */
+    // TODO(crbug.com/367426935) Fold into the getBottomInset* methods
+    int getSystemBottomInsetPx();
+
+    /**
      * Whether the system is drawing "toEdge" (i.e. the edge-to-edge wrapper has no bottom padding).
      * This could be due to the current page being opted into edge-to-edge, or a partial
      * edge-to-edge with the bottom chin present.

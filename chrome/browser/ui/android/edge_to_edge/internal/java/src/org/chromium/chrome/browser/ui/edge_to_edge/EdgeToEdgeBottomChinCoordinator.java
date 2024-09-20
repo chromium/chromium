@@ -77,7 +77,7 @@ public class EdgeToEdgeBottomChinCoordinator implements Destroyable {
         int initNavBarColor = navigationBarColorProvider.getNavigationBarColor();
         PropertyModel model =
                 new PropertyModel.Builder(EdgeToEdgeBottomChinProperties.ALL_KEYS)
-                        .with(EdgeToEdgeBottomChinProperties.IS_VISIBLE, false)
+                        .with(EdgeToEdgeBottomChinProperties.CAN_SHOW, false)
                         .with(EdgeToEdgeBottomChinProperties.COLOR, initNavBarColor)
                         .with(EdgeToEdgeBottomChinProperties.DIVIDER_COLOR, initNavBarColor)
                         .build();

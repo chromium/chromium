@@ -145,8 +145,8 @@ public class EdgeToEdgeControllerTest {
 
     @Before
     public void setUp() {
-        ChromeFeatureList.sDrawEdgeToEdge.setForTesting(true);
         ChromeFeatureList.sEdgeToEdgeBottomChin.setForTesting(true);
+        ChromeFeatureList.sEdgeToEdgeWebOptIn.setForTesting(true);
         ChromeFeatureList.sDrawNativeEdgeToEdge.setForTesting(false);
 
         MockitoAnnotations.openMocks(this);

@@ -4528,7 +4528,7 @@ const char kEdgeToEdgeBottomChinDescription[] =
     "Enables the scrollable bottom chin for an intermediate Edge-to-Edge "
     "experience.";
 
-const char kEdgeToEdgeWebOptInName[] = "DrawEdgeToEdge";
+const char kEdgeToEdgeWebOptInName[] = "EdgeToEdgeWebOptIn";
 const char kEdgeToEdgeWebOptInDescription[] =
     "Enables Chrome to draw below the Nav Bar on websites that have explicitly "
     "opted into Edge-to-Edge. Requires DrawCutoutEdgeToEdge to also be "

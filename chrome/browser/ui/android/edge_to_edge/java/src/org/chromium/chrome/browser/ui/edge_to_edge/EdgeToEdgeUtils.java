@@ -157,7 +157,7 @@ public class EdgeToEdgeUtils {
      */
     static boolean shouldDrawToEdge(
             boolean isPageOptedIntoEdgeToEdge, @LayoutType int layoutType, int bottomInset) {
-        return (isLegacyWebsiteOptInEnabled() && isPageOptedIntoEdgeToEdge)
+        return (isEdgeToEdgeWebOptInEnabled() && isPageOptedIntoEdgeToEdge)
                 || (isEdgeToEdgeBottomChinEnabled()
                         && isBottomChinAllowed(layoutType, bottomInset));
     }
@@ -191,8 +191,7 @@ public class EdgeToEdgeUtils {
         if (sAlwaysDrawWebEdgeToEdgeForTesting) {
             return true;
         }
-        // TODO (crbug.com/353724310) Refactor flag check to the E2E web opt-in flag
-        return isLegacyWebsiteOptInEnabled() && getWasViewportFitCover(tab);
+        return isEdgeToEdgeWebOptInEnabled() && getWasViewportFitCover(tab);
     }
 
     /**
@@ -204,7 +203,7 @@ public class EdgeToEdgeUtils {
         if (tab == null || tab.isNativePage()) {
             return ChromeFeatureList.sDrawNativeEdgeToEdge.isEnabled();
         }
-        if (!isLegacyWebsiteOptInEnabled()) {
+        if (!isEdgeToEdgeWebOptInEnabled()) {
             return false;
         }
         return value == ViewportFit.COVER || value == ViewportFit.COVER_FORCED_BY_USER_AGENT;
