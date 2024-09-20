@@ -469,6 +469,17 @@ TEST(MathUtilTest, RoundUp) {
   }
 }
 
+TEST(MathUtilTest, RoundUpAlmostOverflow) {
+  // This is the largest multiple of 64 before rounding up overflows.
+  constexpr int value = 2147483584;
+  constexpr int multiple = 64;
+
+  static_assert(MathUtil::VerifyRoundup<int>(value, multiple));
+  static_assert(!MathUtil::VerifyRoundup<int>(value + 1, multiple));
+
+  EXPECT_EQ(MathUtil::UncheckedRoundUp<int>(value, multiple), value);
+}
+
 TEST(MathUtilTest, RoundUpOverflow) {
   // Rounding up 123 by 50 is 150, which overflows int8_t, but fits in uint8_t.
   EXPECT_FALSE(MathUtil::VerifyRoundup<int8_t>(123, 50));
@@ -500,6 +511,17 @@ TEST(MathUtilTest, RoundDown) {
           << "attempt=" << attempt << " multiplier=" << multiplier;
     }
   }
+}
+
+TEST(MathUtilTest, RoundDownAlmostOverflow) {
+  // This is the smallest multiple of 10 before rounding down overflows.
+  constexpr int value = -2147483640;
+  constexpr int multiple = 10;
+
+  static_assert(MathUtil::VerifyRoundDown(value, multiple));
+  static_assert(!MathUtil::VerifyRoundDown(value - 1, multiple));
+
+  EXPECT_EQ(MathUtil::UncheckedRoundDown<int>(value, multiple), value);
 }
 
 TEST(MathUtilTest, RoundDownUnderflow) {

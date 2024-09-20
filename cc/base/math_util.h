@@ -120,6 +120,7 @@ class CC_BASE_EXPORT MathUtil {
  public:
   // Returns true if rounded up value does not overflow, false otherwise.
   template <typename T>
+    requires std::integral<T>
   static constexpr bool VerifyRoundup(T n, T mul) {
     return mul && (n <= (std::numeric_limits<T>::max() -
                          (std::numeric_limits<T>::max() % mul)));
@@ -130,24 +131,23 @@ class CC_BASE_EXPORT MathUtil {
   //    - RoundUp(123, 50) returns 150.
   //    - RoundUp(-123, 50) returns -100.
   template <typename T>
+    requires std::integral<T>
   static constexpr T UncheckedRoundUp(T n, T mul) {
-    static_assert(std::numeric_limits<T>::is_integer,
-                  "T must be an integer type");
     return RoundUpInternal(n, mul);
   }
 
   // Similar to UncheckedRoundUp(), but dies with a CRASH() if rounding up a
   // given |n| overflows T.
   template <typename T>
+    requires std::integral<T>
   static constexpr T CheckedRoundUp(T n, T mul) {
-    static_assert(std::numeric_limits<T>::is_integer,
-                  "T must be an integer type");
     CHECK(VerifyRoundup(n, mul));
     return RoundUpInternal(n, mul);
   }
 
   // Returns true if rounded down value does not underflow, false otherwise.
   template <typename T>
+    requires std::integral<T>
   static constexpr bool VerifyRoundDown(T n, T mul) {
     return mul && (n >= (std::numeric_limits<T>::min() -
                          (std::numeric_limits<T>::min() % mul)));
@@ -158,18 +158,16 @@ class CC_BASE_EXPORT MathUtil {
   //    - RoundDown(123, 50) returns 100.
   //    - RoundDown(-123, 50) returns -150.
   template <typename T>
+    requires std::integral<T>
   static constexpr T UncheckedRoundDown(T n, T mul) {
-    static_assert(std::numeric_limits<T>::is_integer,
-                  "T must be an integer type");
     return RoundDownInternal(n, mul);
   }
 
   // Similar to UncheckedRoundDown(), but dies with a CRASH() if rounding down a
   // given |n| underflows T.
   template <typename T>
+    requires std::integral<T>
   static constexpr T CheckedRoundDown(T n, T mul) {
-    static_assert(std::numeric_limits<T>::is_integer,
-                  "T must be an integer type");
     CHECK(VerifyRoundDown(n, mul));
     return RoundDownInternal(n, mul);
   }
@@ -341,13 +339,20 @@ class CC_BASE_EXPORT MathUtil {
  private:
   template <typename T>
   static constexpr T RoundUpInternal(T n, T mul) {
-    return (n > 0) ? ((n + mul - 1) / mul) * mul : (n / mul) * mul;
+    T remainder = n % mul;
+    if (remainder == 0) {
+      return n;
+    }
+    return (n > 0) ? n + mul - remainder : n - remainder;
   }
 
   template <typename T>
   static constexpr T RoundDownInternal(T n, T mul) {
-    return (n > 0) ? (n / mul) * mul : (n == 0) ? 0
-                                                : ((n - mul + 1) / mul) * mul;
+    T remainder = n % mul;
+    if (remainder == 0) {
+      return n;
+    }
+    return (n > 0) ? n - remainder : n - mul - remainder;
   }
 };
 
