@@ -259,6 +259,7 @@ if (is_chromeos_device) {
       "//chrome/browser/ui/ash/shelf",
       "//chrome/test:test_support",
       "//chrome/test/base/ash/interactive:test_support",
+      "//chrome/test/supervised_user:test_support",
       "//ui/aura",
       "//url",
     ]

@@ -8996,8 +8996,6 @@ static_library("test_support") {
     "share/fake_share_history.h",
     "signin/chrome_signin_client_test_util.cc",
     "signin/chrome_signin_client_test_util.h",
-    "signin/e2e_tests/test_accounts_util.cc",
-    "signin/e2e_tests/test_accounts_util.h",
     "ssl/ssl_browsertest_util.cc",
     "ssl/ssl_browsertest_util.h",
     "ssl/ssl_client_auth_requestor_mock.cc",

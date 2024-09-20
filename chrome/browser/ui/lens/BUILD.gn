@@ -167,6 +167,7 @@ source_set("browser_tests") {
     "//chrome/browser",
     "//chrome/browser/lens/core/mojom:mojo_bindings",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/signin/e2e_tests:test_support",
     "//chrome/browser/sync",
     "//chrome/browser/themes",
     "//chrome/browser/ui",
