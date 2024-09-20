@@ -236,6 +236,7 @@ CorsURLLoaderFactory::CorsURLLoaderFactory(
           std::move(params->shared_dictionary_observer)),
       require_cross_site_request_for_cookies_(
           params->require_cross_site_request_for_cookies),
+      factory_cookie_setting_overrides_(params->cookie_setting_overrides),
       origin_access_list_(origin_access_list),
       owner_(owner) {
   TRACE_EVENT("loading", "CorsURLLoaderFactory::CorsURLLoaderFactory",
@@ -448,7 +449,7 @@ void CorsURLLoaderFactory::CreateLoaderAndStart(
           shared_dictionary_storage,
           shared_dictionary_observer_ ? shared_dictionary_observer_.get()
                                       : nullptr,
-          context_);
+          context_, factory_cookie_setting_overrides_);
     } else {
       loader = std::make_unique<CorsURLLoader>(
           std::move(receiver), process_id_, request_id, options,
@@ -466,7 +467,7 @@ void CorsURLLoaderFactory::CreateLoaderAndStart(
           shared_dictionary_storage,
           shared_dictionary_observer_ ? shared_dictionary_observer_.get()
                                       : nullptr,
-          context_);
+          context_, factory_cookie_setting_overrides_);
     }
     auto* raw_loader = loader.get();
     OnCorsURLLoaderCreated(std::move(loader));

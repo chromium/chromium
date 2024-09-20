@@ -17,6 +17,7 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
+#include "net/cookies/cookie_setting_override.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/network_context.h"
 #include "services/network/public/cpp/cors/origin_access_list.h"
@@ -188,6 +189,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CorsURLLoaderFactory final
   mojo::Remote<mojom::SharedDictionaryAccessObserver>
       shared_dictionary_observer_;
   const bool require_cross_site_request_for_cookies_;
+  const net::CookieSettingOverrides factory_cookie_setting_overrides_;
 
   // Relative order of `network_loader_factory_` and `loaders_` matters -
   // URLLoaderFactory needs to live longer than URLLoaders created using the

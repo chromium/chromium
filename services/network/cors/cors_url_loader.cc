@@ -20,6 +20,8 @@
 #include "base/types/optional_util.h"
 #include "net/base/load_flags.h"
 #include "net/cookies/cookie_partition_key.h"
+#include "net/cookies/cookie_setting_override.h"
+#include "net/cookies/cookie_util.h"
 #include "net/http/http_status_code.h"
 #include "net/log/net_log_values.h"
 #include "net/shared_dictionary/shared_dictionary.h"
@@ -40,6 +42,7 @@
 #include "services/network/public/cpp/timing_allow_origin_parser.h"
 #include "services/network/public/mojom/devtools_observer.mojom.h"
 #include "services/network/public/mojom/early_hints.mojom.h"
+#include "services/network/public/mojom/fetch_api.mojom.h"
 #include "services/network/public/mojom/ip_address_space.mojom.h"
 #include "services/network/public/mojom/shared_dictionary_error.mojom.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
@@ -303,7 +306,8 @@ CorsURLLoader::CorsURLLoader(
     const CrossOriginEmbedderPolicy& cross_origin_embedder_policy,
     scoped_refptr<SharedDictionaryStorage> shared_dictionary_storage,
     raw_ptr<mojom::SharedDictionaryAccessObserver> shared_dictionary_observer,
-    NetworkContext* context)
+    NetworkContext* context,
+    net::CookieSettingOverrides factory_cookie_setting_overrides)
     : receiver_(this, std::move(loader_receiver)),
       process_id_(process_id),
       request_id_(request_id),
@@ -330,7 +334,8 @@ CorsURLLoader::CorsURLLoader(
                                            net::NetLogSourceType::URL_REQUEST)),
       context_(context),
       shared_dictionary_storage_(std::move(shared_dictionary_storage)),
-      shared_dictionary_observer_(shared_dictionary_observer) {
+      shared_dictionary_observer_(shared_dictionary_observer),
+      factory_cookie_setting_overrides_(factory_cookie_setting_overrides) {
   TRACE_EVENT("loading", "CorsURLLoader::CorsURLLoader",
               perfetto::Flow::ProcessScoped(net_log_.source().id));
   CHECK(url_loader_network_service_observer_ != nullptr);
@@ -864,17 +869,20 @@ void CorsURLLoader::StartRequest() {
       return false;
     }
 
-    if (context_->cookie_manager()
+    if (request_.credentials_mode == mojom::CredentialsMode::kInclude &&
+        context_->cookie_manager()
             ->cookie_settings()
             .IsStorageAccessHeadersEnabled(
                 request_.url, isolation_info_.top_frame_origin()) &&
-        !request_.site_for_cookies.IsFirstParty(request_.url)) {
-      // TODO(https://crbug.com/366284840): CorsURLLoader ought to be aware of
-      // the Sec-Fetch-Storage-Access state, so that it can only add the Origin
-      // header to requests with the "inactive" state (That delegates this logic
-      // to the proper place instead of duplicating it, and limits the set of
-      // requests that have the Origin header. For now, we have to add the
-      // Origin header regardless of the `StorageAccessStatus`.
+        context_->cookie_manager()->cookie_settings().GetStorageAccessStatus(
+            request_.url, request_.site_for_cookies,
+            isolation_info_.top_frame_origin(),
+            network::URLLoader::CalculateCookieSettingOverrides(
+                factory_cookie_setting_overrides_, request_)) ==
+            net::cookie_util::StorageAccessStatus::kInactive) {
+      // Lower layers will add the Sec-Fetch-Storage-Access header, and the
+      // server may respond with a "retry" header. The server needs to know the
+      // origin in that event.
       return true;
     }
 
