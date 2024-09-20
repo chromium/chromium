@@ -48,8 +48,9 @@ class TestProxyConfigService : public net::ProxyConfigService {
     config_ =
         net::ProxyConfigWithAnnotation(config, TRAFFIC_ANNOTATION_FOR_TESTS);
     availability_ = availability;
-    for (net::ProxyConfigService::Observer& observer : observers_)
+    for (net::ProxyConfigService::Observer& observer : observers_) {
       observer.OnProxyConfigChanged(config_, availability);
+    }
   }
 
  private:
@@ -248,6 +249,70 @@ TEST_F(PrefProxyConfigTrackerImplTest,
 }
 #endif
 
+#if BUILDFLAG(ENABLE_QUIC_PROXY_SUPPORT)
+// Ensure that QUIC proxies are correctly parsed when the build flag for QUIC
+// proxy support, `ENABLE_QUIC_PROXY_SUPPORT`, is enabled.
+TEST_F(PrefProxyConfigTrackerImplTest,
+       DynamicPrefOverridesQuicProxySupportValidWhenBuildFlagEnabled) {
+  InitConfigService(net::ProxyConfigService::CONFIG_VALID);
+  pref_service_->SetManagedPref(
+      proxy_config::prefs::kProxy,
+      std::make_unique<base::Value>(ProxyConfigDictionary::CreateFixedServers(
+          "quic://foopy:443", std::string())));
+  base::RunLoop().RunUntilIdle();
+
+  net::ProxyConfigWithAnnotation actual_config;
+  EXPECT_EQ(net::ProxyConfigService::CONFIG_VALID,
+            proxy_config_service_->GetLatestProxyConfig(&actual_config));
+  EXPECT_FALSE(actual_config.value().auto_detect());
+  EXPECT_EQ(net::ProxyConfig::ProxyRules::Type::PROXY_LIST,
+            actual_config.value().proxy_rules().type);
+  EXPECT_EQ(actual_config.value().proxy_rules().single_proxies.First(),
+            net::ProxyUriToProxyChain("quic://foopy:443",
+                                      net::ProxyServer::SCHEME_HTTP,
+                                      /*is_quic_allowed=*/true));
+
+  pref_service_->SetManagedPref(
+      proxy_config::prefs::kProxy,
+      std::make_unique<base::Value>(ProxyConfigDictionary::CreateAutoDetect()));
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(net::ProxyConfigService::CONFIG_VALID,
+            proxy_config_service_->GetLatestProxyConfig(&actual_config));
+  EXPECT_TRUE(actual_config.value().auto_detect());
+}
+#else
+// Ensure that QUIC proxy support is not valid/parsed when the build flag for
+// QUIC support, `ENABLE_QUIC_PROXY_SUPPORT`, is disabled.
+TEST_F(PrefProxyConfigTrackerImplTest,
+       DynamicPrefOverridesQuicProxySupportNotValidWhenBuildFlagDisabled) {
+  InitConfigService(net::ProxyConfigService::CONFIG_VALID);
+  pref_service_->SetManagedPref(
+      proxy_config::prefs::kProxy,
+      std::make_unique<base::Value>(ProxyConfigDictionary::CreateFixedServers(
+          "quic://foopy:443", std::string())));
+  base::RunLoop().RunUntilIdle();
+
+  net::ProxyConfigWithAnnotation actual_config;
+  EXPECT_EQ(net::ProxyConfigService::CONFIG_VALID,
+            proxy_config_service_->GetLatestProxyConfig(&actual_config));
+  EXPECT_FALSE(actual_config.value().auto_detect());
+  EXPECT_EQ(net::ProxyConfig::ProxyRules::Type::PROXY_LIST,
+            actual_config.value().proxy_rules().type);
+  // ProxyList should be empty b/c brackets in URI are invalid format.
+  EXPECT_TRUE(actual_config.value().proxy_rules().single_proxies.IsEmpty());
+
+  pref_service_->SetManagedPref(
+      proxy_config::prefs::kProxy,
+      std::make_unique<base::Value>(ProxyConfigDictionary::CreateAutoDetect()));
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(net::ProxyConfigService::CONFIG_VALID,
+            proxy_config_service_->GetLatestProxyConfig(&actual_config));
+  EXPECT_TRUE(actual_config.value().auto_detect());
+}
+#endif  // BUILDFLAG(ENABLE_QUIC_PROXY_SUPPORT)
+
 // Compares proxy configurations, but allows different sources.
 MATCHER_P(ProxyConfigMatches, config, "") {
   net::ProxyConfig reference(config);
@@ -264,8 +329,9 @@ TEST_F(PrefProxyConfigTrackerImplTest, Observers) {
   // Firing the observers in the delegate should trigger a notification.
   net::ProxyConfig config2;
   config2.set_auto_detect(true);
-  EXPECT_CALL(observer, OnProxyConfigChanged(ProxyConfigMatches(config2),
-                                             CONFIG_VALID)).Times(1);
+  EXPECT_CALL(observer,
+              OnProxyConfigChanged(ProxyConfigMatches(config2), CONFIG_VALID))
+      .Times(1);
   delegate_service_->SetProxyConfig(config2, CONFIG_VALID);
   base::RunLoop().RunUntilIdle();
   Mock::VerifyAndClearExpectations(&observer);
@@ -275,7 +341,8 @@ TEST_F(PrefProxyConfigTrackerImplTest, Observers) {
   pref_config.set_pac_url(GURL(kFixedPacUrl));
 
   EXPECT_CALL(observer, OnProxyConfigChanged(ProxyConfigMatches(pref_config),
-                                             CONFIG_VALID)).Times(1);
+                                             CONFIG_VALID))
+      .Times(1);
   pref_service_->SetManagedPref(
       proxy_config::prefs::kProxy,
       std::make_unique<base::Value>(
@@ -296,8 +363,9 @@ TEST_F(PrefProxyConfigTrackerImplTest, Observers) {
   Mock::VerifyAndClearExpectations(&observer);
 
   // Clear the override should switch back to the fixed configuration.
-  EXPECT_CALL(observer, OnProxyConfigChanged(ProxyConfigMatches(config3),
-                                             CONFIG_VALID)).Times(1);
+  EXPECT_CALL(observer,
+              OnProxyConfigChanged(ProxyConfigMatches(config3), CONFIG_VALID))
+      .Times(1);
   pref_service_->RemoveManagedPref(proxy_config::prefs::kProxy);
   base::RunLoop().RunUntilIdle();
   Mock::VerifyAndClearExpectations(&observer);
@@ -305,8 +373,9 @@ TEST_F(PrefProxyConfigTrackerImplTest, Observers) {
   // Delegate service notifications should show up again.
   net::ProxyConfig config4;
   config4.proxy_rules().ParseFromString("socks:config4");
-  EXPECT_CALL(observer, OnProxyConfigChanged(ProxyConfigMatches(config4),
-                                             CONFIG_VALID)).Times(1);
+  EXPECT_CALL(observer,
+              OnProxyConfigChanged(ProxyConfigMatches(config4), CONFIG_VALID))
+      .Times(1);
   delegate_service_->SetProxyConfig(config4, CONFIG_VALID);
   base::RunLoop().RunUntilIdle();
   Mock::VerifyAndClearExpectations(&observer);
@@ -332,7 +401,8 @@ TEST_F(PrefProxyConfigTrackerImplTest, Fallback) {
   // Set a recommended pref.
   EXPECT_CALL(observer,
               OnProxyConfigChanged(ProxyConfigMatches(recommended_config),
-                                   CONFIG_VALID)).Times(1);
+                                   CONFIG_VALID))
+      .Times(1);
   pref_service_->SetRecommendedPref(
       proxy_config::prefs::kProxy,
       std::make_unique<base::Value>(ProxyConfigDictionary::CreateAutoDetect()));
@@ -343,9 +413,9 @@ TEST_F(PrefProxyConfigTrackerImplTest, Fallback) {
   EXPECT_TRUE(actual_config.value().Equals(recommended_config));
 
   // Override in user prefs.
-  EXPECT_CALL(observer,
-              OnProxyConfigChanged(ProxyConfigMatches(user_config),
-                                   CONFIG_VALID)).Times(1);
+  EXPECT_CALL(observer, OnProxyConfigChanged(ProxyConfigMatches(user_config),
+                                             CONFIG_VALID))
+      .Times(1);
   pref_service_->SetManagedPref(
       proxy_config::prefs::kProxy,
       std::make_unique<base::Value>(
@@ -359,7 +429,8 @@ TEST_F(PrefProxyConfigTrackerImplTest, Fallback) {
   // Go back to recommended pref.
   EXPECT_CALL(observer,
               OnProxyConfigChanged(ProxyConfigMatches(recommended_config),
-                                   CONFIG_VALID)).Times(1);
+                                   CONFIG_VALID))
+      .Times(1);
   pref_service_->RemoveManagedPref(proxy_config::prefs::kProxy);
   base::RunLoop().RunUntilIdle();
   Mock::VerifyAndClearExpectations(&observer);
