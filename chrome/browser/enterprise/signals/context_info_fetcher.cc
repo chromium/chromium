@@ -153,11 +153,7 @@ SettingValue GetMacOSFirewall() {
     return SettingValue::UNKNOWN;
   }
 
-  // State 1 is when the Firewall is simply enabled.
-  // State 2 is when the Firewall is enabled and all incoming connections are
-  // blocked.
-  if (output.find("(State = 1)") != std::string::npos ||
-      output.find("(State = 2)") != std::string::npos) {
+  if (output.find("(State = 1)") != std::string::npos) {
     return SettingValue::ENABLED;
   }
   if (output.find("(State = 0)") != std::string::npos) {
