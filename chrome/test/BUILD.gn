@@ -7902,6 +7902,7 @@ test("unit_tests") {
       "../browser/ui/serial/serial_chooser_controller_unittest.cc",
       "../browser/ui/singleton_tabs_unittest.cc",
       "../browser/ui/startup/launch_mode_recorder_unittest.cc",
+      "../browser/ui/sync/profile_signin_confirmation_helper_unittest.cc",
       "../browser/ui/tab_contents/chrome_web_contents_menu_helper_unittest.cc",
       "../browser/ui/tab_contents/core_tab_helper_unittest.cc",
       "../browser/ui/tab_contents/tab_contents_iterator_unittest.cc",
