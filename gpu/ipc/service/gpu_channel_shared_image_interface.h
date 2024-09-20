@@ -125,9 +125,6 @@ class GPU_IPC_SERVICE_EXPORT GpuChannelSharedImageInterface
 #endif
 
   SequenceId sequence() { return sequence_; }
-  scoped_refptr<gpu::SyncPointClientState> sync_point_client_state() {
-    return sync_point_client_state_;
-  }
 
  protected:
   ~GpuChannelSharedImageInterface() override;
@@ -139,11 +136,11 @@ class GPU_IPC_SERVICE_EXPORT GpuChannelSharedImageInterface
   }
 
   void ScheduleGpuTask(base::OnceClosure task,
-                       std::vector<SyncToken> sync_token_fences);
+                       std::vector<SyncToken> sync_token_fences,
+                       const SyncToken& release);
 
   // Only called on the gpu thread.
   bool MakeContextCurrent(bool needs_gl = false);
-  void ReleaseFenceSync(uint64_t release);
   void GetGpuMemoryBufferHandleInfoOnGpuThread(
       const Mailbox& mailbox,
       gfx::GpuMemoryBufferHandle* handle,
@@ -154,24 +151,20 @@ class GPU_IPC_SERVICE_EXPORT GpuChannelSharedImageInterface
 
   void CreateSharedImageOnGpuThread(const Mailbox& mailbox,
                                     SharedImageInfo si_info,
-                                    gpu::SurfaceHandle surface_handle,
-                                    uint64_t release);
+                                    gpu::SurfaceHandle surface_handle);
   void CreateSharedImageWithDataOnGpuThread(const Mailbox& mailbox,
                                             SharedImageInfo si_info,
-                                            std::vector<uint8_t> pixel_data,
-                                            uint64_t release);
+                                            std::vector<uint8_t> pixel_data);
   void CreateSharedImageWithBufferUsageOnGpuThread(
       const Mailbox& mailbox,
       SharedImageInfo si_info,
       SurfaceHandle surface_handle,
-      gfx::BufferUsage buffer_usage,
-      uint64_t release);
+      gfx::BufferUsage buffer_usage);
   void CreateSharedImageWithBufferOnGpuThread(
       const Mailbox& mailbox,
       SharedImageInfo si_info,
-      gfx::GpuMemoryBufferHandle buffer_handle,
-      uint64_t release);
-  void UpdateSharedImageOnGpuThread(const Mailbox& mailbox, uint64_t release);
+      gfx::GpuMemoryBufferHandle buffer_handle);
+  void UpdateSharedImageOnGpuThread(const Mailbox& mailbox);
   void DestroySharedImageOnGpuThread(const Mailbox& mailbox);
   void DestroyClientSharedImageOnGpuThread(
       scoped_refptr<ClientSharedImage> client_shared_image);
