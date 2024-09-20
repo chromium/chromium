@@ -8789,11 +8789,6 @@
     "expiry_milestone": 135
   },
   {
-    "name": "throttle-ambient-animations",
-    "owners": [ "esum@chromium.org", "assistive-eng@google.com" ],
-    "expiry_milestone": 114
-  },
-  {
     "name": "tiled-display-support",
     "owners": [ "sukoo@chromium.org", "//ui/display/OWNERS", "chromeos-gfx-compositor@chromium.org" ],
     "expiry_milestone": 135
