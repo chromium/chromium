@@ -2964,6 +2964,62 @@ void CreateOperatorNodeForGatherElements(
   CHECK(id_to_node_output_map.try_emplace(output_id, output).second);
 }
 
+void CreateOperatorNodeForGatherND(const ContextProperties& context_properties,
+                                   const IdToOperandMap& id_to_operand_map,
+                                   const mojom::GatherNDPtr& gather_nd,
+                                   GraphBuilderDml& graph_builder,
+                                   IdToNodeOutputMap& id_to_node_output_map) {
+  const NodeOutput* input = GetNodeOutputForOperand(
+      id_to_node_output_map, gather_nd->input_operand_id);
+  TensorDesc input_tensor_desc = input->GetTensorDesc();
+  CHECK(context_properties.data_type_limits.gather_nd_input.Has(
+      DmlDataTypeToOperand(input_tensor_desc.GetDataType())));
+
+  const NodeOutput* indices = GetNodeOutputForOperand(
+      id_to_node_output_map, gather_nd->indices_operand_id);
+  TensorDesc indices_tensor_desc = indices->GetTensorDesc();
+  CHECK(context_properties.data_type_limits.gather_nd_indices.Has(
+      DmlDataTypeToOperand(indices_tensor_desc.GetDataType())));
+
+  uint64_t output_id = gather_nd->output_operand_id;
+  const TensorDesc original_output_tensor_desc =
+      CreateOutputTensorDesc(id_to_operand_map, output_id);
+
+  size_t input_rank = input_tensor_desc.GetDimensions().size();
+  size_t indices_rank = indices_tensor_desc.GetDimensions().size();
+  size_t output_rank = original_output_tensor_desc.GetDimensions().size();
+  size_t maximum_rank = std::max({input_rank, indices_rank, output_rank});
+
+  // Add leading ones to the dimensions to ensure these tensors have the same
+  // rank as required.
+  input_tensor_desc.EnsureMinimumRank(maximum_rank,
+                                      TensorDesc::Alignment::kTrailing);
+  indices_tensor_desc.EnsureMinimumRank(maximum_rank,
+                                        TensorDesc::Alignment::kTrailing);
+
+  TensorDesc output_tensor_desc = original_output_tensor_desc;
+  output_tensor_desc.EnsureMinimumRank(maximum_rank,
+                                       TensorDesc::Alignment::kTrailing);
+
+  // DirectML handles out-of-bounds indices internally and ensures no invalid
+  // reads outside of input tensor.
+  DML_GATHER_ND_OPERATOR_DESC gather_nd_desc{
+      .InputTensor = &input_tensor_desc.GetDMLTensorDesc(),
+      .IndicesTensor = &indices_tensor_desc.GetDMLTensorDesc(),
+      .OutputTensor = &output_tensor_desc.GetDMLTensorDesc(),
+      .InputDimensionCount = base::checked_cast<uint32_t>(input_rank),
+      .IndicesDimensionCount = base::checked_cast<uint32_t>(indices_rank)};
+
+  std::array<const NodeOutput*, 2> inputs = {input, indices};
+  const OperatorNode* node = graph_builder.CreateOperatorNode(
+      DML_OPERATOR_GATHER_ND, &gather_nd_desc, inputs, gather_nd->label);
+
+  const NodeOutput* output = graph_builder.CreateNodeOutput(
+      node, std::move(original_output_tensor_desc), 0);
+  // The output id must be unique in the map.
+  CHECK(id_to_node_output_map.try_emplace(output_id, output).second);
+}
+
 void CreateOperatorNodeForGelu(
     Adapter* adapter,
     const IdToOperandMap& id_to_operand_map,
@@ -5946,6 +6002,12 @@ base::expected<void, mojom::ErrorPtr> GraphImplDml::CreateAndBuildInternal(
             context_properties, id_to_operand_map,
             operation->get_gather_elements(), graph_builder,
             id_to_node_output_map);
+        break;
+      }
+      case mojom::Operation::Tag::kGatherNd: {
+        CreateOperatorNodeForGatherND(context_properties, id_to_operand_map,
+                                      operation->get_gather_nd(), graph_builder,
+                                      id_to_node_output_map);
         break;
       }
       case mojom::Operation::Tag::kGelu: {
