@@ -207,7 +207,12 @@ int HttpStreamPool::AttemptManager::Preconnect(
 }
 
 void HttpStreamPool::AttemptManager::OnServiceEndpointsUpdated() {
-  ProcessServiceEndpointChanges();
+  // For plain HTTP request, we need to wait for HTTPS RR because we could
+  // trigger HTTP -> HTTPS upgrade when HTTPS RR is received during the endpoint
+  // resolution.
+  if (UsingTls() || service_endpoint_request_->EndpointsCryptoReady()) {
+    ProcessServiceEndpointChanges();
+  }
 }
 
 void HttpStreamPool::AttemptManager::OnServiceEndpointRequestFinished(int rv) {

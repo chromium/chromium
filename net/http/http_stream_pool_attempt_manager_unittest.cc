@@ -745,6 +745,7 @@ TEST_F(HttpStreamPoolAttemptManagerTest,
   FastForwardBy(kDnsUpdateDelay);
   endpoint_request
       ->add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint())
+      .set_crypto_ready(true)
       .CallOnServiceEndpointsUpdated();
   RunUntilIdle();
   FastForwardBy(kDnsUpdateDelay);
@@ -764,6 +765,27 @@ TEST_F(HttpStreamPoolAttemptManagerTest,
   ASSERT_TRUE(stream->GetLoadTimingInfo(&timing_info));
   ASSERT_EQ(timing_info.connect_timing.domain_lookup_end,
             timing_info.connect_timing.connect_start);
+}
+
+TEST_F(HttpStreamPoolAttemptManagerTest, PlainHttpWaitForHttpsRecord) {
+  FakeServiceEndpointRequest* endpoint_request = resolver()->AddFakeRequest();
+
+  StreamRequester requester;
+  requester.set_destination("http://a.test").RequestStream(pool());
+
+  // Notify there is a resolved IP address. The request should not make any
+  // progress since it needs to wait for HTTPS RR.
+  endpoint_request
+      ->add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint())
+      .CallOnServiceEndpointsUpdated();
+  Group& group = pool().GetOrCreateGroupForTesting(requester.GetStreamKey());
+  ASSERT_EQ(group.ActiveStreamSocketCount(), 0u);
+
+  // Simulate triggering HTTP -> HTTPS upgrade.
+  endpoint_request->CallOnServiceEndpointRequestFinished(
+      ERR_DNS_NAME_HTTPS_ONLY);
+  requester.WaitForResult();
+  EXPECT_THAT(requester.result(), Optional(IsError(ERR_DNS_NAME_HTTPS_ONLY)));
 }
 
 TEST_F(HttpStreamPoolAttemptManagerTest, SetPriority) {
@@ -805,9 +827,10 @@ TEST_F(HttpStreamPoolAttemptManagerTest, SetPriority) {
   data2->set_connect_data(MockConnect(SYNCHRONOUS, ERR_IO_PENDING));
   socket_factory()->AddSocketDataProvider(data2.get());
 
-  endpoint_request->add_endpoint(
-      ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint());
-  endpoint_request->CallOnServiceEndpointsUpdated();
+  endpoint_request
+      ->add_endpoint(ServiceEndpointBuilder().add_v4("192.0.2.1").endpoint())
+      .set_crypto_ready(true)
+      .CallOnServiceEndpointsUpdated();
   ASSERT_EQ(pool().TotalActiveStreamCount(), 2u);
   ASSERT_EQ(request1->GetLoadState(), LOAD_STATE_CONNECTING);
   ASSERT_EQ(request2->GetLoadState(), LOAD_STATE_CONNECTING);
