@@ -1190,7 +1190,7 @@ std::vector<Suggestion> CreateSuggestionsFromProfiles(
         profile->record_type() == AutofillProfile::RecordType::kAccount &&
         profile->initial_creator_id() !=
             AutofillProfile::kInitialCreatorOrModifierChrome) {
-      suggestions.back().feature_for_iph =
+      suggestion.feature_for_iph =
           &feature_engagement::
               kIPHAutofillExternalAccountProfileSuggestionFeature;
     }
