@@ -42,6 +42,7 @@ FakeVideoDecoder::~FakeVideoDecoder() {
     SatisfyReset();
 
   decoded_frames_.clear();
+  total_decoded_frames_ = 0;
 }
 
 void FakeVideoDecoder::EnableEncryptedConfigSupport() {
@@ -208,6 +209,7 @@ void FakeVideoDecoder::SatisfySingleDecode() {
 
   DecodeCB decode_cb = std::move(held_decode_callbacks_.front());
   held_decode_callbacks_.pop_front();
+  total_decoded_frames_++;
   RunDecodeCallback(std::move(decode_cb));
 
   if (!reset_cb_.IsNull() && held_decode_callbacks_.empty())

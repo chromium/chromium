@@ -626,6 +626,12 @@ TEST_P(VideoDecoderStreamTest, Read_AfterReset) {
 // Tests that the decoder stream will switch from a software decoder to a
 // hardware decoder if the config size increases
 TEST_P(VideoDecoderStreamTest, ConfigChangeSwToHw) {
+  if (base::FeatureList::IsEnabled(kVideoDecodeBatching) &&
+      GetParam().parallel_decoding != 1) {
+    // Fake demuxer allows reading over different configs when batch decoding is
+    // enabled, so we need to skip this test.
+    return;
+  }
   EnablePlatformDecoders({1});
 
   // Create a demuxer stream with a config that increases in size
@@ -668,6 +674,12 @@ TEST_P(VideoDecoderStreamTest, ConfigChangeSwToHw) {
 // Tests that the decoder stream will stay on a hardware decoder when the config
 // size decreases.
 TEST_P(VideoDecoderStreamTest, ConfigChangeHwToSw) {
+  if (base::FeatureList::IsEnabled(kVideoDecodeBatching) &&
+      GetParam().parallel_decoding != 1) {
+    // Fake demuxer allows reading over different configs when batch decoding is
+    // enabled, so we need to skip this test.
+    return;
+  }
   EnablePlatformDecoders({1});
 
   // Create a demuxer stream with a config that progressively decreases in size
@@ -804,6 +816,53 @@ TEST_P(VideoDecoderStreamTest, Read_BlockedDemuxerAndDecoder) {
   demuxer_stream_->SatisfyRead();
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(pending_read_);
+}
+
+TEST_P(VideoDecoderStreamTest, BatchDecodingWithPlatformDecoder) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kVideoDecodeBatching);
+  int parallel_decodings = GetParam().parallel_decoding;
+
+  Initialize();
+  decoder_->SetIsPlatformDecoder(true);
+
+  // Block the decoder so that we can check the DecoderBuffer number got
+  // from a single Read() call.
+  decoder_->HoldDecode();
+  ReadOneFrame();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(parallel_decodings, demuxer_stream_->num_buffers_returned());
+
+  demuxer_stream_->HoldNextRead();
+  decoder_->SatisfyDecode();
+
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(decoder_->total_decoded_frames(), parallel_decodings);
+}
+
+TEST_P(VideoDecoderStreamTest, NoBatchDecodingWithNonPlatformDecoder) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(kVideoDecodeBatching);
+
+  Initialize();
+  // Set the decoder as not platform decoder, so that it prevents single
+  // demuxer read to return multiple DecoderBuffers.
+  decoder_->SetIsPlatformDecoder(false);
+
+  // Block the demuxer so that we can manually unblock the first demuxer
+  // read to check the DecoderBuffer number got from a single Read() call.
+  demuxer_stream_->HoldNextRead();
+  decoder_->HoldDecode();
+  ReadOneFrame();
+  demuxer_stream_->SatisfyReadAndHoldNext();
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(1, demuxer_stream_->num_buffers_returned());
+
+  decoder_->SatisfyDecode();
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(decoder_->total_decoded_frames(), 1);
 }
 
 TEST_P(VideoDecoderStreamTest, Read_DuringEndOfStreamDecode) {

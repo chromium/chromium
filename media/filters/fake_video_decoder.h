@@ -89,6 +89,8 @@ class FakeVideoDecoder : public VideoDecoder {
 
   int total_bytes_decoded() const { return total_bytes_decoded_; }
 
+  int total_decoded_frames() const { return total_decoded_frames_; }
+
   auto eos_next_configs() const { return eos_next_configs_; }
 
  protected:
@@ -143,6 +145,8 @@ class FakeVideoDecoder : public VideoDecoder {
   int total_bytes_decoded_;
 
   bool fail_to_initialize_;
+
+  int total_decoded_frames_ = 0;
 
   std::vector<VideoDecoderConfig> eos_next_configs_;
 

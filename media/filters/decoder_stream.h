@@ -171,6 +171,9 @@ class MEDIA_EXPORT DecoderStream {
   // Returns maximum concurrent decode requests for the current |decoder_|.
   int GetMaxDecodeRequests() const;
 
+  // Returns if current |decoder_| is a platform decoder.
+  bool IsPlatformDecoder() const;
+
   // Returns the maximum number of outputs we should keep ready at any one time.
   int GetMaxReadyOutputs() const;
 

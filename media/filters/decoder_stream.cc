@@ -296,6 +296,17 @@ int DecoderStream<StreamType>::GetMaxDecodeRequests() const {
              : 0;
 }
 
+// A false return value indicates that the decoder is not a platform decoder, or
+// it is still unknown (e.g. during initialization).
+template <DemuxerStream::Type StreamType>
+bool DecoderStream<StreamType>::IsPlatformDecoder() const {
+  // The decoder is owned by |decoder_selector_| during reinitialization, so
+  // during that time we return false to indicate decoder type unknown.
+  return state_ != State::kStateReinitializingDecoder
+             ? decoder_->IsPlatformDecoder()
+             : false;
+}
+
 template <>
 int DecoderStream<DemuxerStream::AUDIO>::GetMaxDecodeRequests() const {
   return 1;
@@ -736,7 +747,9 @@ void DecoderStream<StreamType>::ReadFromDemuxerStream() {
                            this);
   pending_demuxer_read_ = true;
   uint32_t buffer_read_count = 1;
-  if (base::FeatureList::IsEnabled(kVideoDecodeBatching)) {
+  // Do not batch with software video decoder.
+  if (IsPlatformDecoder() &&
+      base::FeatureList::IsEnabled(kVideoDecodeBatching)) {
     buffer_read_count = GetMaxDecodeRequests() - pending_decode_requests_;
   }
   {
