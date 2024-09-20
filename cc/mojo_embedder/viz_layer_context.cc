@@ -33,7 +33,6 @@ void ComputePropertyTreeNodeUpdate(
       old_node->element_id == new_node.element_id &&
       old_node->local == new_node.local &&
       old_node->origin == new_node.origin &&
-      old_node->post_translation == new_node.post_translation &&
       old_node->sticky_position_constraint_id ==
           new_node.sticky_position_constraint_id &&
       old_node->anchor_position_scroll_data_id ==
@@ -41,8 +40,6 @@ void ComputePropertyTreeNodeUpdate(
       old_node->sorting_context_id == new_node.sorting_context_id &&
       old_node->scroll_offset == new_node.scroll_offset &&
       old_node->snap_amount == new_node.snap_amount &&
-      old_node->needs_local_transform_update ==
-          new_node.needs_local_transform_update &&
       old_node->has_potential_animation == new_node.has_potential_animation &&
       old_node->is_currently_animating == new_node.is_currently_animating &&
       old_node->flattens_inherited_transform ==
@@ -68,7 +65,6 @@ void ComputePropertyTreeNodeUpdate(
   wire->element_id = new_node.element_id;
   wire->local = new_node.local;
   wire->origin = new_node.origin;
-  wire->post_translation = new_node.post_translation;
   if (new_node.sticky_position_constraint_id >= 0) {
     wire->sticky_position_constraint_id =
         base::checked_cast<uint32_t>(new_node.sticky_position_constraint_id);
@@ -80,7 +76,6 @@ void ComputePropertyTreeNodeUpdate(
   wire->sorting_context_id = new_node.sorting_context_id;
   wire->scroll_offset = new_node.scroll_offset;
   wire->snap_amount = new_node.snap_amount;
-  wire->needs_local_transform_update = new_node.needs_local_transform_update;
   wire->has_potential_animation = new_node.has_potential_animation;
   wire->is_currently_animating = new_node.is_currently_animating;
   wire->flattens_inherited_transform = new_node.flattens_inherited_transform;

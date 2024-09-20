@@ -126,7 +126,6 @@ struct TransformNode {
   // Actual transformation parameters for this node. See cc::TransformNode.
   gfx.mojom.Transform local;
   gfx.mojom.Point3F origin;
-  gfx.mojom.Vector2dF post_translation;
   gfx.mojom.PointF scroll_offset;
   gfx.mojom.Vector2dF snap_amount;
 
@@ -143,7 +142,6 @@ struct TransformNode {
 
   // Flags reflecting client-side changes to transform state. These all
   // correspond to equivalent flags on cc::TransformNode.
-  bool needs_local_transform_update;
   bool has_potential_animation;
   bool is_currently_animating;
   bool flattens_inherited_transform;
