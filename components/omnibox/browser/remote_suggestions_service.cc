@@ -70,9 +70,18 @@ GURL RemoteSuggestionsService::EndpointUrl(
       url = net::AppendOrReplaceQueryParameter(url, "sclient", "cros-launcher");
       break;
     }
+    case metrics::OmniboxEventProto::CONTEXTUAL_SEARCHBOX:
+    case metrics::OmniboxEventProto::SEARCH_SIDE_PANEL_SEARCHBOX:
+      // Append `client=chrome-contextual` for non-multimodal and contextual
+      // lens searchboxes.
+      url = net::AppendOrReplaceQueryParameter(url, "client",
+                                               "chrome-contextual");
+      break;
     case metrics::OmniboxEventProto::LENS_SIDE_PANEL_SEARCHBOX: {
+      // Append `client=chrome-multimodal` for the multimodal lens searchbox.
+      url = net::AppendOrReplaceQueryParameter(url, "client",
+                                               "chrome-multimodal");
       // Append `iil=` for the multimodal searchbox entry point, if available.
-      // TODO(b/328763711): Replace this with a TemplateURL substitution.
       if (search_terms_args.lens_overlay_interaction_response.has_value() &&
           search_terms_args.lens_overlay_interaction_response
               ->has_suggest_signals()) {

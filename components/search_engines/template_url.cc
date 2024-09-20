@@ -1362,22 +1362,17 @@ std::string TemplateURLRef::HandleReplacements(
       case GOOGLE_SEARCH_SOURCE_ID: {
         DCHECK(!replacement.is_post_param);
         switch (search_terms_args.request_source) {
-          case RequestSource::SEARCH_SIDE_PANEL_SEARCHBOX:
-          case RequestSource::CONTEXTUAL_SEARCHBOX:
-          case RequestSource::LENS_SIDE_PANEL_SEARCHBOX:
-            // Searchboxes used by the Lens Overlay have their source set via
-            // the Lens Overlay url builder as it contains entry point
-            // information. Therefore we shouldn't replace anything here.
-            break;
           case RequestSource::NTP_MODULE:
           case RequestSource::SEARCHBOX:
           case RequestSource::CROS_APP_LIST:
-          default:
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
             HandleReplacement("sourceid", "chrome-mobile", replacement, &url);
 #else
             HandleReplacement("sourceid", "chrome", replacement, &url);
 #endif
+            break;
+          case RequestSource::LENS_OVERLAY:
+            // No replacement.
             break;
         }
         break;
@@ -1408,15 +1403,6 @@ std::string TemplateURLRef::HandleReplacements(
             NOTREACHED_IN_MIGRATION();
 #endif
             break;
-          case RequestSource::CONTEXTUAL_SEARCHBOX:
-          case RequestSource::SEARCH_SIDE_PANEL_SEARCHBOX:
-            HandleReplacement(std::string(), "chrome-contextual", replacement,
-                              &url);
-            break;
-          case RequestSource::LENS_SIDE_PANEL_SEARCHBOX:
-            HandleReplacement(std::string(), "chrome-multimodal", replacement,
-                              &url);
-            break;
           case RequestSource::SEARCHBOX:
           case RequestSource::CROS_APP_LIST:
 #if BUILDFLAG(IS_ANDROID)
@@ -1431,16 +1417,14 @@ std::string TemplateURLRef::HandleReplacements(
             HandleReplacement(std::string(), "chrome-omni", replacement, &url);
 #endif
             break;
+          case RequestSource::LENS_OVERLAY:
+            // No replacement.
+            break;
         }
         break;
 
       case GOOGLE_SUGGEST_REQUEST_ID:
         switch (search_terms_args.request_source) {
-          case RequestSource::NTP_MODULE:
-          case RequestSource::CONTEXTUAL_SEARCHBOX:
-          case RequestSource::SEARCH_SIDE_PANEL_SEARCHBOX:
-          case RequestSource::LENS_SIDE_PANEL_SEARCHBOX:
-            break;
           case RequestSource::SEARCHBOX:
           case RequestSource::CROS_APP_LIST:
 #if BUILDFLAG(IS_ANDROID)
@@ -1452,6 +1436,10 @@ std::string TemplateURLRef::HandleReplacements(
 #endif
             HandleReplacement(std::string(), "chrome-ext-ansg", replacement,
                               &url);
+            break;
+          case RequestSource::NTP_MODULE:
+          case RequestSource::LENS_OVERLAY:
+            // No replacement.
             break;
         }
         break;

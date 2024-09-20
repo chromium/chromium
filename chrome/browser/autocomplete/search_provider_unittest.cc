@@ -3805,11 +3805,11 @@ TEST_F(SearchProviderRequestTest, SendRequestWithLensInteractionResponse) {
   provider_->Start(input, false);
 
   // Make sure the default provider's suggest endpoint was queried with the
-  // Lens interaction response.
+  // expected client and Lens Suggest signals.
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(provider_->done());
   EXPECT_TRUE(test_url_loader_factory_.IsPending(
-      "https://www.google.com/suggest?q=foo&iil=xyz"));
+      "https://www.google.com/suggest?q=foo&client=chrome-multimodal&iil=xyz"));
 }
 
 TEST_F(SearchProviderTest, TestDeleteMatch) {

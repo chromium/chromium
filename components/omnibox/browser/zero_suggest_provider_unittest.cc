@@ -942,11 +942,11 @@ TEST_F(ZeroSuggestProviderRequestTest,
   AutocompleteInput input = OnFocusInputForLens();
   provider_->Start(input, false);
 
-  // Make sure the default provider's suggest endpoint was queried without the
-  // Lens interaction response.
+  // Make sure the default provider's suggest endpoint was queried with the
+  // expected client and without Lens Suggest signals.
   EXPECT_FALSE(provider_->done());
-  EXPECT_TRUE(
-      test_loader_factory()->IsPending("https://www.google.com/suggest?q=&"));
+  EXPECT_TRUE(test_loader_factory()->IsPending(
+      "https://www.google.com/suggest?q=&client=chrome-multimodal"));
 
   test_loader_factory()->AddResponse(
       test_loader_factory()->GetPendingRequest(0)->request.url.spec(),
@@ -981,12 +981,11 @@ TEST_F(ZeroSuggestProviderRequestTest, SendRequestWithLensInteractionResponse) {
       lens_overlay_interaction_response);
   provider_->Start(input, false);
 
-  // Make sure the default provider's suggest endpoint was queried without the
-  // Lens interaction response.
+  // Make sure the default provider's suggest endpoint was queried with the
+  // expected client and Lens Suggest signals.
   EXPECT_FALSE(provider_->done());
-  EXPECT_TRUE(
-      test_loader_factory()->IsPending("https://www.google.com/"
-                                       "suggest?q=&iil=xyz"));
+  EXPECT_TRUE(test_loader_factory()->IsPending(
+      "https://www.google.com/suggest?q=&client=chrome-multimodal&iil=xyz"));
 
   test_loader_factory()->AddResponse(
       test_loader_factory()->GetPendingRequest(0)->request.url.spec(),

@@ -1498,27 +1498,6 @@ TEST_F(TemplateURLTest, SearchSourceId) {
 #else
   EXPECT_EQ("http://google.com/?sourceid=chrome&", result.spec());
 #endif
-
-  // Check that the URL is correct for the lens searchboxes.
-  search_terms_args.request_source = RequestSource::CONTEXTUAL_SEARCHBOX;
-  result = GURL(
-      url.url_ref().ReplaceSearchTerms(search_terms_args, search_terms_data_));
-  ASSERT_TRUE(result.is_valid());
-  // The Lens Overlay url builder will handle setting the correct source.
-  EXPECT_EQ("http://google.com/?", result.spec());
-
-  search_terms_args.request_source = RequestSource::SEARCH_SIDE_PANEL_SEARCHBOX;
-  result = GURL(
-      url.url_ref().ReplaceSearchTerms(search_terms_args, search_terms_data_));
-  ASSERT_TRUE(result.is_valid());
-  EXPECT_EQ("http://google.com/?", result.spec());
-
-  search_terms_args.request_source = RequestSource::LENS_SIDE_PANEL_SEARCHBOX;
-  result = GURL(
-      url.url_ref().ReplaceSearchTerms(search_terms_args, search_terms_data_));
-  ASSERT_TRUE(result.is_valid());
-  // The Lens Overlay url builder will handle setting the correct source.
-  EXPECT_EQ("http://google.com/?", result.spec());
 }
 
 TEST_F(TemplateURLTest, SearchClient) {
@@ -1577,25 +1556,6 @@ TEST_F(TemplateURLTest, SuggestClient) {
 #else
   EXPECT_EQ("http://google.com/?client=chrome-omni", result.spec());
 #endif
-
-  // Check that the URL is correct for the lens searchboxes.
-  search_terms_args.request_source = RequestSource::CONTEXTUAL_SEARCHBOX;
-  result = GURL(
-      url.url_ref().ReplaceSearchTerms(search_terms_args, search_terms_data_));
-  ASSERT_TRUE(result.is_valid());
-  EXPECT_EQ("http://google.com/?client=chrome-contextual", result.spec());
-
-  search_terms_args.request_source = RequestSource::SEARCH_SIDE_PANEL_SEARCHBOX;
-  result = GURL(
-      url.url_ref().ReplaceSearchTerms(search_terms_args, search_terms_data_));
-  ASSERT_TRUE(result.is_valid());
-  EXPECT_EQ("http://google.com/?client=chrome-contextual", result.spec());
-
-  search_terms_args.request_source = RequestSource::LENS_SIDE_PANEL_SEARCHBOX;
-  result = GURL(
-      url.url_ref().ReplaceSearchTerms(search_terms_args, search_terms_data_));
-  ASSERT_TRUE(result.is_valid());
-  EXPECT_EQ("http://google.com/?client=chrome-multimodal", result.spec());
 }
 
 TEST_F(TemplateURLTest, SuggestRequestIdentifier) {
@@ -1624,25 +1584,6 @@ TEST_F(TemplateURLTest, SuggestRequestIdentifier) {
 #else
   EXPECT_EQ("http://google.com/?gs_ri=chrome-ext-ansg", result.spec());
 #endif
-
-  // Check that the URL is correct for the lens searchboxes.
-  search_terms_args.request_source = RequestSource::CONTEXTUAL_SEARCHBOX;
-  result = GURL(
-      url.url_ref().ReplaceSearchTerms(search_terms_args, search_terms_data_));
-  ASSERT_TRUE(result.is_valid());
-  EXPECT_EQ("http://google.com/?gs_ri=", result.spec());
-
-  search_terms_args.request_source = RequestSource::SEARCH_SIDE_PANEL_SEARCHBOX;
-  result = GURL(
-      url.url_ref().ReplaceSearchTerms(search_terms_args, search_terms_data_));
-  ASSERT_TRUE(result.is_valid());
-  EXPECT_EQ("http://google.com/?gs_ri=", result.spec());
-
-  search_terms_args.request_source = RequestSource::LENS_SIDE_PANEL_SEARCHBOX;
-  result = GURL(
-      url.url_ref().ReplaceSearchTerms(search_terms_args, search_terms_data_));
-  ASSERT_TRUE(result.is_valid());
-  EXPECT_EQ("http://google.com/?gs_ri=", result.spec());
 }
 
 TEST_F(TemplateURLTest, ZeroSuggestCacheDuration) {

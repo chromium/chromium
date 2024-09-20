@@ -327,6 +327,22 @@ TEST_F(RemoteSuggestionsServiceTest, EnsureLensOverridenOrAppendedQueryParams) {
       &template_url, search_terms_args, SearchTermsData());
   ASSERT_EQ(endpoint_url.spec(), "https://www.example.com/suggest?q=query");
 
+  // No additional query params is appended for the non-multimodal searchbox
+  // entry point for non-Google template URL.
+  search_terms_args.page_classification =
+      metrics::OmniboxEventProto::SEARCH_SIDE_PANEL_SEARCHBOX;
+  endpoint_url = RemoteSuggestionsService::EndpointUrl(
+      &template_url, search_terms_args, SearchTermsData());
+  ASSERT_EQ(endpoint_url.spec(), "https://www.example.com/suggest?q=query");
+
+  // No additional query params is appended for the contextual searchbox entry
+  // point for non-Google template URL.
+  search_terms_args.page_classification =
+      metrics::OmniboxEventProto::CONTEXTUAL_SEARCHBOX;
+  endpoint_url = RemoteSuggestionsService::EndpointUrl(
+      &template_url, search_terms_args, SearchTermsData());
+  ASSERT_EQ(endpoint_url.spec(), "https://www.example.com/suggest?q=query");
+
   // Set up a Google search provider.
   TemplateURLData google_template_url_data;
   google_template_url_data.SetURL(
@@ -336,10 +352,31 @@ TEST_F(RemoteSuggestionsServiceTest, EnsureLensOverridenOrAppendedQueryParams) {
   google_template_url_data.id = SEARCH_ENGINE_GOOGLE;
   TemplateURL google_template_url(google_template_url_data);
 
-  // `iil=` is appended for the for the multimodal searchbox entry point for
-  // Google template URL.
+  // `iil=` and `client=chrome-multimodal` are appended for the multimodal
+  // searchbox entry point for Google template URL.
+  search_terms_args.page_classification =
+      metrics::OmniboxEventProto::LENS_SIDE_PANEL_SEARCHBOX;
   endpoint_url = RemoteSuggestionsService::EndpointUrl(
       &google_template_url, search_terms_args, SearchTermsData());
   ASSERT_EQ(endpoint_url.spec(),
-            "https://www.google.com/suggest?q=query&iil=xyz");
+            "https://www.google.com/"
+            "suggest?q=query&client=chrome-multimodal&iil=xyz");
+
+  // `client=chrome-contextual` is appended for the non-multimodal searchbox
+  // entry point for Google template URL.
+  search_terms_args.page_classification =
+      metrics::OmniboxEventProto::SEARCH_SIDE_PANEL_SEARCHBOX;
+  endpoint_url = RemoteSuggestionsService::EndpointUrl(
+      &google_template_url, search_terms_args, SearchTermsData());
+  ASSERT_EQ(endpoint_url.spec(),
+            "https://www.google.com/suggest?q=query&client=chrome-contextual");
+
+  // `client=chrome-contextual` is appended for the contextual searchbox entry
+  // point for Google template URL.
+  search_terms_args.page_classification =
+      metrics::OmniboxEventProto::CONTEXTUAL_SEARCHBOX;
+  endpoint_url = RemoteSuggestionsService::EndpointUrl(
+      &google_template_url, search_terms_args, SearchTermsData());
+  ASSERT_EQ(endpoint_url.spec(),
+            "https://www.google.com/suggest?q=query&client=chrome-contextual");
 }

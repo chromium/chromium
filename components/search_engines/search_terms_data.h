@@ -17,12 +17,10 @@ class SearchTermsData {
   // Enumeration of the known search or suggest request sources. These values
   // are not persisted or used in histograms; thus can be freely changed.
   enum class RequestSource {
-    SEARCHBOX,                    // Omnibox or the NTP realbox. The default.
-    CROS_APP_LIST,                // Chrome OS app list searchbox.
-    NTP_MODULE,                   // Suggestions for the NTP modules.
-    CONTEXTUAL_SEARCHBOX,         // Contextual searchbox in the lens overlay.
-    SEARCH_SIDE_PANEL_SEARCHBOX,  // Search side panel searchbox.
-    LENS_SIDE_PANEL_SEARCHBOX,    // Lens side panel searchbox.
+    SEARCHBOX,      // Omnibox or the NTP realbox. The default.
+    CROS_APP_LIST,  // Chrome OS app list searchbox.
+    NTP_MODULE,     // NTP modules.
+    LENS_OVERLAY,   // Lens Overlay searchboxes.
   };
 
   // Utility function that takes a snapshot of a different SearchTermsData
@@ -43,8 +41,8 @@ class SearchTermsData {
   virtual std::string GoogleBaseURLValue() const;
 
   // Returns the value to use for the GOOGLE_BASE_SEARCH_BY_IMAGE_URL. Points
-  // at Lens if the user is enrolled in the Lens experiment, and defaults to
-  // Image Search otherwise.
+  // at LENS_OVERLAY if the user is enrolled in the LENS_OVERLAY experiment, and
+  // defaults to Image Search otherwise.
   virtual std::string GoogleBaseSearchByImageURLValue() const;
 
   // Returns the value for the GOOGLE_BASE_SUGGEST_URL term.  This
