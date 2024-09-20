@@ -45,7 +45,7 @@ constexpr int kButtonRadius = 12;
 // also looks for the "Learn more" substring in `text` and make it a link which
 // will trigger `learn_more_cliked`.
 std::unique_ptr<PopupRowContentView> CreateFeedbackContentView(
-    base::RepeatingClosure learn_more_clicked) {
+    base::RepeatingClosure manage_prediction_improvements_clicked) {
   auto feedback_container = std::make_unique<PopupRowContentView>();
   // TODO(crbug.com/345170058): Possibly move `touchable_menu_height` inside the
   // `ChromeLayoutProvider`.
@@ -54,7 +54,7 @@ std::unique_ptr<PopupRowContentView> CreateFeedbackContentView(
 
   views::StyledLabel::RangeStyleInfo style_info =
       views::StyledLabel::RangeStyleInfo::CreateForLink(
-          std::move(learn_more_clicked));
+          std::move(manage_prediction_improvements_clicked));
   std::vector<size_t> replacement_offsets;
   const std::u16string manage_prediction_improvements_link_text =
       l10n_util::GetStringUTF16(

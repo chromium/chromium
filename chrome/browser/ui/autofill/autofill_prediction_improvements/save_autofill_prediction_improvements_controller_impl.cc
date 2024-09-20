@@ -69,6 +69,10 @@ void SaveAutofillPredictionImprovementsControllerImpl::OnBubbleClosed(
   }
 }
 
+void SaveAutofillPredictionImprovementsControllerImpl::OnThumbsUpClicked() {}
+void SaveAutofillPredictionImprovementsControllerImpl::OnThumbsDownClicked() {}
+void SaveAutofillPredictionImprovementsControllerImpl::OnLearnMoreClicked() {}
+
 PageActionIconType
 SaveAutofillPredictionImprovementsControllerImpl::GetPageActionIconType() {
   // TODO(crbug.com/362227379): Update icon.

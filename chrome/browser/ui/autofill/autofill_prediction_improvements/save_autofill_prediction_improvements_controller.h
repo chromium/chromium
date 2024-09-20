@@ -59,6 +59,15 @@ class SaveAutofillPredictionImprovementsController {
   // Called when the user accepts to save prediction improvements.
   virtual void OnSaveButtonClicked() = 0;
 
+  // Called when the user clicks on the thumbs up button in the dialog.
+  virtual void OnThumbsUpClicked() = 0;
+
+  // Called when the user clicks on the thumbs down button in the dialog.
+  virtual void OnThumbsDownClicked() = 0;
+
+  // Called when the user clicks on the learn more button in the dialog.
+  virtual void OnLearnMoreClicked() = 0;
+
   // Returns the prediction improvements to be displayed in the UI.
   virtual const std::vector<optimization_guide::proto::UserAnnotationsEntry>&
   GetPredictionImprovements() const = 0;

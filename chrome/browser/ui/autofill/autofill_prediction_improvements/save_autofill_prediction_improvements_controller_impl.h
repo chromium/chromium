@@ -39,10 +39,12 @@ class SaveAutofillPredictionImprovementsControllerImpl
   const std::vector<optimization_guide::proto::UserAnnotationsEntry>&
   GetPredictionImprovements() const override;
   void OnBubbleClosed(
-
       PredictionImprovementsBubbleClosedReason closed_reason) override;
   base::WeakPtr<SaveAutofillPredictionImprovementsController> GetWeakPtr()
       override;
+  void OnThumbsUpClicked() override;
+  void OnThumbsDownClicked() override;
+  void OnLearnMoreClicked() override;
 
  protected:
   explicit SaveAutofillPredictionImprovementsControllerImpl(
