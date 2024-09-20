@@ -38,7 +38,7 @@ class BookmarkModel;
 namespace gfx {
 class Image;
 struct VectorIcon;
-}
+}  // namespace gfx
 
 class AutocompleteControllerEmitter;
 class PrefService;
@@ -272,6 +272,9 @@ class OmniboxClient {
   // have a 'learn more' or next-steps link. `OpenIphLink()` allows opening
   // these in a new tab.
   virtual void OpenIphLink(GURL gurl) {}
+
+  // Returns true if history embeddings is enabled and user has opted in.
+  virtual bool IsHistoryEmbeddingsEnabled() const;
 
   virtual base::WeakPtr<OmniboxClient> AsWeakPtr() = 0;
 };

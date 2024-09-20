@@ -332,10 +332,12 @@ void OmniboxSuggestionButtonRowView::UpdateFromModel() {
                             OmniboxPopupSelection::KEYWORD_MODE);
     if (keyword_button_->GetVisible()) {
       std::u16string keyword;
+      std::u16string keyword_placeholder;
       bool is_keyword_hint = false;
       match().GetKeywordUIState(
           popup_view_->controller()->client()->GetTemplateURLService(),
-          &keyword, &is_keyword_hint);
+          popup_view_->controller()->client()->IsHistoryEmbeddingsEnabled(),
+          &keyword, &keyword_placeholder, &is_keyword_hint);
 
       const auto names = SelectedKeywordView::GetKeywordLabelNames(
           keyword,
