@@ -13,6 +13,8 @@
 
 #include <tuple>
 
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/strings/string_util.h"
 #include "base/test/test_reg_util_win.h"
 #include "base/win/win_util.h"
@@ -27,8 +29,10 @@
 
 using ::testing::ElementsAre;
 using ::testing::Eq;
+using ::testing::HasSubstr;
 using ::testing::Optional;
 using ::testing::StrCaseEq;
+using ::testing::StrNe;
 
 namespace install_static {
 
@@ -284,6 +288,33 @@ TEST(InstallStaticTest, BrowserProcessTest) {
   EXPECT_FALSE(IsProcessTypeInitialized());
   InitializeProcessType();
   EXPECT_TRUE(IsBrowserProcess());
+}
+
+TEST(InstallStaticTest, CreateUniqueTempDirectoryTest) {
+  constexpr std::wstring_view kPrefix(L"Foobar");
+  std::wstring dir = CreateUniqueTempDirectory(kPrefix);
+  ASSERT_FALSE(dir.empty());
+
+  EXPECT_THAT(dir, HasSubstr(L"\\" + std::wstring(kPrefix)));
+
+  base::FilePath dir_path(dir);
+  EXPECT_TRUE(base::DirectoryExists(dir_path));
+  EXPECT_TRUE(dir_path.IsAbsolute());
+
+  EXPECT_TRUE(base::DeleteFile(dir_path));
+}
+
+TEST(InstallStaticTest, CreateMoreThanOneUniqueTempDirectoryTest) {
+  std::wstring dir1 = CreateUniqueTempDirectory({});
+  ASSERT_FALSE(dir1.empty());
+
+  std::wstring dir2 = CreateUniqueTempDirectory({});
+  ASSERT_FALSE(dir2.empty());
+
+  EXPECT_THAT(dir2, StrNe(dir1));
+
+  EXPECT_TRUE(base::DeleteFile(base::FilePath(dir1)));
+  EXPECT_TRUE(base::DeleteFile(base::FilePath(dir2)));
 }
 
 class InstallStaticUtilTest

@@ -306,6 +306,11 @@ std::wstring GetCommandLineSwitchValue(std::wstring_view switch_name);
 // failure to create a directory.
 bool RecursiveDirectoryCreate(const std::wstring& full_path);
 
+// Creates a new directory with the unique name in the format of
+// <prefix>[Chrome|Chromium]<random number> in the default %TEMP% folder.
+// If the directory cannot be created, returns an empty string.
+std::wstring CreateUniqueTempDirectory(std::wstring_view prefix);
+
 struct DetermineChannelResult {
   std::wstring channel_name;
   ChannelOrigin origin;

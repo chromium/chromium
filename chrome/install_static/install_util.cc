@@ -297,6 +297,27 @@ bool ProcessNeedsProfileDir(ProcessType process_type) {
   return false;
 }
 
+// Returns the user's temporary directory, or an empty string in case of
+// failure.
+std::wstring GetTempDir() {
+  constexpr DWORD kBufferLength = MAX_PATH + 1U;
+  wchar_t temp_path[kBufferLength];
+  DWORD temp_path_len = ::GetTempPath(kBufferLength, temp_path);
+  if (temp_path_len == 0 || temp_path_len > kBufferLength) {
+    return {};
+  }
+
+  std::wstring temp_dir(temp_path, temp_path_len);
+
+  // Strip the trailing slashes if any to duplicate //base method behavior.
+  while (!temp_dir.empty() &&
+         (temp_dir.back() == '\\' || temp_dir.back() == '/')) {
+    temp_dir.pop_back();
+  }
+
+  return temp_dir;
+}
+
 }  // namespace
 
 bool IsSystemInstall() {
@@ -885,6 +906,45 @@ bool RecursiveDirectoryCreate(const std::wstring& full_path) {
     }
   }
   return true;
+}
+
+std::wstring CreateUniqueTempDirectory(std::wstring_view prefix) {
+  std::wstring temp_dir = GetTempDir();
+  if (temp_dir.empty()) {
+    Trace(L"Failed to retrieve temporary directory");
+    return {};
+  }
+
+  // The following code uses std::to_wstring() which is banned in Chrome,
+  // however, since the //base alternative is not available here, we use it as
+  // the last resort. Please DO NOT copy/paste this code outside install_static!
+  temp_dir.push_back(L'\\');
+  temp_dir.append(prefix);
+  temp_dir.append(kProductPathName, kProductPathNameLength);
+  temp_dir.append(std::to_wstring(::GetCurrentProcessId()));
+  temp_dir.append(std::to_wstring(::GetTickCount()));
+  size_t temp_dir_length = temp_dir.length();
+
+  // Try to create a new temporary directory. If the one exists, keep trying
+  // adding a randomized suffix to the path until we reach some limit.
+  for (int count = 0; count < 50; ++count) {
+    if (::CreateDirectory(temp_dir.c_str(), /*lpSecurityAttributes*/ nullptr)) {
+      return temp_dir;
+    }
+
+    // Seed the rand() once.
+    [[maybe_unused]] static bool once = []() {
+      srand(::GetTickCount());
+      return true;
+    }();
+
+    temp_dir.erase(temp_dir_length);
+    temp_dir.append(std::to_wstring(rand()));
+  }
+
+  Trace(L"Failed to create unique temporary directory %ls", temp_dir.c_str());
+
+  return {};
 }
 
 // This function takes these inputs rather than accessing the module's
