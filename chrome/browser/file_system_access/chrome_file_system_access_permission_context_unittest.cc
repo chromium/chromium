@@ -478,6 +478,18 @@ class ChromeFileSystemAccessPermissionContextNoPersistenceTest
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+class ChromeFileSystemAccessPermissionContextSymbolicLinkCheckTest
+    : public ChromeFileSystemAccessPermissionContextTest {
+ public:
+  ChromeFileSystemAccessPermissionContextSymbolicLinkCheckTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kFileSystemAccessSymbolicLinkCheck);
+  }
+
+ protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
 TEST_F(ChromeFileSystemAccessPermissionContextTest,
        ConfirmSensitiveEntryAccess_NoSpecialPath) {
   const base::FilePath kTestPath =
@@ -603,8 +615,6 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
         IsOpenAllowed(download_dir.AppendASCII("foo"), HandleType::kDirectory));
   }
 
-// TODO(crbug.com/40101963): Enable more android tests.
-#if !BUILDFLAG(IS_ANDROID)
   // The profile directory, its children, and its direct parent should all be
   // blocked. Note that this may not match USER_DATA_DIR if the --user-data-dir
   // override is used.
@@ -625,7 +635,6 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
     EXPECT_TRUE(
         IsOpenAllowed(download_dir.AppendASCII("foo"), HandleType::kDirectory));
   }
-#endif
 
 #if BUILDFLAG(IS_WIN)
   // `DIR_IE_INTERNET_CACHE` is an example of a directory where nested
@@ -848,13 +857,8 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 
-TEST_F(ChromeFileSystemAccessPermissionContextTest,
+TEST_F(ChromeFileSystemAccessPermissionContextSymbolicLinkCheckTest,
        ConfirmSensitiveEntryAccess_ResolveSymbolicLink) {
-  if (!base::FeatureList::IsEnabled(
-          features::kFileSystemAccessSymbolicLinkCheck)) {
-    return;
-  }
-
   base::FilePath symlink1 = temp_dir_.GetPath().AppendASCII("symlink1");
 
   base::FilePath app_dir = temp_dir_.GetPath().AppendASCII("app");
@@ -889,6 +893,30 @@ TEST_F(ChromeFileSystemAccessPermissionContextTest,
                 permission_context(), PathType::kLocal, symlink2,
                 HandleType::kFile, UserAction::kOpen),
             SensitiveDirectoryResult::kAllowed);
+}
+
+TEST_F(ChromeFileSystemAccessPermissionContextSymbolicLinkCheckTest,
+       ConfirmSensitiveEntryAccess_ResolveBlockPathSymbolicLink) {
+  base::FilePath symlink1 = temp_dir_.GetPath().AppendASCII("symlink1");
+
+  base::FilePath app_dir = temp_dir_.GetPath().AppendASCII("app");
+  ASSERT_TRUE(base::CreateDirectory(app_dir));
+
+  CreateSymbolicLinkResult result =
+      CreateSymbolicLinkForTesting(app_dir, symlink1);
+  if (result == CreateSymbolicLinkResult::kUnsupported) {
+    GTEST_SKIP();
+  }
+  ASSERT_EQ(result, CreateSymbolicLinkResult::kSucceeded);
+
+  // Set the blocked path to a symbolic link.
+  base::ScopedPathOverride app_override(base::DIR_EXE, symlink1, true, true);
+
+  // The target of the blocked symbolic link should be blocked.
+  EXPECT_EQ(ConfirmSensitiveEntryAccessSync(
+                permission_context(), PathType::kLocal, app_dir,
+                HandleType::kFile, UserAction::kOpen),
+            SensitiveDirectoryResult::kAbort);
 }
 
 TEST_F(ChromeFileSystemAccessPermissionContextTest,

@@ -358,6 +358,21 @@ struct BlockPathRule {
   BlockType type;
 };
 
+// A wrapper around `base::NormalizeFilePath` that returns its result instead of
+// using an out parameter.
+base::FilePath NormalizeFilePath(const base::FilePath& path) {
+  CHECK(path.IsAbsolute());
+  // TODO(crbug.com/368130513O): On Windows, this call will fail if the target
+  // file path is greater than MAX_PATH. We should decide how to handle this
+  // scenario.
+  base::FilePath normalized_path;
+  if (!base::NormalizeFilePath(path, &normalized_path)) {
+    return path;
+  }
+  CHECK_EQ(path.empty(), normalized_path.empty());
+  return normalized_path;
+}
+
 bool ShouldBlockAccessToPath(const base::FilePath& path,
                              HandleType handle_type,
                              std::vector<BlockPathRule> rules) {
@@ -374,25 +389,11 @@ bool ShouldBlockAccessToPath(const base::FilePath& path,
 #endif
   DCHECK(path.IsAbsolute());
 
-  base::FilePath check_path;
-  if (base::FeatureList::IsEnabled(
-          features::kFileSystemAccessSymbolicLinkCheck)) {
-    // `base::NormalizeFilePath()` is called to perform normalization. It will
-    // resolve any file path elements like symbolic links or junctions by
-    // returning the target file path.
-    //
-    // `path` is expected to be absolute.
-    //
-    // TODO(crbug.com/368130513O): On Windows, this call will fail if the target
-    // file path is greater than MAX_PATH. We should decide how to handle this
-    // scenario.
-    if (!base::NormalizeFilePath(path, &check_path)) {
-      check_path = path;
-    }
-    DCHECK(!check_path.empty());
-  } else {
-    check_path = path;
-  }
+  bool normalize_file_paths = base::FeatureList::IsEnabled(
+      features::kFileSystemAccessSymbolicLinkCheck);
+
+  base::FilePath check_path =
+      normalize_file_paths ? NormalizeFilePath(path) : path;
 
 #if BUILDFLAG(IS_WIN)
   // On Windows, local UNC paths are rejected, as UNC path can be written in a
@@ -424,15 +425,18 @@ bool ShouldBlockAccessToPath(const base::FilePath& path,
   base::FilePath nearest_ancestor;
   BlockType nearest_ancestor_block_type = kDontBlockChildren;
   for (const auto& block : rules) {
-    if (check_path == block.path || check_path.IsParent(block.path)) {
+    base::FilePath blocked_path =
+        normalize_file_paths ? NormalizeFilePath(block.path) : block.path;
+
+    if (check_path == blocked_path || check_path.IsParent(blocked_path)) {
       VLOG(1) << "Blocking access to " << check_path
-              << " because it is a parent of " << block.path;
+              << " because it is a parent of " << blocked_path;
       return true;
     }
 
-    if (block.path.IsParent(check_path) &&
-        (nearest_ancestor.empty() || nearest_ancestor.IsParent(block.path))) {
-      nearest_ancestor = block.path;
+    if (blocked_path.IsParent(check_path) &&
+        (nearest_ancestor.empty() || nearest_ancestor.IsParent(blocked_path))) {
+      nearest_ancestor = blocked_path;
       nearest_ancestor_block_type = block.type;
     }
   }
