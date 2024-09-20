@@ -314,7 +314,6 @@ void AudioDestination::StartWithWorkletTaskRunner(
 
 bool AudioDestination::IsPlaying() {
   DCHECK(IsMainThread());
-  base::AutoLock locker(device_state_lock_);
   return device_state_ == DeviceState::kRunning;
 }
 
@@ -500,8 +499,9 @@ void AudioDestination::RequestRender(
 
   base::AutoTryLock locker(device_state_lock_);
 
-  TRACE_EVENT("webaudio", "AudioDestination::RequestRender", "frames_to_render",
-              frames_to_render, "delay_timestamp (ms)",
+  TRACE_EVENT("webaudio", "AudioDestination::RequestRender", "frames_requested",
+              frames_requested, "frames_to_render", frames_to_render,
+              "delay_timestamp (ms)",
               (delay_timestamp - base::TimeTicks()).InMillisecondsF(),
               "playout_delay (ms)", delay.InMillisecondsF(), "delay (frames)",
               fifo_->GetFramesAvailable());
