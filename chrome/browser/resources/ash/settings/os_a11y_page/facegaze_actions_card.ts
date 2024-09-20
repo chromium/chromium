@@ -249,12 +249,7 @@ export class FaceGazeActionsCardElement extends FaceGazeActionsCardElementBase {
 
     if (unassignIndex >= 0) {
       const unassignGesture = this.commandPairs_[unassignIndex].gesture;
-
-      // Update configuration and notify Polymer.
-      this.commandPairs_[unassignIndex].gesture = null;
-      this.notifyPath(
-          `${FaceGazeActionsCardElement.FACEGAZE_COMMAND_PAIRS_PROPERTY_NAME}.${
-              unassignIndex}.gesture`);
+      this.updateCommandPairGesture_(unassignIndex, null);
 
       // Unassign key combo after gesture is unassigned so FaceGaze does not
       // attempt to execute macro for gesture.
@@ -272,22 +267,16 @@ export class FaceGazeActionsCardElement extends FaceGazeActionsCardElementBase {
       // Gesture page.
       const updateIndex = this.commandPairs_.findIndex(
           (item: FaceGazeCommandPair) =>
-              item.action === newCommandPair.action && item.gesture === null);
+              item.actionsEqual(newCommandPair) && item.gesture === null);
       if (updateIndex > -1) {
-        // Update configuration and notify Polymer.
-        this.commandPairs_[updateIndex].gesture = newCommandPair.gesture;
-        this.notifyPath(`${
-            FaceGazeActionsCardElement.FACEGAZE_COMMAND_PAIRS_PROPERTY_NAME}.${
-            updateIndex}.gesture`);
+        this.updateCommandPairGesture_(updateIndex, newCommandPair.gesture);
       }
     } else {
       const updateIndex = this.commandPairs_.findIndex(
           (item: FaceGazeCommandPair) => item.equals(newCommandPair));
       if (updateIndex < 0) {
         // Add new gesture/action pairing if it does not already exist.
-        this.push(
-            FaceGazeActionsCardElement.FACEGAZE_COMMAND_PAIRS_PROPERTY_NAME,
-            newCommandPair);
+        this.addNewCommandPair_(newCommandPair);
       }
     }
   }
@@ -383,10 +372,35 @@ export class FaceGazeActionsCardElement extends FaceGazeActionsCardElementBase {
           newCommandPair.assignedKeyCombo = new AssignedKeyCombo(keyCombo);
         }
 
-        this.push(
-            FaceGazeActionsCardElement.FACEGAZE_COMMAND_PAIRS_PROPERTY_NAME,
-            newCommandPair);
+        this.addNewCommandPair_(newCommandPair);
       }
+    }
+  }
+
+  private addNewCommandPair_(newCommandPair: FaceGazeCommandPair): void {
+    this.push(
+        FaceGazeActionsCardElement.FACEGAZE_COMMAND_PAIRS_PROPERTY_NAME,
+        newCommandPair);
+  }
+
+  private updateCommandPairGesture_(
+      index: number, newGesture: FacialGesture|null): void {
+    const updateCommandPair = this.commandPairs_[index];
+    const unassignGesture = updateCommandPair.gesture;
+
+    // Update configuration and notify Polymer.
+    this.commandPairs_[index].gesture = newGesture;
+    this.notifyPath(
+        `${FaceGazeActionsCardElement.FACEGAZE_COMMAND_PAIRS_PROPERTY_NAME}.${
+            index}.gesture`);
+
+    // If the command pair being updated contains a key combo and is being
+    // updated to unassign a gesture, first unassign the gesture then unassign
+    // the key combo so FaceGaze does not attempt to execute macro for gesture.
+    if (updateCommandPair.action === MacroName.CUSTOM_KEY_COMBINATION &&
+        unassignGesture && !newGesture) {
+      this.removeKeyComboFromPref_(
+          unassignGesture, this.commandPairs_[index].assignedKeyCombo);
     }
   }
 

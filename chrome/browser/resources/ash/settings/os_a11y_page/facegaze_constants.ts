@@ -65,9 +65,12 @@ export class FaceGazeCommandPair {
   }
 
   equals(other: FaceGazeCommandPair): boolean {
-    if (this.action !== other.action || this.gesture !== other.gesture) {
-      // If the action and gesture do not match, then these objects cannot be
-      // equal.
+    return this.actionsEqual(other) && this.gesture === other.gesture;
+  }
+
+  actionsEqual(other: FaceGazeCommandPair): boolean {
+    if (this.action !== other.action) {
+      // If the macro does not match, then these actions cannot be equal.
       return false;
     }
 
