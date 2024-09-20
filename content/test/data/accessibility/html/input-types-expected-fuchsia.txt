@@ -136,11 +136,7 @@ UNKNOWN focusable has_input_focus
 ++++++++STATIC_TEXT label='Password: '
 ++++++++++UNKNOWN label='Password: '
 ++++++++TEXT_FIELD focusable label='Password:' actions='{DEFAULT, SET_VALUE}'
-++++++++++UNKNOWN hidden
-++++++++++++UNKNOWN hidden
-++++++++++++++UNKNOWN
-++++++++++++UNKNOWN hidden
-++++++++++++++STATIC_TEXT hidden
+++++++++++UNKNOWN
 ++++++UNKNOWN hidden
 ++++++++STATIC_TEXT hidden
 ++++++++RADIO_BUTTON focusable label='Radio:' actions='{DEFAULT}' checked_state='UNCHECKED'

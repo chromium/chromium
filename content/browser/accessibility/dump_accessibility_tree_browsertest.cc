@@ -34,18 +34,13 @@
 #include "base/mac/mac_util.h"
 #endif
 
-// TODO(aboxhall): Create expectations on Android for these
+// Tests that use @DEFAULT_ACTION-ON to open a popup for an <input> (such as
+// color or date/time pickers) never complete on Android, where native pickers
+// are used. Because that UI is native, it is not necessary to pass those tests.
 #if BUILDFLAG(IS_ANDROID)
-#define MAYBE(x) DISABLED_##x
+#define NOT_ANDROID(x) DISABLED_##x
 #else
-#define MAYBE(x) x
-#endif
-
-// TODO(crbug.com/40868032): Flaky on asan builder on multiple platforms.
-#if defined(ADDRESS_SANITIZER)
-#define MAYBE_ASAN(x) DISABLED_##x
-#else
-#define MAYBE_ASAN(x) x
+#define NOT_ANDROID(x) x
 #endif
 
 namespace content {
@@ -998,8 +993,7 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
   RunAriaTest(FILE_PATH_LITERAL("aria-hidden-iframe.html"));
 }
 
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
-                       MAYBE(AccessibilityAriaFlowto)) {
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityAriaFlowto) {
   RunAriaTest(FILE_PATH_LITERAL("aria-flowto.html"));
 }
 
@@ -1009,7 +1003,7 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
-                       MAYBE(AccessibilityAriaFlowtoMultiple)) {
+                       AccessibilityAriaFlowtoMultiple) {
   RunAriaTest(FILE_PATH_LITERAL("aria-flowto-multiple.html"));
 }
 
@@ -2451,10 +2445,8 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityInputColor) {
   RunHtmlTest(FILE_PATH_LITERAL("input-color.html"));
 }
 
-// https://crbug.com/1186138 - fails due to timing issues with focus
-// and aria-live announcement.
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
-                       DISABLED_AccessibilityInputColorWithPopupOpen) {
+                       NOT_ANDROID(AccessibilityInputColorWithPopupOpen)) {
   RunHtmlTest(FILE_PATH_LITERAL("input-color-with-popup-open.html"));
 }
 
@@ -2472,16 +2464,14 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
   RunHtmlTest(FILE_PATH_LITERAL("input-color-disabled.html"));
 }
 
-// TODO: date and time controls drop their children, including the popup button,
-// on Android.
-// TODO(crbug.com/40875029): Flaky on every platform.
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
-                       DISABLED_AccessibilityInputDateWithPopupOpen) {
+                       NOT_ANDROID(AccessibilityInputDateWithPopupOpen)) {
   RunHtmlTest(FILE_PATH_LITERAL("input-date-with-popup-open.html"));
 }
 
 // The /blink test pass is different when run on Windows vs other OSs.
-// So separate into two different tests.
+// So separate into two different tests: <input type="datetime-local"> has a
+// ", " inserted between fields on Windows.
 #if BUILDFLAG(IS_WIN)
 #define AccessibilityInputDateWithPopupOpenMultiple_TestFile \
   FILE_PATH_LITERAL("input-date-with-popup-open-multiple-for-win.html")
@@ -2490,40 +2480,25 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
   FILE_PATH_LITERAL("input-date-with-popup-open-multiple.html")
 #endif
 
-// TODO(crbug.com/40946735): Test times out on android.
-#if BUILDFLAG(IS_ANDROID)
-#define MAYBE_AccessibilityInputDateWithPopupOpenMultiple \
-  DISABLED_AccessibilityInputDateWithPopupOpenMultiple
-#else
-#define MAYBE_AccessibilityInputDateWithPopupOpenMultiple \
-  AccessibilityInputDateWithPopupOpenMultiple
-#endif
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
-                       MAYBE_AccessibilityInputDateWithPopupOpenMultiple) {
+IN_PROC_BROWSER_TEST_P(
+    DumpAccessibilityTreeTest,
+    NOT_ANDROID(AccessibilityInputDateWithPopupOpenMultiple)) {
   RunHtmlTest(AccessibilityInputDateWithPopupOpenMultiple_TestFile);
 }
 
-IN_PROC_BROWSER_TEST_P(YieldingParserDumpAccessibilityTreeTest,
-                       MAYBE_AccessibilityInputDateWithPopupOpenMultiple) {
+IN_PROC_BROWSER_TEST_P(
+    YieldingParserDumpAccessibilityTreeTest,
+    NOT_ANDROID(AccessibilityInputDateWithPopupOpenMultiple)) {
   RunHtmlTest(AccessibilityInputDateWithPopupOpenMultiple_TestFile);
 }
 
-// TODO: date and time controls drop their children, including the popup button,
-// on Android
-#if BUILDFLAG(IS_ANDROID)
-#define MAYBE_AccessibilityInputTimeWithPopupOpen \
-  DISABLED_AccessibilityInputTimeWithPopupOpen
-#else
-#define MAYBE_AccessibilityInputTimeWithPopupOpen \
-  AccessibilityInputTimeWithPopupOpen
-#endif
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
-                       MAYBE_AccessibilityInputTimeWithPopupOpen) {
+                       NOT_ANDROID(AccessibilityInputTimeWithPopupOpen)) {
   RunHtmlTest(FILE_PATH_LITERAL("input-time-with-popup-open.html"));
 }
 
 IN_PROC_BROWSER_TEST_P(YieldingParserDumpAccessibilityTreeTest,
-                       MAYBE_AccessibilityInputTimeWithPopupOpen) {
+                       NOT_ANDROID(AccessibilityInputTimeWithPopupOpen)) {
   RunHtmlTest(FILE_PATH_LITERAL("input-time-with-popup-open.html"));
 }
 
@@ -2531,13 +2506,10 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityInputDateTime) {
   RunHtmlTest(FILE_PATH_LITERAL("input-datetime.html"));
 }
 
-// Fails on OS X 10.9 and higher <https://crbug.com/430622>.
-#if !BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
                        AccessibilityInputDateTimeLocal) {
   RunHtmlTest(FILE_PATH_LITERAL("input-datetime-local.html"));
 }
-#endif
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityInputEmail) {
   RunHtmlTest(FILE_PATH_LITERAL("input-email.html"));
@@ -2567,27 +2539,12 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityInputNumber) {
   RunHtmlTest(FILE_PATH_LITERAL("input-number.html"));
 }
 
-// Test flakes on Android P - b/329275097.
-#if BUILDFLAG(IS_ANDROID)
-#define MAYBE_AccessibilityInputPassword DISABLED_AccessibilityInputPassword
-#else
-#define MAYBE_AccessibilityInputPassword AccessibilityInputPassword
-#endif
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
-                       MAYBE_AccessibilityInputPassword) {
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityInputPassword) {
   RunHtmlTest(FILE_PATH_LITERAL("input-password.html"));
 }
 
-// Test flakes on Android P - b/329271598.
-#if BUILDFLAG(IS_ANDROID)
-#define MAYBE_AccessibilityInputPasswordObscured \
-  DISABLED_AccessibilityInputPasswordObscured
-#else
-#define MAYBE_AccessibilityInputPasswordObscured \
-  AccessibilityInputPasswordObscured
-#endif
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
-                       MAYBE_AccessibilityInputPasswordObscured) {
+                       AccessibilityInputPasswordObscured) {
   RunHtmlTest(FILE_PATH_LITERAL("input-password-obscured.html"));
 }
 
@@ -2620,14 +2577,7 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
   RunHtmlTest(FILE_PATH_LITERAL("input-radio-wrapped-label.html"));
 }
 
-// TODO(crbug.com/40887968): failing on Fuchsia
-#if BUILDFLAG(IS_FUCHSIA)
-#define MAYBE_AccessibilityInputRange DISABLED_AccessibilityInputRange
-#else
-#define MAYBE_AccessibilityInputRange AccessibilityInputRange
-#endif  // BUILDFLAG(IS_FUCHSIA)
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
-                       MAYBE_AccessibilityInputRange) {
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityInputRange) {
   RunHtmlTest(FILE_PATH_LITERAL("input-range.html"));
 }
 
@@ -2722,27 +2672,21 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
   RunHtmlTest(FILE_PATH_LITERAL("input-text-with-selection.html"));
 }
 
-#if BUILDFLAG(IS_MAC)
-// TODO(crbug.com/40666501): The /blink test pass is different on Windows and
-// Mac, versus Linux. Also, see https://crbug.com/1314896.
-#define MAYBE_AccessibilityInputTime DISABLED_AccessibilityInputTime
-#else
-#define MAYBE_AccessibilityInputTime AccessibilityInputTime
-#endif
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
-                       MAYBE_AccessibilityInputTime) {
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityInputTime) {
   RunHtmlTest(FILE_PATH_LITERAL("input-time.html"));
 }
 
-#if BUILDFLAG(IS_ANDROID)
-// Blink flakes with datetime pickers on most platforms.
-#define MAYBE_AccessibilityInputTypes AccessibilityInputTypes
+// The /blink test pass is different when run on Windows vs other OSs.
+// So separate into two different tests.
+#if BUILDFLAG(IS_WIN)
+#define AccessibilityInputTypes_TestFile \
+  FILE_PATH_LITERAL("input-types-for-win.html")
 #else
-#define MAYBE_AccessibilityInputTypes DISABLED_AccessibilityInputTypes
+#define AccessibilityInputTypes_TestFile FILE_PATH_LITERAL("input-types.html")
 #endif
-IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
-                       MAYBE_AccessibilityInputTypes) {
-  RunHtmlTest(FILE_PATH_LITERAL("input-types.html"));
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityInputTypes) {
+  RunHtmlTest(AccessibilityInputTypes_TestFile);
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
@@ -2772,15 +2716,8 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityId) {
   RunHtmlTest(FILE_PATH_LITERAL("id.html"));
 }
 
-// Flaky on Android - crbug.com/1488592
-#if BUILDFLAG(IS_ANDROID)
-#define MAYBE_AccessibilityImgFormFormControls \
-  DISABLED_AccessibilityImgFormFormControls
-#else
-#define MAYBE_AccessibilityImgFormFormControls AccessibilityImgFormFormControls
-#endif
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
-                       MAYBE_AccessibilityImgFormFormControls) {
+                       AccessibilityImgFormFormControls) {
   RunFormControlsTest(FILE_PATH_LITERAL("img-form.html"));
 }
 

@@ -65,8 +65,8 @@ rootWebArea
 ++++++++++++++++spinButton name='Year Datetime-local:' placeholder='yyyy' valueForRange=0.00 minValueForRange=1.00 maxValueForRange=275760.00
 ++++++++++++++++++staticText name='yyyy'
 ++++++++++++++++++++inlineTextBox name='yyyy'
-++++++++++++++++staticText name=', '
-++++++++++++++++++inlineTextBox name=', '
+++++++++++++++++staticText name=' '
+++++++++++++++++++inlineTextBox name=' '
 ++++++++++++++++spinButton name='Hours Datetime-local:' placeholder='--' valueForRange=0.00 minValueForRange=1.00 maxValueForRange=12.00
 ++++++++++++++++++staticText name='--'
 ++++++++++++++++++++inlineTextBox name='--'
