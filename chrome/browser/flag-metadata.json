@@ -1847,11 +1847,6 @@
     "expiry_milestone": 130
   },
   {
-    "name": "cros-shortstand",
-    "owners": [ "chromeos-apps-foundation-team@google.com" ],
-    "expiry_milestone": 130
-  },
-  {
     "name": "cros-soul",
     "owners": [ "cschlosser@chromium.org", "cros-privacy-features-dev@google.com" ],
     "expiry_milestone": 135
