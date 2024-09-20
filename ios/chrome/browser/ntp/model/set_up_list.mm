@@ -40,7 +40,8 @@ bool GetIsItemComplete(SetUpListItemType type,
     case SetUpListItemType::kDefaultBrowser:
       return IsChromeLikelyDefaultBrowser();
     case SetUpListItemType::kAutofill:
-      return password_manager_util::IsCredentialProviderEnabledOnStartup(prefs);
+      return password_manager_util::IsCredentialProviderEnabledOnStartup(
+          local_state);
     case SetUpListItemType::kNotifications: {
       id<SystemIdentity> identity =
           auth_service->GetPrimaryIdentity(signin::ConsentLevel::kSignin);

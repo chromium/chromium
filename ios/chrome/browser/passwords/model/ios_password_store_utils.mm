@@ -18,6 +18,7 @@
 #import "ios/chrome/browser/passwords/model/ios_chrome_password_reuse_manager_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_password_manager_settings_service_factory.h"
+#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/sync/model/sync_service_factory.h"
 
@@ -96,19 +97,18 @@ class StoreMetricReporterHelper : public base::SupportsUserData::Data {
   void LogIfCredentialProviderEnabled(PrefService* pref_service, BOOL enabled) {
     base::UmaHistogramBoolean("IOS.CredentialExtension.IsEnabled.Startup",
                               enabled);
-    if (pref_service) {
-      // The value stored on the last app startup.
-      bool is_credential_provider_enabled =
-          password_manager_util::IsCredentialProviderEnabledOnStartup(
-              pref_service);
-      // If the value changed since last launch, store the new value and log
-      // that the value has changed.
-      if (enabled != is_credential_provider_enabled) {
-        password_manager_util::SetCredentialProviderEnabledOnStartup(
-            pref_service, enabled);
-        base::UmaHistogramBoolean(
-            "IOS.CredentialExtension.StatusDidChangeTo.Startup", enabled);
-      }
+    PrefService* local_state = GetApplicationContext()->GetLocalState();
+    // The value stored on the last app startup.
+    bool is_credential_provider_enabled =
+        password_manager_util::IsCredentialProviderEnabledOnStartup(
+            local_state);
+    // If the value changed since last launch, store the new value and log
+    // that the value has changed.
+    if (enabled != is_credential_provider_enabled) {
+      password_manager_util::SetCredentialProviderEnabledOnStartup(local_state,
+                                                                   enabled);
+      base::UmaHistogramBoolean(
+          "IOS.CredentialExtension.StatusDidChangeTo.Startup", enabled);
     }
   }
 

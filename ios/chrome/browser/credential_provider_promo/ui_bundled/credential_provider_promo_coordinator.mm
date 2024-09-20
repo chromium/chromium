@@ -58,8 +58,7 @@ using credential_provider_promo::IOSCredentialProviderPromoAction;
   PromosManager* promosManager =
       PromosManagerFactory::GetForBrowserState(self.browser->GetBrowserState());
   self.mediator = [[CredentialProviderPromoMediator alloc]
-      initWithPromosManager:promosManager
-                prefService:self.browser->GetBrowserState()->GetPrefs()];
+      initWithPromosManager:promosManager];
 }
 
 - (void)stop {

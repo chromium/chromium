@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/shared/model/prefs/browser_prefs.h"
 
 #import "base/files/file_path.h"
+#import "components/password_manager/core/common/password_manager_pref_names.h"
 #import "components/prefs/testing_pref_service.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/sync_preferences/testing_pref_service_syncable.h"
@@ -54,12 +55,21 @@ TEST_F(BrowserPrefsTest, VerifyBrowserStatePrefsMigration) {
   // Simulate registering a value different from default in profile prefService.
   pref_service()->SetBoolean(prefs::kBottomOmnibox, true);
   pref_service()->SetBoolean(prefs::kBottomOmniboxByDefault, true);
+  pref_service()->SetBoolean(
+      password_manager::prefs::kCredentialProviderEnabledOnStartup, true);
 
   EXPECT_EQ(pref_service()->GetBoolean(prefs::kBottomOmnibox), true);
   EXPECT_EQ(local_state()->GetBoolean(prefs::kBottomOmnibox), false);
 
   EXPECT_EQ(pref_service()->GetBoolean(prefs::kBottomOmniboxByDefault), true);
   EXPECT_EQ(local_state()->GetBoolean(prefs::kBottomOmniboxByDefault), false);
+
+  EXPECT_EQ(pref_service()->GetBoolean(
+                password_manager::prefs::kCredentialProviderEnabledOnStartup),
+            true);
+  EXPECT_EQ(local_state()->GetBoolean(
+                password_manager::prefs::kCredentialProviderEnabledOnStartup),
+            false);
 
   MigrateObsoleteBrowserStatePrefs(base::FilePath(), pref_service());
 
@@ -69,6 +79,13 @@ TEST_F(BrowserPrefsTest, VerifyBrowserStatePrefsMigration) {
 
   EXPECT_EQ(pref_service()->GetBoolean(prefs::kBottomOmniboxByDefault), false);
   EXPECT_EQ(local_state()->GetBoolean(prefs::kBottomOmniboxByDefault), true);
+
+  EXPECT_EQ(pref_service()->GetBoolean(
+                password_manager::prefs::kCredentialProviderEnabledOnStartup),
+            false);
+  EXPECT_EQ(local_state()->GetBoolean(
+                password_manager::prefs::kCredentialProviderEnabledOnStartup),
+            true);
 }
 
 // Check that the migration of a pref from localState prefService to

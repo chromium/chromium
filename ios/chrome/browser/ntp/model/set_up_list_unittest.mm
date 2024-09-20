@@ -116,8 +116,8 @@ class SetUpListTest : public PlatformTest {
 
   // Fakes enabling or disabling the credential provider.
   void FakeEnableCredentialProvider(bool enable) {
-    password_manager_util::SetCredentialProviderEnabledOnStartup(prefs_,
-                                                                 enable);
+    password_manager_util::SetCredentialProviderEnabledOnStartup(
+        GetLocalState(), enable);
   }
 
   // Enables/disables tips notifications.

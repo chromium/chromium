@@ -171,13 +171,13 @@ class AppStoreRatingSceneAgentTest : public PlatformTest {
 
   // Enable Credentials Provider.
   void EnableCPE() {
-    profile_->GetPrefs()->SetBoolean(
+    local_state()->SetBoolean(
         password_manager::prefs::kCredentialProviderEnabledOnStartup, true);
   }
 
   // Disable Credentials Provider.
   void DisableCPE() {
-    profile_->GetPrefs()->SetBoolean(
+    local_state()->SetBoolean(
         password_manager::prefs::kCredentialProviderEnabledOnStartup, false);
   }
 };

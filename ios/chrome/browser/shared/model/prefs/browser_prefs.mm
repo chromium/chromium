@@ -41,6 +41,7 @@
 #import "components/optimization_guide/core/model_execution/model_execution_prefs.h"
 #import "components/optimization_guide/core/optimization_guide_prefs.h"
 #import "components/password_manager/core/browser/password_manager.h"
+#import "components/password_manager/core/common/password_manager_pref_names.h"
 #import "components/payments/core/payment_prefs.h"
 #import "components/plus_addresses/plus_address_prefs.h"
 #import "components/policy/core/browser/browser_policy_connector.h"
@@ -710,6 +711,8 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   // List pref that stores the positions of the Safety Check module (with
   // notifications opt-in) within the Magic Stack.
   registry->RegisterListPref(prefs::kMagicStackSafetyCheckNotificationsShown);
+
+  password_manager::PasswordManager::RegisterLocalPrefs(registry);
 }
 
 void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {
@@ -1285,6 +1288,10 @@ void MigrateObsoleteBrowserStatePrefs(const base::FilePath& state_path,
   // Added 09/2024.
   MigrateBooleanPrefFromProfilePrefsToLocalStatePrefs(
       prefs::kBrowserLockdownModeEnabled, prefs);
+
+  // Added 09/2024.
+  MigrateBooleanPrefFromProfilePrefsToLocalStatePrefs(
+      password_manager::prefs::kCredentialProviderEnabledOnStartup, prefs);
 }
 
 void MigrateObsoleteUserDefault() {

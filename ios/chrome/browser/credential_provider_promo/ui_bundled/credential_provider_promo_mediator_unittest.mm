@@ -50,7 +50,6 @@ class CredentialProviderPromoMediatorTest : public PlatformTest {
  protected:
   CredentialProviderPromoMediatorTest() {
     CreateCredentialProviderPromoMediator();
-    DisableCredentialProviderExtension();
   }
 
   PrefService* local_state() {
@@ -61,7 +60,6 @@ class CredentialProviderPromoMediatorTest : public PlatformTest {
   IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   std::unique_ptr<MockPromosManager> promos_manager_;
   CredentialProviderPromoMediator* mediator_;
-  std::unique_ptr<TestingPrefServiceSimple> pref_service_;
   id consumer_;
   NSString* firstStepTitleString =
       l10n_util::GetNSString(IDS_IOS_CREDENTIAL_PROVIDER_PROMO_INITIAL_TITLE);
@@ -80,17 +78,10 @@ class CredentialProviderPromoMediatorTest : public PlatformTest {
 
   void CreateCredentialProviderPromoMediator() {
     promos_manager_ = std::make_unique<MockPromosManager>();
-    pref_service_ = std::make_unique<TestingPrefServiceSimple>();
     consumer_ = OCMProtocolMock(@protocol(CredentialProviderPromoConsumer));
     mediator_ = [[CredentialProviderPromoMediator alloc]
-        initWithPromosManager:promos_manager_.get()
-                  prefService:pref_service_.get()];
+        initWithPromosManager:promos_manager_.get()];
     mediator_.consumer = consumer_;
-  }
-
-  void DisableCredentialProviderExtension() {
-    pref_service_->registry()->RegisterBooleanPref(
-        password_manager::prefs::kCredentialProviderEnabledOnStartup, false);
   }
 
   void ExpectConsumerSetFieldsForFirstStep() {
@@ -129,7 +120,7 @@ class CredentialProviderPromoMediatorTest : public PlatformTest {
 // Credential Provider Extension.
 TEST_F(CredentialProviderPromoMediatorTest,
        CredentialProviderExtensionEnabled) {
-  pref_service_->SetBoolean(
+  local_state()->SetBoolean(
       password_manager::prefs::kCredentialProviderEnabledOnStartup, true);
 
   EXPECT_FALSE([mediator_

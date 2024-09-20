@@ -18,18 +18,13 @@
 // The PromosManager is used to register promos.
 @property(nonatomic, assign) PromosManager* promosManager;
 
-// The PrefService is used to retrieve user pref.
-@property(nonatomic, assign) PrefService* prefService;
-
 @end
 
 @implementation CredentialProviderPromoSceneAgent
 
-- (instancetype)initWithPromosManager:(PromosManager*)promosManager
-                          prefService:(PrefService*)prefService {
+- (instancetype)initWithPromosManager:(PromosManager*)promosManager {
   if ((self = [super init])) {
     _promosManager = promosManager;
-    _prefService = prefService;
   }
   return self;
 }
@@ -68,9 +63,8 @@
 #pragma mark - Private
 
 - (BOOL)isCPEEnabled {
-  DCHECK(_prefService);
   return password_manager_util::IsCredentialProviderEnabledOnStartup(
-      _prefService);
+      GetApplicationContext()->GetLocalState());
 }
 
 @end

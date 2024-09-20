@@ -1119,8 +1119,7 @@ void OnListFamilyMembersResponse(
   // Do not gate by feature flag so it can run for enabled -> disabled
   // scenarios.
   [sceneState addAgent:[[CredentialProviderPromoSceneAgent alloc]
-                           initWithPromosManager:promosManager
-                                     prefService:prefService]];
+                           initWithPromosManager:promosManager]];
 }
 
 // Determines the mode (normal or incognito) the initial UI should be in.

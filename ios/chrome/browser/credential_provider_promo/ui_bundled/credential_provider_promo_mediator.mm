@@ -30,9 +30,6 @@ NSString* const kLearnMoreAnimation = @"CPE_promo_animation_edu_how_to_enable";
 
 @interface CredentialProviderPromoMediator ()
 
-// The PrefService used by this mediator.
-@property(nonatomic, assign) PrefService* prefService;
-
 // Indicates whether the 'first step' or 'learn more' version of the promo is
 // being presented.
 @property(nonatomic, assign) CredentialProviderPromoContext promoContext;
@@ -44,10 +41,8 @@ NSString* const kLearnMoreAnimation = @"CPE_promo_animation_edu_how_to_enable";
 
 @implementation CredentialProviderPromoMediator
 
-- (instancetype)initWithPromosManager:(PromosManager*)promosManager
-                          prefService:(PrefService*)prefService {
+- (instancetype)initWithPromosManager:(PromosManager*)promosManager {
   if ((self = [super init])) {
-    _prefService = prefService;
     _promosManager = promosManager;
   }
   return self;
@@ -68,9 +63,10 @@ NSString* const kLearnMoreAnimation = @"CPE_promo_animation_edu_how_to_enable";
        trigger != CredentialProviderPromoTrigger::RemindMeLater);
   BOOL policyEnabled = GetApplicationContext()->GetLocalState()->GetBoolean(
       prefs::kIosCredentialProviderPromoPolicyEnabled);
+  PrefService* localState = GetApplicationContext()->GetLocalState();
   return !impressionLimitMet && policyEnabled &&
          !password_manager_util::IsCredentialProviderEnabledOnStartup(
-             self.prefService);
+             localState);
 }
 
 - (void)configureConsumerWithTrigger:(CredentialProviderPromoTrigger)trigger

@@ -438,13 +438,14 @@ std::string GetSignonRealm(const GURL& url) {
 }
 
 #if BUILDFLAG(IS_IOS)
-bool IsCredentialProviderEnabledOnStartup(const PrefService* prefs) {
-  return prefs->GetBoolean(
+bool IsCredentialProviderEnabledOnStartup(const PrefService* local_state) {
+  return local_state->GetBoolean(
       password_manager::prefs::kCredentialProviderEnabledOnStartup);
 }
 
-void SetCredentialProviderEnabledOnStartup(PrefService* prefs, bool enabled) {
-  prefs->SetBoolean(
+void SetCredentialProviderEnabledOnStartup(PrefService* local_state,
+                                           bool enabled) {
+  local_state->SetBoolean(
       password_manager::prefs::kCredentialProviderEnabledOnStartup, enabled);
 }
 #endif
