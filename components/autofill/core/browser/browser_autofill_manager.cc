@@ -1501,13 +1501,14 @@ void BrowserAutofillManager::
                                       kFormControlElementClicked)) {
       std::move(callback).Run(/*show_suggestions=*/true, suggestions,
                               /*ranking_context=*/std::nullopt);
+      return;
     }
   }
-  if (!callback.is_null()) {
-    GenerateSuggestionsAndMaybeShowUI(form, form_structure, field,
-                                      autofill_field, trigger_source, context,
-                                      std::move(callback));
-  }
+
+  GenerateSuggestionsAndMaybeShowUI(form, form_structure, field, autofill_field,
+                                    trigger_source, context,
+                                    std::move(callback));
+
   if (autofill_field && context.ablation_group != AblationGroup::kDefault) {
     autofill_field->AppendLogEventIfNotRepeated(AblationFieldLogEvent{
         context.ablation_group, context.conditional_ablation_group,
