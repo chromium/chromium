@@ -28,6 +28,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/signin/core/browser/account_reconcilor_delegate.h"
 #include "components/signin/public/base/account_consistency_method.h"
+#include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_client.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_pref_names.h"
@@ -383,6 +384,13 @@ void AccountReconcilor::OnPrimaryAccountChanged(
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   // Perform the "clear on exit" migration if applicable.
   MaybeMigrateClearOnExit(*client_, *identity_manager_);
+
+  if (switches::IsExplicitBrowserSigninUIOnDesktopEnabled() &&
+      event_details.GetEventTypeFor(ConsentLevel::kSignin) ==
+          signin::PrimaryAccountChangeEvent::Type::kCleared) {
+    VLOG(1) << "AccountReconcilor::OnPrimaryAccountChanged";
+    StartReconcile(Trigger::kPrimaryAccountChanged);
+  }
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 }
 
