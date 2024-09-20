@@ -330,8 +330,10 @@ _CONFIG = [
             'base::MappedReadOnlyRegion',
             'base::ReadOnlySharedMemoryMapping',
             'base::ReadOnlySharedMemoryRegion',
+            'base::StructuredSharedMemory',
             'base::UnsafeSharedMemoryRegion',
             'base::WritableSharedMemoryMapping',
+            'base::subtle::SharedAtomic',
         ]
     },
     {
@@ -368,6 +370,13 @@ _CONFIG = [
             # delegating to MIME utilities in other components
             'net::MatchesMimeType',
             'media::IsSupportedMediaMimeType',
+        ],
+    },
+    {
+        'paths': ['third_party/blink/common/performance/performance_scenarios.cc'],
+        'allowed': [
+            # Used in both browser and renderer process so can't use Oilpan.
+            'base::NoDestructor',
         ],
     },
     {

@@ -52,6 +52,11 @@ struct SharedMemorySafetyChecker<std::array<T, N>> {
 template <typename T>
 concept AllowedOverSharedMemory = SharedMemorySafetyChecker<T>::kIsAllowed;
 
+// Convenience alias for atomics that are safe to share across memory spaces.
+template <typename T>
+  requires AllowedOverSharedMemory<std::atomic<T>>
+using SharedAtomic = std::atomic<T>;
+
 }  // namespace base::subtle
 
 #endif  // BASE_MEMORY_SHARED_MEMORY_SAFETY_CHECKER_H_
