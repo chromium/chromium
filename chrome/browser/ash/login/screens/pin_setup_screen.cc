@@ -163,7 +163,7 @@ void PinSetupScreen::ShowImpl() {
 
   if (view_) {
     view_->Show(token, is_child_account, has_login_support_.value_or(false),
-                using_pin_as_main_factor_);
+                using_pin_as_main_factor_.value_or(false));
   }
 }
 
@@ -202,6 +202,15 @@ void PinSetupScreen::OnHasLoginSupport(bool login_available) {
   has_login_support_ = login_available;
   if (!is_hidden() && view_) {
     view_->SetLoginSupportAvailable(has_login_support_.value());
+  }
+
+  // When hardware support is available, PIN will be offered as a main factor.
+  if (ash::switches::IsOobePinOnlyPrototypeEnabled()) {
+    // The first value is only set once, based on hardware capability.
+    if (using_pin_as_main_factor_.has_value()) {
+      return;
+    }
+    using_pin_as_main_factor_ = login_available;
   }
 }
 

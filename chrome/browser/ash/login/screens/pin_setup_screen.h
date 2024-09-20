@@ -78,8 +78,8 @@ class PinSetupScreen : public BaseScreen {
   // immediately.
   std::optional<bool> has_login_support_;
 
-  // Wether PIN is being offered as the main sign-in factor (PIN-only OOBE).
-  bool using_pin_as_main_factor_ = false;
+  // Whether PIN is being offered as the main sign-in factor (PIN-only OOBE).
+  std::optional<bool> using_pin_as_main_factor_;
 
   base::WeakPtr<PinSetupScreenView> view_;
   ScreenExitCallback exit_callback_;

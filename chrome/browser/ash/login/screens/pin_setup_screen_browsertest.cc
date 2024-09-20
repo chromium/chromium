@@ -10,12 +10,15 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_base.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_command_line.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/login/screen_manager.h"
 #include "chrome/browser/ash/login/test/cryptohome_mixin.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
@@ -27,19 +30,22 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/login/login_display_host.h"
 #include "chrome/browser/ui/webui/ash/login/pin_setup_screen_handler.h"
+#include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/cryptohome/constants.h"
 #include "chromeos/ash/components/dbus/userdataauth/fake_userdataauth_client.h"
 #include "chromeos/ash/components/osauth/public/auth_session_storage.h"
 #include "components/user_manager/user_type.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "ui/base/l10n/l10n_util.h"
+#include "ui/chromeos/devicetype_utils.h"
 
 namespace ash {
 namespace {
 
 using ::testing::ElementsAre;
 
-constexpr char kPinSetupScreen[] = "pin-setup";
+constexpr auto* kPinSetupScreen = PinSetupScreenView::kScreenId.name;
 constexpr char kPinSetupScreenCompletionTime[] =
     "OOBE.StepCompletionTime.Pin-setup";
 constexpr char kPinSetupScreenCompletionTimeByExitReason[] =
@@ -51,9 +57,13 @@ const test::UIPath kPinSetupScreenDoneStep = {kPinSetupScreen, "doneDialog"};
 const test::UIPath kBackButton = {kPinSetupScreen, "backButton"};
 const test::UIPath kNextButton = {kPinSetupScreen, "nextButton"};
 const test::UIPath kSkipButton = {kPinSetupScreen, "setupSkipButton"};
+const test::UIPath kSkipButtonCore = {kPinSetupScreen, "setupSkipButton",
+                                      "button"};
 const test::UIPath kDoneButton = {kPinSetupScreen, "doneButton"};
 const test::UIPath kPinKeyboardInput = {kPinSetupScreen, "pinKeyboard",
                                         "pinKeyboard", "pinInput"};
+const test::UIPath kSetupTitle = {kPinSetupScreen, "setupTitle"};
+const test::UIPath kSetupSubtitle = {kPinSetupScreen, "setupSubtitle"};
 
 enum class PinPolicy {
   kUnlock,
@@ -227,6 +237,24 @@ class PinSetupScreenTest : public OobeBaseTest {
     }
   }
 
+  void WaitForSetupTitleAndSubtitle(int title_msg_id,
+                                    int subtitle_msg_id,
+                                    bool subtitle_has_device_name = false) {
+    auto expected_title = l10n_util::GetStringUTF8(title_msg_id);
+    auto expected_subtitle =
+        subtitle_has_device_name
+            ? l10n_util::GetStringFUTF8(subtitle_msg_id,
+                                        ui::GetChromeOSDeviceName())
+            : l10n_util::GetStringUTF8(subtitle_msg_id);
+
+    test::OobeJS()
+        .CreateElementTextContentWaiter(expected_title, kSetupTitle)
+        ->Wait();
+    test::OobeJS()
+        .CreateElementTextContentWaiter(expected_subtitle, kSetupSubtitle)
+        ->Wait();
+  }
+
   std::optional<PinSetupScreen::Result> screen_result_;
   base::HistogramTester histogram_tester_;
   bool screen_exited_ = false;
@@ -374,6 +402,18 @@ IN_PROC_BROWSER_TEST_F(PinSetupScreenTest, FinishedFlow) {
   ExpectUserActionMetric(PinSetupScreen::UserAction::kDoneButtonClicked);
 }
 
+// Ensures the correct strings when PIN is being offered not as the main factor.
+IN_PROC_BROWSER_TEST_F(PinSetupScreenTest,
+                       CorrectStringsWhenPinIsNotTheMainFactor) {
+  ShowPinSetupScreen();
+  WaitForScreenShown();
+
+  WaitForSetupTitleAndSubtitle(IDS_DISCOVER_PIN_SETUP_TITLE1,
+                               IDS_DISCOVER_PIN_SETUP_SUBTITLE1);
+  test::OobeJS().ExpectElementText(
+      l10n_util::GetStringUTF8(IDS_DISCOVER_PIN_SETUP_SKIP), kSkipButtonCore);
+}
+
 // Fixture to pretend that hardware support for login is not available.
 class PinSetupScreenTestWithoutLoginSupport : public PinSetupScreenTest {
  public:
@@ -414,6 +454,41 @@ IN_PROC_BROWSER_TEST_F(PinSetupScreenTestWithoutLoginSupport,
   WaitForScreenExit();
 
   ExpectExitResultAndMetric(PinSetupScreen::Result::kUserSkip);
+}
+
+class PinSetupScreenTestAsMainFactor : public PinSetupScreenTest {
+ public:
+  PinSetupScreenTestAsMainFactor() {
+    SetHardwareSupport(true);
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{ash::features::kAllowPasswordlessSetup},
+        /*disabled_features=*/{});
+    scoped_command_line_.GetProcessCommandLine()->AppendSwitch(
+        ash::switches::kOobeEnablePinOnlyPrototype);
+  }
+
+  ~PinSetupScreenTestAsMainFactor() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::ScopedCommandLine scoped_command_line_;
+};
+
+// Tests that the strings are correct when setting up PIN as the main factor.
+IN_PROC_BROWSER_TEST_F(PinSetupScreenTestAsMainFactor,
+                       TitleAndSubtitleStrings) {
+  ShowPinSetupScreen();
+  WaitForScreenShown();
+
+  WaitForSetupTitleAndSubtitle(
+      IDS_DISCOVER_PIN_SETUP_PIN_AS_MAIN_FACTOR_TITLE,
+      IDS_DISCOVER_PIN_SETUP_PIN_AS_MAIN_FACTOR_SUBTITLE,
+      /*subtitle_has_device_name=*/true);
+
+  // Check that the 'Skip' button shows 'Use password instead'
+  test::OobeJS().ExpectElementText(
+      l10n_util::GetStringUTF8(IDS_DISCOVER_PIN_SETUP_PIN_AS_MAIN_FACTOR_SKIP),
+      kSkipButtonCore);
 }
 
 }  // namespace ash

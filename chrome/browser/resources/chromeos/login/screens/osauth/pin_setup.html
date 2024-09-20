@@ -13,7 +13,7 @@ found in the LICENSE file.
 
 <oobe-adaptive-dialog id="setup" role="dialog" for-step="start,confirm">
   <iron-icon slot="icon" icon="oobe-32:lock"></iron-icon>
-  <h1 slot="title" for-step="start" aria-live="polite">
+  <h1 id="setupTitle" slot="title" for-step="start" aria-live="polite">
     <div hidden="[[!usingPinAsMainSignInFactor]]">
       [[i18nDynamic(locale, 'discoverPinSetupPinAsMainFactorTitle')]]
     </div>
@@ -34,7 +34,7 @@ found in the LICENSE file.
       [[i18nDynamic(locale, 'discoverPinSetupTitle2ForChild')]]
     </div>
   </h1>
-  <div slot="subtitle" for-step="start">
+  <div id="setupSubtitle" slot="subtitle" for-step="start">
     <div hidden="[[!usingPinAsMainSignInFactor]]">
       [[i18nDynamic(locale, 'discoverPinSetupPinAsMainFactorSubtitle')]]
     </div>
