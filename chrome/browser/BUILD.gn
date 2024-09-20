@@ -2810,6 +2810,7 @@ static_library("browser") {
       "android/webapk/webapk_sync_service.h",
       "android/webapk/webapk_sync_service_factory.cc",
       "android/webapk/webapk_sync_service_factory.h",
+      "android/webapk/webapk_sync_service_jni.cc",
       "android/webapk/webapk_update_manager.cc",
       "android/webapps/webapp_registry.cc",
       "android/webapps/webapp_registry.h",
