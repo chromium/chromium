@@ -1,6 +1,8 @@
 /* ***** BEGIN LICENSE BLOCK *****
  * Version: MPL 1.1/GPL 2.0/LGPL 2.1
  *
+ * Copyright (C) 2002-2017 Németh László
+ *
  * The contents of this file are subject to the Mozilla Public License Version
  * 1.1 (the "License"); you may not use this file except in compliance with
  * the License. You may obtain a copy of the License at
@@ -11,12 +13,7 @@
  * for the specific language governing rights and limitations under the
  * License.
  *
- * The Original Code is Hunspell, based on MySpell.
- *
- * The Initial Developers of the Original Code are
- * Kevin Hendricks (MySpell) and Németh László (Hunspell).
- * Portions created by the Initial Developers are Copyright (C) 2002-2005
- * the Initial Developers. All Rights Reserved.
+ * Hunspell is based on MySpell which is Copyright (C) 2002 Kevin Hendricks.
  *
  * Contributor(s): David Einstein, Davide Prina, Giuseppe Modugno,
  * Gianluca Turconi, Simon Brouwer, Noll János, Bíró Árpád,
@@ -102,23 +99,20 @@ replentry* RepList::item(int n) {
 int RepList::find(const char* word) {
   int p1 = 0;
   int p2 = pos - 1;
+  int ret = -1;
   while (p1 <= p2) {
-    int m = (p1 + p2) / 2;
+    int m = ((unsigned)p1 + (unsigned)p2) >> 1;
     int c = strncmp(word, dat[m]->pattern.c_str(), dat[m]->pattern.size());
     if (c < 0)
       p2 = m - 1;
     else if (c > 0)
       p1 = m + 1;
-    else {      // scan back for a longer match
-      for (p1 = m - 1; p1 >= 0; --p1)
-        if (!strncmp(word, dat[p1]->pattern.c_str(), dat[p1]->pattern.size()))
-          m = p1;
-        else if (dat[p1]->pattern.size() < dat[m]->pattern.size())
-          break;
-      return m;
+    else {      // scan in the right half for a longer match
+      ret = m;
+      p1 = m + 1;
     }
   }
-  return -1;
+  return ret;
 }
 
 std::string RepList::replace(const char* word, int ind, bool atstart) {
@@ -170,20 +164,11 @@ int RepList::add(const std::string& in_pat1, const std::string& pat2) {
 #if 0
   int i;
   for (i = pos - 1; i > 0; i--) {
-    int c = strncmp(r->pattern.c_str(), dat[i-1]->pattern.c_str(), dat[i-1]->pattern.size());
-    if (c > 0)
+    if (strcmp(r->pattern.c_str(), dat[i - 1]->pattern.c_str()) < 0) {
+      dat[i] = dat[i - 1];
+    } else
       break;
-    else if (c == 0) { // subpatterns match. Patterns can't be identical since would catch earlier
-      for (int j = i - 2; j > 0 && !strncmp(dat[i-1]->pattern.c_str(), dat[j]->pattern.c_str(), dat[i-1]->pattern.size()); --j)
-        if (dat[j]->pattern.size() > r->pattern.size() ||
-              (dat[j]->pattern.size() == r->pattern.size() && strncmp(dat[j]->pattern.c_str(), r->pattern.c_str(), r->pattern.size()) > 0)) {
-          i = j;
-          break;
-        }
-      break;
-    }
   }
-  memmove(dat + i + 1, dat + i, (pos - i - 1) * sizeof(replentry *));
   dat[i] = r;
 #else
   for (int i = pos - 1; i > 0; i--) {
