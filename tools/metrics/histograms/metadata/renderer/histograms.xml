@@ -135,21 +135,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Renderer.DelegatedInkTrail.Prediction.WrongDirection"
-    enum="BooleanDirection" expires_after="2025-08-01">
-  <owner>jonross@chromium.org</owner>
-  <owner>sahir.vellani@microsoft.com</owner>
-  <owner>gastonr@microsoft.com</owner>
-  <summary>
-    Boolean that indicates whether the prediction is in the same direction as
-    the real trajectory at the same prediction time. True means the direction is
-    not the same (wrong direction).
-
-    Warning: this histogram was expired from 02-26-2021 to 09-11-2024; data may
-    be missing.
-  </summary>
-</histogram>
-
 <histogram name="Renderer.DelegatedInkTrail.Prediction.{Direction}Prediction"
     units="pixels" expires_after="2025-08-01">
   <owner>jonross@chromium.org</owner>
