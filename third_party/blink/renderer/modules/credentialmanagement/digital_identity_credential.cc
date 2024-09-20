@@ -194,16 +194,9 @@ void DiscoverDigitalIdentityCredentialFromExternalSource(
   UseCounter::Count(resolver->GetExecutionContext(),
                     WebFeature::kIdentityDigitalCredentials);
 
-  auto* signal = options.getSignalOr(nullptr);
-  if (signal && signal->aborted()) {
-    resolver->RejectWithDOMException(DOMExceptionCode::kAbortError,
-                                     "Request has been aborted");
-    return;
-  }
-
   ScriptState* script_state = resolver->GetScriptState();
   std::unique_ptr<ScopedAbortState> scoped_abort_state;
-  if (signal) {
+  if (auto* signal = options.getSignalOr(nullptr)) {
     auto callback = WTF::BindOnce(&AbortRequest, WrapPersistent(script_state));
     auto* handle = signal->AddAlgorithm(std::move(callback));
     scoped_abort_state = std::make_unique<ScopedAbortState>(signal, handle);

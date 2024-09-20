@@ -1256,6 +1256,11 @@ ScriptPromise<IDLNullable<Credential>> AuthenticationCredentialsContainer::get(
   auto promise = resolver->Promise();
   ExecutionContext* context = ExecutionContext::From(script_state);
 
+  if (options->hasSignal() && options->signal()->aborted()) {
+    resolver->Reject(options->signal()->reason(script_state));
+    return promise;
+  }
+
   auto required_origin_type = RequiredOriginType::kSecureAndSameWithAncestors;
   // hasPublicKey() implies that this is a WebAuthn request.
   if (options->hasPublicKey()) {
@@ -1440,10 +1445,6 @@ ScriptPromise<IDLNullable<Credential>> AuthenticationCredentialsContainer::get(
 
     std::unique_ptr<ScopedAbortState> scoped_abort_state = nullptr;
     if (auto* signal = options->getSignalOr(nullptr)) {
-      if (signal->aborted()) {
-        resolver->Reject(signal->reason(script_state));
-        return promise;
-      }
       auto* handle = signal->AddAlgorithm(
           MakeGarbageCollected<PublicKeyRequestAbortAlgorithm>(script_state));
       scoped_abort_state = std::make_unique<ScopedAbortState>(signal, handle);
@@ -1493,10 +1494,6 @@ ScriptPromise<IDLNullable<Credential>> AuthenticationCredentialsContainer::get(
 
     std::unique_ptr<ScopedAbortState> scoped_abort_state = nullptr;
     if (auto* signal = options->getSignalOr(nullptr)) {
-      if (signal->aborted()) {
-        resolver->Reject(signal->reason(script_state));
-        return promise;
-      }
       auto* handle = signal->AddAlgorithm(
           MakeGarbageCollected<OtpRequestAbortAlgorithm>(script_state));
       scoped_abort_state = std::make_unique<ScopedAbortState>(signal, handle);
@@ -1995,13 +1992,6 @@ void AuthenticationCredentialsContainer::GetForIdentity(
     return;
   }
 
-  auto* signal = options.getSignalOr(nullptr);
-  if (signal && signal->aborted()) {
-    resolver->Reject(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kAbortError, "Request has been aborted."));
-    return;
-  }
-
   ExecutionContext* context = ExecutionContext::From(script_state);
 
   // TODO(https://crbug.com/1441075): Ideally the logic should be handled in
@@ -2155,8 +2145,8 @@ void AuthenticationCredentialsContainer::GetForIdentity(
   }
 
   std::unique_ptr<ScopedAbortState> scoped_abort_state;
-  if (signal) {
-    // Checked signal->aborted() at the top of the function.
+  if (auto* signal = options.getSignalOr(nullptr)) {
+    // Checked signal->aborted() at the top of get().
 
     auto callback = WTF::BindOnce(&AbortIdentityCredentialRequest,
                                   WrapPersistent(script_state));
