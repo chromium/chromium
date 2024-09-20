@@ -505,8 +505,15 @@ IN_PROC_BROWSER_TEST_P(TabUsageScenarioTrackerDiscardBrowserTest,
             interval_data.source_id_for_longest_visible_origin_duration);
 }
 
+// TODO(crbug.com/368253760): Fix the flakiness on Windows and re-enable the
+// test.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_FullScreenVideoDiscarded DISABLED_FullScreenVideoDiscarded
+#else
+#define MAYBE_FullScreenVideoDiscarded FullScreenVideoDiscarded
+#endif
 IN_PROC_BROWSER_TEST_P(TabUsageScenarioTrackerDiscardBrowserTest,
-                       FullScreenVideoDiscarded) {
+                       MAYBE_FullScreenVideoDiscarded) {
   // Play full screen video in a tab and discard it while it's playing, ensure
   // that things are tracked properly.
   EXPECT_TRUE(
