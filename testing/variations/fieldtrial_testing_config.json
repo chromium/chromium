@@ -53,26 +53,6 @@
             ]
         }
     ],
-    "AblateSearchProviderWarmupRequests": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AblateSearchProviderWarmup"
-                    ]
-                }
-            ]
-        }
-    ],
     "AccessibilityIncludeLongClickAction": [
         {
             "platforms": [
@@ -26935,6 +26915,7 @@
                         "ZeroSuggestPrefetchDebounceFromLastRun": "false"
                     },
                     "enable_features": [
+                        "AblateSearchProviderWarmup",
                         "ZeroSuggestPrefetchDebouncing"
                     ]
                 },
@@ -26945,6 +26926,7 @@
                         "ZeroSuggestPrefetchDebounceFromLastRun": "true"
                     },
                     "enable_features": [
+                        "AblateSearchProviderWarmup",
                         "ZeroSuggestPrefetchDebouncing"
                     ]
                 }
@@ -26964,6 +26946,7 @@
                         "ZeroSuggestPrefetchDebounceFromLastRun": "false"
                     },
                     "enable_features": [
+                        "AblateSearchProviderWarmup",
                         "ZeroSuggestPrefetchDebouncing",
                         "ZeroSuggestPrefetchingOnSRP"
                     ],
@@ -26978,6 +26961,7 @@
                         "ZeroSuggestPrefetchDebounceFromLastRun": "true"
                     },
                     "enable_features": [
+                        "AblateSearchProviderWarmup",
                         "ZeroSuggestPrefetchDebouncing",
                         "ZeroSuggestPrefetchingOnSRP"
                     ],
@@ -26988,6 +26972,7 @@
                 {
                     "name": "Enabled_Prefetching_Only",
                     "enable_features": [
+                        "AblateSearchProviderWarmup",
                         "ZeroSuggestPrefetchingOnSRP"
                     ],
                     "disable_features": [
