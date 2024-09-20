@@ -250,17 +250,20 @@ scoped_refptr<gfx::NativePixmap> WaylandSurfaceFactory::CreateNativePixmap(
     return nullptr;
   }
 #if defined(WAYLAND_GBM)
-  scoped_refptr<GbmPixmapWayland> pixmap =
-      base::MakeRefCounted<GbmPixmapWayland>(buffer_manager_);
+  auto* gbm_device = buffer_manager_->GetGbmDevice();
+  if (gbm_device->CanCreateBufferForFormat(
+          GetFourCCFormatFromBufferFormat(format))) {
+    scoped_refptr<GbmPixmapWayland> pixmap =
+        base::MakeRefCounted<GbmPixmapWayland>(buffer_manager_);
 
-  if (!pixmap->InitializeBuffer(widget, size, format, usage,
-                                framebuffer_size)) {
-    return nullptr;
+    if (!pixmap->InitializeBuffer(widget, size, format, usage,
+                                  framebuffer_size)) {
+      return nullptr;
+    }
+    return pixmap;
   }
-  return pixmap;
-#else
-  return nullptr;
 #endif
+  return nullptr;
 }
 
 void WaylandSurfaceFactory::CreateNativePixmapAsync(
