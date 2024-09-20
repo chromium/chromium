@@ -78,6 +78,12 @@ void DedicatedWorkerHostsForDocument::OnRestoreFromBackForwardCache() {
   }
 }
 
+void DedicatedWorkerHostsForDocument::UpdateSubresourceLoaderFactories() {
+  for (auto worker : dedicated_workers_) {
+    worker->UpdateSubresourceLoaderFactories();
+  }
+}
+
 DOCUMENT_USER_DATA_KEY_IMPL(DedicatedWorkerHostsForDocument);
 
 }  // namespace content
