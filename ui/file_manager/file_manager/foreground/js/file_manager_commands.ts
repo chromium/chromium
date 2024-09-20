@@ -13,7 +13,7 @@ import type {VolumeManager} from '../../background/js/volume_manager.js';
 import {getDlpRestrictionDetails, getHoldingSpaceState, startIOTask} from '../../common/js/api.js';
 import {isModal} from '../../common/js/dialog_type.js';
 import {getFocusedTreeItem} from '../../common/js/dom_utils.js';
-import {entriesToURLs, getTreeItemEntry, isDirectoryEntry, isFakeEntry, isGrandRootEntryInDrive, isNonModifiable, isRecentRootType, isTeamDriveRoot, isTeamDrivesGrandRoot, isTrashEntry, isTrashRoot, unwrapEntry} from '../../common/js/entry_utils.js';
+import {entriesToURLs, getTreeItemEntry, isDirectoryEntry, isFakeEntry, isGrandRootEntryInDrive, isNonModifiable, isReadOnlyForDelete, isRecentRootType, isTeamDriveRoot, isTeamDrivesGrandRoot, isTrashEntry, isTrashRoot, unwrapEntry} from '../../common/js/entry_utils.js';
 import {getExtension, getType, isEncrypted} from '../../common/js/file_type.js';
 import type {FakeEntry, FilesAppDirEntry, FilesAppEntry} from '../../common/js/files_app_entry_types.js';
 import {EntryList} from '../../common/js/files_app_entry_types.js';
@@ -719,11 +719,8 @@ export class DeleteCommand extends FilesCommand {
   private containsReadOnlyEntry_(
       entries: Array<Entry|FilesAppEntry>,
       fileManager: CommandHandlerDeps): boolean {
-    return entries.some(entry => {
-      const locationInfo = fileManager.volumeManager.getLocationInfo(entry);
-      return (locationInfo && locationInfo.isReadOnly) ||
-          isNonModifiable(fileManager.volumeManager, entry);
-    });
+    return entries.some(
+        entry => isReadOnlyForDelete(fileManager.volumeManager, entry));
   }
 }
 

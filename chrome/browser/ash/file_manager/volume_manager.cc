@@ -587,8 +587,21 @@ bool VolumeManager::RegisterDownloadsDirectoryForTesting(
   }
 
   const bool ok = RegisterDownloadsMountPoint(profile_, path);
+  // Determine if the local user files directory should be mounted as read-only:
+  //  - SkyVault GA is enabled
+  //  - Local storage of user files is disallowed by policy
+  const bool read_only = IsSkyVaultV2Enabled() && !local_user_files_allowed_;
+
+  // In production, once read_only_local_folders_ is false, the
+  // MyFiles/Downloads are unmounted and not mounted again. However, in tests,
+  // it's possible to call this function after the SkyVault migration has
+  // completed.
+  if (read_only && !read_only_local_folders_) {
+    LOG(WARNING) << "Adding Downloads volume for testing, even though it "
+                    "should've been removed because of SkyVault.";
+  }
   return DoMountEvent(
-      Volume::CreateForDownloads(path),
+      Volume::CreateForDownloads(path, {}, nullptr, read_only),
       ok ? ash::MountError::kSuccess : ash::MountError::kInvalidPath);
 }
 

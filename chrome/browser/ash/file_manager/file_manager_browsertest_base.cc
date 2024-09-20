@@ -4147,6 +4147,10 @@ void FileManagerBrowserTestBase::OnCommand(const std::string& name,
     return;
   }
 
+  if (HandleSkyVaultCommands(name, value, output)) {
+    return;
+  }
+
   FAIL() << "Unknown test message: " << name;
 }  // NOLINT(readability/fn_size): Structure of OnCommand function should be
    // easy to manage.
@@ -4219,6 +4223,15 @@ bool FileManagerBrowserTestBase::HandleEnterpriseConnectorCommands(
     std::string* output) {
   // Enterprise connector commands are only handled by the
   // FileTransferConnectorFilesAppBrowserTest.
+  return false;
+}
+
+bool FileManagerBrowserTestBase::HandleSkyVaultCommands(
+    const std::string& name,
+    const base::Value::Dict& value,
+    std::string* output) {
+  // SkyVault commands are only handled by the
+  // SkyVaultFilesAppBrowserTest.
   return false;
 }
 
