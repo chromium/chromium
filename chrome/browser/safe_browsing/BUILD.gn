@@ -159,6 +159,7 @@ static_library("safe_browsing") {
       "//build:branding_buildflags",
       "//build:chromeos_buildflags",
       "//chrome/browser:browser_process",
+      "//chrome/browser/download",
       "//chrome/browser/profiles:profile",
       "//chrome/common/safe_browsing:proto",
       "//components/autofill/core/browser",
