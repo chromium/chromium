@@ -44,7 +44,6 @@
 #include "extensions/browser/permissions_manager.h"
 #include "extensions/common/api/extension_action/action_info.h"
 #include "extensions/common/extension.h"
-#include "extensions/common/extension_features.h"
 #include "extensions/common/extension_id.h"
 #include "extensions/common/extension_set.h"
 #include "extensions/common/manifest.h"
@@ -117,24 +116,21 @@ ExtensionAction::ShowAction ExtensionActionRunner::RunAction(
 
   // Anything that gets here should have a page or browser action, or toggle the
   // extension's side panel, and not blocked actions.
-  if (base::FeatureList::IsEnabled(
-          extensions_features::kExtensionSidePanelIntegration)) {
-    // This method is only called to execute an action by the user, so we can
-    // grant tab permissions unless `action` will toggle the side panel. Tab
-    // permissions are not granted in this case because:
-    //  - the extension's side panel entry can be opened through the side panel
-    //    itself which does not grant tab permissions
-    //  - extension side panels can persist through tab changes and so
-    //  permissions
-    //    granted for one tab shouldn't persist on that side panel across tab
-    //    changes.
-    // TODO(crbug.com/40904917): Evaluate if this is the best course of action.
-    SidePanelService* side_panel_service =
-        SidePanelService::Get(browser_context_);
-    if (side_panel_service &&
-        side_panel_service->HasSidePanelActionForTab(*extension, tab_id)) {
-      return ExtensionAction::ShowAction::kToggleSidePanel;
-    }
+  // This method is only called to execute an action by the user, so we can
+  // grant tab permissions unless `action` will toggle the side panel. Tab
+  // permissions are not granted in this case because:
+  //  - the extension's side panel entry can be opened through the side panel
+  //    itself which does not grant tab permissions
+  //  - extension side panels can persist through tab changes and so
+  //  permissions
+  //    granted for one tab shouldn't persist on that side panel across tab
+  //    changes.
+  // TODO(crbug.com/40904917): Evaluate if this is the best course of action.
+  SidePanelService* side_panel_service =
+      SidePanelService::Get(browser_context_);
+  if (side_panel_service &&
+      side_panel_service->HasSidePanelActionForTab(*extension, tab_id)) {
+    return ExtensionAction::ShowAction::kToggleSidePanel;
   }
 
   if (grant_tab_permissions) {

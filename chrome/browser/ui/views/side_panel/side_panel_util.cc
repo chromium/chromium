@@ -31,7 +31,6 @@
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/actions/actions.h"
 #include "chrome/browser/ui/views/side_panel/extensions/extension_side_panel_manager.h"
-#include "extensions/common/extension_features.h"
 
 // static
 void SidePanelUtil::PopulateGlobalEntries(Browser* browser,
@@ -60,11 +59,8 @@ void SidePanelUtil::PopulateGlobalEntries(Browser* browser,
     SearchCompanionSidePanelCoordinator::GetOrCreateForBrowser(browser);
   }
 
-  if (base::FeatureList::IsEnabled(
-          extensions_features::kExtensionSidePanelIntegration)) {
     extensions::ExtensionSidePanelManager::CreateForBrowser(browser,
                                                             window_registry);
-  }
 
   return;
 }

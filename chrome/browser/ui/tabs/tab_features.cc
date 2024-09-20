@@ -39,7 +39,6 @@
 #include "components/fingerprinting_protection_filter/common/fingerprinting_protection_filter_features.h"
 #include "components/image_fetcher/core/image_fetcher_service.h"
 #include "components/permissions/permission_indicators_tab_data.h"
-#include "extensions/common/extension_features.h"
 
 namespace tabs {
 
@@ -139,11 +138,8 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
   customize_chrome_side_panel_controller_ =
       std::make_unique<customize_chrome::SidePanelControllerViews>(tab);
 
-  if (base::FeatureList::IsEnabled(
-          extensions_features::kExtensionSidePanelIntegration)) {
     extensions::ExtensionSidePanelManager::CreateForTab(
         profile, tab.GetContents(), side_panel_registry_.get());
-  }
 
   data_protection_controller_ = std::make_unique<
       enterprise_data_protection::DataProtectionNavigationController>(&tab);
@@ -202,11 +198,8 @@ void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
   // scoped.
   side_panel_registry_->Deregister(
       SidePanelEntry::Key(SidePanelEntry::Id::kAboutThisSite));
-  if (base::FeatureList::IsEnabled(
-          extensions_features::kExtensionSidePanelIntegration)) {
     extensions::ExtensionSidePanelManager::GetForTabForTesting(old_contents)
         ->WillDiscard();
-  }
 
   if (commerce_ui_tab_helper_) {
     commerce_ui_tab_helper_.reset();
@@ -231,12 +224,9 @@ void TabFeatures::WillDiscardContents(tabs::TabInterface* tab,
         std::make_unique<privacy_sandbox::PrivacySandboxTabObserver>(
             tab->GetContents());
   }
-  if (base::FeatureList::IsEnabled(
-          extensions_features::kExtensionSidePanelIntegration)) {
     extensions::ExtensionSidePanelManager::CreateForTab(
         Profile::FromBrowserContext(new_contents->GetBrowserContext()),
         new_contents, side_panel_registry_.get());
-  }
 }
 
 }  // namespace tabs

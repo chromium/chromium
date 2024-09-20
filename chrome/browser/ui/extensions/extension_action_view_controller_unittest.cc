@@ -19,7 +19,6 @@
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/extensions/api/extension_action/extension_action_api.h"
 #include "chrome/browser/extensions/api/side_panel/side_panel_service.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
@@ -1104,11 +1103,6 @@ TEST_F(ExtensionActionViewControllerFeatureWithPermittedSitesUnitTest,
 class ExtensionActionViewControllerWithSidePanelUnitTest
     : public ExtensionActionViewControllerUnitTest {
  public:
-  ExtensionActionViewControllerWithSidePanelUnitTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        extensions_features::kExtensionSidePanelIntegration);
-  }
-
   void SetUp() override {
     ExtensionActionViewControllerUnitTest::SetUp();
     extensions::SidePanelService::GetFactoryInstance()->SetTestingFactory(
@@ -1119,9 +1113,6 @@ class ExtensionActionViewControllerWithSidePanelUnitTest
   extensions::SidePanelService* side_panel_service() {
     return extensions::SidePanelService::Get(profile());
   }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Test that the extension action is enabled if opening the side panel on icon

@@ -16,7 +16,6 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_util.h"
 #include "extensions/browser/process_manager.h"
-#include "extensions/common/extension_features.h"
 #include "extensions/common/manifest_handlers/incognito_info.h"
 #include "extensions/common/mojom/view_type.mojom.h"
 
@@ -128,8 +127,6 @@ ExtensionViewHostFactory::CreateSidePanelHost(
     Browser* browser,
     content::WebContents* web_contents) {
   DCHECK(browser == nullptr ^ web_contents == nullptr);
-  DCHECK(base::FeatureList::IsEnabled(
-      extensions_features::kExtensionSidePanelIntegration));
 
   Profile* profile = browser
                          ? browser->profile()

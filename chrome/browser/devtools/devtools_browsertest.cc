@@ -135,7 +135,6 @@
 #include "extensions/browser/offscreen_document_host.h"
 #include "extensions/browser/service_worker/service_worker_test_utils.h"
 #include "extensions/browser/test_extension_registry_observer.h"
-#include "extensions/common/extension_features.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/mojom/view_type.mojom.h"
 #include "extensions/common/switches.h"
@@ -1939,18 +1938,8 @@ class DevToolsExtensionSidePanelTest
       public ::testing::WithParamInterface<bool> {
  public:
   DevToolsExtensionSidePanelTest() {
-    if (GetParam()) {
-      feature_list_.InitWithFeatures(
-          /*enabled_features=*/{extensions_features::
-                                    kExtensionSidePanelIntegration,
-                                ::features::kDevToolsTabTarget},
-          /*disabled_features=*/{});
-    } else {
-      feature_list_.InitWithFeatures(
-          /*enabled_features=*/{extensions_features::
-                                    kExtensionSidePanelIntegration},
-          /*disabled_features=*/{::features::kDevToolsTabTarget});
-    }
+    feature_list_.InitWithFeatureState(::features::kDevToolsTabTarget,
+                                       GetParam());
   }
 
  private:

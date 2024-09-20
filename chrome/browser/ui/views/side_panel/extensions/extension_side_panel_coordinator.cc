@@ -25,7 +25,6 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/extension.h"
-#include "extensions/common/extension_features.h"
 #include "extensions/common/manifest_handlers/icons_handler.h"
 #include "extensions/common/permissions/api_permission.h"
 #include "extensions/common/permissions/permissions_data.h"
@@ -72,9 +71,6 @@ ExtensionSidePanelCoordinator::ExtensionSidePanelCoordinator(
       extension_(extension),
       registry_(registry),
       for_tab_(for_tab) {
-  DCHECK(base::FeatureList::IsEnabled(
-      extensions_features::kExtensionSidePanelIntegration));
-
   // Only one of `browser` or `web_contents` should be defined when constructing
   // this class.
   DCHECK(browser != nullptr ^ web_contents != nullptr);
