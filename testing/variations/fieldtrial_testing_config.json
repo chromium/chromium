@@ -15497,21 +15497,6 @@
             ]
         }
     ],
-    "OmniboxPrefBasedConsentHelper": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "PrefBasedDataCollectionConsentHelper"
-                    ]
-                }
-            ]
-        }
-    ],
     "OmniboxPrerender": [
         {
             "platforms": [

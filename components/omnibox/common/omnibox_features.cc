@@ -239,7 +239,7 @@ BASE_FEATURE(kDomainSuggestions,
 // consent helper instead of a history sync based one.
 BASE_FEATURE(kPrefBasedDataCollectionConsentHelper,
              "PrefBasedDataCollectionConsentHelper",
-             enabled_by_default_desktop_ios);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, clipboard suggestion will not show the clipboard content until
 // the user clicks the reveal button.
