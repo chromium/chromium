@@ -251,11 +251,6 @@ export class SettingsCookiesPageElement extends SettingsCookiesPageElementBase {
     primarySettingGroup.sendPrefChange();
   }
 
-  private onClearOnExitChange_() {
-    this.metricsBrowserProxy_.recordSettingsPageHistogram(
-        PrivacyElementInteractions.COOKIES_SESSION);
-  }
-
   private onPrivacySandboxClick_() {
     this.metricsBrowserProxy_.recordAction(
         'Settings.PrivacySandbox.OpenedFromCookiesPageToast');
