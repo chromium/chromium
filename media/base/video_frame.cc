@@ -1314,6 +1314,10 @@ bool VideoFrame::HasNativeGpuMemoryBuffer() const {
   return false;
 }
 
+gfx::GpuMemoryBuffer* VideoFrame::GetGpuMemoryBufferForTesting() const {
+  return GetGpuMemoryBuffer();
+}
+
 gfx::GpuMemoryBuffer* VideoFrame::GetGpuMemoryBuffer() const {
   return wrapped_frame_ ? wrapped_frame_->GetGpuMemoryBuffer()
                         : gpu_memory_buffer_.get();
