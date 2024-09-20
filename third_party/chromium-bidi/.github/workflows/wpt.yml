@@ -78,7 +78,7 @@ jobs:
         with:
           submodules: true
       - name: Set up Node.js
-        uses: actions/setup-node@1e60f620b9541d16bece96c5465dc8ee9832be0b # v4.0.3
+        uses: actions/setup-node@0a44ba7841725637a19e28fa30b79a866c81b0a6 # v4.0.4
         with:
           node-version-file: '.nvmrc'
           cache: npm
@@ -167,7 +167,7 @@ jobs:
         with:
           submodules: true
       - name: Set up Node.js
-        uses: actions/setup-node@1e60f620b9541d16bece96c5465dc8ee9832be0b # v4.0.3
+        uses: actions/setup-node@0a44ba7841725637a19e28fa30b79a866c81b0a6 # v4.0.4
         with:
           node-version-file: '.nvmrc'
           cache: npm
@@ -261,7 +261,7 @@ jobs:
           rm -rf wpt-metadata/chromedriver wpt-metadata/mapper
           mv all-artifacts/updated-wpt-metadata/* ./wpt-metadata/
       - name: Create Pull Request
-        uses: peter-evans/create-pull-request@c5a7806660adbe173f04e3e038b0ccdcd758773c # v6.1.0
+        uses: peter-evans/create-pull-request@5e914681df9dc83aa4e4905692ca88beb2f9e91f # v7.0.5
         with:
           token: ${{ secrets.BROWSER_AUTOMATION_BOT_TOKEN }}
           branch: ${{ github.head_ref }}-update-expectations
@@ -293,7 +293,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
       - name: Set up Node.js
-        uses: actions/setup-node@1e60f620b9541d16bece96c5465dc8ee9832be0b # v4.0.3
+        uses: actions/setup-node@0a44ba7841725637a19e28fa30b79a866c81b0a6 # v4.0.4
         with:
           node-version-file: '.nvmrc'
           cache: npm
