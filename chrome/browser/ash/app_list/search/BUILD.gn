@@ -91,7 +91,6 @@ static_library("search") {
     "//chrome/browser/ash/app_list/arc",
     "//chrome/browser/ash/app_list/search/util",
     "//chrome/browser/ash/app_list/vector_icons",
-    "//chrome/browser/ash/crosapi:browser_util",
     "//chrome/browser/ash/drive",
     "//chrome/browser/ash/release_notes",
     "//chrome/browser/chromeos/launcher_search:search_util",

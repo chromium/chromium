@@ -59,7 +59,6 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
 #include "chromeos/ash/components/scalable_iph/scalable_iph.h"
-#include "chromeos/crosapi/cpp/gurl_os_handler_utils.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/public/tracker.h"
 #include "components/session_manager/core/session_manager.h"
