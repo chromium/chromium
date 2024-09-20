@@ -304,7 +304,7 @@ export class ExtensionsMv2DeprecationPanelElement extends I18nMixin
         chrome.metricsPrivate.recordUserAction(
             'Extensions.Mv2Deprecation.Warning.DismissedForExtension');
         break;
-      case Mv2ExperimentStage.WARNING:
+      case Mv2ExperimentStage.DISABLE_WITH_REENABLE:
         chrome.metricsPrivate.recordUserAction(
             'Extensions.Mv2Deprecation.Disabled.DismissedForExtension');
         break;
