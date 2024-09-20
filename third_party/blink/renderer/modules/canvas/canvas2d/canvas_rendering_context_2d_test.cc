@@ -447,11 +447,17 @@ void CanvasRenderingContext2DTest::TearDown() {
 
 //============================================================================
 
+enum class CompositingMode {
+  kDoesNotSupportDirectCompositing,
+  kSupportsDirectCompositing
+};
+
 class FakeCanvasResourceProvider : public CanvasResourceProvider {
  public:
   FakeCanvasResourceProvider(const SkImageInfo& info,
                              RasterModeHint hint,
-                             CanvasResourceHost* resource_host)
+                             CanvasResourceHost* resource_host,
+                             CompositingMode compositing_mode)
       : CanvasResourceProvider(CanvasResourceProvider::kSharedImage,
                                info,
                                cc::PaintFlags::FilterQuality::kLow,
@@ -459,7 +465,9 @@ class FakeCanvasResourceProvider : public CanvasResourceProvider {
                                SharedGpuContext::ContextProviderWrapper(),
                                /*resource_dispatcher=*/nullptr,
                                resource_host),
-        is_accelerated_(hint != RasterModeHint::kPreferCPU) {
+        is_accelerated_(hint != RasterModeHint::kPreferCPU),
+        supports_direct_compositing_(
+            compositing_mode == CompositingMode::kSupportsDirectCompositing) {
     ON_CALL(*this, Snapshot)
         .WillByDefault(
             [this](FlushReason reason, ImageOrientation orientation) {
@@ -476,7 +484,9 @@ class FakeCanvasResourceProvider : public CanvasResourceProvider {
         gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
             gpu::SHARED_IMAGE_USAGE_RASTER_WRITE));
   }
-  bool SupportsDirectCompositing() const override { return true; }
+  bool SupportsDirectCompositing() const override {
+    return supports_direct_compositing_;
+  }
   bool IsValid() const override { return true; }
   sk_sp<SkSurface> CreateSkSurface() const override {
     return SkSurfaces::Raster(GetSkImageInfo());
@@ -498,6 +508,7 @@ class FakeCanvasResourceProvider : public CanvasResourceProvider {
 
  private:
   bool is_accelerated_;
+  bool supports_direct_compositing_;
 };
 
 //============================================================================
@@ -521,6 +532,123 @@ testing::Matcher<base::HistogramTester> OverdrawOpAre(Args... args) {
       std::unordered_set<BaseRenderingContext2D::OverdrawOp>{args...});
 }
 
+TEST_P(CanvasRenderingContext2DTest, NonDisplayedCanvasIsNotRateLimited) {
+  CreateContext(kNonOpaque);
+  EXPECT_FALSE(!!CanvasElement().RateLimiter());
+
+  EXPECT_TRUE(CanvasElement().IsResourceValid());
+  CanvasElement().SetIsDisplayed(false);
+  EXPECT_FALSE(!!CanvasElement().RateLimiter());
+
+  // Invoking FinalizeFrame() twice should not result in rate limiting as the
+  // canvas is not displayed.
+  Context2D()->FinalizeFrame(FlushReason::kCanvasPushFrame);
+  Context2D()->FinalizeFrame(FlushReason::kCanvasPushFrame);
+  EXPECT_FALSE(!!CanvasElement().RateLimiter());
+}
+
+TEST_P(CanvasRenderingContext2DTest,
+       DisplayedNonPaintableCanvasIsNotRateLimited) {
+  CreateContext(kNonOpaque);
+  EXPECT_FALSE(!!CanvasElement().RateLimiter());
+
+  EXPECT_TRUE(CanvasElement().IsResourceValid());
+  CanvasElement().SetIsDisplayed(true);
+  EXPECT_FALSE(!!CanvasElement().RateLimiter());
+
+  // Invoking FinalizeFrame() twice should not result in rate limiting as the
+  // canvas is not paintable.
+  Context2D()->FinalizeFrame(FlushReason::kCanvasPushFrame);
+  Context2D()->FinalizeFrame(FlushReason::kCanvasPushFrame);
+  EXPECT_FALSE(!!CanvasElement().RateLimiter());
+}
+
+TEST_P(CanvasRenderingContext2DTest,
+       DisplayedPaintableNonCompositedCanvasIsNotRateLimited) {
+  CreateContext(kNonOpaque);
+  EXPECT_FALSE(!!CanvasElement().RateLimiter());
+
+  // Install a Canvas2DLayerBridge instance to make the canvas paintable and a
+  // CanvasResourceProvider that does not support direct compositing.
+  gfx::Size size = CanvasElement().Size();
+  auto provider = std::make_unique<FakeCanvasResourceProvider>(
+      SkImageInfo::MakeN32Premul(size.width(), size.height()),
+      RasterModeHint::kPreferGPU, &CanvasElement(),
+      CompositingMode::kDoesNotSupportDirectCompositing);
+  CanvasElement().SetResourceProviderForTesting(
+      std::move(provider),
+      std::make_unique<Canvas2DLayerBridge>(&CanvasElement()), size);
+
+  EXPECT_TRUE(CanvasElement().IsResourceValid());
+  CanvasElement().SetIsDisplayed(true);
+  EXPECT_FALSE(!!CanvasElement().RateLimiter());
+
+  // Invoking FinalizeFrame() twice should not result in rate limiting as the
+  // canvas is not composited.
+  Context2D()->FinalizeFrame(FlushReason::kCanvasPushFrame);
+  Context2D()->FinalizeFrame(FlushReason::kCanvasPushFrame);
+  EXPECT_FALSE(!!CanvasElement().RateLimiter());
+}
+
+TEST_P(CanvasRenderingContext2DTest,
+       DisplayedPaintableCompositedCanvasIsRateLimited) {
+  CreateContext(kNonOpaque);
+  EXPECT_FALSE(!!CanvasElement().RateLimiter());
+
+  // Install a Canvas2DLayerBridge instance to make the canvas paintable and a
+  // CanvasResourceProvider that supports direct compositing to make the canvas
+  // composited.
+  gfx::Size size = CanvasElement().Size();
+  auto provider = std::make_unique<FakeCanvasResourceProvider>(
+      SkImageInfo::MakeN32Premul(size.width(), size.height()),
+      RasterModeHint::kPreferGPU, &CanvasElement(),
+      CompositingMode::kSupportsDirectCompositing);
+  CanvasElement().SetResourceProviderForTesting(
+      std::move(provider),
+      std::make_unique<Canvas2DLayerBridge>(&CanvasElement()), size);
+
+  EXPECT_TRUE(CanvasElement().IsResourceValid());
+  CanvasElement().SetIsDisplayed(true);
+  EXPECT_FALSE(!!CanvasElement().RateLimiter());
+
+  // Invoking FinalizeFrame() twice should result in rate limiting.
+  Context2D()->FinalizeFrame(FlushReason::kCanvasPushFrame);
+  Context2D()->FinalizeFrame(FlushReason::kCanvasPushFrame);
+  EXPECT_TRUE(!!CanvasElement().RateLimiter());
+}
+
+TEST_P(CanvasRenderingContext2DTest, HidingCanvasTurnsOffRateLimiting) {
+  CreateContext(kNonOpaque);
+  EXPECT_FALSE(!!CanvasElement().RateLimiter());
+
+  // Install a Canvas2DLayerBridge instance to make the canvas paintable and a
+  // CanvasResourceProvider that supports direct compositing to make the canvas
+  // composited.
+  gfx::Size size = CanvasElement().Size();
+  auto provider = std::make_unique<FakeCanvasResourceProvider>(
+      SkImageInfo::MakeN32Premul(size.width(), size.height()),
+      RasterModeHint::kPreferGPU, &CanvasElement(),
+      CompositingMode::kSupportsDirectCompositing);
+  CanvasElement().SetResourceProviderForTesting(
+      std::move(provider),
+      std::make_unique<Canvas2DLayerBridge>(&CanvasElement()), size);
+
+  EXPECT_TRUE(CanvasElement().IsResourceValid());
+  CanvasElement().SetIsDisplayed(true);
+  EXPECT_FALSE(!!CanvasElement().RateLimiter());
+
+  Context2D()->FinalizeFrame(FlushReason::kCanvasPushFrame);
+  Context2D()->FinalizeFrame(FlushReason::kCanvasPushFrame);
+  EXPECT_TRUE(!!CanvasElement().RateLimiter());
+
+  CanvasElement().SetIsDisplayed(false);
+  EXPECT_FALSE(!!CanvasElement().RateLimiter());
+
+  Context2D()->FinalizeFrame(FlushReason::kCanvasPushFrame);
+  Context2D()->FinalizeFrame(FlushReason::kCanvasPushFrame);
+  EXPECT_FALSE(!!CanvasElement().RateLimiter());
+}
+
 TEST_P(CanvasRenderingContext2DTest,
        PrepareMailboxWhenContextIsLostWithFailedRestore) {
   // Gpu compositing must be supported for this test to be able to create
@@ -540,7 +668,8 @@ TEST_P(CanvasRenderingContext2DTest,
   gfx::Size size = CanvasElement().Size();
   auto provider = std::make_unique<FakeCanvasResourceProvider>(
       SkImageInfo::MakeN32Premul(size.width(), size.height()),
-      RasterModeHint::kPreferGPU, &CanvasElement());
+      RasterModeHint::kPreferGPU, &CanvasElement(),
+      CompositingMode::kSupportsDirectCompositing);
   CanvasElement().SetResourceProviderForTesting(
       std::move(provider),
       std::make_unique<Canvas2DLayerBridge>(&CanvasElement()), size);
@@ -1142,7 +1271,8 @@ TEST_P(CanvasRenderingContext2DTest, PutImageData_FullCoverage) {
   gfx::Size size = CanvasElement().Size();
   auto provider = std::make_unique<FakeCanvasResourceProvider>(
       SkImageInfo::MakeN32Premul(size.width(), size.height()),
-      RasterModeHint::kPreferGPU, &CanvasElement());
+      RasterModeHint::kPreferGPU, &CanvasElement(),
+      CompositingMode::kSupportsDirectCompositing);
 
   // The recording will be cleared, so nothing will be rastered before
   // `WritePixels` is called.
@@ -1176,7 +1306,8 @@ TEST_P(CanvasRenderingContext2DTest, PutImageData_PartialCoverage) {
   gfx::Size size = CanvasElement().Size();
   auto provider = std::make_unique<FakeCanvasResourceProvider>(
       SkImageInfo::MakeN32Premul(size.width(), size.height()),
-      RasterModeHint::kPreferGPU, &CanvasElement());
+      RasterModeHint::kPreferGPU, &CanvasElement(),
+      CompositingMode::kSupportsDirectCompositing);
 
   // `putImageData` forces a flush, so the `fillRect` will get rasterized before
   // `WritePixels` is called.
@@ -1257,7 +1388,8 @@ TEST_P(CanvasRenderingContext2DTest, GPUMemoryUpdateForAcceleratedCanvas) {
   std::unique_ptr<FakeCanvasResourceProvider> fake_resource_provider =
       std::make_unique<FakeCanvasResourceProvider>(
           SkImageInfo::MakeN32Premul(size.width(), size.height()),
-          RasterModeHint::kPreferGPU, &CanvasElement());
+          RasterModeHint::kPreferGPU, &CanvasElement(),
+          CompositingMode::kSupportsDirectCompositing);
   auto bridge = std::make_unique<Canvas2DLayerBridge>(&CanvasElement());
   Canvas2DLayerBridge* bridge_ptr = bridge.get();
   CanvasElement().SetPreferred2DRasterMode(RasterModeHint::kPreferGPU);
@@ -1285,7 +1417,8 @@ TEST_P(CanvasRenderingContext2DTest, GPUMemoryUpdateForAcceleratedCanvas) {
   std::unique_ptr<FakeCanvasResourceProvider> fake_resource_provider2 =
       std::make_unique<FakeCanvasResourceProvider>(
           SkImageInfo::MakeN32Premul(size2.width(), size2.height()),
-          RasterModeHint::kPreferGPU, &CanvasElement());
+          RasterModeHint::kPreferGPU, &CanvasElement(),
+          CompositingMode::kSupportsDirectCompositing);
   anotherCanvas->SetPreferred2DRasterMode(RasterModeHint::kPreferGPU);
   anotherCanvas->SetResourceProviderForTesting(
       std::move(fake_resource_provider2), std::move(bridge2), size2);
@@ -2003,7 +2136,8 @@ TEST_P(CanvasRenderingContext2DTestAccelerated, HibernationWithUnclosedLayer) {
   gfx::Size size(100, 100);
   auto provider = std::make_unique<FakeCanvasResourceProvider>(
       SkImageInfo::MakeN32Premul(size.width(), size.height()),
-      RasterModeHint::kPreferGPU, &CanvasElement());
+      RasterModeHint::kPreferGPU, &CanvasElement(),
+      CompositingMode::kSupportsDirectCompositing);
 
   // Recorded draw ops are resterized on hibernation. The provider gets replaced
   // when getting out of hibernation, so this mock will not see the later calls
@@ -2228,10 +2362,12 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   gfx::Size size(100, 100);
   auto gpu_provider = std::make_unique<FakeCanvasResourceProvider>(
       SkImageInfo::MakeN32Premul(size.width(), size.height()),
-      RasterModeHint::kPreferGPU, &CanvasElement());
+      RasterModeHint::kPreferGPU, &CanvasElement(),
+      CompositingMode::kSupportsDirectCompositing);
   auto cpu_provider = std::make_unique<FakeCanvasResourceProvider>(
       SkImageInfo::MakeN32Premul(size.width(), size.height()),
-      RasterModeHint::kPreferCPU, &CanvasElement());
+      RasterModeHint::kPreferCPU, &CanvasElement(),
+      CompositingMode::kSupportsDirectCompositing);
 
   // When disabling acceleration, the raster content is read from the
   // accelerated provider and written to the unaccelerated provider.
