@@ -315,8 +315,8 @@ void FocusManager::SetFocusedViewWithReason(View* view,
   // Update the reason for the focus change (since this is checked by
   // some listeners), then notify all listeners.
   focus_change_reason_ = reason;
-  for (FocusChangeListener& observer : focus_change_listeners_)
-    observer.OnWillChangeFocus(focused_view_, view);
+  focus_change_listeners_.Notify(&FocusChangeListener::OnWillChangeFocus,
+                                 focused_view_, view);
 
   View* old_focused_view = focused_view_;
   focused_view_ = view;
@@ -340,8 +340,8 @@ void FocusManager::SetFocusedViewWithReason(View* view,
     focused_view_->Focus();
   }
 
-  for (FocusChangeListener& observer : focus_change_listeners_)
-    observer.OnDidChangeFocus(old_focused_view, focused_view_);
+  focus_change_listeners_.Notify(&FocusChangeListener::OnDidChangeFocus,
+                                 old_focused_view, focused_view_);
 }
 
 void FocusManager::SetFocusedView(View* view) {

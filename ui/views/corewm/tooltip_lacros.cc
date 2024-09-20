@@ -49,16 +49,13 @@ void TooltipLacros::RemoveObserver(wm::TooltipObserver* observer) {
 void TooltipLacros::OnTooltipShownOnServer(const std::u16string& text,
                                            const gfx::Rect& bounds) {
   is_visible_ = true;
-  for (auto& observer : observers_) {
-    observer.OnTooltipShown(parent_window_, text, bounds);
-  }
+  observers_.Notify(&wm::TooltipObserver::OnTooltipShown, parent_window_, text,
+                    bounds);
 }
 
 void TooltipLacros::OnTooltipHiddenOnServer() {
   is_visible_ = false;
-  for (auto& observer : observers_) {
-    observer.OnTooltipHidden(parent_window_);
-  }
+  observers_.Notify(&wm::TooltipObserver::OnTooltipHidden, parent_window_);
 }
 
 int TooltipLacros::GetMaxWidth(const gfx::Point& location) const {

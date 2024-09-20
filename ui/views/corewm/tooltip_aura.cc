@@ -252,11 +252,9 @@ void TooltipAura::Show() {
       gfx::Rect bounds = widget_->GetWindowBoundsInScreen();
       aura::Window::ConvertRectToTarget(tooltip_window_, toplevel_window,
                                         &bounds);
-      for (auto& observer : observers_) {
-        observer.OnTooltipShown(
-            toplevel_window, widget_->GetTooltipView()->render_text()->text(),
-            bounds);
-      }
+      observers_.Notify(&wm::TooltipObserver::OnTooltipShown, toplevel_window,
+                        widget_->GetTooltipView()->render_text()->text(),
+                        bounds);
     }
   }
 }
@@ -278,8 +276,7 @@ void TooltipAura::Hide() {
     aura::Window* toplevel_window = tooltip_window_->GetToplevelWindow();
     // `tooltip_window_`'s toplevel window may be null for testing.
     if (toplevel_window) {
-      for (auto& observer : observers_)
-        observer.OnTooltipHidden(toplevel_window);
+      observers_.Notify(&wm::TooltipObserver::OnTooltipHidden, toplevel_window);
     }
     DestroyWidget();
   }

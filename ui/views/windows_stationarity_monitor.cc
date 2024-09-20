@@ -19,9 +19,7 @@ void WindowsStationarityMonitor::RemoveObserver(Observer* observer) {
 }
 
 void WindowsStationarityMonitor::NotifyWindowStationaryStateChanged() {
-  for (auto& observer : observers_) {
-    observer.OnWindowStationaryStateChanged();
-  }
+  observers_.Notify(&Observer::OnWindowStationaryStateChanged);
 }
 
 }  // namespace views

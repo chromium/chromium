@@ -827,8 +827,8 @@ void AnimatingLayoutManager::AnimateTo(double value,
 }
 
 void AnimatingLayoutManager::NotifyIsAnimatingChanged() {
-  for (auto& observer : observers_)
-    observer.OnLayoutIsAnimatingChanged(this, is_animating());
+  observers_.Notify(&Observer::OnLayoutIsAnimatingChanged, this,
+                    is_animating());
 }
 
 void AnimatingLayoutManager::RunQueuedActions() {

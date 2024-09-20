@@ -341,14 +341,12 @@ void BoundsAnimator::AnimationContainerProgressed(
     repaint_bounds_.SetRect(0, 0, 0, 0);
   }
 
-  for (BoundsAnimatorObserver& observer : observers_)
-    observer.OnBoundsAnimatorProgressed(this);
+  observers_.Notify(&BoundsAnimatorObserver::OnBoundsAnimatorProgressed, this);
 
   if (!IsAnimating()) {
     // Notify here rather than from AnimationXXX to avoid deleting the animation
     // while the animation is calling us.
-    for (BoundsAnimatorObserver& observer : observers_)
-      observer.OnBoundsAnimatorDone(this);
+    observers_.Notify(&BoundsAnimatorObserver::OnBoundsAnimatorDone, this);
   }
 }
 
