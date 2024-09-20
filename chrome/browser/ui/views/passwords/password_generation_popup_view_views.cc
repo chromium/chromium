@@ -558,19 +558,5 @@ PasswordGenerationPopupViewViews::GetPasswordViewViewAccessibilityForTest() {
   return password_view_->GetViewAccessibility();
 }
 
-const views::ViewAccessibility&
-PasswordGenerationPopupViewViews::GetAcceptButtonViewAccessibilityForTest() {
-  return static_cast<NudgePasswordButtons*>(nudge_password_buttons_view_)
-      ->GetAcceptButton()
-      ->GetViewAccessibility();
-}
-
-const views::ViewAccessibility&
-PasswordGenerationPopupViewViews::GetCancelButtonViewAccessibilityForTest() {
-  return static_cast<NudgePasswordButtons*>(nudge_password_buttons_view_)
-      ->GetCancelButton()
-      ->GetViewAccessibility();
-}
-
 BEGIN_METADATA(PasswordGenerationPopupViewViews)
 END_METADATA

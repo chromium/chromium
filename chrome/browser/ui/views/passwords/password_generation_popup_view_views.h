@@ -38,8 +38,6 @@ class PasswordGenerationPopupViewViews : public autofill::PopupBaseView,
   void NudgePasswordSelectionUpdated() override;
 
   const views::ViewAccessibility& GetPasswordViewViewAccessibilityForTest();
-  const views::ViewAccessibility& GetAcceptButtonViewAccessibilityForTest();
-  const views::ViewAccessibility& GetCancelButtonViewAccessibilityForTest();
 
  private:
   class GeneratedPasswordBox;

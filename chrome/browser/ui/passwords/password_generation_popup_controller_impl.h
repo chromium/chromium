@@ -138,12 +138,6 @@ class PasswordGenerationPopupControllerImpl
 #if defined(UNIT_TEST)
   PasswordGenerationPopupView* view() const { return view_; }
   void SetViewForTesting(PasswordGenerationPopupView* view) { view_ = view; }
-  void SelectAcceptButtonForTesting() {
-    SelectElement(PasswordGenerationPopupElement::kNudgePasswordAcceptButton);
-  }
-  void SelectCancelButtonForTesting() {
-    SelectElement(PasswordGenerationPopupElement::kNudgePasswordCancelButton);
-  }
 #endif
 
  protected:
