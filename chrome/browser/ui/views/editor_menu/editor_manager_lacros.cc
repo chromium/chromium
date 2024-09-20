@@ -91,9 +91,7 @@ void EditorManagerLacros::RemoveObserver(EditorManager::Observer* observer) {
 }
 
 void EditorManagerLacros::NotifyEditorModeChanged(const EditorMode& mode) {
-  for (EditorManager::Observer& obs : observers_) {
-    obs.OnEditorModeChanged(mode);
-  }
+  observers_.Notify(&EditorManager::Observer::OnEditorModeChanged, mode);
 }
 
 void EditorManagerLacros::OnEditorPanelContextResult(

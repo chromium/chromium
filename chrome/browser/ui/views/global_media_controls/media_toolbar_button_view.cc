@@ -94,16 +94,14 @@ void MediaToolbarButtonView::Show() {
   SetVisible(true);
   PreferredSizeChanged();
 
-  for (auto& observer : observers_)
-    observer.OnMediaButtonShown();
+  observers_.Notify(&MediaToolbarButtonObserver::OnMediaButtonShown);
 }
 
 void MediaToolbarButtonView::Hide() {
   SetVisible(false);
   PreferredSizeChanged();
 
-  for (auto& observer : observers_)
-    observer.OnMediaButtonHidden();
+  observers_.Notify(&MediaToolbarButtonObserver::OnMediaButtonHidden);
 }
 
 void MediaToolbarButtonView::Enable() {
@@ -118,8 +116,7 @@ void MediaToolbarButtonView::Enable() {
           feature_engagement::kIPHLiveCaptionFeature);
   }
 
-  for (auto& observer : observers_)
-    observer.OnMediaButtonEnabled();
+  observers_.Notify(&MediaToolbarButtonObserver::OnMediaButtonEnabled);
 }
 
 void MediaToolbarButtonView::Disable() {
@@ -127,8 +124,7 @@ void MediaToolbarButtonView::Disable() {
 
   ClosePromoBubble();
 
-  for (auto& observer : observers_)
-    observer.OnMediaButtonDisabled();
+  observers_.Notify(&MediaToolbarButtonObserver::OnMediaButtonDisabled);
 }
 
 void MediaToolbarButtonView::MaybeShowLocalMediaCastingPromo() {
@@ -155,9 +151,7 @@ void MediaToolbarButtonView::ButtonPressed() {
   } else {
     MediaDialogView::ShowDialogFromToolbar(this, service_, browser_->profile());
     ClosePromoBubble();
-
-    for (auto& observer : observers_)
-      observer.OnMediaDialogOpened();
+    observers_.Notify(&MediaToolbarButtonObserver::OnMediaDialogOpened);
   }
 }
 

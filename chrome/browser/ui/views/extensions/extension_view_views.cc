@@ -39,9 +39,7 @@ ExtensionViewViews::~ExtensionViewViews() {
     parent()->RemoveChildView(this);
   }
 
-  for (auto& observer : observers_) {
-    observer.OnViewDestroying();
-  }
+  observers_.Notify(&Observer::OnViewDestroying);
 }
 
 void ExtensionViewViews::Init() {

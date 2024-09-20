@@ -17,9 +17,7 @@
 SidePanelRegistry::SidePanelRegistry() = default;
 
 SidePanelRegistry::~SidePanelRegistry() {
-  for (SidePanelRegistryObserver& observer : observers_) {
-    observer.OnRegistryDestroying(this);
-  }
+  observers_.Notify(&SidePanelRegistryObserver::OnRegistryDestroying, this);
 }
 
 // static
@@ -70,9 +68,8 @@ bool SidePanelRegistry::Register(std::unique_ptr<SidePanelEntry> entry) {
   entry->AddObserver(this);
   SidePanelEntry* entry_ptr = entry.get();
   entries_.push_back(std::move(entry));
-  for (SidePanelRegistryObserver& observer : observers_) {
-    observer.OnEntryRegistered(this, entry_ptr);
-  }
+  observers_.Notify(&SidePanelRegistryObserver::OnEntryRegistered, this,
+                    entry_ptr);
   return true;
 }
 
@@ -112,9 +109,8 @@ std::unique_ptr<SidePanelEntry> SidePanelRegistry::DeregisterAndReturnEntry(
   // panel view instead of being cached.
   // SidePanelCoordinator::OnEntryWillDeregister will retrieve the view from the
   // side panel and cache it into `entry`.
-  for (SidePanelRegistryObserver& observer : observers_) {
-    observer.OnEntryWillDeregister(this, entry);
-  }
+  observers_.Notify(&SidePanelRegistryObserver::OnEntryWillDeregister, this,
+                    entry);
 
   return RemoveEntry(entry);
 }

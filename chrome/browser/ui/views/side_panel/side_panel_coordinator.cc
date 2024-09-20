@@ -501,10 +501,8 @@ void SidePanelCoordinator::Show(
   // If the side panel was in the process of closing, notify observers that the
   // close was cancelled.
   if (browser_view_->unified_side_panel()->IsClosing()) {
-    for (SidePanelViewStateObserver& view_state_observer :
-         view_state_observers_) {
-      view_state_observer.OnSidePanelCloseInterrupted();
-    }
+    view_state_observers_.Notify(
+        &SidePanelViewStateObserver::OnSidePanelCloseInterrupted);
   }
 
   // If the side panel is already showing, cancel all loads and do nothing.
@@ -670,10 +668,8 @@ void SidePanelCoordinator::PopulateSidePanel(
   // Notify the observers when the side panel is opened (made visible). However,
   // the observers are not renotified when the side panel entry changes.
   if (opening_side_panel) {
-    for (SidePanelViewStateObserver& view_state_observer :
-         view_state_observers_) {
-      view_state_observer.OnSidePanelDidOpen();
-    }
+    view_state_observers_.Notify(
+        &SidePanelViewStateObserver::OnSidePanelDidOpen);
   }
 
   if (base::FeatureList::IsEnabled(features::kSidePanelResizing)) {
@@ -1223,10 +1219,8 @@ void SidePanelCoordinator::OnViewVisibilityChanged(views::View* observed_view,
   }
   SidePanelUtil::RecordSidePanelClosed(opened_timestamp_);
 
-  for (SidePanelViewStateObserver& view_state_observer :
-       view_state_observers_) {
-    view_state_observer.OnSidePanelDidClose();
-  }
+  view_state_observers_.Notify(
+      &SidePanelViewStateObserver::OnSidePanelDidClose);
 }
 
 void SidePanelCoordinator::OnActionsChanged() {

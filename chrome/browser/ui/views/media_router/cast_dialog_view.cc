@@ -119,8 +119,7 @@ void CastDialogView::OnModelUpdated(const CastDialogModel& model) {
   MaybeSizeToContents();
   // Update the main action button.
   DialogModelChanged();
-  for (Observer& observer : observers_)
-    observer.OnDialogModelUpdated(this);
+  observers_.Notify(&Observer::OnDialogModelUpdated, this);
 }
 
 void CastDialogView::OnControllerDestroying() {
@@ -171,9 +170,7 @@ void CastDialogView::Init() {
 }
 
 void CastDialogView::WindowClosing() {
-  for (Observer& observer : observers_) {
-    observer.OnDialogWillClose(this);
-  }
+  observers_.Notify(&Observer::OnDialogWillClose, this);
 }
 
 void CastDialogView::ShowAccessCodeCastDialog() {

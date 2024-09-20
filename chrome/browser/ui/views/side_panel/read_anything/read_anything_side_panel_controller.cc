@@ -81,9 +81,8 @@ ReadAnythingSidePanelController::~ReadAnythingSidePanelController() {
   }
 
   // Inform observers when |this| is destroyed so they can do their own cleanup.
-  for (ReadAnythingSidePanelController::Observer& obs : observers_) {
-    obs.OnSidePanelControllerDestroyed();
-  }
+  observers_.Notify(&ReadAnythingSidePanelController::Observer::
+                        OnSidePanelControllerDestroyed);
 }
 
 void ReadAnythingSidePanelController::ResetForTabDiscard() {
@@ -125,9 +124,8 @@ void ReadAnythingSidePanelController::OnEntryShown(SidePanelEntry* entry) {
   if (service) {
     service->OnReadAnythingSidePanelEntryShown();
   }
-  for (ReadAnythingSidePanelController::Observer& obs : observers_) {
-    obs.Activate(true);
-  }
+
+  observers_.Notify(&ReadAnythingSidePanelController::Observer::Activate, true);
 }
 
 void ReadAnythingSidePanelController::OnEntryHidden(SidePanelEntry* entry) {
@@ -141,9 +139,8 @@ void ReadAnythingSidePanelController::OnEntryHidden(SidePanelEntry* entry) {
   if (service) {
     service->OnReadAnythingSidePanelEntryHidden();
   }
-  for (ReadAnythingSidePanelController::Observer& obs : observers_) {
-    obs.Activate(false);
-  }
+  observers_.Notify(&ReadAnythingSidePanelController::Observer::Activate,
+                    false);
 }
 
 std::unique_ptr<views::View>

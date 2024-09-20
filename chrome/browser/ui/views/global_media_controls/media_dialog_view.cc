@@ -196,9 +196,7 @@ global_media_controls::MediaItemUI* MediaDialogView::ShowMediaItem(
 
   view_ptr->AddObserver(this);
   UpdateBubbleSize();
-  for (auto& observer : observers_) {
-    observer.OnMediaSessionShown();
-  }
+  observers_.Notify(&MediaDialogViewObserver::OnMediaSessionShown);
   return view_ptr;
 }
 
@@ -215,9 +213,7 @@ void MediaDialogView::HideMediaItem(const std::string& id) {
     UpdateBubbleSize();
   }
 
-  for (auto& observer : observers_) {
-    observer.OnMediaSessionHidden();
-  }
+  observers_.Notify(&MediaDialogViewObserver::OnMediaSessionHidden);
 }
 
 void MediaDialogView::RefreshMediaItem(
@@ -351,15 +347,11 @@ void MediaDialogView::OnMediaItemUISizeChanged() {
 }
 
 void MediaDialogView::OnMediaItemUIMetadataChanged() {
-  for (auto& observer : observers_) {
-    observer.OnMediaSessionMetadataUpdated();
-  }
+  observers_.Notify(&MediaDialogViewObserver::OnMediaSessionMetadataUpdated);
 }
 
 void MediaDialogView::OnMediaItemUIActionsChanged() {
-  for (auto& observer : observers_) {
-    observer.OnMediaSessionActionsChanged();
-  }
+  observers_.Notify(&MediaDialogViewObserver::OnMediaSessionActionsChanged);
 }
 
 void MediaDialogView::OnMediaItemUIDestroyed(const std::string& id) {

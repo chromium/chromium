@@ -156,9 +156,8 @@ void PermissionToggleRowView::AddObserver(
 void PermissionToggleRowView::PermissionChanged() {
   UpdateUiOnPermissionChanged();
 
-  for (PermissionToggleRowViewObserver& observer : observer_list_) {
-    observer.OnPermissionChanged(permission_);
-  }
+  observer_list_.Notify(&PermissionToggleRowViewObserver::OnPermissionChanged,
+                        permission_);
 }
 
 void PermissionToggleRowView::UpdatePermission(

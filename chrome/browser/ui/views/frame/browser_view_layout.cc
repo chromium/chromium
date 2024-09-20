@@ -100,13 +100,11 @@ class BrowserViewLayout::WebContentsModalDialogHostViews
       const WebContentsModalDialogHostViews&) = delete;
 
   ~WebContentsModalDialogHostViews() override {
-    for (ModalDialogHostObserver& observer : observer_list_)
-      observer.OnHostDestroying();
+    observer_list_.Notify(&ModalDialogHostObserver::OnHostDestroying);
   }
 
   void NotifyPositionRequiresUpdate() {
-    for (ModalDialogHostObserver& observer : observer_list_)
-      observer.OnPositionRequiresUpdate();
+    observer_list_.Notify(&ModalDialogHostObserver::OnPositionRequiresUpdate);
   }
 
   gfx::Point GetDialogPosition(const gfx::Size& size) override {

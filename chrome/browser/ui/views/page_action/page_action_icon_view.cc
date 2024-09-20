@@ -153,9 +153,8 @@ bool PageActionIconView::ShouldShowSeparator() const {
 }
 
 void PageActionIconView::NotifyClick(const ui::Event& event) {
-  for (PageActionIconViewObserver& observer : observer_list_) {
-    observer.OnPageActionIconViewClicked(this);
-  }
+  observer_list_.Notify(
+      &PageActionIconViewObserver::OnPageActionIconViewClicked, this);
   // Intentionally skip the immediate parent function
   // IconLabelBubbleView::NotifyClick(). It calls ShowBubble() which
   // is redundant here since we use Chrome command to show the bubble.
@@ -325,9 +324,8 @@ void PageActionIconView::SetVisible(bool visible) {
   const bool was_visible = GetVisible();
   IconLabelBubbleView::SetVisible(visible);
   if (!was_visible && visible) {
-    for (PageActionIconViewObserver& observer : observer_list_) {
-      observer.OnPageActionIconViewShown(this);
-    }
+    observer_list_.Notify(
+        &PageActionIconViewObserver::OnPageActionIconViewShown, this);
   }
 }
 

@@ -60,20 +60,16 @@ void SidePanelEntry::OnEntryShown() {
   // timestamp so we don't keep recording this entry after its selected from the
   // combobox.
   ResetLoadTimestamp();
-  for (SidePanelEntryObserver& observer : observers_)
-    observer.OnEntryShown(this);
+  observers_.Notify(&SidePanelEntryObserver::OnEntryShown, this);
 }
 
 void SidePanelEntry::OnEntryWillHide(SidePanelEntryHideReason reason) {
-  for (SidePanelEntryObserver& observer : observers_) {
-    observer.OnEntryWillHide(this, reason);
-  }
+  observers_.Notify(&SidePanelEntryObserver::OnEntryWillHide, this, reason);
 }
 
 void SidePanelEntry::OnEntryHidden() {
   SidePanelUtil::RecordEntryHiddenMetrics(key_.id(), entry_shown_timestamp_);
-  for (SidePanelEntryObserver& observer : observers_)
-    observer.OnEntryHidden(this);
+  observers_.Notify(&SidePanelEntryObserver::OnEntryHidden, this);
 }
 
 void SidePanelEntry::AddObserver(SidePanelEntryObserver* observer) {

@@ -114,9 +114,8 @@ void ChosenObjectView::ExecuteDeleteCommand() {
   // Hide the row after revoking access.
   SetVisible(false);
 
-  for (ChosenObjectViewObserver& observer : observer_list_) {
-    observer.OnChosenObjectDeleted(*info_);
-  }
+  observer_list_.Notify(&ChosenObjectViewObserver::OnChosenObjectDeleted,
+                        *info_);
 }
 
 void ChosenObjectView::UpdateIconImage(bool is_deleted) const {

@@ -59,9 +59,8 @@ bool WebUIBubbleManager::ShowBubble(const std::optional<gfx::Rect>& anchor,
 
   bubble_widget_observation_.Observe(bubble_view_->GetWidget());
 
-  for (WebUIBubbleManagerObserver& observer : observers_) {
-    observer.BeforeBubbleWidgetShowed(bubble_view_->GetWidget());
-  }
+  observers_.Notify(&WebUIBubbleManagerObserver::BeforeBubbleWidgetShowed,
+                    bubble_view_->GetWidget());
 
   // Some bubbles can be triggered when there is no active browser (e.g. emoji
   // picker in Chrome OS launcher). In that case, the close bubble helper isn't

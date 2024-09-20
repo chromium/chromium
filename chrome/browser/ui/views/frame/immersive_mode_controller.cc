@@ -9,8 +9,7 @@
 ImmersiveModeController::ImmersiveModeController() = default;
 
 ImmersiveModeController::~ImmersiveModeController() {
-  for (Observer& observer : observers_)
-    observer.OnImmersiveModeControllerDestroyed();
+  observers_.Notify(&Observer::OnImmersiveModeControllerDestroyed);
 }
 
 void ImmersiveModeController::AddObserver(Observer* observer) {

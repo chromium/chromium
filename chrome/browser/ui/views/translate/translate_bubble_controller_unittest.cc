@@ -175,9 +175,8 @@ class FakePartialTranslateBubbleModel : public PartialTranslateBubbleModel {
   bool GetSourceTextTruncatedForTest() { return source_text_truncated_; }
 
   void NotifyTranslated() {
-    for (PartialTranslateBubbleModel::Observer& obs : observers_) {
-      obs.OnPartialTranslateComplete();
-    }
+    observers_.Notify(
+        &PartialTranslateBubbleModel::Observer::OnPartialTranslateComplete);
   }
 
   ViewState current_view_state_;

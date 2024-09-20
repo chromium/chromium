@@ -132,9 +132,7 @@ void AvatarToolbarButton::UpdateIcon() {
   SetImageModel(ButtonState::STATE_DISABLED,
                 ui::GetDefaultDisabledIconFromImageModel(icon));
 
-  for (auto& observer : observer_list_) {
-    observer.OnIconUpdated();
-  }
+  observer_list_.Notify(&Observer::OnIconUpdated);
 }
 
 void AvatarToolbarButton::AddedToWidget() {
@@ -378,16 +376,12 @@ void AvatarToolbarButton::MaybeShowWebSignoutIPH(const std::string& gaia_id) {
 }
 
 void AvatarToolbarButton::OnMouseExited(const ui::MouseEvent& event) {
-  for (auto& observer : observer_list_) {
-    observer.OnMouseExited();
-  }
+  observer_list_.Notify(&Observer::OnMouseExited);
   ToolbarButton::OnMouseExited(event);
 }
 
 void AvatarToolbarButton::OnBlur() {
-  for (auto& observer : observer_list_) {
-    observer.OnBlur();
-  }
+  observer_list_.Notify(&Observer::OnBlur);
   ToolbarButton::OnBlur();
 }
 
@@ -426,10 +420,9 @@ void AvatarToolbarButton::ButtonPressed(bool is_source_accelerator) {
 void AvatarToolbarButton::AfterPropertyChange(const void* key,
                                               int64_t old_value) {
   if (key == user_education::kHasInProductHelpPromoKey) {
-    for (auto& observer : observer_list_) {
-      observer.OnIPHPromoChanged(
-          GetProperty(user_education::kHasInProductHelpPromoKey));
-    }
+    observer_list_.Notify(
+        &Observer::OnIPHPromoChanged,
+        GetProperty(user_education::kHasInProductHelpPromoKey));
   }
   ToolbarButton::AfterPropertyChange(key, old_value);
 }
