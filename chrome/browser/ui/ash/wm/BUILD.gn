@@ -33,6 +33,7 @@ source_set("browser_tests") {
 
   sources = [
     "coral_browsertest.cc",
+    "float_controller_browsertest.cc",
     "snap_group_browsertest.cc",
     "wmp_browsertest.cc",
   ]

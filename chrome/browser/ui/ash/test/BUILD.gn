@@ -34,7 +34,6 @@ source_set("browser_tests") {
     "annotator_client_impl_browsertest.cc",
     "event_latency_metrics_browsertest.cc",
     "feature_discovery_duration_reporter_browsertest.cc",
-    "float_controller_browsertest.cc",
   ]
 
   deps = [
