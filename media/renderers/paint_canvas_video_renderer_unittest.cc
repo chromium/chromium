@@ -277,8 +277,9 @@ PaintCanvasVideoRendererTest::~PaintCanvasVideoRendererTest() = default;
 void PaintCanvasVideoRendererTest::PaintWithoutFrame(cc::PaintCanvas* canvas) {
   cc::PaintFlags flags;
   flags.setFilterQuality(cc::PaintFlags::FilterQuality::kLow);
-  renderer_.Paint(nullptr, canvas, kNaturalRect, flags, kNoTransformation,
-                  nullptr);
+  PaintCanvasVideoRenderer::PaintParams params;
+  params.dest_rect = kNaturalRect;
+  renderer_.Paint(nullptr, canvas, flags, params, nullptr);
 }
 
 void PaintCanvasVideoRendererTest::Paint(scoped_refptr<VideoFrame> video_frame,
@@ -311,8 +312,10 @@ void PaintCanvasVideoRendererTest::PaintRotated(
   cc::PaintFlags flags;
   flags.setBlendMode(mode);
   flags.setFilterQuality(cc::PaintFlags::FilterQuality::kLow);
-  renderer_.Paint(std::move(video_frame), canvas, dest_rect, flags,
-                  video_transformation, nullptr);
+  PaintCanvasVideoRenderer::PaintParams params;
+  params.dest_rect = dest_rect;
+  params.transformation = video_transformation;
+  renderer_.Paint(std::move(video_frame), canvas, flags, params, nullptr);
 }
 
 void PaintCanvasVideoRendererTest::Copy(scoped_refptr<VideoFrame> video_frame,
@@ -679,9 +682,10 @@ TEST_F(PaintCanvasVideoRendererTest, Y16) {
   cc::SkiaPaintCanvas canvas(bitmap);
   cc::PaintFlags flags;
   flags.setFilterQuality(cc::PaintFlags::FilterQuality::kNone);
-  renderer_.Paint(std::move(video_frame), &canvas,
-                  gfx::RectF(bitmap.width(), bitmap.height()), flags,
-                  kNoTransformation, nullptr);
+  PaintCanvasVideoRenderer::PaintParams paint_params;
+  paint_params.dest_rect = gfx::RectF(bitmap.width(), bitmap.height());
+  renderer_.Paint(std::move(video_frame), &canvas, flags, paint_params,
+                  nullptr);
   for (int j = 0; j < bitmap.height(); j++) {
     for (int i = 0; i < bitmap.width(); i++) {
       const int value = i + j * bitmap.width();
@@ -934,8 +938,10 @@ TEST_F(PaintCanvasVideoRendererTest, ContextLost) {
 
   cc::PaintFlags flags;
   flags.setFilterQuality(cc::PaintFlags::FilterQuality::kLow);
-  renderer_.Paint(std::move(video_frame), &canvas, kNaturalRect, flags,
-                  kNoTransformation, context_provider.get());
+  PaintCanvasVideoRenderer::PaintParams params;
+  params.dest_rect = kNaturalRect;
+  renderer_.Paint(std::move(video_frame), &canvas, flags, params,
+                  context_provider.get());
 }
 #endif
 
@@ -957,10 +963,10 @@ TEST_F(PaintCanvasVideoRendererTest, CorrectFrameSizeToVisibleRect) {
       media::PIXEL_FORMAT_Y16, coded_size, gfx::Rect(visible_size),
       visible_size, &memory[0], fWidth * fHeight * 2, base::Milliseconds(4));
 
-  gfx::RectF visible_rect(visible_size.width(), visible_size.height());
   cc::PaintFlags flags;
-  renderer_.Paint(std::move(video_frame), &canvas, visible_rect, flags,
-                  kNoTransformation, nullptr);
+  PaintCanvasVideoRenderer::PaintParams params;
+  params.dest_rect = gfx::RectF(visible_size.width(), visible_size.height());
+  renderer_.Paint(std::move(video_frame), &canvas, flags, params, nullptr);
 
   EXPECT_EQ(fWidth / 2, renderer_.LastImageDimensionsForTesting().width());
   EXPECT_EQ(fWidth / 2, renderer_.LastImageDimensionsForTesting().height());

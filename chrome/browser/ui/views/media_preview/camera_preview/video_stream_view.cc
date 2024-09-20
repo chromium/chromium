@@ -92,18 +92,17 @@ void VideoStreamView::OnPaint(gfx::Canvas* canvas) {
 
   ++rendered_frame_count_;
 
-  const gfx::RectF dest_rect(media::ComputeLetterboxRegion(
+  media::PaintCanvasVideoRenderer::PaintParams paint_params;
+  paint_params.dest_rect = gfx::RectF(media::ComputeLetterboxRegion(
       {width(), height()}, latest_frame_->natural_size()));
+  paint_params.transformation.mirrored = true;
 
   cc::PaintFlags flags;
   // Select high quality frame scaling.
   flags.setFilterQuality(cc::PaintFlags::FilterQuality::kHigh);
   flags.setAntiAlias(true);
-  media::VideoTransformation transformation;
-  transformation.mirrored = true;
-  video_renderer_.Paint(std::move(latest_frame_), canvas->sk_canvas(),
-                        dest_rect, flags, transformation,
-                        raster_context_provider_.get());
+  video_renderer_.Paint(std::move(latest_frame_), canvas->sk_canvas(), flags,
+                        paint_params, raster_context_provider_.get());
 }
 
 gfx::Size VideoStreamView::CalculatePreferredSize(

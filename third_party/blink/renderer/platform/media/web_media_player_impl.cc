@@ -1502,10 +1502,12 @@ void WebMediaPlayerImpl::Paint(cc::PaintCanvas* canvas,
   video_frame_readback_count_++;
   pipeline_controller_->OnExternalVideoFrameRequest();
 
-  video_renderer_.Paint(
-      video_frame, canvas, gfx::RectF(rect), flags,
-      pipeline_metadata_.video_decoder_config.video_transformation(),
-      raster_context_provider_.get());
+  media::PaintCanvasVideoRenderer::PaintParams paint_params;
+  paint_params.dest_rect = gfx::RectF(rect);
+  paint_params.transformation =
+      pipeline_metadata_.video_decoder_config.video_transformation();
+  video_renderer_.Paint(video_frame, canvas, flags, paint_params,
+                        raster_context_provider_.get());
 }
 
 scoped_refptr<media::VideoFrame>

@@ -1236,12 +1236,12 @@ void VideoResourceUpdater::TransferRGBPixelsToPaintCanvas(
   flags.setBlendMode(SkBlendMode::kSrc);
   flags.setFilterQuality(cc::PaintFlags::FilterQuality::kLow);
 
-  // Note that PaintCanvasVideoRenderer::Copy would copy to the origin,
-  // not |video_frame->visible_rect|, so call Paint instead.
+  // Note that the default PaintCanvasVideoRenderer::PaintParams would copy to
+  // the origin, not `video_frame->visible_rect`.
   // https://crbug.com/1090435
-  video_renderer_->Paint(video_frame, &canvas,
-                         gfx::RectF(video_frame->visible_rect()), flags,
-                         media::kNoTransformation, nullptr);
+  PaintCanvasVideoRenderer::PaintParams paint_params;
+  paint_params.dest_rect = gfx::RectF(video_frame->visible_rect());
+  video_renderer_->Paint(video_frame, &canvas, flags, paint_params, nullptr);
 }
 
 bool VideoResourceUpdater::WriteRGBPixelsToTexture(

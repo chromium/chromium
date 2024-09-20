@@ -64,18 +64,25 @@ class MEDIA_EXPORT PaintCanvasVideoRenderer {
 
   ~PaintCanvasVideoRenderer();
 
-  // Paints |video_frame| translated and scaled to |dest_rect| on |canvas|.
+  // Paints `video_frame` on `canvas`. The below Paint and Copy functions call
+  // into this function.
   //
-  // If the format of |video_frame| is PIXEL_FORMAT_NATIVE_TEXTURE, |context_3d|
-  // and |context_support| must be provided.
+  // If the format of `video_frame` is PIXEL_FORMAT_NATIVE_TEXTURE, `context_3d`
+  // and `context_support` must be provided.
   //
-  // If |video_frame| is nullptr or an unsupported format, |dest_rect| will be
-  // painted black.
+  // If `video_frame` is nullptr or an unsupported format, then paint black.
+  struct PaintParams {
+    // Translate and scale the video frame to `dest_rect` on the specified
+    // canvas. If not specified, then this will be a rectangle at 0,0 with the
+    // size of `video_frame->visible_rect().size()`.
+    std::optional<gfx::RectF> dest_rect;
+    // The transformation to apply to the video before the copy.
+    VideoTransformation transformation = media::kNoTransformation;
+  };
   void Paint(scoped_refptr<VideoFrame> video_frame,
              cc::PaintCanvas* canvas,
-             const gfx::RectF& dest_rect,
              cc::PaintFlags& flags,
-             VideoTransformation video_transformation,
+             const PaintParams& params,
              viz::RasterContextProvider* raster_context_provider);
 
   // Paints |video_frame|, scaled to its |video_frame->visible_rect().size()|

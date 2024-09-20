@@ -313,13 +313,15 @@ bool DrawVideoFrameIntoResourceProvider(
     }
   }
 
-  video_renderer->Paint(
-      frame.get(), &resource_provider->Canvas(/*needs_will_draw*/ true),
-      gfx::RectF(dest_rect), media_flags,
+  media::PaintCanvasVideoRenderer::PaintParams params;
+  params.dest_rect = gfx::RectF(dest_rect);
+  params.transformation =
       ignore_video_transformation
           ? media::kNoTransformation
-          : frame->metadata().transformation.value_or(media::kNoTransformation),
-      raster_context_provider);
+          : frame->metadata().transformation.value_or(media::kNoTransformation);
+  video_renderer->Paint(frame.get(),
+                        &resource_provider->Canvas(/*needs_will_draw*/ true),
+                        media_flags, params, raster_context_provider);
   return true;
 }
 
@@ -333,16 +335,15 @@ void DrawVideoFrameIntoCanvas(scoped_refptr<media::VideoFrame> frame,
       raster_context_provider = context_provider->RasterContextProvider();
   }
 
-  const gfx::RectF dest_rect(frame->natural_size().width(),
-                             frame->natural_size().height());
-
   media::PaintCanvasVideoRenderer video_renderer;
-  auto transformation =
+  media::PaintCanvasVideoRenderer::PaintParams params;
+  params.dest_rect =
+      gfx::RectF(frame->natural_size().width(), frame->natural_size().height());
+  params.transformation =
       ignore_video_transformation
           ? media::kNoTransformation
           : frame->metadata().transformation.value_or(media::kNoTransformation);
-  video_renderer.Paint(frame, canvas, dest_rect, flags, transformation,
-                       raster_context_provider);
+  video_renderer.Paint(frame, canvas, flags, params, raster_context_provider);
 }
 
 scoped_refptr<viz::RasterContextProvider> GetRasterContextProvider() {

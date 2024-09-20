@@ -970,9 +970,8 @@ PaintCanvasVideoRenderer::~PaintCanvasVideoRenderer() = default;
 void PaintCanvasVideoRenderer::Paint(
     scoped_refptr<VideoFrame> video_frame,
     cc::PaintCanvas* canvas,
-    const gfx::RectF& dest_rect,
     cc::PaintFlags& flags,
-    VideoTransformation video_transformation,
+    const PaintParams& params,
     viz::RasterContextProvider* raster_context_provider) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (flags.isFullyTransparent()) {
@@ -993,6 +992,9 @@ void PaintCanvasVideoRenderer::Paint(
     }
   }
 
+  gfx::RectF dest_rect = params.dest_rect.value_or(
+      video_frame ? gfx::RectF(gfx::SizeF(video_frame->visible_rect().size()))
+                  : gfx::RectF());
   SkRect dest;
   dest.setLTRB(dest_rect.x(), dest_rect.y(), dest_rect.right(),
                dest_rect.bottom());
@@ -1028,11 +1030,11 @@ void PaintCanvasVideoRenderer::Paint(
   video_flags.setAlphaf(flags.getAlphaf());
   video_flags.setBlendMode(flags.getBlendMode());
 
-  const bool need_rotation = video_transformation.rotation != VIDEO_ROTATION_0;
+  const bool need_rotation = params.transformation.rotation != VIDEO_ROTATION_0;
   const bool need_scaling =
       dest_rect.size() != gfx::SizeF(video_frame->visible_rect().size());
   const bool need_translation = !dest_rect.origin().IsOrigin();
-  const bool needs_mirror = video_transformation.mirrored;
+  const bool needs_mirror = params.transformation.mirrored;
   bool need_transform =
       need_rotation || need_scaling || need_translation || needs_mirror;
   if (need_transform) {
@@ -1041,7 +1043,7 @@ void PaintCanvasVideoRenderer::Paint(
         SkFloatToScalar(dest_rect.x() + (dest_rect.width() * 0.5f)),
         SkFloatToScalar(dest_rect.y() + (dest_rect.height() * 0.5f)));
     SkScalar angle = SkFloatToScalar(0.0f);
-    switch (video_transformation.rotation) {
+    switch (params.transformation.rotation) {
       case VIDEO_ROTATION_0:
         break;
       case VIDEO_ROTATION_90:
@@ -1059,8 +1061,8 @@ void PaintCanvasVideoRenderer::Paint(
     gfx::SizeF rotated_dest_size = dest_rect.size();
 
     const bool has_flipped_size =
-        video_transformation.rotation == VIDEO_ROTATION_90 ||
-        video_transformation.rotation == VIDEO_ROTATION_270;
+        params.transformation.rotation == VIDEO_ROTATION_90 ||
+        params.transformation.rotation == VIDEO_ROTATION_270;
     if (has_flipped_size) {
       rotated_dest_size =
           gfx::SizeF(rotated_dest_size.height(), rotated_dest_size.width());
@@ -1134,9 +1136,8 @@ void PaintCanvasVideoRenderer::Copy(
   flags.setBlendMode(SkBlendMode::kSrc);
   flags.setFilterQuality(cc::PaintFlags::FilterQuality::kLow);
 
-  auto dest_rect = gfx::RectF(gfx::SizeF(video_frame->visible_rect().size()));
-  Paint(std::move(video_frame), canvas, dest_rect, flags,
-        media::kNoTransformation, raster_context_provider);
+  Paint(std::move(video_frame), canvas, flags, PaintParams(),
+        raster_context_provider);
 }
 
 namespace {
