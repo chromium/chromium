@@ -109,8 +109,6 @@ source_set("extensions") {
     "api/developer_private/inspectable_views_finder.h",
     "api/downloads/downloads_api.cc",
     "api/downloads/downloads_api.h",
-    "api/enterprise_hardware_platform/enterprise_hardware_platform_api.cc",
-    "api/enterprise_hardware_platform/enterprise_hardware_platform_api.h",
     "api/enterprise_reporting_private/conversion_utils.cc",
     "api/enterprise_reporting_private/conversion_utils.h",
     "api/enterprise_reporting_private/enterprise_reporting_private_api.cc",
