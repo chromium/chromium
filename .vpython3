@@ -125,7 +125,7 @@ wheel: <
 # Chromium tests using Telemetry function properly.
 wheel: <
   name: "infra/python/wheels/numpy/${vpython_platform}"
-  version: "version:1.2x.supported.1"
+  version: "version:1.23.5.chromium.4"
 >
 wheel: <
   name: "infra/python/wheels/pexpect/${vpython_platform}"
@@ -141,7 +141,7 @@ wheel: <
 >
 wheel: <
   name: "infra/python/wheels/pillow/${vpython_platform}"
-  version: "version:8.3.1"
+  version: "version:10.4.0"
   # There is currently no Linux arm/arm64 version in CIPD.
   not_match_tag: <
     platform: "linux_arm64"
