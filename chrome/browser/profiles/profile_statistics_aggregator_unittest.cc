@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/profiles/profile_statistics.h"
+#include "chrome/browser/profiles/profile_statistics_aggregator.h"
 
 #include <memory>
 #include <utility>
@@ -10,7 +10,6 @@
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/test/test_file_util.h"
-#include "chrome/browser/profiles/profile_statistics_aggregator.h"
 #include "components/autofill/core/browser/test_personal_data_manager.h"
 #include "components/autofill/core/browser/webdata/autocomplete/autocomplete_table.h"
 #include "components/autofill/core/browser/webdata/autofill_webdata_service.h"
@@ -49,8 +48,9 @@ scoped_refptr<autofill::AutofillWebDataService> BuildFakeAutofillWebDataService(
 class BookmarkStatHelper {
  public:
   void StatsCallback(profiles::ProfileCategoryStats stats) {
-    if (stats.back().category == profiles::kProfileStatisticsBookmarks)
+    if (stats.back().category == profiles::kProfileStatisticsBookmarks) {
       ++num_of_times_called_;
+    }
   }
 
   int GetNumOfTimesCalled() { return num_of_times_called_; }
@@ -60,9 +60,9 @@ class BookmarkStatHelper {
 };
 }  // namespace
 
-class ProfileStatisticsTest : public testing::Test {
+class ProfileStatisticsAggregatorTest : public testing::Test {
  public:
-  ProfileStatisticsTest() {
+  ProfileStatisticsAggregatorTest() {
     history_service_.Init(history::HistoryDatabaseParams(
         base::CreateUniqueTempDirectoryScopedToTest(),
         /*download_interrupt_reason_none=*/0,
@@ -72,7 +72,7 @@ class ProfileStatisticsTest : public testing::Test {
     autofill_web_data_service_->Init(base::DoNothing());
   }
 
-  ~ProfileStatisticsTest() override {
+  ~ProfileStatisticsAggregatorTest() override {
     profile_password_store_->ShutdownOnUIThread();
   }
 
@@ -105,7 +105,7 @@ class ProfileStatisticsTest : public testing::Test {
           os_crypt_.get());
 };
 
-TEST_F(ProfileStatisticsTest, WaitOrCountBookmarks) {
+TEST_F(ProfileStatisticsAggregatorTest, WaitOrCountBookmarks) {
   // Run ProfileStatisticsAggregator::WaitOrCountBookmarks.
   BookmarkStatHelper bookmark_stat_helper;
   base::RunLoop run_loop_aggregator_done;
