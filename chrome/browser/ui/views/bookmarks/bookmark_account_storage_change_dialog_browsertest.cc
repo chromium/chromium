@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/bookmarks/move_bookmark_to_account_dialog.h"
+#include "chrome/browser/ui/views/bookmarks/bookmark_account_storage_change_dialog.h"
 
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser.h"
@@ -14,16 +14,16 @@
 
 namespace {
 
-class MoveBookmarksToAccountDialogTest : public DialogBrowserTest {
+class BookmarkAccountStorageChangeDialogTest : public DialogBrowserTest {
  public:
-  MoveBookmarksToAccountDialogTest() = default;
+  BookmarkAccountStorageChangeDialogTest() = default;
 
-  MoveBookmarksToAccountDialogTest(const MoveBookmarksToAccountDialogTest&) =
-      delete;
-  MoveBookmarksToAccountDialogTest& operator=(
-      const MoveBookmarksToAccountDialogTest&) = delete;
+  BookmarkAccountStorageChangeDialogTest(
+      const BookmarkAccountStorageChangeDialogTest&) = delete;
+  BookmarkAccountStorageChangeDialogTest& operator=(
+      const BookmarkAccountStorageChangeDialogTest&) = delete;
 
-  ~MoveBookmarksToAccountDialogTest() override = default;
+  ~BookmarkAccountStorageChangeDialogTest() override = default;
 
   void ShowUi(const std::string& name) override {
     signin::IdentityManager* identity_manager =
@@ -34,11 +34,11 @@ class MoveBookmarksToAccountDialogTest : public DialogBrowserTest {
                                       "https://avatar.com/avatar.png",
                                       gfx::test::CreateImage(/*size=*/32));
 
-    ShowMoveBookmarkToAccountDialog(browser());
+    ShowBookmarkAccountStorageChangeDialog(browser());
   }
 };
 
-IN_PROC_BROWSER_TEST_F(MoveBookmarksToAccountDialogTest, Show) {
+IN_PROC_BROWSER_TEST_F(BookmarkAccountStorageChangeDialogTest, Show) {
   set_baseline("5807574");
 
   ShowAndVerifyUi();

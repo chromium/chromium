@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/bookmarks/move_bookmark_to_account_dialog.h"
+#include "chrome/browser/ui/views/bookmarks/bookmark_account_storage_change_dialog.h"
 
 #include <memory>
 #include <utility>
@@ -34,7 +34,7 @@ const int kAvatarSize = 16;
 
 }  // namespace
 
-void ShowMoveBookmarkToAccountDialog(Browser* browser) {
+void ShowBookmarkAccountStorageChangeDialog(Browser* browser) {
   // Retrieve info about the signed-in account. Use GetOriginalProfile() because
   // the dialog can be shown in incognito.
   signin::IdentityManager* identity_manager =

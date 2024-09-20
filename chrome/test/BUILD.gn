@@ -3132,7 +3132,7 @@ if (!is_android) {
       "../browser/ui/views/bluetooth_device_pair_confirm_view_browsertest.cc",
       "../browser/ui/views/bookmarks/bookmark_bar_view_browsertest.cc",
       "../browser/ui/views/bookmarks/bookmark_bar_view_test_helper.h",
-      "../browser/ui/views/bookmarks/move_bookmark_to_account_dialog_browsertest.cc",
+      "../browser/ui/views/bookmarks/bookmark_account_storage_change_dialog_browsertest.cc",
       "../browser/ui/views/bookmarks/saved_tab_groups/saved_tab_group_bar_browsertest.cc",
       "../browser/ui/views/commerce/shopping_ui_handler_delegate_uitest.cc",
       "../browser/ui/views/confirm_bubble_views_browsertest.cc",
