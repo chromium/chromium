@@ -104,32 +104,32 @@ ElementRareDataVector::GetPseudoElements() const {
     return {};
   return data->GetPseudoElements();
 }
-void ElementRareDataVector::AddColumnScrollMarker(
-    ScrollMarkerPseudoElement& column_scroll_marker) {
+void ElementRareDataVector::AddColumnPseudoElement(
+    PseudoElement& column_pseudo_element) {
   PseudoElementData* data =
       static_cast<PseudoElementData*>(GetField(FieldId::kPseudoElementData));
   if (!data) {
     data = MakeGarbageCollected<PseudoElementData>();
     SetField(FieldId::kPseudoElementData, data);
   }
-  data->AddColumnScrollMarker(column_scroll_marker);
+  data->AddColumnPseudoElement(column_pseudo_element);
 }
-const PseudoElementData::ColumnScrollMarkersVector*
-ElementRareDataVector::GetColumnScrollMarkers() const {
+const PseudoElementData::ColumnPseudoElementsVector*
+ElementRareDataVector::GetColumnPseudoElements() const {
   PseudoElementData* data =
       static_cast<PseudoElementData*>(GetField(FieldId::kPseudoElementData));
   if (!data) {
     return nullptr;
   }
-  return data->GetColumnScrollMarkers();
+  return data->GetColumnPseudoElements();
 }
-void ElementRareDataVector::ClearColumnScrollMarkers() {
+void ElementRareDataVector::ClearColumnPseudoElements() {
   PseudoElementData* data =
       static_cast<PseudoElementData*>(GetField(FieldId::kPseudoElementData));
   if (!data) {
     return;
   }
-  data->ClearColumnScrollMarkers();
+  data->ClearColumnPseudoElements();
 }
 
 CSSStyleDeclaration& ElementRareDataVector::EnsureInlineCSSStyleDeclaration(

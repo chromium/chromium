@@ -115,7 +115,6 @@ class ResizeObserverSize;
 class ScrollIntoViewOptions;
 class CheckVisibilityOptions;
 class ScrollToOptions;
-class ScrollMarkerPseudoElement;
 class ShadowRoot;
 class ShadowRootInit;
 class SpaceSplitString;
@@ -1374,16 +1373,13 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
 
   void SetPseudoElementStylesChangeCounters(bool value);
 
-  // Create a per column ::scroll-marker from ::column::scroll-marker style
-  // during layout, and add it to the end of the list of generated markers.
-  // ClearColumnScrollMarkers() needs to be called before each layout pass that
-  // generate these markers.
-  // Note: a regular ::scroll-marker isn't added to this list and lives in
-  // separate field of PseudoElementData.
-  ScrollMarkerPseudoElement* CreateColumnScrollMarker();
-  const HeapVector<Member<ScrollMarkerPseudoElement>>* GetColumnScrollMarkers()
-      const;
-  void ClearColumnScrollMarkers();
+  // Create per column (fragmentainer) ::column pseudo element during layout,
+  // and add it to the end of the list of generated column pseudo elements.
+  // ClearColumnPseudoElements() needs to be called before each layout pass that
+  // generate these pseudo elements.
+  PseudoElement* CreateColumnPseudoElement();
+  const HeapVector<Member<PseudoElement>>* GetColumnPseudoElements() const;
+  void ClearColumnPseudoElements();
 
   // True if a scroller has not been explicitly scrolled by a user or by a
   // programmatic scroll. Indicates that we should use the CSS scroll-start

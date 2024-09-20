@@ -31,24 +31,23 @@ class PseudoElementData final : public GarbageCollected<PseudoElementData>,
   using PseudoElementVector = HeapVector<Member<PseudoElement>, 2>;
   PseudoElementVector GetPseudoElements() const;
 
-  using ColumnScrollMarkersVector =
-      HeapVector<Member<ScrollMarkerPseudoElement>>;
-  const ColumnScrollMarkersVector* GetColumnScrollMarkers() const {
-    return column_scroll_markers_;
+  using ColumnPseudoElementsVector = HeapVector<Member<PseudoElement>>;
+  const ColumnPseudoElementsVector* GetColumnPseudoElements() const {
+    return column_pseudo_elements_;
   }
-  void AddColumnScrollMarker(ScrollMarkerPseudoElement& column_scroll_marker) {
-    if (!column_scroll_markers_) {
-      column_scroll_markers_ =
-          MakeGarbageCollected<ColumnScrollMarkersVector>();
+  void AddColumnPseudoElement(PseudoElement& column_pseudo_element) {
+    if (!column_pseudo_elements_) {
+      column_pseudo_elements_ =
+          MakeGarbageCollected<ColumnPseudoElementsVector>();
     }
-    DCHECK(column_scroll_markers_->Find(column_scroll_marker) == kNotFound);
-    column_scroll_markers_->push_back(column_scroll_marker);
+    DCHECK(column_pseudo_elements_->Find(column_pseudo_element) == kNotFound);
+    column_pseudo_elements_->push_back(column_pseudo_element);
   }
-  void ClearColumnScrollMarkers() {
-    if (!column_scroll_markers_) {
+  void ClearColumnPseudoElements() {
+    if (!column_pseudo_elements_) {
       return;
     }
-    column_scroll_markers_->clear();
+    column_pseudo_elements_->clear();
   }
 
   bool HasPseudoElements() const;
@@ -65,7 +64,7 @@ class PseudoElementData final : public GarbageCollected<PseudoElementData>,
     visitor->Trace(generated_scroll_prev_button_);
     visitor->Trace(backdrop_);
     visitor->Trace(transition_data_);
-    visitor->Trace(column_scroll_markers_);
+    visitor->Trace(column_pseudo_elements_);
     ElementRareDataField::Trace(visitor);
   }
 
@@ -83,11 +82,11 @@ class PseudoElementData final : public GarbageCollected<PseudoElementData>,
 
   Member<TransitionPseudoElementData> transition_data_;
 
-  // Column scroll markers are scroll marker pseudo elements
-  // created once per column (fragmentainer) with style specified with
-  // ::column::scroll-marker. They live here as array, since there is no Element
-  // for fragment, and they should appear somewhere for focus and a11y.
-  Member<ColumnScrollMarkersVector> column_scroll_markers_;
+  // Column pseudo elements are created once per column (fragmentainer)
+  // with style specified with ::column. They live here as array, since there is
+  // no Element for column (fragmentainer), and they should appear somewhere for
+  // focus and a11y.
+  Member<ColumnPseudoElementsVector> column_pseudo_elements_;
 };
 
 inline bool PseudoElementData::HasPseudoElements() const {
@@ -96,7 +95,7 @@ inline bool PseudoElementData::HasPseudoElements() const {
          generated_scroll_marker_group_before_ ||
          generated_scroll_marker_group_after_ || generated_scroll_marker_ ||
          generated_scroll_next_button_ || generated_scroll_prev_button_ ||
-         (column_scroll_markers_ && !column_scroll_markers_->empty());
+         (column_pseudo_elements_ && !column_pseudo_elements_->empty());
 }
 
 inline void PseudoElementData::ClearPseudoElements() {
@@ -110,8 +109,8 @@ inline void PseudoElementData::ClearPseudoElements() {
   SetPseudoElement(kPseudoIdScrollMarker, nullptr);
   SetPseudoElement(kPseudoIdScrollNextButton, nullptr);
   SetPseudoElement(kPseudoIdScrollPrevButton, nullptr);
-  if (column_scroll_markers_) {
-    column_scroll_markers_->clear();
+  if (column_pseudo_elements_) {
+    column_pseudo_elements_->clear();
   }
   if (transition_data_) {
     transition_data_->ClearPseudoElements();
@@ -258,8 +257,8 @@ PseudoElementData::GetPseudoElements() const {
   if (generated_scroll_prev_button_) {
     result.push_back(generated_scroll_prev_button_);
   }
-  if (column_scroll_markers_) {
-    result.AppendVector(*column_scroll_markers_);
+  if (column_pseudo_elements_) {
+    result.AppendVector(*column_pseudo_elements_);
   }
   return result;
 }

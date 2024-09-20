@@ -1180,10 +1180,10 @@ TEST_F(ElementTest, GetPseudoElement) {
   }
 }
 
-TEST_F(ElementTest, ColumnScrollMarkers) {
+TEST_F(ElementTest, ColumnPseudoElements) {
   GetDocument().body()->setInnerHTML(R"HTML(
     <style id="test-style">
-    #test::column::scroll-marker { content: "*"; opacity: 0.5; }
+    #test::column { content: "*"; opacity: 0.5; }
     </style>
     <div id="test"></div>
     )HTML");
@@ -1192,24 +1192,24 @@ TEST_F(ElementTest, ColumnScrollMarkers) {
 
   Element* element = GetElementById("test");
 
-  ScrollMarkerPseudoElement* first_scroll_marker =
-      element->CreateColumnScrollMarker();
-  ASSERT_TRUE(first_scroll_marker);
-  ScrollMarkerPseudoElement* second_scroll_marker =
-      element->CreateColumnScrollMarker();
-  ASSERT_TRUE(second_scroll_marker);
-  ScrollMarkerPseudoElement* third_scroll_marker =
-      element->CreateColumnScrollMarker();
-  ASSERT_TRUE(third_scroll_marker);
+  PseudoElement* first_column_pseudo_element =
+      element->CreateColumnPseudoElement();
+  ASSERT_TRUE(first_column_pseudo_element);
+  PseudoElement* second_column_pseudo_element =
+      element->CreateColumnPseudoElement();
+  ASSERT_TRUE(second_column_pseudo_element);
+  PseudoElement* third_column_pseudo_element =
+      element->CreateColumnPseudoElement();
+  ASSERT_TRUE(third_column_pseudo_element);
 
-  ASSERT_TRUE(element->GetColumnScrollMarkers());
-  ASSERT_EQ(element->GetColumnScrollMarkers()->size(), 3u);
+  ASSERT_TRUE(element->GetColumnPseudoElements());
+  ASSERT_EQ(element->GetColumnPseudoElements()->size(), 3u);
 
   Element* style = GetElementById("test-style");
   style->setInnerHTML("");
   GetDocument().UpdateStyleAndLayoutTree();
 
-  ASSERT_EQ(element->GetColumnScrollMarkers()->size(), 0u);
+  ASSERT_EQ(element->GetColumnPseudoElements()->size(), 0u);
 }
 
 }  // namespace blink

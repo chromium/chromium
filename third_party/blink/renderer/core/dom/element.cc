@@ -4133,14 +4133,12 @@ StyleRecalcChange Element::RecalcOwnStyle(
     }
   }
 
-  // If element doesn't have ::column::scroll-marker rules anymore,
-  // clear column scroll markers.
-  if (old_style &&
-      old_style->CanGeneratePseudoElement(kPseudoIdColumnScrollMarker) &&
-      new_style &&
-      !new_style->CanGeneratePseudoElement(kPseudoIdColumnScrollMarker)) {
+  // If element doesn't have ::column rules anymore clear column pseudo
+  // elements.
+  if (old_style && old_style->CanGeneratePseudoElement(kPseudoIdColumn) &&
+      new_style && !new_style->CanGeneratePseudoElement(kPseudoIdColumn)) {
     if (ElementRareDataVector* data = GetElementRareData()) {
-      data->ClearColumnScrollMarkers();
+      data->ClearColumnPseudoElements();
     }
   }
 
@@ -6947,37 +6945,36 @@ void Element::SetPseudoElementStylesChangeCounters(bool value) {
   EnsureElementRareData().SetPseudoElementStylesChangeCounters(value);
 }
 
-ScrollMarkerPseudoElement* Element::CreateColumnScrollMarker() {
-  const ComputedStyle* style =
-      CachedStyleForPseudoElement(kPseudoIdColumnScrollMarker);
+PseudoElement* Element::CreateColumnPseudoElement() {
+  const ComputedStyle* style = CachedStyleForPseudoElement(kPseudoIdColumn);
   if (!style) {
     return nullptr;
   }
-  auto* scroll_marker = MakeGarbageCollected<ScrollMarkerPseudoElement>(
-      /*originating_element=*/this);
-  scroll_marker->SetComputedStyle(style);
+  auto* column_pseudo_element =
+      MakeGarbageCollected<PseudoElement>(this, kPseudoIdColumn);
+  column_pseudo_element->SetComputedStyle(style);
   ElementRareDataVector& data = EnsureElementRareData();
-  data.AddColumnScrollMarker(*scroll_marker);
-  scroll_marker->InsertedInto(*this);
-  probe::PseudoElementCreated(scroll_marker);
-  return scroll_marker;
+  data.AddColumnPseudoElement(*column_pseudo_element);
+  column_pseudo_element->InsertedInto(*this);
+  probe::PseudoElementCreated(column_pseudo_element);
+  return column_pseudo_element;
 }
 
-const PseudoElementData::ColumnScrollMarkersVector*
-Element::GetColumnScrollMarkers() const {
+const PseudoElementData::ColumnPseudoElementsVector*
+Element::GetColumnPseudoElements() const {
   ElementRareDataVector* data = GetElementRareData();
   if (!data) {
     return nullptr;
   }
-  return data->GetColumnScrollMarkers();
+  return data->GetColumnPseudoElements();
 }
 
-void Element::ClearColumnScrollMarkers() {
+void Element::ClearColumnPseudoElements() {
   ElementRareDataVector* data = GetElementRareData();
   if (!data) {
     return;
   }
-  data->ClearColumnScrollMarkers();
+  data->ClearColumnPseudoElements();
 }
 
 void Element::SetScrollbarPseudoElementStylesDependOnFontMetrics(bool value) {
