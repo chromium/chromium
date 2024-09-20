@@ -7,10 +7,22 @@
 
 #include "base/check_is_test.h"
 #include "chrome/browser/ui/webui/web_app_internals/web_app_internals.mojom-forward.h"
+#include "chrome/common/webui_url_constants.h"
+#include "content/public/browser/webui_config.h"
+#include "content/public/common/url_constants.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 
 class WebAppInternalsHandler;
+class WebAppInternalsUI;
+
+class WebAppInternalsUIConfig
+    : public content::DefaultWebUIConfig<WebAppInternalsUI> {
+ public:
+  WebAppInternalsUIConfig()
+      : DefaultWebUIConfig(content::kChromeUIScheme,
+                           chrome::kChromeUIWebAppInternalsHost) {}
+};
 
 // The WebUI for chrome://web-app-internals
 class WebAppInternalsUI : public ui::MojoWebUIController {

@@ -124,9 +124,6 @@
 #include "chrome/browser/ui/webui/settings/settings_ui.h"
 #include "chrome/browser/ui/webui/settings/settings_utils.h"
 #include "chrome/browser/ui/webui/signin/sync_confirmation_ui.h"
-#include "chrome/browser/ui/webui/sync_file_system_internals/sync_file_system_internals_ui.h"
-#include "chrome/browser/ui/webui/system/system_info_ui.h"
-#include "chrome/browser/ui/webui/web_app_internals/web_app_internals_ui.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "media/base/media_switches.h"
@@ -422,13 +419,6 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
   // Settings are implemented with native UI elements on Android.
   if (url.host_piece() == chrome::kChromeUISettingsHost)
     return &NewWebUI<settings::SettingsUI>;
-  if (url.host_piece() == chrome::kChromeUISyncFileSystemInternalsHost)
-    return &NewWebUI<SyncFileSystemInternalsUI>;
-  if (url.host_piece() == chrome::kChromeUISystemInfoHost)
-    return &NewWebUI<SystemInfoUI>;
-  if (url.host_piece() == chrome::kChromeUIWebAppInternalsHost) {
-    return &NewWebUI<WebAppInternalsUI>;
-  }
 #endif  // !BUILDFLAG(IS_ANDROID)
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (url.host_piece() == chrome::kChromeUIMobileSetupHost)
