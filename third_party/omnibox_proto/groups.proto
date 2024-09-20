@@ -80,6 +80,7 @@ enum GroupId {
   GROUP_MOBILE_CLIPBOARD = 30002;
   GROUP_MOBILE_QUERY_TILES = 30003;  // E.g. "News", "Films", "Sports", ...
   GROUP_MOBILE_RICH_ANSWER = 30004;  // Visually rich answer suggestion.
+  GROUP_MOBILE_OPEN_TABS = 30005;    // Tabs which are currently open.
 
   // Reserved for personalized zero-prefix suggestions.
   // Produced by LocalHistoryZeroSuggestProvider and maybe ZeroSuggestProvider.
