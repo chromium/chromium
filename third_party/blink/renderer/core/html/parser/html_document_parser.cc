@@ -182,7 +182,7 @@ PreloadProcessingMode GetPreloadProcessingMode() {
 
 bool BackgroundScanMainFrameOnly() {
   static const base::FeatureParam<bool> kScanMainFrameOnlyParam{
-      &features::kThreadedPreloadScanner, "scan-main-frame-only", false};
+      &features::kThreadedPreloadScanner, "scan-main-frame-only", true};
   // Cache the value to avoid parsing the param string more than once.
   static const bool kScanMainFrameOnlyValue = kScanMainFrameOnlyParam.Get();
   return kScanMainFrameOnlyValue;
