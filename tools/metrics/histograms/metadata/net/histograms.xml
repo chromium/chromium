@@ -5323,8 +5323,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.SpdySession.ServerSupportsWebSocket" enum="Boolean"
-    expires_after="2024-09-22">
-  <owner>dschinazi@chromium.org</owner>
+    expires_after="2025-09-19">
+  <owner>bashi@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
     Whether the server has advertised support for WebSockets over HTTP/2.
