@@ -111,6 +111,11 @@ pub enum Decoded {
 #[derive(Debug)]
 pub enum DecodingError {
     /// An error in IO of the underlying reader.
+    ///
+    /// Note that some IO errors may be recoverable - decoding may be retried after the
+    /// error is resolved.  For example, decoding from a slow stream of data (e.g. decoding from a
+    /// network stream) may occasionally result in [std::io::ErrorKind::UnexpectedEof] kind of
+    /// error, but decoding can resume when more data becomes available.
     IoError(io::Error),
     /// The input image was not a valid PNG.
     ///
@@ -163,10 +168,6 @@ pub(crate) enum FormatErrorInner {
     },
     /// Not a PNG, the magic signature is missing.
     InvalidSignature,
-    /// End of file, within a chunk event.
-    UnexpectedEof,
-    /// End of file, while expecting more image data.
-    UnexpectedEndOfChunk,
     // Errors of chunk level ordering, missing etc.
     /// Ihdr must occur.
     MissingIhdr,
@@ -235,8 +236,6 @@ pub(crate) enum FormatErrorInner {
     CorruptFlateStream {
         err: fdeflate::DecompressionError,
     },
-    /// The image data chunk was too short for the expected pixel count.
-    NoMoreImageData,
     /// Bad text encoding
     BadTextEncoding(TextDecodingError),
     /// fdAT shorter than 4 bytes
@@ -326,9 +325,6 @@ impl fmt::Display for FormatError {
             UnknownInterlaceMethod(nr) => write!(fmt, "Unknown interlace method {}.", nr),
             BadSubFrameBounds {} => write!(fmt, "Sub frame is out-of-bounds."),
             InvalidSignature => write!(fmt, "Invalid PNG signature."),
-            UnexpectedEof => write!(fmt, "Unexpected end of data before image end."),
-            UnexpectedEndOfChunk => write!(fmt, "Unexpected end of data within a chunk."),
-            NoMoreImageData => write!(fmt, "IDAT or fDAT chunk is has not enough data for image."),
             CorruptFlateStream { err } => {
                 write!(fmt, "Corrupt deflate stream. ")?;
                 write!(fmt, "{:?}", err)
@@ -1488,10 +1484,12 @@ mod tests {
     use super::ScaledFloat;
     use super::SourceChromaticities;
     use crate::test_utils::*;
-    use crate::{Decoder, DecodingError};
+    use crate::{Decoder, DecodingError, Reader};
     use byteorder::WriteBytesExt;
+    use std::cell::RefCell;
     use std::fs::File;
-    use std::io::Write;
+    use std::io::{ErrorKind, Read, Write};
+    use std::rc::Rc;
 
     #[test]
     fn image_gamma() -> Result<(), ()> {
@@ -1944,5 +1942,175 @@ mod tests {
         // the current behavior.
         reader.next_frame(&mut buf).unwrap();
         assert_eq!(3093270825, crc32fast::hash(&buf));
+    }
+
+    /// `StremingInput` can be used by tests to simulate a streaming input
+    /// (e.g. a slow http response, where all bytes are not immediately available).
+    #[derive(Clone)]
+    struct StreamingInput(Rc<RefCell<StreamingInputState>>);
+
+    struct StreamingInputState {
+        full_input: Vec<u8>,
+        current_pos: usize,
+        available_len: usize,
+    }
+
+    impl StreamingInput {
+        fn new(full_input: Vec<u8>) -> Self {
+            Self(Rc::new(RefCell::new(StreamingInputState {
+                full_input,
+                current_pos: 0,
+                available_len: 0,
+            })))
+        }
+
+        fn with_noncompressed_png(width: u32, idat_size: usize) -> Self {
+            let mut png = Vec::new();
+            write_noncompressed_png(&mut png, width, idat_size);
+            Self::new(png)
+        }
+
+        fn expose_next_byte(&self) {
+            let mut state = self.0.borrow_mut();
+            assert!(state.available_len < state.full_input.len());
+            state.available_len += 1;
+        }
+
+        fn stream_input_until_reader_is_available(&self) -> Reader<StreamingInput> {
+            loop {
+                self.0.borrow_mut().current_pos = 0;
+                match Decoder::new(self.clone()).read_info() {
+                    Ok(reader) => {
+                        break reader;
+                    }
+                    Err(DecodingError::IoError(e)) if e.kind() == ErrorKind::UnexpectedEof => {
+                        self.expose_next_byte();
+                    }
+                    _ => panic!("Unexpected error"),
+                }
+            }
+        }
+
+        fn decode_full_input<F, R>(&self, f: F) -> R
+        where
+            F: FnOnce(Reader<&[u8]>) -> R,
+        {
+            let state = self.0.borrow();
+            let decoder = Decoder::new(state.full_input.as_slice());
+            f(decoder.read_info().unwrap())
+        }
+    }
+
+    impl Read for StreamingInput {
+        fn read(&mut self, buf: &mut [u8]) -> std::io::Result<usize> {
+            let mut state = self.0.borrow_mut();
+            let mut available_bytes = &state.full_input[state.current_pos..state.available_len];
+            let number_of_read_bytes = available_bytes.read(buf)?;
+            state.current_pos += number_of_read_bytes;
+            assert!(state.current_pos <= state.available_len);
+            Ok(number_of_read_bytes)
+        }
+    }
+
+    /// Test resuming/retrying `Reader.next_frame` after `UnexpectedEof`.
+    #[test]
+    fn test_streaming_input_and_decoding_via_next_frame() {
+        const WIDTH: u32 = 16;
+        const IDAT_SIZE: usize = 512;
+        let streaming_input = StreamingInput::with_noncompressed_png(WIDTH, IDAT_SIZE);
+
+        let (whole_output_info, decoded_from_whole_input) =
+            streaming_input.decode_full_input(|mut r| {
+                let mut buf = vec![0; r.output_buffer_size()];
+                let output_info = r.next_frame(&mut buf).unwrap();
+                (output_info, buf)
+            });
+
+        let mut png_reader = streaming_input.stream_input_until_reader_is_available();
+        let mut decoded_from_streaming_input = vec![0; png_reader.output_buffer_size()];
+        let streaming_output_info = loop {
+            match png_reader.next_frame(decoded_from_streaming_input.as_mut_slice()) {
+                Ok(output_info) => break output_info,
+                Err(DecodingError::IoError(e)) if e.kind() == ErrorKind::UnexpectedEof => {
+                    streaming_input.expose_next_byte()
+                }
+                e => panic!("Unexpected error: {:?}", e),
+            }
+        };
+        assert_eq!(whole_output_info, streaming_output_info);
+        assert_eq!(
+            crc32fast::hash(&decoded_from_whole_input),
+            crc32fast::hash(&decoded_from_streaming_input)
+        );
+    }
+
+    /// Test resuming/retrying `Reader.next_row` after `UnexpectedEof`.
+    #[test]
+    fn test_streaming_input_and_decoding_via_next_row() {
+        const WIDTH: u32 = 16;
+        const IDAT_SIZE: usize = 512;
+        let streaming_input = StreamingInput::with_noncompressed_png(WIDTH, IDAT_SIZE);
+
+        let decoded_from_whole_input = streaming_input.decode_full_input(|mut r| {
+            let mut buf = vec![0; r.output_buffer_size()];
+            r.next_frame(&mut buf).unwrap();
+            buf
+        });
+
+        let mut png_reader = streaming_input.stream_input_until_reader_is_available();
+        let mut decoded_from_streaming_input = Vec::new();
+        loop {
+            match png_reader.next_row() {
+                Ok(None) => break,
+                Ok(Some(row)) => decoded_from_streaming_input.extend_from_slice(row.data()),
+                Err(DecodingError::IoError(e)) if e.kind() == ErrorKind::UnexpectedEof => {
+                    streaming_input.expose_next_byte()
+                }
+                e => panic!("Unexpected error: {:?}", e),
+            }
+        }
+        assert_eq!(
+            crc32fast::hash(&decoded_from_whole_input),
+            crc32fast::hash(&decoded_from_streaming_input)
+        );
+    }
+
+    /// Test resuming/retrying `Decoder.read_header_info` after `UnexpectedEof`.
+    #[test]
+    fn test_streaming_input_and_reading_header_info() {
+        const WIDTH: u32 = 16;
+        const IDAT_SIZE: usize = 512;
+        let streaming_input = StreamingInput::with_noncompressed_png(WIDTH, IDAT_SIZE);
+
+        let info_from_whole_input = streaming_input.decode_full_input(|r| r.info().clone());
+
+        let mut decoder = Decoder::new(streaming_input.clone());
+        let info_from_streaming_input = loop {
+            match decoder.read_header_info() {
+                Ok(info) => break info.clone(),
+                Err(DecodingError::IoError(e)) if e.kind() == ErrorKind::UnexpectedEof => {
+                    streaming_input.expose_next_byte()
+                }
+                e => panic!("Unexpected error: {:?}", e),
+            }
+        };
+
+        assert_eq!(info_from_whole_input.width, info_from_streaming_input.width);
+        assert_eq!(
+            info_from_whole_input.height,
+            info_from_streaming_input.height
+        );
+        assert_eq!(
+            info_from_whole_input.bit_depth,
+            info_from_streaming_input.bit_depth
+        );
+        assert_eq!(
+            info_from_whole_input.color_type,
+            info_from_streaming_input.color_type
+        );
+        assert_eq!(
+            info_from_whole_input.interlaced,
+            info_from_streaming_input.interlaced
+        );
     }
 }

@@ -5,7 +5,7 @@
 /// [the Adam7 algorithm](https://en.wikipedia.org/wiki/Adam7_algorithm)
 /// applies to a decoded row.
 ///
-/// See also [crate::decoder::Reader::next_interlaced_row].
+/// See also [Reader.next_interlaced_row](crate::decoder::Reader::next_interlaced_row).
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub struct Adam7Info {
     pub(crate) pass: u8,
@@ -27,10 +27,10 @@ impl Adam7Info {
     ///   in the 1st `pass`, the `width` is be 1/8th of the image width (rounded up as
     ///   necessary).
     ///
-    /// Note that in typical usage, `Adam7Info`s are returned by [Reader::next_interlaced_row]
+    /// Note that in typical usage, `Adam7Info`s are returned by [Reader.next_interlaced_row]
     /// and there is no need to create them by calling `Adam7Info::new`.  `Adam7Info::new` is
     /// nevertheless exposed as a public API, because it helps to provide self-contained example
-    /// usage of [expand_interlaced_row].
+    /// usage of [expand_interlaced_row](crate::expand_interlaced_row).
     pub fn new(pass: u8, line: u32, width: u32) -> Self {
         assert!(1 <= pass && pass <= 7);
         assert!(width > 0);
@@ -91,11 +91,6 @@ impl Adam7Iterator {
         self.line_width = line_width.ceil() as u32;
         self.lines = lines.ceil() as u32;
         self.line = 0;
-    }
-
-    /// The current pass#.
-    pub fn current_pass(&self) -> u8 {
-        self.current_pass
     }
 }
 

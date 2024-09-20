@@ -1,3 +1,4 @@
+mod interlace_info;
 mod stream;
 pub(crate) mod transform;
 mod zlib;
@@ -8,14 +9,16 @@ use self::transform::{create_transform_fn, TransformFn};
 
 use std::io::{BufRead, BufReader, Read};
 use std::mem;
-use std::ops::Range;
 
-use crate::adam7;
+use crate::adam7::{self, Adam7Info};
 use crate::chunk;
 use crate::common::{
     BitDepth, BytesPerPixel, ColorType, Info, ParameterErrorKind, Transformations,
 };
 use crate::filter::{unfilter, FilterType};
+
+pub use interlace_info::InterlaceInfo;
+use interlace_info::InterlaceInfoIter;
 
 /*
 pub enum InterlaceHandling {
@@ -104,42 +107,6 @@ impl<'data> InterlacedRow<'data> {
     }
 }
 
-/// Describes which interlacing algorithm applies to a decoded row.
-///
-/// PNG (2003) specifies two interlace modes, but reserves future extensions.
-///
-/// See also [Reader::next_interlaced_row].
-#[derive(Clone, Copy, Debug)]
-pub enum InterlaceInfo {
-    /// The `null` method means no interlacing.
-    Null,
-    /// [The `Adam7` algorithm](https://en.wikipedia.org/wiki/Adam7_algorithm) derives its name
-    /// from doing 7 passes over the image, only decoding a subset of all pixels in each pass.
-    /// The following table shows pictorially what parts of each 8x8 area of the image is found in
-    /// each pass:
-    ///
-    /// ```txt
-    /// 1 6 4 6 2 6 4 6
-    /// 7 7 7 7 7 7 7 7
-    /// 5 6 5 6 5 6 5 6
-    /// 7 7 7 7 7 7 7 7
-    /// 3 6 4 6 3 6 4 6
-    /// 7 7 7 7 7 7 7 7
-    /// 5 6 5 6 5 6 5 6
-    /// 7 7 7 7 7 7 7 7
-    /// ```
-    Adam7(adam7::Adam7Info),
-}
-
-impl InterlaceInfo {
-    fn get_adam7_info(&self) -> Option<&adam7::Adam7Info> {
-        match self {
-            InterlaceInfo::Null => None,
-            InterlaceInfo::Adam7(adam7info) => Some(adam7info),
-        }
-    }
-}
-
 /// A row of data without interlace information.
 #[derive(Clone, Copy, Debug)]
 pub struct Row<'data> {
@@ -224,9 +191,7 @@ impl<R: Read> Decoder<R> {
         while self.read_decoder.info().is_none() {
             buf.clear();
             if self.read_decoder.decode_next(&mut buf)?.is_none() {
-                return Err(DecodingError::Format(
-                    FormatErrorInner::UnexpectedEof.into(),
-                ));
+                return Err(DecodingError::IoError(std::io::ErrorKind::UnexpectedEof.into()));
             }
         }
         Ok(self.read_decoder.info().unwrap())
@@ -320,9 +285,7 @@ impl<R: Read> ReadDecoder<R> {
             let (consumed, result) = {
                 let buf = self.reader.fill_buf()?;
                 if buf.is_empty() {
-                    return Err(DecodingError::Format(
-                        FormatErrorInner::UnexpectedEof.into(),
-                    ));
+                    return Err(DecodingError::IoError(std::io::ErrorKind::UnexpectedEof.into()));
                 }
                 self.decoder.update(buf, image_data)?
             };
@@ -340,9 +303,7 @@ impl<R: Read> ReadDecoder<R> {
         while !self.at_eof {
             let buf = self.reader.fill_buf()?;
             if buf.is_empty() {
-                return Err(DecodingError::Format(
-                    FormatErrorInner::UnexpectedEof.into(),
-                ));
+                return Err(DecodingError::IoError(std::io::ErrorKind::UnexpectedEof.into()));
             }
             let (consumed, event) = self.decoder.update(buf, &mut vec![])?;
             self.reader.consume(consumed);
@@ -357,9 +318,7 @@ impl<R: Read> ReadDecoder<R> {
             }
         }
 
-        Err(DecodingError::Format(
-            FormatErrorInner::UnexpectedEof.into(),
-        ))
+        Err(DecodingError::IoError(std::io::ErrorKind::UnexpectedEof.into()))
     }
 
     fn info(&self) -> Option<&Info<'static>> {
@@ -406,18 +365,13 @@ struct SubframeInfo {
     width: u32,
     height: u32,
     rowlen: usize,
-    interlace: InterlaceIter,
+    current_interlace_info: Option<InterlaceInfo>,
+    interlace_info_iter: InterlaceInfoIter,
     consumed_and_flushed: bool,
 }
 
-#[derive(Clone)]
-enum InterlaceIter {
-    None(Range<u32>),
-    Adam7(adam7::Adam7Iterator),
-}
-
 /// Denote a frame as given by sequence numbers.
-#[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord)]
 enum SubframeIdx {
     /// The initial frame in an IDAT chunk without fcTL chunk applying to it.
     /// Note that this variant precedes `Some` as IDAT frames precede fdAT frames and all fdAT
@@ -470,6 +424,9 @@ impl<R: Read> Reader<R> {
             .ok_or(DecodingError::Format(FormatErrorInner::MissingIhdr.into()))?;
         self.bpp = info.bpp_in_prediction();
         self.subframe = SubframeInfo::new(info);
+        self.data_stream.clear();
+        self.current_start = 0;
+        self.prev_start = 0;
 
         // Allocate output buffer.
         let buflen = self.output_line_size(self.subframe.width);
@@ -534,9 +491,6 @@ impl<R: Read> Reader<R> {
             line_size: self.output_line_size(self.subframe.width),
         };
 
-        self.data_stream.clear();
-        self.current_start = 0;
-        self.prev_start = 0;
         if self.info().interlaced {
             let stride = self.output_line_size(self.info().width);
             let samples = color_type.samples() as u8;
@@ -549,12 +503,18 @@ impl<R: Read> Reader<R> {
             {
                 // `unwrap` won't panic, because we checked `self.info().interlaced` above.
                 let adam7info = interlace.get_adam7_info().unwrap();
-                adam7::expand_pass(buf, stride, row, &adam7info, bits_pp);
+                adam7::expand_pass(buf, stride, row, adam7info, bits_pp);
             }
         } else {
+            let current_interlace_info = self.subframe.current_interlace_info.as_ref();
+            let already_done_rows = current_interlace_info
+                .map(|info| info.line_number())
+                .unwrap_or(self.subframe.height);
+
             for row in buf
                 .chunks_exact_mut(output_info.line_size)
                 .take(self.subframe.height as usize)
+                .skip(already_done_rows as usize)
             {
                 self.next_interlaced_row_impl(self.subframe.rowlen, row)?;
             }
@@ -594,15 +554,22 @@ impl<R: Read> Reader<R> {
 
     /// Returns the next processed row of the image
     pub fn next_interlaced_row(&mut self) -> Result<Option<InterlacedRow>, DecodingError> {
-        let (rowlen, interlace) = match self.next_pass() {
-            Some((rowlen, interlace)) => (rowlen, interlace),
+        let interlace = match self.subframe.current_interlace_info.as_ref() {
             None => return Ok(None),
+            Some(interlace) => *interlace,
         };
-
-        let width = if let InterlaceInfo::Adam7(adam7::Adam7Info { width, .. }) = interlace {
-            width
-        } else {
-            self.subframe.width
+        if interlace.line_number() == 0 {
+            self.prev_start = self.current_start;
+        }
+        let rowlen = match interlace {
+            InterlaceInfo::Null(_) => self.subframe.rowlen,
+            InterlaceInfo::Adam7(Adam7Info { width, .. }) => {
+                self.info().raw_row_length_from_width(width)
+            }
+        };
+        let width = match interlace {
+            InterlaceInfo::Adam7(Adam7Info { width, .. }) => width,
+            InterlaceInfo::Null(_) => self.subframe.width,
         };
         let output_line_size = self.output_line_size(width);
 
@@ -658,6 +625,7 @@ impl<R: Read> Reader<R> {
         };
         transform_fn(row, output_buffer, self.info());
 
+        self.subframe.current_interlace_info = self.subframe.interlace_info_iter.next();
         Ok(())
     }
 
@@ -711,24 +679,6 @@ impl<R: Read> Reader<R> {
         color.raw_row_length_from_width(depth, width) - 1
     }
 
-    fn next_pass(&mut self) -> Option<(usize, InterlaceInfo)> {
-        match self.subframe.interlace {
-            InterlaceIter::Adam7(ref mut adam7) => {
-                let last_pass = adam7.current_pass();
-                let adam7info = adam7.next()?;
-                let rowlen = self.info().raw_row_length_from_width(adam7info.width);
-                if last_pass != adam7info.pass {
-                    self.prev_start = self.current_start;
-                }
-                Some((rowlen, InterlaceInfo::Adam7(adam7info)))
-            }
-            InterlaceIter::None(ref mut height) => {
-                let _ = height.next()?;
-                Some((self.subframe.rowlen, InterlaceInfo::Null))
-            }
-        }
-    }
-
     /// Write the next raw interlaced row into `self.prev`.
     ///
     /// The scanline is filtered against the previous scanline according to the specification.
@@ -736,9 +686,7 @@ impl<R: Read> Reader<R> {
         // Read image data until we have at least one full row (but possibly more than one).
         while self.data_stream.len() - self.current_start < rowlen {
             if self.subframe.consumed_and_flushed {
-                return Err(DecodingError::Format(
-                    FormatErrorInner::NoMoreImageData.into(),
-                ));
+                return Err(DecodingError::IoError(std::io::ErrorKind::UnexpectedEof.into()));
             }
 
             // Clear the current buffer before appending more data.
@@ -756,14 +704,7 @@ impl<R: Read> Reader<R> {
                     self.subframe.consumed_and_flushed = true;
                 }
                 None => {
-                    return Err(DecodingError::Format(
-                        if self.data_stream.is_empty() {
-                            FormatErrorInner::NoMoreImageData
-                        } else {
-                            FormatErrorInner::UnexpectedEndOfChunk
-                        }
-                        .into(),
-                    ));
+                    return Err(DecodingError::IoError(std::io::ErrorKind::UnexpectedEof.into()));
                 }
                 _ => (),
             }
@@ -796,7 +737,8 @@ impl SubframeInfo {
             width: 0,
             height: 0,
             rowlen: 0,
-            interlace: InterlaceIter::None(0..0),
+            current_interlace_info: None,
+            interlace_info_iter: InterlaceInfoIter::empty(),
             consumed_and_flushed: false,
         }
     }
@@ -810,17 +752,14 @@ impl SubframeInfo {
             (info.width, info.height)
         };
 
-        let interlace = if info.interlaced {
-            InterlaceIter::Adam7(adam7::Adam7Iterator::new(width, height))
-        } else {
-            InterlaceIter::None(0..height)
-        };
-
+        let mut interlace_info_iter = InterlaceInfoIter::new(width, height, info.interlaced);
+        let current_interlace_info = interlace_info_iter.next();
         SubframeInfo {
             width,
             height,
             rowlen: info.raw_row_length_from_width(width),
-            interlace,
+            current_interlace_info,
+            interlace_info_iter,
             consumed_and_flushed: false,
         }
     }
