@@ -147,8 +147,7 @@ void BocaAppHandler::GetSession(GetSessionCallback callback) {
                   mojom::GetSessionError::kHTTPError));
               return;
             }
-            if (!result.value() ||
-                result.value()->session_state() != ::boca::Session::ACTIVE) {
+            if (!result.value()) {
               std::move(callback).Run(mojom::SessionResult::NewError(
                   mojom::GetSessionError::kEmpty));
               return;
@@ -170,7 +169,7 @@ void BocaAppHandler::GetSession(GetSessionCallback callback) {
                   session_caption_config.translations_enabled();
             }
 
-            mojom::OnTaskConfigPtr on_task_config = mojom::OnTaskConfig::New();
+            mojom::OnTaskConfigPtr on_task_config;
             if (GetSessionConfigSafe(session.get()).has_on_task_config()) {
               auto session_on_task_config =
                   GetSessionConfigSafe(session.get()).on_task_config();
