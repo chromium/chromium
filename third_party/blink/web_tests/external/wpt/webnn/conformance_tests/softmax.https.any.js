@@ -13,19 +13,6 @@
 //
 // MLOperand softmax(MLOperand input, unsigned long axis);
 
-
-const getSoftmaxPrecisionTolerance = (graphResources) => {
-  const args = graphResources.operators[0].arguments;
-  const inputShape =
-      graphResources.inputs[args[0][Object.keys(args[0])[0]]].descriptor.shape;
-  const axis = args.length === 2 ? args[1][Object.keys(args[1])[0]] : 1;
-  const tolerance = inputShape[axis] * 3 + 3;
-  const toleranceValueDict = {float32: tolerance, float16: tolerance};
-  const expectedDataType =
-      getExpectedDataTypeOfSingleOutput(graphResources.expectedOutputs);
-  return {metricType: 'ULP', value: toleranceValueDict[expectedDataType]};
-};
-
 const softmaxTests = [
   {
     'name': 'softmax float32 2D constant tensor all positive',
@@ -225,8 +212,7 @@ const softmaxTests = [
 
 if (navigator.ml) {
   softmaxTests.forEach((test) => {
-    webnn_conformance_test(
-        buildGraphAndCompute, getSoftmaxPrecisionTolerance, test);
+    webnn_conformance_test(buildGraphAndCompute, getPrecisionTolerance, test);
   });
 } else {
   test(() => assert_implements(navigator.ml, 'missing navigator.ml'));

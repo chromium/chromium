@@ -45,7 +45,7 @@ const whereTests = [
           {'condition': 'inputCondition'}, {'trueValue': 'inputTrueValue'},
           {'falseValue': 'inputFalseValue'}
         ],
-        'outputs': 'output'
+        'outputs': 'whereOutput'
       }],
       'expectedOutputs': {
         'whereOutput': {
@@ -102,7 +102,7 @@ const whereTests = [
           {'condition': 'inputCondition'}, {'trueValue': 'inputTrueValue'},
           {'falseValue': 'inputFalseValue'}
         ],
-        'outputs': 'output'
+        'outputs': 'whereOutput'
       }],
       'expectedOutputs': {
         'whereOutput': {
@@ -165,7 +165,7 @@ const whereTests = [
           {'condition': 'inputCondition'}, {'trueValue': 'inputTrueValue'},
           {'falseValue': 'inputFalseValue'}
         ],
-        'outputs': 'output'
+        'outputs': 'whereOutput'
       }],
       'expectedOutputs': {
         'whereOutput': {
@@ -228,7 +228,7 @@ const whereTests = [
           {'condition': 'inputCondition'}, {'trueValue': 'inputTrueValue'},
           {'falseValue': 'inputFalseValue'}
         ],
-        'outputs': 'output'
+        'outputs': 'whereOutput'
       }],
       'expectedOutputs': {
         'whereOutput': {
@@ -291,7 +291,7 @@ const whereTests = [
           {'condition': 'inputCondition'}, {'trueValue': 'inputTrueValue'},
           {'falseValue': 'inputFalseValue'}
         ],
-        'outputs': 'output'
+        'outputs': 'whereOutput'
       }],
       'expectedOutputs': {
         'whereOutput': {
@@ -354,7 +354,7 @@ const whereTests = [
           {'condition': 'inputCondition'}, {'trueValue': 'inputTrueValue'},
           {'falseValue': 'inputFalseValue'}
         ],
-        'outputs': 'output'
+        'outputs': 'whereOutput'
       }],
       'expectedOutputs': {
         'whereOutput': {
@@ -417,7 +417,7 @@ const whereTests = [
           {'condition': 'inputCondition'}, {'trueValue': 'inputTrueValue'},
           {'falseValue': 'inputFalseValue'}
         ],
-        'outputs': 'output'
+        'outputs': 'whereOutput'
       }],
       'expectedOutputs': {
         'whereOutput': {
@@ -475,7 +475,7 @@ const whereTests = [
           {'condition': 'inputCondition'}, {'trueValue': 'inputTrueValue'},
           {'falseValue': 'inputFalseValue'}
         ],
-        'outputs': 'output'
+        'outputs': 'whereOutput'
       }],
       'expectedOutputs': {
         'whereOutput': {
@@ -535,7 +535,7 @@ const whereTests = [
           {'condition': 'inputCondition'}, {'trueValue': 'inputTrueValue'},
           {'falseValue': 'inputFalseValue'}
         ],
-        'outputs': 'output'
+        'outputs': 'whereOutput'
       }],
       'expectedOutputs': {
         'whereOutput': {
@@ -595,7 +595,7 @@ const whereTests = [
           {'condition': 'inputCondition'}, {'trueValue': 'inputTrueValue'},
           {'falseValue': 'inputFalseValue'}
         ],
-        'outputs': 'output'
+        'outputs': 'whereOutput'
       }],
       'expectedOutputs': {
         'whereOutput': {
@@ -655,7 +655,7 @@ const whereTests = [
           {'condition': 'inputCondition'}, {'trueValue': 'inputTrueValue'},
           {'falseValue': 'inputFalseValue'}
         ],
-        'outputs': 'output'
+        'outputs': 'whereOutput'
       }],
       'expectedOutputs': {
         'whereOutput': {
@@ -715,7 +715,7 @@ const whereTests = [
           {'condition': 'inputCondition'}, {'trueValue': 'inputTrueValue'},
           {'falseValue': 'inputFalseValue'}
         ],
-        'outputs': 'output'
+        'outputs': 'whereOutput'
       }],
       'expectedOutputs': {
         'whereOutput': {
@@ -772,7 +772,7 @@ const whereTests = [
           {'condition': 'inputCondition'}, {'trueValue': 'inputTrueValue'},
           {'falseValue': 'inputFalseValue'}
         ],
-        'outputs': 'output'
+        'outputs': 'whereOutput'
       }],
       'expectedOutputs': {
         'whereOutput': {
@@ -829,7 +829,7 @@ const whereTests = [
           {'condition': 'inputCondition'}, {'trueValue': 'inputTrueValue'},
           {'falseValue': 'inputFalseValue'}
         ],
-        'outputs': 'output'
+        'outputs': 'whereOutput'
       }],
       'expectedOutputs': {
         'whereOutput': {
@@ -886,7 +886,7 @@ const whereTests = [
           {'condition': 'inputCondition'}, {'trueValue': 'inputTrueValue'},
           {'falseValue': 'inputFalseValue'}
         ],
-        'outputs': 'output'
+        'outputs': 'whereOutput'
       }],
       'expectedOutputs': {
         'whereOutput': {
@@ -943,7 +943,7 @@ const whereTests = [
           {'condition': 'inputCondition'}, {'trueValue': 'inputTrueValue'},
           {'falseValue': 'inputFalseValue'}
         ],
-        'outputs': 'output'
+        'outputs': 'whereOutput'
       }],
       'expectedOutputs': {
         'whereOutput': {
@@ -991,7 +991,7 @@ const whereTests = [
           {'condition': 'inputCondition'}, {'trueValue': 'inputTrueValue'},
           {'falseValue': 'inputFalseValue'}
         ],
-        'outputs': 'output'
+        'outputs': 'whereOutput'
       }],
       'expectedOutputs': {
         'whereOutput': {

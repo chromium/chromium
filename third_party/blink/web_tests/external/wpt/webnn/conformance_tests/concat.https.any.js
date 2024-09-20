@@ -67,7 +67,7 @@ const buildGraphAndComputeWithConcat =
 
   // Execute the compiled graph.
   const result = await context.compute(graph, inputs, outputs);
-  return result;
+  return {result, namedOutputOperand};
 };
 
 const concatTests = [

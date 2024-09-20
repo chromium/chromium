@@ -14,14 +14,6 @@
 //
 // MLOperand gelu(MLOperand input);
 
-
-const getGeluPrecisionTolerance = (graphResources) => {
-  const toleranceValueDict = {float32: 18, float16: 18};
-  const expectedDataType =
-      getExpectedDataTypeOfSingleOutput(graphResources.expectedOutputs);
-  return {metricType: 'ULP', value: toleranceValueDict[expectedDataType]};
-};
-
 const geluTests = [
   {
     'name': 'gelu float32 0D scalar',
@@ -512,8 +504,7 @@ const geluTests = [
 
 if (navigator.ml) {
   geluTests.forEach((test) => {
-    webnn_conformance_test(
-        buildGraphAndCompute, getGeluPrecisionTolerance, test);
+    webnn_conformance_test(buildGraphAndCompute, getPrecisionTolerance, test);
   });
 } else {
   test(() => assert_implements(navigator.ml, 'missing navigator.ml'));

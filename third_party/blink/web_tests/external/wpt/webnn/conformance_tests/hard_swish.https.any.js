@@ -14,14 +14,6 @@
 //
 // MLOperand hardSwish(MLOperand input);
 
-
-const getHardSwishPrecisionTolerance = (graphResources) => {
-  const toleranceValueDict = {float32: 4, float16: 4};
-  const expectedDataType =
-      getExpectedDataTypeOfSingleOutput(graphResources.expectedOutputs);
-  return {metricType: 'ULP', value: toleranceValueDict[expectedDataType]};
-};
-
 const hardSwishTests = [
   {
     'name': 'hardSwish float32 0D tensor',
@@ -386,8 +378,7 @@ const hardSwishTests = [
 
 if (navigator.ml) {
   hardSwishTests.forEach((test) => {
-    webnn_conformance_test(
-        buildGraphAndCompute, getHardSwishPrecisionTolerance, test);
+    webnn_conformance_test(buildGraphAndCompute, getPrecisionTolerance, test);
   });
 } else {
   test(() => assert_implements(navigator.ml, 'missing navigator.ml'));

@@ -23,38 +23,6 @@
 // MLOperand gemm(
 //     MLOperand a, MLOperand b, optional MLGemmOptions options = {});
 
-
-const getGemmPrecisionTolerance = (graphResources) => {
-  // GEMM : alpha * (A x B) + beta * C
-  // An upper bound for the worst serial ordering is bounded by
-  // the number of lossy operations, where matrix multiplication
-  // is a dot product (mul and add times the number of elements)
-  // plus bias operations.
-  const args = graphResources.operators[0].arguments;
-  const shapeA =
-      graphResources.inputs[args[0][Object.keys(args[0])[0]]].descriptor.shape;
-  const options =
-      args.length === 3 ? {...args[2][Object.keys(args[2])[0]]} : {};
-  const width = options.aTranspose ? shapeA[0] : shapeA[1];
-  let tolerance = width * 2;
-  // default options.alpha is 1.0
-  if (options.alpha !== undefined && options.alpha !== 1.0) {
-    tolerance++;
-  }
-  if (options.c && options.beta !== 0.0) {
-    // default options.beta is 1.0
-    if (options.beta !== undefined && options.beta !== 1.0) {
-      tolerance++;
-    }
-    tolerance++;
-  }
-
-  const toleranceValueDict = {float32: tolerance, float16: tolerance};
-  const expectedDataType =
-      getExpectedDataTypeOfSingleOutput(graphResources.expectedOutputs);
-  return {metricType: 'ULP', value: toleranceValueDict[expectedDataType]};
-};
-
 const gemmTests = [
   {
     'name': 'gemm two float32 2D tensors (b is non-constant) default options',
@@ -1294,8 +1262,7 @@ const gemmTests = [
 
 if (navigator.ml) {
   gemmTests.forEach((test) => {
-    webnn_conformance_test(
-        buildGraphAndCompute, getGemmPrecisionTolerance, test);
+    webnn_conformance_test(buildGraphAndCompute, getPrecisionTolerance, test);
   });
 } else {
   test(() => assert_implements(navigator.ml, 'missing navigator.ml'));

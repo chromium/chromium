@@ -19,14 +19,6 @@
 //
 // MLOperand elu(MLOperand input, optional MLEluOptions options = {});
 
-
-const getEluPrecisionTolerance = (graphResources) => {
-  const toleranceValueDict = {float32: 18, float16: 18};
-  const expectedDataType =
-      getExpectedDataTypeOfSingleOutput(graphResources.expectedOutputs);
-  return {metricType: 'ULP', value: toleranceValueDict[expectedDataType]};
-};
-
 const eluTests = [
   {
     'name': 'elu float32 positive 0D scalar default options',
@@ -399,8 +391,7 @@ const eluTests = [
 
 if (navigator.ml) {
   eluTests.forEach((test) => {
-    webnn_conformance_test(
-        buildGraphAndCompute, getEluPrecisionTolerance, test);
+    webnn_conformance_test(buildGraphAndCompute, getPrecisionTolerance, test);
   });
 } else {
   test(() => assert_implements(navigator.ml, 'missing navigator.ml'));

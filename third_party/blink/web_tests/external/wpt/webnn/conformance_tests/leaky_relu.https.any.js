@@ -20,14 +20,6 @@
 // MLOperand leakyRelu(
 //     MLOperand input, optional MLLeakyReluOptions options = {});
 
-
-const getLeakyReluPrecisionTolerance = (graphResources) => {
-  const toleranceValueDict = {float32: 1, float16: 1};
-  const expectedDataType =
-      getExpectedDataTypeOfSingleOutput(graphResources.expectedOutputs);
-  return {metricType: 'ULP', value: toleranceValueDict[expectedDataType]};
-};
-
 const leakyReluTests = [
   {
     'name': 'leakyRelu float32 1D constant tensor default options',
@@ -438,8 +430,7 @@ const leakyReluTests = [
 
 if (navigator.ml) {
   leakyReluTests.forEach((test) => {
-    webnn_conformance_test(
-        buildGraphAndCompute, getLeakyReluPrecisionTolerance, test);
+    webnn_conformance_test(buildGraphAndCompute, getPrecisionTolerance, test);
   });
 } else {
   test(() => assert_implements(navigator.ml, 'missing navigator.ml'));

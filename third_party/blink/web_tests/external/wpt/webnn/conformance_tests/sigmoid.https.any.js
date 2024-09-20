@@ -14,15 +14,6 @@
 //
 // MLOperand sigmoid(MLOperand input);
 
-
-const getSigmoidPrecisionTolerance = (graphResources) => {
-  // float32 (leaving a few ULP for roundoff)
-  const toleranceValueDict = {float32: 32 + 2, float16: 3};
-  const expectedDataType =
-      getExpectedDataTypeOfSingleOutput(graphResources.expectedOutputs);
-  return {metricType: 'ULP', value: toleranceValueDict[expectedDataType]};
-};
-
 const sigmoidTests = [
   {
     'name': 'sigmoid float32 1D constant tensor',
@@ -291,8 +282,7 @@ const sigmoidTests = [
 
 if (navigator.ml) {
   sigmoidTests.forEach((test) => {
-    webnn_conformance_test(
-        buildGraphAndCompute, getSigmoidPrecisionTolerance, test);
+    webnn_conformance_test(buildGraphAndCompute, getPrecisionTolerance, test);
   });
 } else {
   test(() => assert_implements(navigator.ml, 'missing navigator.ml'));

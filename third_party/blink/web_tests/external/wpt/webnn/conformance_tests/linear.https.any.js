@@ -18,14 +18,6 @@
 //
 // MLOperand linear(MLOperand input, optional MLLinearOptions options = {});
 
-
-const getLinearPrecisionTolerance = (graphResources) => {
-  const toleranceValueDict = {float32: 2, float16: 2};
-  const expectedDataType =
-      getExpectedDataTypeOfSingleOutput(graphResources.expectedOutputs);
-  return {metricType: 'ULP', value: toleranceValueDict[expectedDataType]};
-};
-
 const linearTests = [
   {
     'name': 'linear float32 1D constant tensor default options',
@@ -555,8 +547,7 @@ const linearTests = [
 
 if (navigator.ml) {
   linearTests.forEach((test) => {
-    webnn_conformance_test(
-        buildGraphAndCompute, getLinearPrecisionTolerance, test);
+    webnn_conformance_test(buildGraphAndCompute, getPrecisionTolerance, test);
   });
 } else {
   test(() => assert_implements(navigator.ml, 'missing navigator.ml'));

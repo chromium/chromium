@@ -14,14 +14,6 @@
 //
 // MLOperand softplus(MLOperand input);
 
-
-const getSoftplusPrecisionTolerance = (graphResources) => {
-  const toleranceValueDict = {float32: 18, float16: 18};
-  const expectedDataType =
-      getExpectedDataTypeOfSingleOutput(graphResources.expectedOutputs);
-  return {metricType: 'ULP', value: toleranceValueDict[expectedDataType]};
-};
-
 const softplusTests = [
   {
     'name': 'softplus float32 1D constant tensor',
@@ -290,8 +282,7 @@ const softplusTests = [
 
 if (navigator.ml) {
   softplusTests.forEach((test) => {
-    webnn_conformance_test(
-        buildGraphAndCompute, getSoftplusPrecisionTolerance, test);
+    webnn_conformance_test(buildGraphAndCompute, getPrecisionTolerance, test);
   });
 } else {
   test(() => assert_implements(navigator.ml, 'missing navigator.ml'));

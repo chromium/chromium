@@ -20,14 +20,6 @@
 // MLOperand hardSigmoid(
 //     MLOperand input, optional MLHardSigmoidOptions options = {});
 
-
-const getHardSigmoidPrecisionTolerance = (graphResources) => {
-  const toleranceValueDict = {float32: 2, float16: 2};
-  const expectedDataType =
-      getExpectedDataTypeOfSingleOutput(graphResources.expectedOutputs);
-  return {metricType: 'ULP', value: toleranceValueDict[expectedDataType]};
-};
-
 const hardSigmoidTests = [
   {
     'name': 'hardSigmoid float32 positive 0D tensor default options',
@@ -699,8 +691,7 @@ const hardSigmoidTests = [
 
 if (navigator.ml) {
   hardSigmoidTests.forEach((test) => {
-    webnn_conformance_test(
-        buildGraphAndCompute, getHardSigmoidPrecisionTolerance, test);
+    webnn_conformance_test(buildGraphAndCompute, getPrecisionTolerance, test);
   });
 } else {
   test(() => assert_implements(navigator.ml, 'missing navigator.ml'));

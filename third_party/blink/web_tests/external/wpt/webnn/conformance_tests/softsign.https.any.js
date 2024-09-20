@@ -14,14 +14,6 @@
 //
 // MLOperand softsign(MLOperand input);
 
-
-const getSoftsignPrecisionTolerance = (graphResources) => {
-  const toleranceValueDict = {float32: 3, float16: 3};
-  const expectedDataType =
-      getExpectedDataTypeOfSingleOutput(graphResources.expectedOutputs);
-  return {metricType: 'ULP', value: toleranceValueDict[expectedDataType]};
-};
-
 const softsignTests = [
   {
     'name': 'softsign positive float32 1D constant tensor',
@@ -352,8 +344,7 @@ const softsignTests = [
 
 if (navigator.ml) {
   softsignTests.forEach((test) => {
-    webnn_conformance_test(
-        buildGraphAndCompute, getSoftsignPrecisionTolerance, test);
+    webnn_conformance_test(buildGraphAndCompute, getPrecisionTolerance, test);
   });
 } else {
   test(() => assert_implements(navigator.ml, 'missing navigator.ml'));

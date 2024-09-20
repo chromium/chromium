@@ -22,14 +22,6 @@
 //     MLOperand input, MLOperand mean, MLOperand, variance,
 //     optional MLBatchNormalizationOptions options = {});
 
-
-const getBatchNormPrecisionTolerance = (graphResources) => {
-  const toleranceValueDict = {float32: 6, float16: 6};
-  const expectedDataType =
-      getExpectedDataTypeOfSingleOutput(graphResources.expectedOutputs);
-  return {metricType: 'ULP', value: toleranceValueDict[expectedDataType]};
-};
-
 const batchNormTests = [
   {
     'name':
@@ -710,8 +702,7 @@ const batchNormTests = [
 
 if (navigator.ml) {
   batchNormTests.forEach((test) => {
-    webnn_conformance_test(
-        buildGraphAndCompute, getBatchNormPrecisionTolerance, test);
+    webnn_conformance_test(buildGraphAndCompute, getPrecisionTolerance, test);
   });
 } else {
   test(() => assert_implements(navigator.ml, 'missing navigator.ml'));

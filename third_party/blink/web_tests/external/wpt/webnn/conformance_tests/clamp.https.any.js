@@ -19,14 +19,6 @@
 //
 // MLOperand clamp(MLOperand input, optional MLClampOptions options = {});
 
-
-const getClampPrecisionTolerance = (graphResources) => {
-  const toleranceValueDict = {float32: 0, float16: 0};
-  const expectedDataType =
-      getExpectedDataTypeOfSingleOutput(graphResources.expectedOutputs);
-  return {metricType: 'ULP', value: toleranceValueDict[expectedDataType]};
-};
-
 const clampTests = [
   {
     'name': 'clamp float32 0D tensor default options',
@@ -932,8 +924,7 @@ const clampTests = [
 
 if (navigator.ml) {
   clampTests.forEach((test) => {
-    webnn_conformance_test(
-        buildGraphAndCompute, getClampPrecisionTolerance, test);
+    webnn_conformance_test(buildGraphAndCompute, getPrecisionTolerance, test);
   });
 } else {
   test(() => assert_implements(navigator.ml, 'missing navigator.ml'));

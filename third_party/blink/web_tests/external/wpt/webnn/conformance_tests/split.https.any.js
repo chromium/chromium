@@ -50,9 +50,11 @@ const splitTests = [
           'constant': true
         }
       },
-      'operators': [
-        {'name': 'split', 'arguments': [{'input': 'splitInput'}, {'splits': 3}]}
-      ],
+      'operators': [{
+        'name': 'split',
+        'arguments': [{'input': 'splitInput'}, {'splits': 3}],
+        'outputs': ['splitOutput1', 'splitOutput2', 'splitOutput3']
+      }],
       'expectedOutputs': {
         'splitOutput1': {
           'data': [
@@ -99,9 +101,11 @@ const splitTests = [
           'descriptor': {shape: [24], dataType: 'float32'}
         }
       },
-      'operators': [
-        {'name': 'split', 'arguments': [{'input': 'splitInput'}, {'splits': 3}]}
-      ],
+      'operators': [{
+        'name': 'split',
+        'arguments': [{'input': 'splitInput'}, {'splits': 3}],
+        'outputs': ['splitOutput1', 'splitOutput2', 'splitOutput3']
+      }],
       'expectedOutputs': {
         'splitOutput1': {
           'data': [
@@ -148,9 +152,11 @@ const splitTests = [
           'descriptor': {shape: [8, 3], dataType: 'float32'}
         }
       },
-      'operators': [
-        {'name': 'split', 'arguments': [{'input': 'splitInput'}, {'splits': 2}]}
-      ],
+      'operators': [{
+        'name': 'split',
+        'arguments': [{'input': 'splitInput'}, {'splits': 2}],
+        'outputs': ['splitOutput1', 'splitOutput2']
+      }],
       'expectedOutputs': {
         'splitOutput1': {
           'data': [
@@ -191,9 +197,11 @@ const splitTests = [
           'descriptor': {shape: [4, 3, 2], dataType: 'float32'}
         }
       },
-      'operators': [
-        {'name': 'split', 'arguments': [{'input': 'splitInput'}, {'splits': 2}]}
-      ],
+      'operators': [{
+        'name': 'split',
+        'arguments': [{'input': 'splitInput'}, {'splits': 2}],
+        'outputs': ['splitOutput1', 'splitOutput2']
+      }],
       'expectedOutputs': {
         'splitOutput1': {
           'data': [
@@ -234,9 +242,12 @@ const splitTests = [
           'descriptor': {shape: [12, 1, 1, 2], dataType: 'float32'}
         }
       },
-      'operators': [
-        {'name': 'split', 'arguments': [{'input': 'splitInput'}, {'splits': 4}]}
-      ],
+      'operators': [{
+        'name': 'split',
+        'arguments': [{'input': 'splitInput'}, {'splits': 4}],
+        'outputs':
+            ['splitOutput1', 'splitOutput2', 'splitOutput3', 'splitOutput4']
+      }],
       'expectedOutputs': {
         'splitOutput1': {
           'data': [
@@ -287,9 +298,11 @@ const splitTests = [
           'descriptor': {shape: [6, 1, 1, 2, 2], dataType: 'float32'}
         }
       },
-      'operators': [
-        {'name': 'split', 'arguments': [{'input': 'splitInput'}, {'splits': 2}]}
-      ],
+      'operators': [{
+        'name': 'split',
+        'arguments': [{'input': 'splitInput'}, {'splits': 2}],
+        'outputs': ['splitOutput1', 'splitOutput2']
+      }],
       'expectedOutputs': {
         'splitOutput1': {
           'data': [
@@ -332,7 +345,9 @@ const splitTests = [
       },
       'operators': [{
         'name': 'split',
-        'arguments': [{'input': 'splitInput'}, {'splits': [3, 3, 3, 3]}]
+        'arguments': [{'input': 'splitInput'}, {'splits': [3, 3, 3, 3]}],
+        'outputs':
+            ['splitOutput1', 'splitOutput2', 'splitOutput3', 'splitOutput4'],
       }],
       'expectedOutputs': {
         'splitOutput1': {
@@ -387,7 +402,9 @@ const splitTests = [
       'operators': [{
         'name': 'split',
         'arguments':
-            [{'input': 'splitInput'}, {'splits': 3}, {'options': {'axis': 0}}]
+            [{'input': 'splitInput'}, {'splits': 3}, {'options': {'axis': 0}}],
+        'outputs': ['splitOutput1', 'splitOutput2', 'splitOutput3'],
+
       }],
       'expectedOutputs': {
         'splitOutput1': {
@@ -439,7 +456,8 @@ const splitTests = [
         'name': 'split',
         'arguments': [
           {'input': 'splitInput'}, {'splits': [3, 3]}, {'options': {'axis': 2}}
-        ]
+        ],
+        'outputs': ['splitOutput1', 'splitOutput2']
       }],
       'expectedOutputs': {
         'splitOutput1': {
@@ -485,7 +503,8 @@ const splitTests = [
         'name': 'split',
         'arguments': [
           {'input': 'splitInput'}, {'splits': [2, 4]}, {'options': {'axis': 0}}
-        ]
+        ],
+        'outputs': ['splitOutput1', 'splitOutput2']
       }],
       'expectedOutputs': {
         'splitOutput1': {

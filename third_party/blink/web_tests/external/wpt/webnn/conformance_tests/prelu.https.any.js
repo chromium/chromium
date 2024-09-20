@@ -15,14 +15,6 @@
 //
 // MLOperand prelu(MLOperand input, MLOperand slope);
 
-
-const getPreluPrecisionTolerance = (graphResources) => {
-  const toleranceValueDict = {float32: 1, float16: 1};
-  const expectedDataType =
-      getExpectedDataTypeOfSingleOutput(graphResources.expectedOutputs);
-  return {metricType: 'ULP', value: toleranceValueDict[expectedDataType]};
-};
-
 const preluTests = [
   {
     'name': 'prelu float32 0D scalar',
@@ -619,8 +611,7 @@ const preluTests = [
 
 if (navigator.ml) {
   preluTests.forEach((test) => {
-    webnn_conformance_test(
-        buildGraphAndCompute, getPreluPrecisionTolerance, test);
+    webnn_conformance_test(buildGraphAndCompute, getPrecisionTolerance, test);
   });
 } else {
   test(() => assert_implements(navigator.ml, 'missing navigator.ml'));

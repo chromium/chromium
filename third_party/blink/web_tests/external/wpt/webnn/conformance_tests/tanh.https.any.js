@@ -14,7 +14,6 @@
 //
 // MLOperand tanh(MLOperand input);
 
-
 const getTanhPrecisionTolerance = (graphResources) => {
   const toleranceValueDict = {float32: 1 / 1024, float16: 1 / 512};
   const expectedDataType =

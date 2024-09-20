@@ -13,14 +13,6 @@
 //
 // MLOperand relu(MLOperand input);
 
-
-const getReluPrecisionTolerance = (graphResources) => {
-  const toleranceValueDict = {float32: 0, float16: 0};
-  const expectedDataType =
-      getExpectedDataTypeOfSingleOutput(graphResources.expectedOutputs);
-  return {metricType: 'ULP', value: toleranceValueDict[expectedDataType]};
-};
-
 const reluTests = [
   {
     'name': 'relu float32 1D constant tensor',
@@ -387,8 +379,7 @@ const reluTests = [
 
 if (navigator.ml) {
   reluTests.forEach((test) => {
-    webnn_conformance_test(
-        buildGraphAndCompute, getReluPrecisionTolerance, test);
+    webnn_conformance_test(buildGraphAndCompute, getPrecisionTolerance, test);
   });
 } else {
   test(() => assert_implements(navigator.ml, 'missing navigator.ml'));
