@@ -290,6 +290,7 @@ struct EnhancedSafeBrowsingActivePromoData
   TableViewDetailIconItem* _autoFillCreditCardDetailItem;
   TableViewDetailIconItem* _notificationsItem;
   TableViewDetailIconItem* _plusAddressesItem;
+  TableViewDetailIconItem* _defaultBrowserCellItem;
   TableViewItem* _syncItem;
 
   // Whether Settings have been dismissed.
@@ -803,20 +804,24 @@ struct EnhancedSafeBrowsingActivePromoData
 }
 
 - (TableViewItem*)defaultBrowserCellItem {
-  TableViewDetailIconItem* defaultBrowser = [[TableViewDetailIconItem alloc]
+  _defaultBrowserCellItem = [[TableViewDetailIconItem alloc]
       initWithType:SettingsItemTypeDefaultBrowser];
-  defaultBrowser.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-  defaultBrowser.text =
+  _defaultBrowserCellItem.accessoryType =
+      UITableViewCellAccessoryDisclosureIndicator;
+  _defaultBrowserCellItem.text =
       l10n_util::GetNSString(IDS_IOS_SETTINGS_SET_DEFAULT_BROWSER);
 
-  defaultBrowser.iconImage = DefaultSettingsRootSymbol(kDefaultBrowserSymbol);
-  defaultBrowser.iconBackgroundColor = [UIColor colorNamed:kPurple500Color];
-  defaultBrowser.iconTintColor = UIColor.whiteColor;
-  defaultBrowser.iconCornerRadius = kColorfulBackgroundSymbolCornerRadius;
+  _defaultBrowserCellItem.iconImage =
+      DefaultSettingsRootSymbol(kDefaultBrowserSymbol);
+  _defaultBrowserCellItem.iconBackgroundColor =
+      [UIColor colorNamed:kPurple500Color];
+  _defaultBrowserCellItem.iconTintColor = UIColor.whiteColor;
+  _defaultBrowserCellItem.iconCornerRadius =
+      kColorfulBackgroundSymbolCornerRadius;
 
-  [self maybeActivateDefaultBrowserBlueDotPromo:defaultBrowser];
+  [self updateDefaultBrowserSettingsBlueDot];
 
-  return defaultBrowser;
+  return _defaultBrowserCellItem;
 }
 
 - (TableViewItem*)accountCellItem {
@@ -1421,6 +1426,9 @@ struct EnhancedSafeBrowsingActivePromoData
           id<PopupMenuCommands> popupMenuHandler = HandlerForProtocol(
               _browser->GetCommandDispatcher(), PopupMenuCommands);
           [popupMenuHandler updateToolsMenuBlueDotVisibility];
+          self.showingDefaultBrowserNotificationDot =
+              [popupMenuHandler hasBlueDotForOverflowMenu];
+          [self updateDefaultBrowserSettingsBlueDot];
         }
         [self reloadData];
       }
@@ -2057,11 +2065,12 @@ struct EnhancedSafeBrowsingActivePromoData
 
 // Decides whether the default browser blue dot promo should be active, and adds
 // the blue dot badge to the right settings row if it is.
-- (void)maybeActivateDefaultBrowserBlueDotPromo:
-    (TableViewDetailIconItem*)defaultBrowserCellItem {
+- (void)updateDefaultBrowserSettingsBlueDot {
+  // Add or remove the blue dot promo badge for the default browser row.
   if (self.showingDefaultBrowserNotificationDot) {
-    // Add the blue dot promo badge to the default browser row.
-    defaultBrowserCellItem.badgeType = BadgeType::kNotificationDot;
+    _defaultBrowserCellItem.badgeType = BadgeType::kNotificationDot;
+  } else {
+    _defaultBrowserCellItem.badgeType = BadgeType::kNone;
   }
 }
 
