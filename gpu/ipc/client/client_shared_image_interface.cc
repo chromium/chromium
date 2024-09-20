@@ -25,7 +25,16 @@ namespace gpu {
 ClientSharedImageInterface::ClientSharedImageInterface(
     SharedImageInterfaceProxy* proxy,
     scoped_refptr<gpu::GpuChannelHost> channel)
-    : gpu_channel_(std::move(channel)), proxy_(proxy) {}
+    : gpu_channel_(std::move(channel)),
+      proxy_(proxy),
+      shared_memory_pool_(
+#if BUILDFLAG(IS_WIN)
+          base::MakeRefCounted<base::UnsafeSharedMemoryPool>()
+#else
+          nullptr
+#endif
+      ) {
+}
 
 ClientSharedImageInterface::~ClientSharedImageInterface() {
   gpu::SyncToken sync_token;
