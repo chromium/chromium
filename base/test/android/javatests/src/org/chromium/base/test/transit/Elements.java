@@ -137,11 +137,6 @@ public class Elements {
         }
 
         /** Declare as a Condition that a View is not displayed. */
-        public void declareNoView(ViewSpec viewSpec) {
-            declareNoView(viewSpec.getViewMatcher());
-        }
-
-        /** Declare as a Condition that a View is not displayed. */
         public void declareNoView(Matcher<View> viewMatcher) {
             assertNotBuilt();
             mOtherEnterConditions.add(new NotDisplayedAnymoreCondition(viewMatcher));
