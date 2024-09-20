@@ -21,7 +21,7 @@ CastMediaNotificationProducerKeyedService::
 void CastMediaNotificationProducerKeyedService::AddMediaItemManager(
     global_media_controls::MediaItemManager* media_item_manager) {
   CHECK(media_item_manager);
-  CHECK(!base::Contains(managers_and_producers_, media_item_manager));
+  RemoveMediaItemManager(media_item_manager);
   managers_and_producers_[media_item_manager] =
       std::make_unique<CastMediaNotificationProducer>(profile_,
                                                       media_item_manager);
