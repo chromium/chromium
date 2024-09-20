@@ -4,8 +4,6 @@
 
 #import "ios/chrome/browser/safety_check_notifications/utils/utils.h"
 
-#import <optional>
-
 #import "base/strings/sys_string_conversions.h"
 #import "base/time/time.h"
 #import "ios/chrome/browser/safety_check_notifications/utils/constants.h"
@@ -246,11 +244,21 @@ UNNotificationContent* NotificationForSafeBrowsingCheckState(
   return nil;
 }
 
-bool IsSafetyCheckNotification(UNNotificationRequest* request) {
-  return
-      [request.identifier isEqualToString:kSafetyCheckPasswordNotificationID] ||
-      [request.identifier
-          isEqualToString:kSafetyCheckUpdateChromeNotificationID] ||
-      [request.identifier
-          isEqualToString:kSafetyCheckSafeBrowsingNotificationID];
+std::optional<SafetyCheckNotificationType> ParseSafetyCheckNotificationType(
+    UNNotificationRequest* request) {
+  if ([request.identifier
+          isEqualToString:kSafetyCheckUpdateChromeNotificationID]) {
+    return SafetyCheckNotificationType::kUpdateChrome;
+  }
+
+  if ([request.identifier isEqualToString:kSafetyCheckPasswordNotificationID]) {
+    return SafetyCheckNotificationType::kPasswords;
+  }
+
+  if ([request.identifier
+          isEqualToString:kSafetyCheckSafeBrowsingNotificationID]) {
+    return SafetyCheckNotificationType::kSafeBrowsing;
+  }
+
+  return std::nullopt;
 }

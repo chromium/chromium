@@ -8,6 +8,7 @@
 #import "base/functional/bind.h"
 #import "base/functional/callback_helpers.h"
 #import "base/location.h"
+#import "base/metrics/histogram_functions.h"
 #import "base/task/bind_post_task.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/push_notification/model/constants.h"
@@ -94,7 +95,10 @@ bool SafetyCheckNotificationClient::HandleNotificationInteraction(
     UNNotificationResponse* response) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (!IsSafetyCheckNotification(response.notification.request)) {
+  std::optional<SafetyCheckNotificationType> notification_type =
+      ParseSafetyCheckNotificationType(response.notification.request);
+
+  if (!notification_type.has_value()) {
     return false;
   }
 
@@ -102,6 +106,15 @@ bool SafetyCheckNotificationClient::HandleNotificationInteraction(
   // notification to handle it later when the app becomes foreground active.
   interacted_notification_metadata_ =
       response.notification.request.content.userInfo;
+
+  if (![interacted_notification_metadata_ count]) {
+    base::UmaHistogramEnumeration("IOS.Notifications.SafetyCheck.Interaction",
+                                  SafetyCheckNotificationType::kError);
+    return false;
+  }
+
+  base::UmaHistogramEnumeration("IOS.Notifications.SafetyCheck.Interaction",
+                                notification_type.value());
 
   if (IsSceneLevelForegroundActive()) {
     ClearAndRescheduleSafetyCheckNotifications(
@@ -299,12 +312,15 @@ void SafetyCheckNotificationClient::OnNotificationsCleared(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (![requests count]) {
-    // TODO(crbug.com/362481419): Add logging to track the state of the
-    // notification (requested, triggered, etc.).
+    LogTriggeredNotifications();
+    LogDismissedNotifications();
+
     interacted_notification_metadata_ = nil;
 
     return;
   }
+
+  LogDismissedNotifications();
 
   interacted_notification_metadata_ = nil;
 
@@ -340,9 +356,6 @@ void SafetyCheckNotificationClient::ScheduleSafetyCheckNotifications(
     return;
   }
 
-  // TODO(crbug.com/362481419): Add completion handler to log metrics and
-  // actions when Safety Check notifications are requested.
-
   // If `experimental_arm` is `kSuccinct`, only one notification can be
   // scheduled at a time. Otherwise, multiple notifications can be scheduled
   // concurrently.
@@ -356,6 +369,9 @@ void SafetyCheckNotificationClient::ScheduleSafetyCheckNotifications(
     [UNUserNotificationCenter.currentNotificationCenter
         addNotificationRequest:password_notification
          withCompletionHandler:nil];
+
+    base::UmaHistogramEnumeration("IOS.Notifications.SafetyCheck.Requested",
+                                  SafetyCheckNotificationType::kPasswords);
 
     // In the `kSuccinct` experiment arm, only one notification is allowed at a
     // time. Exit early after scheduling it.
@@ -374,6 +390,9 @@ void SafetyCheckNotificationClient::ScheduleSafetyCheckNotifications(
         addNotificationRequest:safe_browsing_notification
          withCompletionHandler:nil];
 
+    base::UmaHistogramEnumeration("IOS.Notifications.SafetyCheck.Requested",
+                                  SafetyCheckNotificationType::kSafeBrowsing);
+
     // In the `kSuccinct` experiment arm, only one notification is allowed at a
     // time. Exit early after scheduling it.
     if (experimental_arm ==
@@ -390,6 +409,9 @@ void SafetyCheckNotificationClient::ScheduleSafetyCheckNotifications(
     [UNUserNotificationCenter.currentNotificationCenter
         addNotificationRequest:update_chrome_notification
          withCompletionHandler:nil];
+
+    base::UmaHistogramEnumeration("IOS.Notifications.SafetyCheck.Requested",
+                                  SafetyCheckNotificationType::kUpdateChrome);
   }
 
   std::move(completion).Run();
@@ -487,4 +509,81 @@ void SafetyCheckNotificationClient::ShowUIForNotificationMetadata(
 
     return;
   }
+}
+
+void SafetyCheckNotificationClient::LogTriggeredNotifications() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  PrefService* local_pref_service = GetApplicationContext()->GetLocalState();
+
+  const PrefService::Preference* last_sent = local_pref_service->FindPreference(
+      prefs::kIosSafetyCheckNotificationsLastSent);
+
+  if (last_sent->IsDefaultValue()) {
+    return;
+  }
+
+  SafetyCheckNotificationType type =
+      static_cast<SafetyCheckNotificationType>(last_sent->GetValue()->GetInt());
+
+  base::UmaHistogramEnumeration("IOS.Notifications.SafetyCheck.Triggered",
+                                type);
+
+  local_pref_service->SetInteger(
+      prefs::kIosSafetyCheckNotificationsLastTriggered, int(type));
+
+  local_pref_service->ClearPref(prefs::kIosSafetyCheckNotificationsLastSent);
+}
+
+void SafetyCheckNotificationClient::LogDismissedNotifications() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  CHECK(task_runner_);
+
+  PrefService* local_pref_service = GetApplicationContext()->GetLocalState();
+
+  if ([interacted_notification_metadata_ count]) {
+    local_pref_service->ClearPref(
+        prefs::kIosSafetyCheckNotificationsLastTriggered);
+
+    return;
+  }
+
+  const PrefService::Preference* last_triggered =
+      local_pref_service->FindPreference(
+          prefs::kIosSafetyCheckNotificationsLastTriggered);
+
+  if (last_triggered->IsDefaultValue()) {
+    return;
+  }
+
+  auto completion = base::CallbackToBlock(base::BindPostTask(
+      task_runner_,
+      base::BindOnce(
+          &SafetyCheckNotificationClient::OnGetDeliveredNotifications,
+          weak_ptr_factory_.GetWeakPtr())));
+
+  [UNUserNotificationCenter.currentNotificationCenter
+      getDeliveredNotificationsWithCompletionHandler:completion];
+}
+
+void SafetyCheckNotificationClient::OnGetDeliveredNotifications(
+    NSArray<UNNotification*>* notifications) {
+  for (UNNotification* notification in notifications) {
+    if (ParseSafetyCheckNotificationType(notification.request).has_value()) {
+      return;
+    }
+  }
+
+  // No Safety Check notification was found, so it must have been dismissed.
+  PrefService* local_pref_service = GetApplicationContext()->GetLocalState();
+
+  SafetyCheckNotificationType type =
+      static_cast<SafetyCheckNotificationType>(local_pref_service->GetInteger(
+          prefs::kIosSafetyCheckNotificationsLastTriggered));
+
+  base::UmaHistogramEnumeration("IOS.Notifications.SafetyCheck.Dismissed",
+                                type);
+
+  local_pref_service->ClearPref(
+      prefs::kIosSafetyCheckNotificationsLastTriggered);
 }

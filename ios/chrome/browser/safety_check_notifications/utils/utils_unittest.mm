@@ -192,12 +192,12 @@ TEST_F(SafetyCheckNotificationUtilsTest, IdentifiesNonSafetyCheckRequest) {
                                            content:content
                                            trigger:nil];
 
-  EXPECT_FALSE(IsSafetyCheckNotification(request));
+  EXPECT_FALSE(ParseSafetyCheckNotificationType(request).has_value());
 }
 
-// Tests that a request with a Safety Check-related notification identifier
-// is correctly identified as a Safety Check notification.
-TEST_F(SafetyCheckNotificationUtilsTest, IdentifiesSafetyCheckRequest) {
+// Tests that an Update Chrome notification request is correctly identified and
+// returns the `kUpdateChrome` identifier enum.
+TEST_F(SafetyCheckNotificationUtilsTest, IdentifiesUpdateChromeRequest) {
   UNMutableNotificationContent* content =
       [[UNMutableNotificationContent alloc] init];
   content.title = @"Safety Check";
@@ -207,5 +207,38 @@ TEST_F(SafetyCheckNotificationUtilsTest, IdentifiesSafetyCheckRequest) {
                     content:content
                     trigger:nil];
 
-  EXPECT_TRUE(IsSafetyCheckNotification(request));
+  EXPECT_EQ(ParseSafetyCheckNotificationType(request).value(),
+            SafetyCheckNotificationType::kUpdateChrome);
+}
+
+// Tests that a Passwords notification request is correctly identified and
+// returns the `kPasswords` identifier enum.
+TEST_F(SafetyCheckNotificationUtilsTest, IdentifiesPasswordRequest) {
+  UNMutableNotificationContent* content =
+      [[UNMutableNotificationContent alloc] init];
+  content.title = @"Safety Check";
+
+  UNNotificationRequest* request = [UNNotificationRequest
+      requestWithIdentifier:kSafetyCheckPasswordNotificationID
+                    content:content
+                    trigger:nil];
+
+  EXPECT_EQ(ParseSafetyCheckNotificationType(request).value(),
+            SafetyCheckNotificationType::kPasswords);
+}
+
+// Tests that a Safe Browsing notification request is correctly identified and
+// returns the `kSafeBrowsing` identifier enum.
+TEST_F(SafetyCheckNotificationUtilsTest, IdentifiesSafeBrowsingRequest) {
+  UNMutableNotificationContent* content =
+      [[UNMutableNotificationContent alloc] init];
+  content.title = @"Safety Check";
+
+  UNNotificationRequest* request = [UNNotificationRequest
+      requestWithIdentifier:kSafetyCheckSafeBrowsingNotificationID
+                    content:content
+                    trigger:nil];
+
+  EXPECT_EQ(ParseSafetyCheckNotificationType(request).value(),
+            SafetyCheckNotificationType::kSafeBrowsing);
 }

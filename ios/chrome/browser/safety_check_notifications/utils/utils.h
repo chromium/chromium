@@ -8,8 +8,12 @@
 #import <Foundation/Foundation.h>
 #import <UserNotifications/UserNotifications.h>
 
+#import <optional>
+
 #import "ios/chrome/browser/passwords/model/password_checkup_utils.h"
 #import "ios/chrome/browser/safety_check/model/ios_chrome_safety_check_manager_constants.h"
+
+enum class SafetyCheckNotificationType;
 
 // Returns a notification request for the most critical Password issue
 // found using `state` and `insecure_password_counts`. Returns `nil` if no
@@ -49,7 +53,9 @@ UNNotificationRequest* SafeBrowsingNotificationRequest(
 UNNotificationContent* NotificationForSafeBrowsingCheckState(
     SafeBrowsingSafetyCheckState state);
 
-// Returns `true` if the given `request` is a Safety Check notification.
-bool IsSafetyCheckNotification(UNNotificationRequest* request);
+// Returns the `SafetyCheckNotificationType` for the given `request`, or
+// `std::nullopt` if the `request` is not a Safety Check notification.
+std::optional<SafetyCheckNotificationType> ParseSafetyCheckNotificationType(
+    UNNotificationRequest* request);
 
 #endif  // IOS_CHROME_BROWSER_SAFETY_CHECK_NOTIFICATIONS_UTILS_UTILS_H_
