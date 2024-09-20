@@ -1758,8 +1758,8 @@ void HostProcess::InitializeSignaling() {
         host_id_, oauth_token_getter_.get(), context_->url_loader_factory());
   } else if (HasScope(kChromotingOAuthMe2MeScope)) {
     service_client = std::make_unique<Me2MeHeartbeatServiceClient>(
-        host_id_, oauth_token_getter_.get(), context_->url_loader_factory(),
-        std::nullopt);
+        host_id_, is_corp_host_, oauth_token_getter_.get(),
+        context_->url_loader_factory());
   } else {
     LOG(ERROR) << "Missing required OAuth scope - can't launch host";
     ShutdownHost(kInvalidOauthCredentialsExitCode);
