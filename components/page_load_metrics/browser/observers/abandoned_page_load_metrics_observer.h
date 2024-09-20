@@ -13,7 +13,10 @@ namespace internal {
 // Exposed for tests.
 extern const char kAbandonedPageLoadMetricsHistogramPrefix[];
 extern const char kSuffixWasBackgrounded[];
-extern const char kSuffixWasHidden[];
+extern const char kSuffixTabWasHiddenAtStartStaysHidden[];
+extern const char kSuffixTabWasHiddenAtStartLaterShown[];
+extern const char kSuffixTabWasHiddenStaysHidden[];
+extern const char kSuffixTabWasHiddenLaterShown[];
 extern const char kRendererProcessCreatedBeforeNavHistogramName[];
 extern const char kRendererProcessInitHistogramName[];
 
@@ -143,6 +146,7 @@ class AbandonedPageLoadMetricsObserver
       const page_load_metrics::mojom::PageLoadTiming& timing) override;
   ObservePolicy OnHidden(
       const page_load_metrics::mojom::PageLoadTiming& timing) override;
+  ObservePolicy OnShown() override;
   void OnFailedProvisionalLoad(
       const page_load_metrics::FailedProvisionalLoadInfo&
           failed_provisional_load_info) override;
@@ -188,11 +192,13 @@ class AbandonedPageLoadMetricsObserver
   // time from the navigation start. Also updates `latest_loading_milestone_` if
   // the given milestone is newer than the current `latest_loading_milestone_`.
   void LogLoadingMilestone(NavigationMilestone milestone, base::TimeDelta time);
+
   bool WasBackgrounded() const {
     return !first_backgrounded_timestamp_.is_null();
   }
   bool WasHidden() const { return !first_hidden_timestamp_.is_null(); }
 
+  void OnHiddenInternal();
   void LogPreviousBackgroundingIfNeeded();
   void LogPreviousHidingIfNeeded();
 
@@ -226,6 +232,12 @@ class AbandonedPageLoadMetricsObserver
   // false).
   base::TimeTicks first_backgrounded_timestamp_;
   base::TimeTicks first_hidden_timestamp_;
+  bool started_in_foreground_ = false;
+
+  // Timestamp of the first and latest `OnShown()` call.
+  base::TimeTicks first_shown_timestamp_;
+  base::TimeTicks last_shown_timestamp_;
+
   // Whether we've previously logged backgrounding/hiding time. This is useful
   // because we will keep observing when backgrounding/hiding happens, unlike
   // other abandonment triggers. This ensures we will only log those events

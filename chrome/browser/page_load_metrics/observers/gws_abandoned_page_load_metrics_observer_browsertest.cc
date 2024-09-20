@@ -113,8 +113,7 @@ class GWSAbandonedPageLoadMetricsObserverBrowserTest
     };
   }
   std::vector<NavigationMilestone> all_testable_milestones() {
-    return {NavigationMilestone::kNavigationStart,
-            NavigationMilestone::kLoaderStart,
+    return {NavigationMilestone::kLoaderStart,
             NavigationMilestone::kFirstRedirectResponseLoaderCallback,
             NavigationMilestone::kNonRedirectResponseLoaderCallback};
   }
@@ -411,19 +410,20 @@ class GWSAbandonedPageLoadMetricsObserverBrowserTest
                        GetLastMilestoneBeforeAbandonHistogramName(
                            std::nullopt, histogram_suffix)})));
     } else {
-      EXPECT_THAT(histogram_tester.GetTotalCountsForPrefix(
-                      GetLastMilestoneBeforeAbandonHistogramName()),
-                  testing::UnorderedElementsAreArray(ExpandHistograms(
-                      {GetLastMilestoneBeforeAbandonHistogramName(
-                           abandon_reason, histogram_suffix),
-                       GetLastMilestoneBeforeAbandonHistogramName(
-                           abandon_after_hiding_reason,
-                           internal::kSuffixWasHidden + histogram_suffix),
-                       GetLastMilestoneBeforeAbandonHistogramName(
-                           std::nullopt, histogram_suffix),
-                       GetLastMilestoneBeforeAbandonHistogramName(
-                           std::nullopt,
-                           internal::kSuffixWasHidden + histogram_suffix)})));
+      EXPECT_THAT(
+          histogram_tester.GetTotalCountsForPrefix(
+              GetLastMilestoneBeforeAbandonHistogramName()),
+          testing::UnorderedElementsAreArray(ExpandHistograms(
+              {GetLastMilestoneBeforeAbandonHistogramName(abandon_reason,
+                                                          histogram_suffix),
+               GetLastMilestoneBeforeAbandonHistogramName(
+                   abandon_after_hiding_reason,
+                   internal::kSuffixTabWasHiddenStaysHidden + histogram_suffix),
+               GetLastMilestoneBeforeAbandonHistogramName(std::nullopt,
+                                                          histogram_suffix),
+               GetLastMilestoneBeforeAbandonHistogramName(
+                   std::nullopt, internal::kSuffixTabWasHiddenStaysHidden +
+                                     histogram_suffix)})));
     }
 
     for (auto milestone : all_milestones()) {
@@ -459,20 +459,24 @@ class GWSAbandonedPageLoadMetricsObserverBrowserTest
                     testing::UnorderedElementsAreArray(ExpandHistograms(
                         {GetMilestoneToAbandonHistogramName(
                              milestone, abandon_after_hiding_reason,
-                             internal::kSuffixWasHidden + histogram_suffix),
+                             internal::kSuffixTabWasHiddenStaysHidden +
+                                 histogram_suffix),
                          GetMilestoneToAbandonHistogramName(
                              milestone, std::nullopt,
-                             internal::kSuffixWasHidden + histogram_suffix)})));
-        EXPECT_THAT(histogram_tester.GetTotalCountsForPrefix(
-                        GetAbandonReasonAtMilestoneHistogramName(milestone)),
-                    testing::UnorderedElementsAreArray(ExpandHistograms(
-                        {GetAbandonReasonAtMilestoneHistogramName(
-                            milestone,
-                            internal::kSuffixWasHidden + histogram_suffix)})));
+                             internal::kSuffixTabWasHiddenStaysHidden +
+                                 histogram_suffix)})));
+        EXPECT_THAT(
+            histogram_tester.GetTotalCountsForPrefix(
+                GetAbandonReasonAtMilestoneHistogramName(milestone)),
+            testing::UnorderedElementsAreArray(
+                ExpandHistograms({GetAbandonReasonAtMilestoneHistogramName(
+                    milestone, internal::kSuffixTabWasHiddenStaysHidden +
+                                   histogram_suffix)})));
 
         histogram_tester.ExpectUniqueSample(
             GetAbandonReasonAtMilestoneHistogramName(
-                milestone, internal::kSuffixWasHidden + histogram_suffix),
+                milestone,
+                internal::kSuffixTabWasHiddenStaysHidden + histogram_suffix),
             abandon_after_hiding_reason.value(), 1);
       } else {
         EXPECT_TRUE(histogram_tester
@@ -490,17 +494,18 @@ class GWSAbandonedPageLoadMetricsObserverBrowserTest
     // recording the milestones after the hiding abandonment, but will add
     // the "WasHidden" suffix.
     if (abandon_reason == AbandonReason::kHidden) {
-      histogram_suffix = internal::kSuffixWasHidden + histogram_suffix;
+      std::string histogram_suffix_after_hiding =
+          internal::kSuffixTabWasHiddenStaysHidden + histogram_suffix;
       // Only expect entries for milestones after the hiding takes place.
       bool already_hidden =
           (abandon_milestone == NavigationMilestone::kNavigationStart);
       histogram_tester.ExpectTotalCount(
           GetMilestoneHistogramName(NavigationMilestone::kNavigationStart,
-                                    histogram_suffix),
+                                    histogram_suffix_after_hiding),
           0);
       histogram_tester.ExpectTotalCount(
           GetMilestoneHistogramName(NavigationMilestone::kLoaderStart,
-                                    histogram_suffix),
+                                    histogram_suffix_after_hiding),
           already_hidden ? 1 : 0);
 
       already_hidden |=
@@ -509,12 +514,12 @@ class GWSAbandonedPageLoadMetricsObserverBrowserTest
       histogram_tester.ExpectTotalCount(
           GetMilestoneHistogramName(
               NavigationMilestone::kFirstRedirectedRequestStart,
-              histogram_suffix),
+              histogram_suffix_after_hiding),
           (has_redirect && already_hidden) ? 1 : 0);
       histogram_tester.ExpectTotalCount(
           GetMilestoneHistogramName(
               NavigationMilestone::kFirstRedirectResponseLoaderCallback,
-              histogram_suffix),
+              histogram_suffix_after_hiding),
           (has_redirect && already_hidden) ? 1 : 0);
 
       already_hidden |=
@@ -523,26 +528,33 @@ class GWSAbandonedPageLoadMetricsObserverBrowserTest
       histogram_tester.ExpectTotalCount(
           GetMilestoneHistogramName(
               NavigationMilestone::kNonRedirectedRequestStart,
-              histogram_suffix),
+              histogram_suffix_after_hiding),
           already_hidden ? 1 : 0);
       histogram_tester.ExpectTotalCount(
           GetMilestoneHistogramName(
               NavigationMilestone::kNonRedirectResponseLoaderCallback,
-              histogram_suffix),
+              histogram_suffix_after_hiding),
           already_hidden ? 1 : 0);
       // The navigation might be abandoned for a second time after hiding. In
       // that case, the milestones after the second abandonment won't be logged,
       // except if it was another hiding.
+      if (abandon_after_hiding_reason.has_value() &&
+          abandon_after_hiding_reason == AbandonReason::kHidden) {
+        // If the second abandonment is also hiding, that means the tab was
+        // shown after the first hiding (before getting hidden again).
+        histogram_suffix_after_hiding =
+            internal::kSuffixTabWasHiddenLaterShown + histogram_suffix;
+      }
       histogram_tester.ExpectTotalCount(
           GetMilestoneHistogramName(NavigationMilestone::kCommitSent,
-                                    histogram_suffix),
+                                    histogram_suffix_after_hiding),
           (!abandon_after_hiding_reason.has_value() ||
            abandon_after_hiding_reason == AbandonReason::kHidden)
               ? 1
               : 0);
       histogram_tester.ExpectTotalCount(
           GetMilestoneHistogramName(NavigationMilestone::kDidCommit,
-                                    histogram_suffix),
+                                    histogram_suffix_after_hiding),
           (!abandon_after_hiding_reason.has_value() ||
            abandon_after_hiding_reason == AbandonReason::kHidden)
               ? 1

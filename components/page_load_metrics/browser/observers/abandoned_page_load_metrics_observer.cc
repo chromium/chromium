@@ -88,8 +88,13 @@ const char kAbandonReasonHidden[] = "Hidden";
 const char kAbandonReasonErrorPage[] = "ErrorPage";
 const char kAbandonReasonAppBackgrounded[] = "AppBackgrounded";
 
-const char kSuffixWasBackgrounded[] = ".WasBackgrounded";
-const char kSuffixWasHidden[] = ".WasHidden";
+const char kSuffixWasAppBackgrounded[] = ".WasAppBackgrounded";
+const char kSuffixTabWasHiddenAtStartStaysHidden[] =
+    ".TabWasHiddenAtStartStaysHidden";
+const char kSuffixTabWasHiddenAtStartLaterShown[] =
+    ".TabWasHiddenAtStartLaterShown";
+const char kSuffixTabWasHiddenStaysHidden[] = ".TabWasHiddenStaysHidden";
+const char kSuffixTabWasHiddenLaterShown[] = ".TabWasHiddenLaterShown";
 
 const char kMilestoneNavigationStart[] = "NavigationStart";
 const char kMilestoneLoaderStart[] = "LoaderStart";
@@ -268,10 +273,26 @@ std::string AbandonedPageLoadMetricsObserver::GetHistogramSuffix(
   // backgrounding the navigation before it starts shouldn't count anyways).
   if (milestone != NavigationMilestone::kNavigationStart) {
     if (WasBackgrounded() && event_time > first_backgrounded_timestamp_) {
-      suffix += internal::kSuffixWasBackgrounded;
+      suffix += internal::kSuffixWasAppBackgrounded;
     }
-    if (WasHidden() && event_time > first_hidden_timestamp_) {
-      suffix += internal::kSuffixWasHidden;
+
+    if (!started_in_foreground_) {
+      if (!first_shown_timestamp_.is_null() &&
+          event_time > first_shown_timestamp_) {
+        suffix += internal::kSuffixTabWasHiddenAtStartLaterShown;
+      } else {
+        suffix += internal::kSuffixTabWasHiddenAtStartStaysHidden;
+      }
+    } else if (WasHidden() && event_time > first_hidden_timestamp_) {
+      if (!last_shown_timestamp_.is_null() &&
+          event_time > last_shown_timestamp_ &&
+          last_shown_timestamp_ > first_hidden_timestamp_) {
+        // Hidden after navigation start, then shown.
+        suffix += internal::kSuffixTabWasHiddenLaterShown;
+      } else {
+        // Stays hidden.
+        suffix += internal::kSuffixTabWasHiddenStaysHidden;
+      }
     }
   }
 
@@ -562,6 +583,7 @@ AbandonedPageLoadMetricsObserver::OnStart(
     bool started_in_foreground) {
   navigation_id_ = navigation_handle->GetNavigationId();
   navigation_start_time_ = GetDelegate().GetNavigationStart();
+  started_in_foreground_ = started_in_foreground;
 
   page_load_metrics::PageLoadMetricsObserver::ObservePolicy
       navigation_handling_result = OnNavigationEvent(navigation_handle);
@@ -570,8 +592,7 @@ AbandonedPageLoadMetricsObserver::OnStart(
   }
 
   if (!started_in_foreground) {
-    page_load_metrics::mojom::PageLoadTiming empty_timing;
-    FlushMetricsOnAppEnterBackground(empty_timing);
+    OnHiddenInternal();
   }
 
   return CONTINUE_OBSERVING;
@@ -794,6 +815,11 @@ AbandonedPageLoadMetricsObserver::FlushMetricsOnAppEnterBackground(
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy
 AbandonedPageLoadMetricsObserver::OnHidden(
     const page_load_metrics::mojom::PageLoadTiming& timing) {
+  OnHiddenInternal();
+  return CONTINUE_OBSERVING;
+}
+
+void AbandonedPageLoadMetricsObserver::OnHiddenInternal() {
   if (first_hidden_timestamp_.is_null()) {
     first_hidden_timestamp_ = base::TimeTicks::Now();
 
@@ -808,6 +834,14 @@ AbandonedPageLoadMetricsObserver::OnHidden(
     // the navigation eventually is allowed to log metrics and we log the
     // milestone metrics, we can note that this abandonment happened.
   }
+}
+
+page_load_metrics::PageLoadMetricsObserver::ObservePolicy
+AbandonedPageLoadMetricsObserver::OnShown() {
+  if (first_shown_timestamp_.is_null()) {
+    first_shown_timestamp_ = base::TimeTicks::Now();
+  }
+  last_shown_timestamp_ = base::TimeTicks::Now();
   return CONTINUE_OBSERVING;
 }
 

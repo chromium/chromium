@@ -24,8 +24,11 @@ chromium-metrics-reviews@google.com.
 
 <variants name="BackgroundSuffix">
   <variant name="" summary="never backgrounded during the navigation"/>
+  <variant name=".WasAppBackgrounded"
+      summary="app backgrounded at least once during the navigation"/>
   <variant name=".WasBackgrounded"
-      summary="backgrounded at least once during the navigation"/>
+      summary="backgrounded at least once during the navigation (this was
+               renamed to WasAppBackgrounded)"/>
 </variants>
 
 <variants name="BrowserInitializationStatus">
@@ -40,8 +43,19 @@ chromium-metrics-reviews@google.com.
 
 <variants name="HiddenSuffix">
   <variant name="" summary="never hidden during the navigation"/>
+  <variant name=".TabWasHiddenAtStartLaterShown"
+      summary="hidden at navigation start and shown later"/>
+  <variant name=".TabWasHiddenAtStartStaysHidden"
+      summary="hidden at navigation start and stays hidden"/>
+  <variant name=".TabWasHiddenLaterShown"
+      summary="tab hidden at least once during the navigation, after
+               navigation start, and is later shown again"/>
+  <variant name=".TabWasHiddenStaysHidden"
+      summary="tab hidden at least once during the navigation, after
+               navigation start, and stays hidden"/>
   <variant name=".WasHidden"
-      summary="hidden at least once during the navigation"/>
+      summary="hidden at least once during the navigation (this was renamed
+               to TabWasHidden*)"/>
 </variants>
 
 <variants name="LoadedIdleVisibility">
