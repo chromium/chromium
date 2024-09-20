@@ -23,6 +23,21 @@
 namespace base {
 namespace features {
 
+namespace {
+
+static constexpr char kPAFeatureEnabledProcessesStr[] = "enabled-processes";
+static constexpr char kBrowserOnlyStr[] = "browser-only";
+static constexpr char kBrowserAndRendererStr[] = "browser-and-renderer";
+static constexpr char kNonRendererStr[] = "non-renderer";
+static constexpr char kAllProcessesStr[] = "all-processes";
+
+#if PA_CONFIG(ENABLE_SHADOW_METADATA)
+static constexpr char kRendererOnlyStr[] = "renderer-only";
+static constexpr char kAllChildProcessesStr[] = "all-child-processes";
+#endif  // PA_CONFIG(ENABLE_SHADOW_METADATA)
+
+}  // namespace
+
 BASE_FEATURE(kPartitionAllocUnretainedDanglingPtr,
              "PartitionAllocUnretainedDanglingPtr",
              FEATURE_ENABLED_BY_DEFAULT);
@@ -102,16 +117,16 @@ BASE_FEATURE(kPartitionAllocWithAdvancedChecks,
 constexpr FeatureParam<PartitionAllocWithAdvancedChecksEnabledProcesses>::Option
     kPartitionAllocWithAdvancedChecksEnabledProcessesOptions[] = {
         {PartitionAllocWithAdvancedChecksEnabledProcesses::kBrowserOnly,
-         "browser-only"},
+         kBrowserOnlyStr},
         {PartitionAllocWithAdvancedChecksEnabledProcesses::kBrowserAndRenderer,
-         "browser-and-renderer"},
+         kBrowserAndRendererStr},
         {PartitionAllocWithAdvancedChecksEnabledProcesses::kNonRenderer,
-         "non-renderer"},
+         kNonRendererStr},
         {PartitionAllocWithAdvancedChecksEnabledProcesses::kAllProcesses,
-         "all-processes"}};
+         kAllProcessesStr}};
 const base::FeatureParam<PartitionAllocWithAdvancedChecksEnabledProcesses>
     kPartitionAllocWithAdvancedChecksEnabledProcessesParam{
-        &kPartitionAllocWithAdvancedChecks, "enabled-processes",
+        &kPartitionAllocWithAdvancedChecks, kPAFeatureEnabledProcessesStr,
         PartitionAllocWithAdvancedChecksEnabledProcesses::kBrowserOnly,
         &kPartitionAllocWithAdvancedChecksEnabledProcessesOptions};
 
@@ -140,15 +155,15 @@ BASE_FEATURE(kPartitionAllocBackupRefPtr,
 
 constexpr FeatureParam<BackupRefPtrEnabledProcesses>::Option
     kBackupRefPtrEnabledProcessesOptions[] = {
-        {BackupRefPtrEnabledProcesses::kBrowserOnly, "browser-only"},
+        {BackupRefPtrEnabledProcesses::kBrowserOnly, kBrowserOnlyStr},
         {BackupRefPtrEnabledProcesses::kBrowserAndRenderer,
-         "browser-and-renderer"},
-        {BackupRefPtrEnabledProcesses::kNonRenderer, "non-renderer"},
-        {BackupRefPtrEnabledProcesses::kAllProcesses, "all-processes"}};
+         kBrowserAndRendererStr},
+        {BackupRefPtrEnabledProcesses::kNonRenderer, kNonRendererStr},
+        {BackupRefPtrEnabledProcesses::kAllProcesses, kAllProcessesStr}};
 
 const base::FeatureParam<BackupRefPtrEnabledProcesses>
     kBackupRefPtrEnabledProcessesParam{
-        &kPartitionAllocBackupRefPtr, "enabled-processes",
+        &kPartitionAllocBackupRefPtr, kPAFeatureEnabledProcessesStr,
 #if PA_BUILDFLAG(IS_MAC) && PA_BUILDFLAG(PA_ARCH_CPU_ARM64)
         BackupRefPtrEnabledProcesses::kNonRenderer,
 #else
@@ -198,13 +213,13 @@ const base::FeatureParam<RetagMode> kRetagModeParam{
 
 constexpr FeatureParam<MemoryTaggingEnabledProcesses>::Option
     kMemoryTaggingEnabledProcessesOptions[] = {
-        {MemoryTaggingEnabledProcesses::kBrowserOnly, "browser-only"},
-        {MemoryTaggingEnabledProcesses::kNonRenderer, "non-renderer"},
-        {MemoryTaggingEnabledProcesses::kAllProcesses, "all-processes"}};
+        {MemoryTaggingEnabledProcesses::kBrowserOnly, kBrowserOnlyStr},
+        {MemoryTaggingEnabledProcesses::kNonRenderer, kNonRendererStr},
+        {MemoryTaggingEnabledProcesses::kAllProcesses, kAllProcessesStr}};
 
 const base::FeatureParam<MemoryTaggingEnabledProcesses>
     kMemoryTaggingEnabledProcessesParam{
-        &kPartitionAllocMemoryTagging, "enabled-processes",
+        &kPartitionAllocMemoryTagging, kPAFeatureEnabledProcessesStr,
 #if PA_BUILDFLAG(USE_FULL_MTE)
         MemoryTaggingEnabledProcesses::kAllProcesses,
 #else
@@ -484,6 +499,24 @@ BASE_FEATURE(kPartitionAllocAdjustSizeWhenInForeground,
 BASE_FEATURE(kPartitionAllocUseSmallSingleSlotSpans,
              "PartitionAllocUseSmallSingleSlotSpans",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+#if PA_CONFIG(ENABLE_SHADOW_METADATA)
+BASE_FEATURE(kPartitionAllocShadowMetadata,
+             "PartitionAllocShadowMetadata",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+constexpr FeatureParam<ShadowMetadataEnabledProcesses>::Option
+    kShadowMetadataEnabledProcessesOptions[] = {
+        {ShadowMetadataEnabledProcesses::kRendererOnly, kRendererOnlyStr},
+        {ShadowMetadataEnabledProcesses::kAllChildProcesses,
+         kAllChildProcessesStr}};
+
+const base::FeatureParam<ShadowMetadataEnabledProcesses>
+    kShadowMetadataEnabledProcessesParam{
+        &kPartitionAllocShadowMetadata, kPAFeatureEnabledProcessesStr,
+        ShadowMetadataEnabledProcesses::kRendererOnly,
+        &kShadowMetadataEnabledProcessesOptions};
+#endif  // PA_CONFIG(ENABLE_SHADOW_METADATA)
 
 }  // namespace features
 }  // namespace base

@@ -257,7 +257,7 @@ declare_args() {
 declare_args() {
   # Shadow metadata is still under development and only supports Linux
   # for now.
-  enable_shadow_metadata = false
+  enable_shadow_metadata = is_linux && has_64_bit_pointers
 }
 
 declare_args() {
