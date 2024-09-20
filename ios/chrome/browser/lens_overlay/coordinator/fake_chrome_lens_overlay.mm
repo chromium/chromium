@@ -19,6 +19,8 @@
 @property(nonatomic, strong) NSData* suggestSignals;
 /// Query text.
 @property(nonatomic, strong) NSString* queryText;
+/// Whether the result represents a text selection.
+@property(nonatomic, readonly) BOOL isTextSelection;
 
 @end
 
@@ -40,6 +42,10 @@
 }
 
 #pragma mark - ChromeLensOverlay
+
+- (BOOL)isTextSelection {
+  return NO;
+}
 
 - (BOOL)isPanningSelectionUI {
   return NO;

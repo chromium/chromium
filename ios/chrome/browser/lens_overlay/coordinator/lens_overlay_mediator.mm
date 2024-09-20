@@ -211,7 +211,12 @@
     [self.resultConsumer loadResultsURL:result.searchResultURL];
   }
   _skipLoadingNextLensResultURL = NO;
-  [self.omniboxCoordinator setThumbnailImage:result.selectionPreviewImage];
+
+  if (result.isTextSelection) {
+    [self.omniboxCoordinator setThumbnailImage:nil];
+  } else {
+    [self.omniboxCoordinator setThumbnailImage:result.selectionPreviewImage];
+  }
 }
 
 - (void)lensOverlayDidTapOnCloseButton:(id<ChromeLensOverlay>)lensOverlay {

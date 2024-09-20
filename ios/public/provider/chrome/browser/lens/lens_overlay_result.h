@@ -20,6 +20,9 @@ class GURL;
 // Data containing the suggest signals.
 @property(nonatomic, readonly) NSData* suggestSignals;
 
+// Whether the result represents a text selection.
+@property(nonatomic, readonly) BOOL isTextSelection;
+
 @end
 
 #endif  // IOS_PUBLIC_PROVIDER_CHROME_BROWSER_LENS_LENS_OVERLAY_RESULT_H_

@@ -111,6 +111,10 @@ const CGFloat kThumbnailButtonTransitionDuration = 0.25f;
 }
 
 - (void)applyThumbnailImage:(UIImage*)thumbnailImage animated:(BOOL)animated {
+  if (!thumbnailImage) {
+    return;
+  }
+
   thumbnailImage = ResizeImage(
       thumbnailImage, CGSizeMake(self.frame.size.width, self.frame.size.height),
       ProjectionMode::kAspectFill);
