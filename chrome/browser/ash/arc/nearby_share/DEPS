@@ -27,6 +27,7 @@ include_rules = [
   "+chrome/browser/ui/ash/shelf",
   "+chrome/browser/ui/browser.h",
   "+chrome/browser/ui/settings_window_manager_chromeos.h",
+  "+chrome/browser/ui/views/chrome_layout_provider.h",
   "+chrome/browser/webshare",
   "+chrome/common/chrome_paths_internal.h",
   "+chrome/test/base",

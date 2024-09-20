@@ -87,7 +87,6 @@ static_library("multidevice_setup") {
   visibility = [
     ":*",
     "//chrome/browser",
-    "//chrome/browser/ash",
     "//chrome/browser/ash/multidevice_debug",
     "//chrome/browser/ash/multidevice_setup",
     "//chrome/browser/ui",

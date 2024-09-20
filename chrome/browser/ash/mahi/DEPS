@@ -34,6 +34,8 @@ specific_include_rules = {
   ],
   "mahi_ui_browsertest.cc": [
     "+chrome/browser/ui/browser.h",
+    "+chrome/browser/ui/views/mahi/mahi_menu_constants.h",
+    "+chrome/browser/ui/views/mahi/mahi_menu_view.h",
   ],
   "mahi_ui_browser_test_base.cc": [
     "+chrome/browser/ui/views/mahi/mahi_menu_constants.h",

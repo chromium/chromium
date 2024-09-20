@@ -33,7 +33,6 @@ static_library("ash") {
     "//chrome/browser:main_extra_parts",
     "//chrome/browser:primitives",
     "//chrome/browser/apps/app_service",
-    "//chrome/browser/ash",
     "//chrome/browser/ash/accessibility",
     "//chrome/browser/ash/api/tasks",
     "//chrome/browser/ash/app_list",
@@ -58,6 +57,7 @@ static_library("ash") {
     "//chrome/browser/ash/extensions",
     "//chrome/browser/ash/extensions/autotest_private",
     "//chrome/browser/ash/file_manager",
+    "//chrome/browser/ash/fileapi",
     "//chrome/browser/ash/floating_workspace",
     "//chrome/browser/ash/geolocation",
     "//chrome/browser/ash/growth",
@@ -185,6 +185,7 @@ static_library("ash") {
     "//chromeos/components/mahi/public/cpp",
     "//components/access_code_cast/common:metrics",
     "//components/arc",
+    "//components/exo",
     "//components/feature_engagement/public",
     "//components/media_router/browser",
     "//components/media_router/common",
@@ -217,7 +218,6 @@ static_library("ash") {
 
   allow_circular_includes_from = [
     "//chrome/browser/apps/app_service",
-    "//chrome/browser/ash",
     "//chrome/browser/ash/accessibility",
     "//chrome/browser/ash/app_list",
     "//chrome/browser/ash/app_list/search/files",

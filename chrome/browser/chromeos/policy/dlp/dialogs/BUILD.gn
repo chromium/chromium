@@ -19,6 +19,7 @@ static_library("dialogs") {
   deps = [
     "//base",
     "//build:chromeos_buildflags",
+    "//chrome/browser:browser_public_dependencies",
     "//components/strings:components_strings",
     "//components/vector_icons",
     "//ui/aura",

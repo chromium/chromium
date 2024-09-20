@@ -185,6 +185,8 @@ static_library("dbus") {
     "//url",
   ]
 
+  data_deps = [ ":dbus_service_files" ]
+
   if (is_cfm) {
     deps += [
       "//chromeos/ash/components/chromebox_for_meetings",

@@ -226,7 +226,9 @@ source_set("browser_tests") {
 
   if (is_chromeos_ash) {
     deps += [
-      "//chrome/browser/ash",
+      "//ash/webui/boca_ui",
+      "//ash/webui/shimless_rma",
+      "//ash/webui/vc_background_ui",
       "//chrome/browser/ash/crostini:test_support",
       "//chrome/browser/ash/extended_updates/test:test_support",
       "//chrome/browser/ash/ownership",

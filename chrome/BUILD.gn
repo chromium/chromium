@@ -1488,8 +1488,8 @@ group("dependencies") {
   if (is_chromeos_ash) {
     public_deps += [
       "//ash/constants",
-      "//chrome/browser/ash",
       "//chrome/browser/ash/boot_times_recorder",
+      "//chrome/browser/ash/dbus",
       "//chrome/browser/ash/schedqos",
       "//chromeos",
       "//chromeos/ash/components/memory",

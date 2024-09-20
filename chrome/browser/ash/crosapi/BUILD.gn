@@ -328,7 +328,6 @@ static_library("crosapi") {
     "//chrome/browser/apps/app_service/app_install:implementation",
     "//chrome/browser/apps/browser_instance",
     "//chrome/browser/apps/platform_apps/api",
-    "//chrome/browser/ash",
     "//chrome/browser/ash/accessibility",
     "//chrome/browser/ash/app_list",
     "//chrome/browser/ash/app_list/app_service",
@@ -573,6 +572,7 @@ static_library("crosapi") {
     "//chrome/browser:browser_public_dependencies",
     "//chrome/browser/task_manager",
     "//chrome/browser/ui/webui/ash/parent_access",
+    "//chromeos/ash/components/dbus/session_manager:login_manager_proto",
     "//media/gpu:buildflags",
     "//printing",
   ]
@@ -582,7 +582,6 @@ static_library("crosapi") {
     "//chrome/browser/apps/app_service/app_install:implementation",
     "//chrome/browser/apps/app_preload_service",
     "//chrome/browser/apps/platform_apps/api",
-    "//chrome/browser/ash",
     "//chrome/browser/ash/app_list",
     "//chrome/browser/ash/app_list/app_service",
     "//chrome/browser/ash/app_list/search",
