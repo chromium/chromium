@@ -28,6 +28,7 @@
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/network/technology_state_controller.h"
 #include "chromeos/ash/components/quick_start/logging.h"
+#include "chromeos/ash/components/quick_start/quick_start_metrics.h"
 #include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder_types.mojom-shared.h"
 #include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder_types.mojom.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom-shared.h"
@@ -384,8 +385,16 @@ void NetworkScreen::OnQuickStartButtonClicked() {
 }
 
 void NetworkScreen::SetQuickStartButtonVisibility(bool visible) {
-  if (view_) {
-    view_->SetQuickStartEntryPointVisibility(visible);
+  if (!view_) {
+    return;
+  }
+
+  view_->SetQuickStartEntryPointVisibility(visible);
+
+  if (visible && !has_emitted_quick_start_visible) {
+    has_emitted_quick_start_visible = true;
+    quick_start::QuickStartMetrics::RecordEntryPointVisible(
+        quick_start::QuickStartMetrics::EntryPoint::NETWORK_SCREEN);
   }
 }
 

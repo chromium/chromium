@@ -40,6 +40,7 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/branded_strings.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/ash/components/quick_start/quick_start_metrics.h"
 #include "chromeos/dbus/constants/dbus_switches.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/prefs/pref_service.h"
@@ -588,6 +589,11 @@ void WelcomeScreen::SetQuickStartButtonVisibility(bool visible) {
     view_->SetQuickStartEnabled();
     base::UmaHistogramBoolean(
         "QuickStart.WelcomeScreen.QuickStartButtonVisible", visible);
+    if (!has_emitted_quick_start_visible) {
+      has_emitted_quick_start_visible = true;
+      quick_start::QuickStartMetrics::RecordEntryPointVisible(
+          quick_start::QuickStartMetrics::EntryPoint::WELCOME_SCREEN);
+    }
   }
 }
 

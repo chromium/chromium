@@ -141,6 +141,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="QuickStart.EntryPointVisible" enum="QuickStartEntryPoint"
+    expires_after="2025-09-16">
+  <owner>bhartmire@google.com</owner>
+  <owner>hansenmichael@google.com</owner>
+  <owner>chromeos-cross-device-eng@google.com</owner>
+  <summary>
+    Counts number of times a Quick Start entry point button is visible. Emitted
+    when the button visibility is determined.
+  </summary>
+</histogram>
+
 <histogram name="QuickStart.FastPairAdvertisementEnded.Duration" units="ms"
     expires_after="2025-02-02">
   <owner>bhartmire@google.com</owner>

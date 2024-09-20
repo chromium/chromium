@@ -84,6 +84,7 @@ constexpr char kAuthenticationMethodHistogram[] =
     "QuickStart.AuthenticationMethod";
 constexpr char kFlowAbortedReason[] = "QuickStart.FlowAborted.Reason";
 constexpr char kEntryPointHistogram[] = "QuickStart.EntryPoint";
+constexpr char kEntryPointVisibleHistogram[] = "QuickStart.EntryPointVisible";
 
 constexpr test::UIPath kQuickStartEntryPointPath = {
     WelcomeView::kScreenId.name, kWelcomeScreen, kQuickStartEntryPoint};
@@ -462,6 +463,9 @@ IN_PROC_BROWSER_TEST_F(QuickStartNotDeterminedBrowserTest,
   test::OobeJS()
       .CreateVisibilityWaiter(/*visibility=*/true, kQuickStartButtonPath)
       ->Wait();
+  histogram_tester_.ExpectBucketCount(
+      kEntryPointVisibleHistogram,
+      quick_start::QuickStartMetrics::EntryPoint::WELCOME_SCREEN, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(QuickStartBrowserTestWithBluetoothDisabled,

@@ -282,6 +282,8 @@ class QuickStartMetrics {
 
   static void RecordEntryPoint(EntryPoint entry_point);
 
+  static void RecordEntryPointVisible(EntryPoint entry_point);
+
   static void RecordAuthenticationMethod(AuthenticationMethod auth_method);
 
   static void RecordAbortFlowReason(AbortFlowReason reason);

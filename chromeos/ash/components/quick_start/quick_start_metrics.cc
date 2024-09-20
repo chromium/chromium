@@ -146,6 +146,8 @@ constexpr const char kScreenClosedQSFallbackURL[] =
 constexpr const char kAbortFlowReasonHistogramName[] =
     "QuickStart.FlowAborted.Reason";
 constexpr const char kEntryPointHistogramName[] = "QuickStart.EntryPoint";
+constexpr const char kEntryPointVisibleHistogramName[] =
+    "QuickStart.EntryPointVisible";
 constexpr const char kConsumerUpdateStartedHistogramName[] =
     "QuickStart.ConsumerUpdateStarted";
 constexpr const char kConsumerUpdateCancelledHistogramName[] =
@@ -324,6 +326,11 @@ void QuickStartMetrics::RecordEntryPoint(EntryPoint entry_point) {
   metrics::structured::StructuredMetricsClient::Record(
       std::move(cros_events::QuickStart_Initiated().SetEntryPoint(
           static_cast<cros_events::QuickStartEntryPoint>(entry_point))));
+}
+
+// static
+void QuickStartMetrics::RecordEntryPointVisible(EntryPoint entry_point) {
+  base::UmaHistogramEnumeration(kEntryPointVisibleHistogramName, entry_point);
 }
 
 // static
