@@ -32,6 +32,7 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "crypto/sha2.h"
+#include "net/base/features.h"
 #include "net/cookies/canonical_cookie.h"
 #include "net/cookies/cookie_constants.h"
 #include "net/cookies/cookie_util.h"
@@ -87,7 +88,10 @@ enum class CookieLoadProblem {
   // Cookie was encrypted but no crypto delegate was passed. Added in
   // https://crrev.com/5875192 (M131).
   kNoCrypto = 7,
-  kMaxValue = kNoCrypto,
+  // Cookie had values in both the plaintext and encrypted fields of the
+  // database. Added in https://crrev.com/5875190 (M131).
+  kValuesExistInBothEncryptedAndPlaintext = 8,
+  kMaxValue = kValuesExistInBothEncryptedAndPlaintext,
 };
 
 // Used to populate a histogram for problems when committing cookies.
@@ -1030,8 +1034,23 @@ bool SQLitePersistentCookieStore::Backend::MakeCookiesFromSQLStatement(
     std::string domain = statement.ColumnString(1);
     std::string value = statement.ColumnString(4);
     std::string encrypted_value = statement.ColumnString(13);
+    const bool encrypted_and_plaintext_values =
+        !value.empty() && !encrypted_value.empty();
     UMA_HISTOGRAM_BOOLEAN("Cookie.EncryptedAndPlaintextValues",
-                          !value.empty() && !encrypted_value.empty());
+                          encrypted_and_plaintext_values);
+
+    // Ensure feature is fully activated for all users who load cookies, before
+    // checking the validity of the row.
+    if (base::FeatureList::IsEnabled(
+            features::kEncryptedAndPlaintextValuesAreInvalid)) {
+      if (encrypted_and_plaintext_values) {
+        RecordCookieLoadProblem(
+            CookieLoadProblem::kValuesExistInBothEncryptedAndPlaintext);
+        ok = false;
+        continue;
+      }
+    }
+
     if (!encrypted_value.empty()) {
       if (!crypto_) {
         RecordCookieLoadProblem(CookieLoadProblem::kNoCrypto);

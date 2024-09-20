@@ -600,4 +600,8 @@ BASE_FEATURE(kNoVarySearchIgnoreUnrecognizedKeys,
              "NoVarySearchIgnoreUnrecognizedKeys",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kEncryptedAndPlaintextValuesAreInvalid,
+             "EncryptedAndPlaintextValuesAreInvalid",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 }  // namespace net::features

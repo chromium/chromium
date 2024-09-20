@@ -612,6 +612,10 @@ NET_EXPORT BASE_DECLARE_FEATURE(kKeepWhitespaceForDataUrls);
 // Otherwise, unrecognized keys are treated as if the header was invalid.
 NET_EXPORT BASE_DECLARE_FEATURE(kNoVarySearchIgnoreUnrecognizedKeys);
 
+// If enabled, then a cookie entry containing both encrypted and plaintext
+// values is considered invalid, and the entire eTLD group will be dropped.
+NET_EXPORT BASE_DECLARE_FEATURE(kEncryptedAndPlaintextValuesAreInvalid);
+
 }  // namespace net::features
 
 #endif  // NET_BASE_FEATURES_H_
