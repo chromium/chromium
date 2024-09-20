@@ -8,7 +8,7 @@ import 'chrome://resources/cr_components/history_embeddings/history_embeddings.j
 import {CrFeedbackOption} from '//resources/cr_elements/cr_feedback_buttons/cr_feedback_buttons.js';
 import {HistoryEmbeddingsBrowserProxyImpl} from 'chrome://resources/cr_components/history_embeddings/browser_proxy.js';
 import type {HistoryEmbeddingsElement} from 'chrome://resources/cr_components/history_embeddings/history_embeddings.js';
-import {PageHandlerRemote, UserFeedback} from 'chrome://resources/cr_components/history_embeddings/history_embeddings.mojom-webui.js';
+import {AnswerStatus, PageHandlerRemote, UserFeedback} from 'chrome://resources/cr_components/history_embeddings/history_embeddings.mojom-webui.js';
 import type {SearchQuery, SearchResultItem} from 'chrome://resources/cr_components/history_embeddings/history_embeddings.mojom-webui.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -57,6 +57,7 @@ import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
         // consider calling this directly from tests instead.
         element.searchResultChangedForTesting({
           query: query.query,
+          answerStatus: AnswerStatus.kUnspecified,
           answer: '',
           items: [...mockResults],
         });
@@ -377,6 +378,7 @@ import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 
       element.searchResultChangedForTesting({
         query: 'some query',
+        answerStatus: AnswerStatus.kSuccess,
         answer: 'some answer',
         items: [...mockResults],
       });

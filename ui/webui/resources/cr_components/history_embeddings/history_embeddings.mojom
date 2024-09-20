@@ -7,6 +7,15 @@ module history_embeddings.mojom;
 import "mojo/public/mojom/base/time.mojom";
 import "url/mojom/url.mojom";
 
+enum AnswerStatus {
+  kUnspecified,
+  kSuccess,
+  kUnanswerable,
+  kModelUnavailable,
+  kExecutionFailure,
+  kExecutionCanceled,
+};
+
 // Some SearchResultItem may be specialized and marked as the query answer.
 // When that happens, it will have an AnswerData instance for details.
 struct AnswerData {
@@ -55,8 +64,13 @@ struct SearchQuery {
 
 // Represents the results of a search query.
 struct SearchResult {
+  // Query associated with this set of results.
   string query;
+  // Status of the answer generation attempt.
+  AnswerStatus answer_status;
+  // Latest generated answer.
   string answer;
+  // The set of history results.
   array<SearchResultItem> items;
 };
 

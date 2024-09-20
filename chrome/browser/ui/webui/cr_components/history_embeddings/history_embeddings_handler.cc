@@ -34,6 +34,24 @@ OptimizationFeedbackFromMojoUserFeedback(
   }
 }
 
+history_embeddings::mojom::AnswerStatus AnswererAnswerStatusToMojoAnswerStatus(
+    history_embeddings::ComputeAnswerStatus status) {
+  switch (status) {
+    case history_embeddings::ComputeAnswerStatus::UNSPECIFIED:
+      return history_embeddings::mojom::AnswerStatus::kUnspecified;
+    case history_embeddings::ComputeAnswerStatus::SUCCESS:
+      return history_embeddings::mojom::AnswerStatus::kSuccess;
+    case history_embeddings::ComputeAnswerStatus::UNANSWERABLE:
+      return history_embeddings::mojom::AnswerStatus::kUnanswerable;
+    case history_embeddings::ComputeAnswerStatus::MODEL_UNAVAILABLE:
+      return history_embeddings::mojom::AnswerStatus::kModelUnavailable;
+    case history_embeddings::ComputeAnswerStatus::EXECUTION_FAILURE:
+      return history_embeddings::mojom::AnswerStatus::kExecutionFailure;
+    case history_embeddings::ComputeAnswerStatus::EXECUTION_CANCELLED:
+      return history_embeddings::mojom::AnswerStatus::kExecutionCanceled;
+  }
+}
+
 }  // namespace
 
 HistoryEmbeddingsHandler::HistoryEmbeddingsHandler(
@@ -82,11 +100,17 @@ void HistoryEmbeddingsHandler::PublishResultToPage(
 
   auto mojom_search_result = history_embeddings::mojom::SearchResult::New();
   mojom_search_result->query = native_search_result.query;
-  bool has_answer = history_embeddings::kEnableAnswers.Get() &&
-                    !native_search_result.AnswerText().empty();
-  if (has_answer) {
-    mojom_search_result->answer = native_search_result.AnswerText();
+
+  bool has_answer = false;
+  if (history_embeddings::kEnableAnswers.Get()) {
+    mojom_search_result->answer_status = AnswererAnswerStatusToMojoAnswerStatus(
+        native_search_result.answerer_result.status);
+    if (!native_search_result.AnswerText().empty()) {
+      has_answer = true;
+      mojom_search_result->answer = native_search_result.AnswerText();
+    }
   }
+
   for (size_t i = 0; i < native_search_result.scored_url_rows.size(); i++) {
     const history_embeddings::ScoredUrlRow& scored_url_row =
         native_search_result.scored_url_rows[i];
