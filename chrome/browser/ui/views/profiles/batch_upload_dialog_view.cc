@@ -82,6 +82,9 @@ BatchUploadDialogView::BatchUploadDialogView(
       std::make_unique<views::WebView>(profile);
   web_view->LoadInitialURL(GURL(chrome::kChromeUIBatchUploadURL));
   web_view_ = web_view.get();
+  // Set initial height to max height in order not to have an empty window.
+  web_view_->SetPreferredSize(
+      gfx::Size(kBatchUploadDialogFixedWidth, kBatchUploadDialogMaxHeight));
 
   BatchUploadUI* web_ui = GetBatchUploadUI(web_view_);
   CHECK(web_ui);
