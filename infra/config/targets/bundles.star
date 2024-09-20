@@ -67,16 +67,19 @@ targets.bundle(
             swarming = targets.swarming(
                 shards = 15,
             ),
+            experiment_percentage = 100,
         ),
         "chrome_public_unit_test_apk": targets.mixin(
             swarming = targets.swarming(
                 shards = 2,
             ),
+            experiment_percentage = 100,
         ),
         "android_browsertests": targets.mixin(
             swarming = targets.swarming(
                 shards = 5,
             ),
+            experiment_percentage = 100,
         ),
     },
 )
