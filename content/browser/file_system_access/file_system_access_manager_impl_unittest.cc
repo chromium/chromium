@@ -1998,4 +1998,72 @@ TEST_F(FileSystemAccessManagerImplTest, GetUniqueId) {
   EXPECT_NE(other_id, dir_id);
 }
 
+TEST_F(FileSystemAccessManagerImplTest, IsSafePathComponent) {
+  // Path components which are allowed everywhere.
+  constexpr const char* kSafePathComponents[] = {
+      "a", "a.txt", "a b.txt", "My Computer", ".a", "lnk.zip", "lnk", "a.local",
+  };
+
+  // Path components which are disallowed everywhere.
+  constexpr const char* kAlwaysUnsafePathComponents[] = {
+      "", ".", "..", "a/", "a\\", "a\\a", "a/a", "C:\\", "C:/",
+  };
+
+  // Path components which are allowed only in sandboxed file systems.
+  constexpr const char* kUnsafeLocalPathComponents[] = {
+      "...",
+      "con",
+      "con.zip",
+      "NUL",
+      "NUL.zip",
+      "a.",
+      "a\"a",
+      "a<a",
+      "a>a",
+      "a?a",
+      "a ",
+      "a . .",
+      " Computer",
+      "My Computer.{a}",
+      "My Computer.{20D04FE0-3AEA-1069-A2D8-08002B30309D}",
+      "a.lnk",
+      "a.url",
+      "C:",
+  };
+
+  for (const char* component : kSafePathComponents) {
+    EXPECT_TRUE(manager_->IsSafePathComponent(storage::kFileSystemTypeTemporary,
+                                              component))
+        << component;
+    EXPECT_TRUE(
+        manager_->IsSafePathComponent(storage::kFileSystemTypeLocal, component))
+        << component;
+    EXPECT_TRUE(manager_->IsSafePathComponent(storage::kFileSystemTypeExternal,
+                                              component))
+        << component;
+  }
+  for (const char* component : kAlwaysUnsafePathComponents) {
+    EXPECT_FALSE(manager_->IsSafePathComponent(
+        storage::kFileSystemTypeTemporary, component))
+        << component;
+    EXPECT_FALSE(
+        manager_->IsSafePathComponent(storage::kFileSystemTypeLocal, component))
+        << component;
+    EXPECT_FALSE(manager_->IsSafePathComponent(storage::kFileSystemTypeExternal,
+                                               component))
+        << component;
+  }
+  for (const char* component : kUnsafeLocalPathComponents) {
+    EXPECT_TRUE(manager_->IsSafePathComponent(storage::kFileSystemTypeTemporary,
+                                              component))
+        << component;
+    EXPECT_FALSE(
+        manager_->IsSafePathComponent(storage::kFileSystemTypeLocal, component))
+        << component;
+    EXPECT_FALSE(manager_->IsSafePathComponent(storage::kFileSystemTypeExternal,
+                                               component))
+        << component;
+  }
+}
+
 }  // namespace content

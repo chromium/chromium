@@ -399,6 +399,15 @@ class CONTENT_EXPORT FileSystemAccessManagerImpl
 
   void Shutdown();
 
+  // The File System Access API should not give access to files that might
+  // trigger special handling from the operating system. This method is used to
+  // validate that all paths passed to GetFileHandle/GetDirectoryHandle are safe
+  // to be exposed to the web.
+  // TODO(crbug.com/40159607): Merge this with
+  // net::IsSafePortablePathComponent.
+  bool IsSafePathComponent(storage::FileSystemType type,
+                           const std::string& name);
+
   // Invokes `method` on the correct sequence on the FileSystemOperationRunner,
   // passing `args` and a callback to the method.
   // The passed in `callback` is wrapped to make sure it is called on the

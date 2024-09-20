@@ -54,35 +54,6 @@ using SensitiveEntryResult =
     FileSystemAccessPermissionContext::SensitiveEntryResult;
 using UserAction = FileSystemAccessPermissionContext::UserAction;
 
-namespace {
-// Returns whether the specified extension receives special handling by the
-// Windows shell.
-bool IsShellIntegratedExtension(const base::FilePath::StringType& extension) {
-  base::FilePath::StringType extension_lower = base::ToLowerASCII(extension);
-
-  // .lnk and .scf files may be used to execute arbitrary code (see
-  // https://nvd.nist.gov/vuln/detail/CVE-2010-2568 and
-  // https://crbug.com/1227995, respectively). '.url' files can be used to read
-  // arbitrary files (see https://crbug.com/1307930 and
-  // https://crbug.com/1354518).
-  if (extension_lower == FILE_PATH_LITERAL("lnk") ||
-      extension_lower == FILE_PATH_LITERAL("scf") ||
-      extension_lower == FILE_PATH_LITERAL("url")) {
-    return true;
-  }
-
-  // Setting a file's extension to a CLSID may conceal its actual file type on
-  // some Windows versions (see https://nvd.nist.gov/vuln/detail/CVE-2004-0420).
-  if (!extension_lower.empty() &&
-      (extension_lower.front() == FILE_PATH_LITERAL('{')) &&
-      (extension_lower.back() == FILE_PATH_LITERAL('}'))) {
-    return true;
-  }
-  return false;
-}
-
-}  // namespace
-
 struct FileSystemAccessDirectoryHandleImpl::
     FileSystemAccessDirectoryEntriesListenerHolder
     : base::RefCountedDeleteOnSequence<
@@ -689,91 +660,6 @@ void FileSystemAccessDirectoryHandleImpl::CurrentBatchEntriesReady(
                                               more_batches_are_expected);
 }
 
-// static
-bool FileSystemAccessDirectoryHandleImpl::IsSafePathComponent(
-    storage::FileSystemType type,
-    const std::string& name) {
-  // This method is similar to net::IsSafePortablePathComponent, with a few
-  // notable differences where the net version does not consider names safe
-  // while here we do want to allow them. These cases are:
-  //  - Files in sandboxed file systems are subject to far fewer restrictions,
-  //    i.e. base::i18n::IsFilenameLegal is not called.
-  //  - Names starting with a '.'. These would be hidden files in most file
-  //    managers, but are something we explicitly want to support for the
-  //    File System Access API, for names like .git.
-  //  - Names that end in '.local'. For downloads writing to such files is
-  //    dangerous since it might modify what code is executed when an executable
-  //    is ran from the same directory. For the File System Access API this
-  //    isn't really a problem though, since if a website can write to a .local
-  //    file via a FileSystemDirectoryHandle they can also just modify the
-  //    executables in the directory directly.
-  //
-  // TODO(crbug.com/40159607): Unify this with
-  // net::IsSafePortablePathComponent, with the result probably ending up in
-  // base/i18n/file_util_icu.h.
-
-  const base::FilePath component = storage::StringToFilePath(name);
-  // Empty names, or names that contain path separators are invalid.
-  if (component.empty() ||
-      component != storage::VirtualPath::BaseName(component) ||
-      component != component.StripTrailingSeparators()) {
-    return false;
-  }
-
-  std::u16string component16;
-#if BUILDFLAG(IS_WIN)
-  component16.assign(component.value().begin(), component.value().end());
-#else
-  std::string component8 = component.AsUTF8Unsafe();
-  if (!base::UTF8ToUTF16(component8.c_str(), component8.size(), &component16)) {
-    return false;
-  }
-#endif
-
-  // The names of files in sandboxed file systems are obfuscated before they end
-  // up on disk (if they ever end up on disk). We don't need to worry about
-  // platform-specific restrictions. More restrictions would need to be added if
-  // we ever revisit allowing file moves across the local/sandboxed file system
-  // boundary. See https://crbug.com/1408211.
-  if (type == storage::kFileSystemTypeTemporary) {
-    // Check for both '/' and '\' as path separators, regardless of what OS
-    // we're running on.
-    return component16 != u"." && component16 != u".." &&
-           !base::Contains(component16, '/') &&
-           !base::Contains(component16, '\\');
-  }
-
-  // base::i18n::IsFilenameLegal blocks names that start with '.', so strip out
-  // a leading '.' before passing it to that method.
-  // TODO(mek): Consider making IsFilenameLegal more flexible to support this
-  // use case.
-  if (component16[0] == '.') {
-    component16 = component16.substr(1);
-  }
-  if (!base::i18n::IsFilenameLegal(component16)) {
-    return false;
-  }
-
-  base::FilePath::StringType extension = component.Extension();
-  if (!extension.empty()) {
-    extension.erase(extension.begin());  // Erase preceding '.'.
-  }
-  if (IsShellIntegratedExtension(extension)) {
-    return false;
-  }
-
-  if (base::TrimString(component.value(), FILE_PATH_LITERAL("."),
-                       base::TRIM_TRAILING) != component.value()) {
-    return false;
-  }
-
-  if (net::IsReservedNameOnWindows(component.value())) {
-    return false;
-  }
-
-  return true;
-}
-
 blink::mojom::FileSystemAccessErrorPtr
 FileSystemAccessDirectoryHandleImpl::GetChildURL(
     const std::string& basename,
@@ -781,7 +667,7 @@ FileSystemAccessDirectoryHandleImpl::GetChildURL(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   const storage::FileSystemURL& parent = url();
-  if (!IsSafePathComponent(parent.type(), basename)) {
+  if (!manager()->IsSafePathComponent(parent.type(), basename)) {
     return file_system_access_error::FromStatus(
         FileSystemAccessStatus::kInvalidArgument, "Name is not allowed.");
   }
