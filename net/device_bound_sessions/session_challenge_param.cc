@@ -4,11 +4,9 @@
 
 #include "net/device_bound_sessions/session_challenge_param.h"
 
-#include <optional>
-
 #include "base/ranges/algorithm.h"
 #include "net/http/http_response_headers.h"
-#include "net/http/structured_headers.h"
+#include "url/gurl.h"
 
 namespace {
 // Sec-Session-Challenge header defined in
@@ -19,8 +17,8 @@ constexpr char kSessionIdKey[] = "id";
 
 namespace net::device_bound_sessions {
 
-SessionChallengeParam::SessionChallengeParam(SessionChallengeParam&& other) =
-    default;
+SessionChallengeParam::SessionChallengeParam(
+    SessionChallengeParam&& other) noexcept = default;
 
 SessionChallengeParam& SessionChallengeParam::operator=(
     SessionChallengeParam&& other) noexcept = default;

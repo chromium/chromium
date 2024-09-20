@@ -8,7 +8,6 @@
 #include <memory>
 #include <optional>
 #include <string>
-#include <string_view>
 
 #include "base/types/strong_alias.h"
 #include "components/unexportable_keys/service_error.h"

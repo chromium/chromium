@@ -11,8 +11,9 @@
 
 #include "net/base/net_export.h"
 #include "net/http/structured_headers.h"
-#include "url/gurl.h"
 
+// Forward declarations.
+class GURL;
 namespace net {
 class HttpResponseHeaders;
 }
@@ -34,12 +35,9 @@ namespace net::device_bound_sessions {
 // the last one will take effect.
 class NET_EXPORT SessionChallengeParam {
  public:
-  SessionChallengeParam(SessionChallengeParam&& other);
+  SessionChallengeParam(SessionChallengeParam&& other) noexcept;
   SessionChallengeParam& operator=(SessionChallengeParam&& other) noexcept;
 
-  // Disabled to make accidental copies compile errors.
-  SessionChallengeParam(const SessionChallengeParam& other) = delete;
-  SessionChallengeParam& operator=(const SessionChallengeParam&) = delete;
   ~SessionChallengeParam();
 
   // Returns a vector of valid instances from the headers.
