@@ -78,12 +78,6 @@ class OnDeviceModelComponentStateManager
     // Called whenever the on-device component state changes. `state` is null if
     // the component is not available.
     virtual void StateChanged(const OnDeviceModelComponentState* state) = 0;
-
-    // Called when on-device eligible `feature` was used for the first time.
-    // This is called when at startup the feature was not used, and then gets
-    // used for the first time.
-    virtual void OnDeviceEligibleFeatureFirstUsed(
-        ModelBasedCapabilityKey feature) {}
   };
 
   // Creates the instance if one does not already exist. Returns an existing
