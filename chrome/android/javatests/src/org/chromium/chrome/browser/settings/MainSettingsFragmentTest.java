@@ -61,7 +61,6 @@ import org.mockito.MockitoAnnotations;
 import org.chromium.base.BuildInfo;
 import org.chromium.base.PackageManagerUtils;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
@@ -947,8 +946,7 @@ public class MainSettingsFragmentTest {
         onView(withId(R.id.signin_promo_view_container)).check(doesNotExist());
 
         // Close settings activity.
-        Activity activity = mMainSettings.getActivity();
-        ApplicationTestUtils.finishActivity(activity);
+        mSettingsActivityTestRule.finishActivity();
 
         // Launch settings activity again.
         mSettingsActivityTestRule.startSettingsActivity();

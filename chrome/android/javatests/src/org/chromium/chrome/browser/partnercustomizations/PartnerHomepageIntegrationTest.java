@@ -236,6 +236,6 @@ public class PartnerHomepageIntegrationTest {
                     Assert.assertEquals(preference.isChecked(), expected);
                 });
 
-        homepagePreferenceActivity.finish();
+        mHomepageSettingsTestRule.finishActivity();
     }
 }
