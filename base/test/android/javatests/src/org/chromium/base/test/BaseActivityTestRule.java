@@ -151,16 +151,23 @@ public class BaseActivityTestRule<T extends Activity> extends ExternalResource {
         Log.d(TAG, String.format("Launching activity %s", mActivityClass.getName()));
 
         final Intent intent = startIntent;
+        // Android system pauses the activity on delivering an intent to an existing activity.
+        // https://developer.android.com/reference/android/app/Activity#onNewIntent(android.content.Intent)
+        Stage targetStage =
+                ((startIntent.getFlags() & Intent.FLAG_ACTIVITY_SINGLE_TOP) != 0
+                                && mActivity != null)
+                        ? Stage.PAUSED
+                        : Stage.CREATED;
         mActivity =
                 ApplicationTestUtils.waitForActivityWithClass(
                         mActivityClass,
-                        Stage.CREATED,
+                        targetStage,
                         () -> ContextUtils.getApplicationContext().startActivity(intent));
     }
 
     /**
-     * Recreates the Activity, blocking until finished.
-     * After calling this, getActivity() returns the new Activity.
+     * Recreates the Activity, blocking until finished. After calling this, getActivity() returns
+     * the new Activity.
      */
     public void recreateActivity() {
         setActivity(ApplicationTestUtils.recreateActivity(getActivity()));
