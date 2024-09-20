@@ -295,9 +295,7 @@ sk_sp<SkPicture> DeserializeOopPicture(const void* data,
                                        void* ctx) {
   uint32_t pic_id;
   if (length < sizeof(pic_id)) {
-    NOTREACHED_IN_MIGRATION();  // Should not happen if the content is as
-                                // written.
-    return GetEmptyPicture();
+    NOTREACHED();  // Should not happen if the content is as written.
   }
   memcpy(&pic_id, data, sizeof(pic_id));
 
@@ -334,9 +332,7 @@ sk_sp<SkTypeface> DeserializeOopTypeface(const void* data,
                                          void* ctx) {
   SkStream* stream = *(reinterpret_cast<SkStream**>(const_cast<void*>(data)));
   if (length < sizeof(stream)) {
-    NOTREACHED_IN_MIGRATION();  // Should not happen if the content is as
-                                // written.
-    return nullptr;
+    NOTREACHED();  // Should not happen if the content is as written.
   }
 
   SkTypefaceID id;

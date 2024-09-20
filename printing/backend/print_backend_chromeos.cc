@@ -54,8 +54,7 @@ mojom::ResultCode PrintBackendChromeOS::GetPrinterBasicInfo(
 mojom::ResultCode PrintBackendChromeOS::GetPrinterSemanticCapsAndDefaults(
     const std::string& printer_name,
     PrinterSemanticCapsAndDefaults* printer_info) {
-  NOTREACHED_IN_MIGRATION();
-  return mojom::ResultCode::kFailed;
+  NOTREACHED();
 }
 
 std::vector<std::string> PrintBackendChromeOS::GetPrinterDriverInfo(
@@ -70,8 +69,7 @@ mojom::ResultCode PrintBackendChromeOS::GetDefaultPrinterName(
 }
 
 bool PrintBackendChromeOS::IsValidPrinter(const std::string& printer_name) {
-  NOTREACHED_IN_MIGRATION();
-  return true;
+  NOTREACHED();
 }
 
 // static

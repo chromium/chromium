@@ -61,7 +61,7 @@ void SkiaTraceMemoryDumpImpl::setMemoryBacking(const char* dump_name,
                                              system_allocator_name);
     }
   } else {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 }
 
@@ -90,7 +90,7 @@ bool SkiaTraceMemoryDumpImpl::shouldDumpWrappedObjects() const {
 
 void SkiaTraceMemoryDumpImpl::dumpWrappedState(const char* dump_name,
                                                bool wrapped) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 bool SkiaTraceMemoryDumpImpl::shouldDumpUnbudgetedObjects() const {

@@ -249,8 +249,7 @@ void OAuth2AccessTokenFetcherImpl::EndGetAccessToken(
   switch (response) {
     case kOk:
     case kOkUnexpectedFormat:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
 
     case kRateLimitExceeded:
     case kInternalFailure:
@@ -289,7 +288,7 @@ void OAuth2AccessTokenFetcherImpl::EndGetAccessToken(
   if (!error.has_value()) {
     // Fallback to http status code.
     if (response_code == net::HTTP_OK) {
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
     } else if (response_code == net::HTTP_FORBIDDEN ||
                response_code == net::HTTP_PROXY_AUTHENTICATION_REQUIRED ||
                response_code >= net::HTTP_INTERNAL_SERVER_ERROR) {

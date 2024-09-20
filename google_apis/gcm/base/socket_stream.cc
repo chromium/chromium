@@ -54,8 +54,7 @@ SocketInputStream::~SocketInputStream() {
 
 bool SocketInputStream::Next(const void** data, int* size) {
   if (GetState() != EMPTY && GetState() != READY) {
-    NOTREACHED_IN_MIGRATION() << "Invalid input stream read attempt.";
-    return false;
+    NOTREACHED() << "Invalid input stream read attempt.";
   }
 
   if (GetState() == EMPTY) {

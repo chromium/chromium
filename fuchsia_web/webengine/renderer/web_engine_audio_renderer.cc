@@ -413,8 +413,7 @@ void WebEngineAudioRenderer::StopTicking() {
   switch (GetPlaybackState()) {
     case PlaybackState::kStopped:
     case PlaybackState::kPaused:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
 
     case PlaybackState::kStartPending: {
       base::AutoLock lock(timeline_lock_);

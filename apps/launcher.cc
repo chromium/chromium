@@ -396,10 +396,8 @@ void LaunchPlatformAppWithCommandLineAndLaunchId(
     in_kiosk_mode = user_manager && user_manager->IsLoggedInAsKioskApp();
 #endif
     if (!in_kiosk_mode) {
-      LOG(ERROR) << "App with 'kiosk_only' attribute must be run in "
-                 << " ChromeOS kiosk mode.";
-      NOTREACHED_IN_MIGRATION();
-      return;
+      NOTREACHED() << "App with 'kiosk_only' attribute must be run in "
+                   << " ChromeOS kiosk mode.";
     }
   }
 

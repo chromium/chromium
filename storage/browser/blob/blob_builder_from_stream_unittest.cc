@@ -83,8 +83,7 @@ class BlobBuilderFromStreamTestWithDelayedLimits
       case LengthHintTestType::kTooSmallSize:
         return actual_size / 2;
     }
-    NOTREACHED_IN_MIGRATION();
-    return 0;
+    NOTREACHED();
   }
 
   std::unique_ptr<BlobDataHandle> BuildFromString(

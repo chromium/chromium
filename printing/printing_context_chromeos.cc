@@ -215,7 +215,7 @@ ScopedIppPtr SettingsToIPPOptions(const PrintSettings& settings,
       sides = CUPS_SIDES_TWO_SIDED_LANDSCAPE;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
 
   // duplexing
@@ -344,7 +344,7 @@ void PrintingContextChromeos::AskUserForSettings(
     bool is_scripted,
     PrintSettingsCallback callback) {
   // We don't want to bring up a dialog here.  Ever.  This should not be called.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 mojom::ResultCode PrintingContextChromeos::UseDefaultSettings() {
@@ -518,8 +518,7 @@ mojom::ResultCode PrintingContextChromeos::PrintDocument(
 
   return StreamData(buffer);
 #else
-  NOTREACHED_IN_MIGRATION();
-  return mojom::ResultCode::kFailed;
+  NOTREACHED();
 #endif  // BUILDFLAG(USE_CUPS)
 }
 

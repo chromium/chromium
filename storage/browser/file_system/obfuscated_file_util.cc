@@ -103,7 +103,7 @@ void UpdateUsage(FileSystemOperationContext* context,
 void TouchDirectory(SandboxDirectoryDatabase* db, FileId dir_id) {
   DCHECK(db);
   if (!db->UpdateModificationTime(dir_id, base::Time::Now()))
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
 }
 
 enum IsolatedOriginStatus {
@@ -292,8 +292,7 @@ class ObfuscatedStorageKeyEnumerator
     if (current_.path.empty())
       return false;
     if (type_string.empty()) {
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
     }
     base::FilePath path =
         base_file_path_.Append(current_.path).AppendASCII(type_string);

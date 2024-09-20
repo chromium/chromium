@@ -226,10 +226,8 @@ GURL GetFileSystemRootURI(const GURL& origin_url, FileSystemType type) {
       return GURL(url + "/");
       // Internal types are always pointed via isolated or external URLs.
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-  NOTREACHED_IN_MIGRATION();
-  return GURL();
 }
 
 std::string GetFileSystemName(const GURL& origin_url, FileSystemType type) {
@@ -282,13 +280,11 @@ std::string GetFileSystemTypeString(FileSystemType type) {
       return "FuseBox";
     case kFileSystemInternalTypeEnumStart:
     case kFileSystemInternalTypeEnumEnd:
-      NOTREACHED_IN_MIGRATION();
-      [[fallthrough]];
+      NOTREACHED();
     case kFileSystemTypeUnknown:
       return "Unknown";
   }
-  NOTREACHED_IN_MIGRATION();
-  return std::string();
+  NOTREACHED();
 }
 
 std::string FilePathToString(const base::FilePath& file_path) {
@@ -328,8 +324,7 @@ bool GetFileSystemPublicType(const std::string type_string,
     *type = blink::kWebFileSystemTypeExternal;
     return true;
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 std::string GetIsolatedFileSystemName(const GURL& origin_url,

@@ -309,8 +309,7 @@ bool IsExclusiveLockMode(int sqlite_lock_mode) {
       return true;
   }
 
-  NOTREACHED_IN_MIGRATION() << "Unsupported mode: " << sqlite_lock_mode;
-  return false;
+  NOTREACHED() << "Unsupported mode: " << sqlite_lock_mode;
 }
 
 }  // namespace
@@ -343,12 +342,7 @@ int SandboxedVfsFile::Lock(int mode) {
       break;
 
     case SQLITE_LOCK_PENDING:
-      NOTREACHED_IN_MIGRATION()
-          << "SQLite never directly asks for PENDING locks";
-
-      // Should we ever receive PENDING lock requests, the handler for
-      // EXCLUSIVE lock requests below happens to work perfectly.
-      [[fallthrough]];
+      NOTREACHED() << "SQLite never directly asks for PENDING locks";
 
     case SQLITE_LOCK_EXCLUSIVE:
       // A SHARED lock is required before an EXCLUSIVE lock is acquired.
@@ -366,7 +360,7 @@ int SandboxedVfsFile::Lock(int mode) {
       break;
 
     default:
-      NOTREACHED_IN_MIGRATION() << "Unimplemented xLock() mode: " << mode;
+      NOTREACHED() << "Unimplemented xLock() mode: " << mode;
   }
 
   DCHECK_EQ(IsExclusiveLockMode(mode),
@@ -516,10 +510,7 @@ int SandboxedVfsFile::ShmMap(int page_index,
   // in WAL mode that may be accessed by multiple processes (are not EXCLUSIVE).
   //
   // Chrome will not only use WAL mode on EXCLUSIVE databases.
-  NOTREACHED_IN_MIGRATION() << "SQLite should not attempt to use shared memory";
-
-  *result = nullptr;
-  return SQLITE_IOERR;
+  NOTREACHED() << "SQLite should not attempt to use shared memory";
 }
 
 int SandboxedVfsFile::ShmLock(int offset, int size, int flags) {
@@ -531,9 +522,7 @@ int SandboxedVfsFile::ShmLock(int offset, int size, int flags) {
   // in WAL mode that may be accessed by multiple processes (are not EXCLUSIVE).
   //
   // Chrome will not only use WAL mode on EXCLUSIVE databases.
-  NOTREACHED_IN_MIGRATION() << "SQLite should not attempt to use shared memory";
-
-  return SQLITE_IOERR;
+  NOTREACHED() << "SQLite should not attempt to use shared memory";
 }
 
 void SandboxedVfsFile::ShmBarrier() {
@@ -542,11 +531,7 @@ void SandboxedVfsFile::ShmBarrier() {
   // in WAL mode that may be accessed by multiple processes (are not EXCLUSIVE).
   //
   // Chrome will not only use WAL mode on EXCLUSIVE databases.
-  NOTREACHED_IN_MIGRATION() << "SQLite should not attempt to use shared memory";
-
-  // All writes to shared memory that have already been issued before this
-  // function is called must complete before the function returns.
-  std::atomic_thread_fence(std::memory_order_acq_rel);
+  NOTREACHED() << "SQLite should not attempt to use shared memory";
 }
 
 int SandboxedVfsFile::ShmUnmap(int also_delete_file) {
@@ -555,9 +540,7 @@ int SandboxedVfsFile::ShmUnmap(int also_delete_file) {
   // in WAL mode that may be accessed by multiple processes (are not EXCLUSIVE).
   //
   // Chrome will not only use WAL mode on EXCLUSIVE databases.
-  NOTREACHED_IN_MIGRATION() << "SQLite should not attempt to use shared memory";
-
-  return SQLITE_IOERR;
+  NOTREACHED() << "SQLite should not attempt to use shared memory";
 }
 
 int SandboxedVfsFile::Fetch(sqlite3_int64 offset, int size, void** result) {

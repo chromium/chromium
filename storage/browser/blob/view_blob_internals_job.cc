@@ -99,8 +99,7 @@ std::string StatusToString(BlobStatus status) {
       return "BlobStatus::PENDING_CONSTRUCTION: Blob construction is pending "
              "on resolving the UUIDs of refereneced blobs.";
   }
-  NOTREACHED_IN_MIGRATION();
-  return "Invalid blob state.";
+  NOTREACHED();
 }
 
 void EndHTML(std::string* out) {

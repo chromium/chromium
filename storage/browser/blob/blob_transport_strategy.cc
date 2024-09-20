@@ -384,10 +384,9 @@ std::unique_ptr<BlobTransportStrategy> BlobTransportStrategy::Create(
       return std::make_unique<FileTransportStrategy>(
           builder, std::move(result_callback), limits);
     case MemoryStrategy::TOO_LARGE:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-  NOTREACHED_IN_MIGRATION();
-  return nullptr;
+  NOTREACHED();
 }
 
 BlobTransportStrategy::~BlobTransportStrategy() = default;

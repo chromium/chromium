@@ -412,7 +412,7 @@ void UrlFetchRequestBase::OnOutputFileClosed(bool success) {
 }
 
 void UrlFetchRequestBase::OnRetry(base::OnceClosure start_retry) {
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 HttpRequestMethod UrlFetchRequestBase::GetRequestType() const {

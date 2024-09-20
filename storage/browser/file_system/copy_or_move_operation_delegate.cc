@@ -970,7 +970,7 @@ CopyOrMoveOperationDelegate::~CopyOrMoveOperationDelegate() = default;
 
 void CopyOrMoveOperationDelegate::Run() {
   // Not supported; this should never be called.
-  NOTREACHED_IN_MIGRATION();
+  NOTREACHED();
 }
 
 void CopyOrMoveOperationDelegate::RunRecursively() {

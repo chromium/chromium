@@ -1362,8 +1362,7 @@ class _Generator(object):
     (c.Append('case %s:' % self._type_helper.GetEnumNoneValue(type_)) \
       .Append('  return "";') \
       .Eblock('}') \
-      .Append('NOTREACHED_IN_MIGRATION();') \
-      .Append('return "";') \
+      .Append('NOTREACHED();') \
       .Eblock('}')
     )
     return c

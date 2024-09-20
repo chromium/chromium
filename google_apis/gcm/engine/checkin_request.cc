@@ -72,8 +72,7 @@ std::string GetCheckinRequestStatusString(CheckinRequestStatus status) {
       return "Failed: No headers";
   }
 
-  NOTREACHED_IN_MIGRATION();
-  return "Failed: Unknown reason";
+  NOTREACHED();
 }
 
 // Records checkin status to both stats recorder and reports to UMA.

@@ -154,8 +154,7 @@ std::string MCSClient::GetStateString() const {
     case CONNECTED:
       return "CONNECTED";
   }
-  NOTREACHED_IN_MIGRATION();
-  return std::string();
+  NOTREACHED();
 }
 
 MCSClient::MCSClient(const std::string& version_string,

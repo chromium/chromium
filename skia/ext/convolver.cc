@@ -545,8 +545,7 @@ void SingleChannelConvolveX1D(const unsigned char* source_data,
       filter.GetSingleFilter(&filter_size, &filter_offset, &filter_length);
 
   if (filter_values == NULL || image_size.width() < filter_size) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
 
   int centrepoint = filter_length / 2;
@@ -629,8 +628,7 @@ void SingleChannelConvolveY1D(const unsigned char* source_data,
       filter.GetSingleFilter(&filter_size, &filter_offset, &filter_length);
 
   if (filter_values == NULL || image_size.height() < filter_size) {
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED();
   }
 
   int centrepoint = filter_length / 2;

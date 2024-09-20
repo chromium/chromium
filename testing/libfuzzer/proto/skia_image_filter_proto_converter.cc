@@ -1319,7 +1319,7 @@ void Converter::Visit(const PathRef& path_ref) {
         case ValidVerb::kClose_Verb:
           break;
         default:
-          NOTREACHED_IN_MIGRATION();
+          NOTREACHED();
       }
     }
     WriteNum(num_points);
@@ -1506,11 +1506,11 @@ void Converter::Visit(const ICC& icc) {
       tags_size = GetLut16Size(icc.color_space().a2b0().lut16()) +
                   kICCTagTableEntrySize;
     } else {
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
     }
     tag_count = 1;
   } else {
-    NOTREACHED_IN_MIGRATION();
+    NOTREACHED();
   }
 
   const uint32_t profile_size = sizeof(float) * 33 + tags_size;
@@ -2123,7 +2123,7 @@ void Converter::WriteFields(const Message& msg,
           break;
         }
         default: {
-          NOTREACHED_IN_MIGRATION();
+          NOTREACHED();
         }
       }
       continue;
@@ -2157,7 +2157,7 @@ void Converter::WriteFields(const Message& msg,
         Visit(reflection->GetMessage(msg, field_descriptor));
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
   }
   CHECK(!write_until_last ||

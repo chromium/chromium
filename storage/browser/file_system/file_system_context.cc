@@ -138,8 +138,7 @@ int FileSystemContext::GetPermissionPolicy(FileSystemType type) {
     case kFileSystemTypeUnknown:
       return FILE_PERMISSION_ALWAYS_DENY;
   }
-  NOTREACHED_IN_MIGRATION();
-  return FILE_PERMISSION_ALWAYS_DENY;
+  NOTREACHED();
 }
 
 scoped_refptr<FileSystemContext> FileSystemContext::Create(
@@ -330,8 +329,7 @@ FileSystemBackend* FileSystemContext::GetFileSystemBackend(
   auto found = backend_map_.find(type);
   if (found != backend_map_.end())
     return found->second;
-  NOTREACHED_IN_MIGRATION() << "Unknown filesystem type: " << type;
-  return nullptr;
+  NOTREACHED() << "Unknown filesystem type: " << type;
 }
 
 WatcherManager* FileSystemContext::GetWatcherManager(

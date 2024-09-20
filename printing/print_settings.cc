@@ -266,8 +266,7 @@ std::optional<bool> IsColorModelSelected(mojom::ColorModel color_model) {
     case mojom::ColorModel::kXeroxXROutputColorPrintAsGrayscale:
       return false;
     case mojom::ColorModel::kUnknownColorModel:
-      NOTREACHED_IN_MIGRATION();
-      return std::nullopt;
+      NOTREACHED();
   }
   // The default case is excluded from the above switch statement to ensure that
   // all ColorModel values are determinantly handled.
@@ -496,7 +495,7 @@ void PrintSettings::SetPrinterPrintableArea(
       break;
     }
     default: {
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
     }
   }
 

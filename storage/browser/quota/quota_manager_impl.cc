@@ -1791,9 +1791,8 @@ bool QuotaManagerImpl::ResetUsageTracker(StorageType type) {
       syncable_usage_tracker_ = std::move(usage_tracker);
       return true;
     default:
-      NOTREACHED_IN_MIGRATION();
+      NOTREACHED();
   }
-  return true;
 }
 
 QuotaManagerImpl::~QuotaManagerImpl() {

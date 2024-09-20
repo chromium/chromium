@@ -452,9 +452,7 @@ void RlzValueStoreChromeOS::WriteStore() {
   base::Value copy = CopyWithoutEmptyChildren(base::Value(rlz_store_.Clone()))
                          .value_or(base::Value(base::Value::Type::DICT));
   if (!serializer.Serialize(copy)) {
-    LOG(ERROR) << "Failed to serialize RLZ data";
-    NOTREACHED_IN_MIGRATION();
-    return;
+    NOTREACHED() << "Failed to serialize RLZ data";
   }
   if (!base::ImportantFileWriter::WriteFileAtomically(store_path_, json_data))
     LOG(ERROR) << "Error writing RLZ store";

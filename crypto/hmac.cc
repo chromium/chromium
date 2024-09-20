@@ -43,8 +43,7 @@ size_t HMAC::DigestLength() const {
     case SHA256:
       return 32;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return 0;
+      NOTREACHED();
   }
 }
 

@@ -78,8 +78,7 @@ bool ShouldRetryWithStatus(UnregistrationRequest::Status status) {
     case UnregistrationRequest::REACHED_MAX_RETRIES:
       return false;
     case UnregistrationRequest::UNREGISTRATION_STATUS_COUNT:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
   return false;
 }

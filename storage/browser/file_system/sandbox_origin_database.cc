@@ -125,8 +125,7 @@ bool SandboxOriginDatabase::Init(InitOption init_option,
         return false;
       return Init(init_option, FAIL_ON_CORRUPTION);
   }
-  NOTREACHED_IN_MIGRATION();
-  return false;
+  NOTREACHED();
 }
 
 bool SandboxOriginDatabase::RepairDatabase(const std::string& db_path) {

@@ -113,8 +113,7 @@ bool Emf::SafePlayback(HDC context) const {
   DCHECK(emf_ && !hdc_);
   XFORM base_matrix;
   if (!GetWorldTransform(context, &base_matrix)) {
-    NOTREACHED_IN_MIGRATION();
-    return false;
+    NOTREACHED();
   }
   Emf::EnumerationContext playback_context;
   playback_context.base_matrix = &base_matrix;
@@ -131,8 +130,7 @@ gfx::Rect Emf::GetPageBounds(unsigned int page_number) const {
   DCHECK_EQ(1U, page_number);
   ENHMETAHEADER header;
   if (GetEnhMetaFileHeader(emf_, sizeof(header), &header) != sizeof(header)) {
-    NOTREACHED_IN_MIGRATION();
-    return gfx::Rect();
+    NOTREACHED();
   }
   // Add 1 to right and bottom because it's inclusive rectangle.
   // See ENHMETAHEADER.
@@ -311,8 +309,7 @@ bool Emf::Record::SafePlayback(Emf::EnumerationContext* context) const {
         const uint32_t* pixels =
             static_cast<const uint32_t*>(bitmap->getPixels());
         if (!pixels) {
-          NOTREACHED_IN_MIGRATION();
-          return false;
+          NOTREACHED();
         }
         BITMAPINFOHEADER bmi = {0};
         skia::CreateBitmapHeaderForN32SkBitmap(*bitmap, &bmi);
@@ -395,8 +392,7 @@ Emf::Enumerator::Enumerator(const Emf& emf, HDC context, const RECT* rect) {
   items_.clear();
   if (!EnumEnhMetaFile(context, emf.emf(), &Emf::Enumerator::EnhMetaFileProc,
                        reinterpret_cast<void*>(this), rect)) {
-    NOTREACHED_IN_MIGRATION();
-    items_.clear();
+    NOTREACHED();
   }
   DCHECK_EQ(context_.hdc, context);
 }

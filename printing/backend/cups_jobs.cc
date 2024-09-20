@@ -151,11 +151,8 @@ CupsJob::JobState ToJobState(ipp_attribute_t* attr) {
     case IPP_JOB_STOPPED:
       return CupsJob::STOPPED;
     default:
-      NOTREACHED_IN_MIGRATION() << "Unidentifed state " << state;
-      break;
+      NOTREACHED() << "Unidentifed state " << state;
   }
-
-  return CupsJob::UNKNOWN;
 }
 
 // Returns the Reason corresponding to the string `reason`.  Returns

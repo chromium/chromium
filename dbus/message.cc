@@ -80,8 +80,7 @@ std::string Message::GetMessageTypeAsString() {
     case MESSAGE_ERROR:
       return "MESSAGE_ERROR";
   }
-  NOTREACHED_IN_MIGRATION();
-  return std::string();
+  NOTREACHED();
 }
 
 std::string Message::ToStringInternal(const std::string& indent,

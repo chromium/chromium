@@ -1532,8 +1532,7 @@ bool FrameImpl::CheckMediaAccessPermission(
       permission = blink::PermissionType::VIDEO_CAPTURE;
       break;
     default:
-      NOTREACHED_IN_MIGRATION();
-      return false;
+      NOTREACHED();
   }
 
   // TODO(crbug.com/40223767): Remove `security_origin`.

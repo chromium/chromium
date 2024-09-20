@@ -212,7 +212,7 @@ TEST_P(BasicTests, WithBytes) {
         EXPECT_EQ(3u, stream_request_count_);
         break;
       default:
-        NOTREACHED_IN_MIGRATION();
+        NOTREACHED();
     }
   }
 }

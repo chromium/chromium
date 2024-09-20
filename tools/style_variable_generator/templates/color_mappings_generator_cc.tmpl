@@ -40,8 +40,7 @@ std::string ColorIdName(ui::ColorId id) {
       return "{{name | to_css_var_name}}";
 {%-  endfor %}
   }
-  NOTREACHED_IN_MIGRATION();
-  return "";
+  NOTREACHED();
 }
 
 }  // namespace {{namespace_name}}

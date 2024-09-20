@@ -326,8 +326,7 @@ void UserSwitchAnimator::TransitionWindows(AnimationStep animation_step) {
       break;
     }
     case ANIMATION_STEP_ENDED:
-      NOTREACHED_IN_MIGRATION();
-      break;
+      NOTREACHED();
   }
 }
 
