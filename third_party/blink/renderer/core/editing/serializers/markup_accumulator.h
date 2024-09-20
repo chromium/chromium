@@ -46,9 +46,17 @@ class CORE_EXPORT MarkupAccumulator {
   STACK_ALLOCATED();
 
  public:
+  enum class AttributesMode : uint8_t {
+    // Correctly represent the current attributes.
+    kSynchronized,
+    // Generate possibly incorrect results, avoiding heap modification.
+    kUnsynchronized,
+  };
+
   MarkupAccumulator(AbsoluteURLs,
                     SerializationType,
-                    const ShadowRootInclusion&);
+                    const ShadowRootInclusion&,
+                    AttributesMode = AttributesMode::kSynchronized);
   MarkupAccumulator(const MarkupAccumulator&) = delete;
   MarkupAccumulator& operator=(const MarkupAccumulator&) = delete;
   virtual ~MarkupAccumulator();
@@ -123,6 +131,8 @@ class CORE_EXPORT MarkupAccumulator {
 
   // https://w3c.github.io/DOM-Parsing/#dfn-generated-namespace-prefix-index
   uint32_t prefix_index_;
+
+  AttributesMode attributes_mode_;
 };
 
 extern template String MarkupAccumulator::SerializeNodes<EditingStrategy>(

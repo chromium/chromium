@@ -144,9 +144,11 @@ class MarkupAccumulator::ElementSerializationData final {
 MarkupAccumulator::MarkupAccumulator(
     AbsoluteURLs resolve_urls_method,
     SerializationType serialization_type,
-    const ShadowRootInclusion& shadow_root_inclusion)
+    const ShadowRootInclusion& shadow_root_inclusion,
+    AttributesMode attributes_mode)
     : formatter_(resolve_urls_method, serialization_type),
-      shadow_root_inclusion_(shadow_root_inclusion) {}
+      shadow_root_inclusion_(shadow_root_inclusion),
+      attributes_mode_(attributes_mode) {}
 
 MarkupAccumulator::~MarkupAccumulator() = default;
 
@@ -193,10 +195,13 @@ bool MarkupAccumulator::ShouldIgnoreElement(const Element& element) const {
 
 AtomicString MarkupAccumulator::AppendElement(const Element& element) {
   const ElementSerializationData data = AppendStartTagOpen(element);
+  AttributeCollection attributes =
+      attributes_mode_ == AttributesMode::kSynchronized
+          ? element.Attributes()
+          : element.AttributesWithoutUpdate();
   if (SerializeAsHTML()) {
     // https://html.spec.whatwg.org/C/#html-fragment-serialisation-algorithm
 
-    AttributeCollection attributes = element.Attributes();
     // 3.2. Element: If current node's is value is not null, and the
     // element does not have an is attribute in its attribute list, ...
     const AtomicString& is_value = element.IsValue();
@@ -210,7 +215,7 @@ AtomicString MarkupAccumulator::AppendElement(const Element& element) {
   } else {
     // https://w3c.github.io/DOM-Parsing/#xml-serializing-an-element-node
 
-    for (const auto& attribute : element.Attributes()) {
+    for (const auto& attribute : attributes) {
       if (data.ignore_namespace_definition_attribute_ &&
           attribute.NamespaceURI() == xmlns_names::kNamespaceURI &&
           attribute.Prefix().empty()) {
