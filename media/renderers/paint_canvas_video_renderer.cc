@@ -1453,7 +1453,6 @@ viz::SharedImageFormat PaintCanvasVideoRenderer::GetRGBPixelsOutputFormat() {
 bool PaintCanvasVideoRenderer::CopyVideoFrameTexturesToGLTexture(
     viz::RasterContextProvider* raster_context_provider,
     gpu::gles2::GLES2Interface* destination_gl,
-    const gpu::Capabilities& destination_gl_capabilities,
     scoped_refptr<VideoFrame> video_frame,
     unsigned int target,
     unsigned int texture,
@@ -1465,10 +1464,9 @@ bool PaintCanvasVideoRenderer::CopyVideoFrameTexturesToGLTexture(
     bool flip_y) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(video_frame);
-  DCHECK(video_frame->HasTextures());
+  CHECK(video_frame->HasTextures());
 
-  if (video_frame->NumTextures() > 1 ||
-      video_frame->shared_image_format_type() ==
+  if (video_frame->shared_image_format_type() ==
           SharedImageFormatType::kSharedImageFormat ||
       video_frame->metadata().read_lock_fences_enabled) {
     DCHECK(video_frame->metadata().texture_origin_is_top_left);
@@ -1490,14 +1488,12 @@ bool PaintCanvasVideoRenderer::CopyVideoFrameTexturesToGLTexture(
 #if !BUILDFLAG(IS_ANDROID)
     if ((media::IsOpaque(video_frame->format()) || premultiply_alpha) &&
         level == 0 &&
-        (video_frame->NumTextures() > 1 ||
-         video_frame->shared_image_format_type() ==
-             SharedImageFormatType::kSharedImageFormat)) {
+        (video_frame->shared_image_format_type() ==
+         SharedImageFormatType::kSharedImageFormat)) {
       if (base::FeatureList::IsEnabled(kOneCopyUploadOfVideoFrameToGLTexture)) {
         if (UploadVideoFrameToGLTexture(
-                raster_context_provider, destination_gl,
-                destination_gl_capabilities, video_frame.get(), target, texture,
-                internal_format, format, type, flip_y)) {
+                raster_context_provider, destination_gl, video_frame.get(),
+                target, texture, internal_format, format, type, flip_y)) {
           return true;
         }
       }
@@ -1573,7 +1569,6 @@ bool PaintCanvasVideoRenderer::CopyVideoFrameTexturesToGLTexture(
 bool PaintCanvasVideoRenderer::UploadVideoFrameToGLTexture(
     viz::RasterContextProvider* raster_context_provider,
     gpu::gles2::GLES2Interface* destination_gl,
-    const gpu::Capabilities& destination_gl_capabilities,
     scoped_refptr<VideoFrame> video_frame,
     unsigned int target,
     unsigned int texture,
@@ -1611,62 +1606,26 @@ bool PaintCanvasVideoRenderer::UploadVideoFrameToGLTexture(
   // significant factor in performance, as the dominant factor in terms of
   // performance will be the fact that the VideoFrame's data needs to be
   // uploaded from the CPU to the GPU.
-  if (!video_frame->HasTextures()) {
-    return false;
-  }
-
-  DCHECK(video_frame->metadata().texture_origin_is_top_left);
-
   CHECK(video_frame->HasTextures());
+  DCHECK(video_frame->metadata().texture_origin_is_top_left);
 
   // Trigger resource allocation for dst texture to back SkSurface.
   // Dst texture size should equal to video frame visible rect.
   BindAndTexImage2D(destination_gl, target, texture, internal_format, format,
                     type, /*level=*/0, video_frame->visible_rect().size());
 
-  if (video_frame->NumTextures() == 1) {
-    gpu::MailboxHolder mailbox_holder =
-        GetVideoFrameMailboxHolder(video_frame.get());
-    destination_gl->WaitSyncTokenCHROMIUM(
-        mailbox_holder.sync_token.GetConstData());
+  gpu::MailboxHolder mailbox_holder =
+      GetVideoFrameMailboxHolder(video_frame.get());
+  destination_gl->WaitSyncTokenCHROMIUM(
+      mailbox_holder.sync_token.GetConstData());
 
-    // Copy shared image to gl texture for hardware video decode with
-    // multiplanar shared image formats.
-    destination_gl->CopySharedImageToTextureINTERNAL(
-        texture, target, internal_format, type, video_frame->visible_rect().x(),
-        video_frame->visible_rect().y(), video_frame->visible_rect().width(),
-        video_frame->visible_rect().height(), flip_y,
-        mailbox_holder.mailbox.name);
-  } else {
-    CHECK_LE(static_cast<int>(video_frame->NumTextures()),
-             SkYUVAInfo::kMaxPlanes);
-
-    // Copy YUVA mailboxes to gl texture for hardware video decode with
-    // one SharedImage per plane.
-    gpu::Mailbox mailboxes[SkYUVAInfo::kMaxPlanes]{};
-    for (size_t i = 0; i < video_frame->NumTextures(); i++) {
-      auto mailbox_holder = video_frame->mailbox_holder(i);
-      destination_gl->WaitSyncTokenCHROMIUM(
-          mailbox_holder.sync_token.GetConstData());
-      mailboxes[i] = mailbox_holder.mailbox;
-    }
-
-    constexpr auto mailbox_name_size = sizeof(mailboxes[0].name);
-    GLbyte mailbox_names[mailbox_name_size * SkYUVAInfo::kMaxPlanes];
-    for (int i = 0; i < SkYUVAInfo::kMaxPlanes; i++) {
-      memcpy(mailbox_names + mailbox_name_size * i, mailboxes[i].name,
-             mailbox_name_size);
-    }
-
-    auto yuva_info = VideoFrameYUVMailboxesHolder::VideoFrameGetSkYUVAInfo(
-        video_frame.get());
-    destination_gl->ConvertYUVAMailboxesToTextureINTERNAL(
-        texture, target, internal_format, type, video_frame->visible_rect().x(),
-        video_frame->visible_rect().y(), video_frame->visible_rect().width(),
-        video_frame->visible_rect().height(), flip_y, yuva_info.yuvColorSpace(),
-        static_cast<GLenum>(yuva_info.planeConfig()),
-        static_cast<GLenum>(yuva_info.subsampling()), mailbox_names);
-  }
+  // Copy shared image to gl texture for hardware video decode with
+  // multiplanar shared image formats.
+  destination_gl->CopySharedImageToTextureINTERNAL(
+      texture, target, internal_format, type, video_frame->visible_rect().x(),
+      video_frame->visible_rect().y(), video_frame->visible_rect().width(),
+      video_frame->visible_rect().height(), flip_y,
+      mailbox_holder.mailbox.name);
 
   SynchronizeVideoFrameRead(std::move(video_frame), destination_gl,
                             raster_context_provider->ContextSupport());
@@ -1678,7 +1637,6 @@ bool PaintCanvasVideoRenderer::UploadVideoFrameToGLTexture(
 bool PaintCanvasVideoRenderer::CopyVideoFrameYUVDataToGLTexture(
     viz::RasterContextProvider* raster_context_provider,
     gpu::gles2::GLES2Interface* destination_gl,
-    const gpu::Capabilities& destination_gl_capabilities,
     scoped_refptr<VideoFrame> video_frame,
     unsigned int target,
     unsigned int texture,
@@ -1922,7 +1880,6 @@ bool PaintCanvasVideoRenderer::UpdateLastImage(
     //   via checking `texture_target`, which will be set only if this is the
     //   case)
     bool can_wrap_texture =
-        video_frame->NumTextures() == 1 &&
         (video_frame->shared_image_format_type() ==
              SharedImageFormatType::kLegacy ||
          video_frame->shared_image_format_type() ==

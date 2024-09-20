@@ -1108,9 +1108,8 @@ class PaintCanvasVideoRendererWithGLTest : public testing::Test {
     destination_gl->BindTexture(target, texture);
 
     renderer_.CopyVideoFrameTexturesToGLTexture(
-        media_context_.get(), destination_gl,
-        destination_context_->ContextCapabilities(), frame, target, texture,
-        GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE, 0, false /* premultiply_alpha */,
+        media_context_.get(), destination_gl, frame, target, texture, GL_RGBA,
+        GL_RGBA, GL_UNSIGNED_BYTE, 0, false /* premultiply_alpha */,
         false /* flip_y */);
 
     gfx::Size expected_size = frame->visible_rect().size();
@@ -1268,10 +1267,9 @@ TEST_F(PaintCanvasVideoRendererWithGLTest, CopyVideoFrameYUVDataToGLTexture) {
   destination_gl->BindTexture(target, texture);
 
   renderer_.CopyVideoFrameYUVDataToGLTexture(
-      media_context_.get(), destination_gl,
-      destination_context_->ContextCapabilities(), cropped_frame(), target,
-      texture, GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE, 0,
-      false /* premultiply_alpha */, false /* flip_y */);
+      media_context_.get(), destination_gl, cropped_frame(), target, texture,
+      GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE, 0, false /* premultiply_alpha */,
+      false /* flip_y */);
 
   gfx::Size expected_size = cropped_frame()->visible_rect().size();
 
@@ -1301,10 +1299,9 @@ TEST_F(PaintCanvasVideoRendererWithGLTest,
   destination_gl->BindTexture(target, texture);
 
   renderer_.CopyVideoFrameYUVDataToGLTexture(
-      media_context_.get(), destination_gl,
-      destination_context_->ContextCapabilities(), cropped_frame(), target,
-      texture, GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE, 0,
-      false /* premultiply_alpha */, true /* flip_y */);
+      media_context_.get(), destination_gl, cropped_frame(), target, texture,
+      GL_RGBA, GL_RGBA, GL_UNSIGNED_BYTE, 0, false /* premultiply_alpha */,
+      true /* flip_y */);
 
   gfx::Size expected_size = cropped_frame()->visible_rect().size();
 

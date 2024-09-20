@@ -6238,10 +6238,10 @@ void WebGLRenderingContextBase::TexImageHelperMediaVideoFrame(
 
     if (media_video_frame->HasTextures() &&
         video_renderer->CopyVideoFrameTexturesToGLTexture(
-            raster_context_provider, ContextGL(), ContextGLCapabilities(),
-            media_video_frame, params.target, texture->Object(),
-            adjusted_internalformat, params.format, params.type, params.level,
-            unpack_premultiply_alpha_, unpack_flip_y_)) {
+            raster_context_provider, ContextGL(), media_video_frame,
+            params.target, texture->Object(), adjusted_internalformat,
+            params.format, params.type, params.level, unpack_premultiply_alpha_,
+            unpack_flip_y_)) {
       return;
     }
 
@@ -6254,10 +6254,10 @@ void WebGLRenderingContextBase::TexImageHelperMediaVideoFrame(
     if (!media_video_frame->HasTextures() &&
         media::IsOpaque(media_video_frame->format()) &&
         video_renderer->CopyVideoFrameYUVDataToGLTexture(
-            raster_context_provider, ContextGL(), ContextGLCapabilities(),
-            media_video_frame, params.target, texture->Object(),
-            adjusted_internalformat, params.format, params.type, params.level,
-            unpack_premultiply_alpha_, unpack_flip_y_)) {
+            raster_context_provider, ContextGL(), media_video_frame,
+            params.target, texture->Object(), adjusted_internalformat,
+            params.format, params.type, params.level, unpack_premultiply_alpha_,
+            unpack_flip_y_)) {
       return;
     }
   }
