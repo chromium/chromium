@@ -311,8 +311,6 @@ source_set("extensions") {
     "api/streams_private/streams_private_api.h",
     "api/system_private/system_private_api.cc",
     "api/system_private/system_private_api.h",
-    "api/tab_capture/tab_capture_api.cc",
-    "api/tab_capture/tab_capture_api.h",
     "api/tab_capture/tab_capture_registry.cc",
     "api/tab_capture/tab_capture_registry.h",
     "api/tabs/app_base_window.cc",
