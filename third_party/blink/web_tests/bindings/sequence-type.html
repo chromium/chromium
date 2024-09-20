@@ -293,4 +293,14 @@
    assert_throws_js(TypeError, () => { sequenceTest.setElementSequence([...elems, 1]) },
                     "Invalid types cause exceptions");
  }, "Array to sequence<> conversions with heterogeneous ScriptWrappable types");
+
+ test(() => {
+   const sequenceTest = internals.sequenceTest();
+
+   const elem1 = document.createElement('br');
+   const elems = [ , elem1 ];
+   assert_throws_js(TypeError, () => { sequenceTest.setElementSequence(elems) },
+                    "Holes cause invalid type exceptoin");
+
+ }, "Sequence of ScriptWrappable conversion should throw on holes");
 </script>
