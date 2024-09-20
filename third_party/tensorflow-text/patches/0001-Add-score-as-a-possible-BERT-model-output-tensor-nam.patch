@@ -1,0 +1,51 @@
+From 7a2f5cc794580461d54291848fada0f6eff9dff9 Mon Sep 17 00:00:00 2001
+From: Sarah Krakowiak Criel <skrakowi@chromium.org>
+Date: Thu, 19 Sep 2024 13:47:51 +0000
+Subject: [PATCH] Add 'score' as a possible BERT model output tensor name
+
+---
+ .../cc/task/text/bert_nl_classifier.cc        | 20 +++++++++++++------
+ 1 file changed, 14 insertions(+), 6 deletions(-)
+
+diff --git a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/text/bert_nl_classifier.cc b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/text/bert_nl_classifier.cc
+index 6b85f361b6047..fca60b05949df 100644
+--- a/third_party/tflite_support/src/tensorflow_lite_support/cc/task/text/bert_nl_classifier.cc
++++ b/third_party/tflite_support/src/tensorflow_lite_support/cc/task/text/bert_nl_classifier.cc
+@@ -44,7 +44,7 @@ using ::tflite::support::TfLiteSupportStatus;
+ using ::tflite::task::core::FindTensorByName;
+ 
+ namespace {
+-constexpr char kScoreTensorName[] = "probability";
++constexpr const char* kValidScoreTensorNames[] = { "probability", "score" };
+ 
+ absl::Status SanityCheckOptions(const BertNLClassifierOptions& options) {
+   if (!options.has_base_options()) {
+@@ -72,12 +72,20 @@ StatusOr<std::vector<core::Category>> BertNLClassifier::Postprocess(
+                         output_tensors.size()),
+         TfLiteSupportStatus::kInvalidNumOutputTensorsError);
+   }
+-  const TfLiteTensor* scores = FindTensorByName(
++  for (const auto& name : kValidScoreTensorNames) {
++    const TfLiteTensor* scores = FindTensorByName(
+       output_tensors, GetMetadataExtractor()->GetOutputTensorMetadata(),
+-      kScoreTensorName);
+-
+-  // optional labels extracted from metadata
+-  return BuildResults(scores, /*labels=*/nullptr);
++      name);
++    if (scores) {
++      // optional labels extracted from metadata
++      return BuildResults(scores, /*labels=*/nullptr);
++    }
++  }
++  return CreateStatusWithPayload(
++      absl::StatusCode::kInvalidArgument,
++      absl::StrFormat("BertNLClassifier models are expected to have an output "
++                      "tensor by the name: 'score' or 'probability'"),
++      TfLiteSupportStatus::kOutputTensorNotFoundError);
+ }
+ 
+ StatusOr<std::unique_ptr<BertNLClassifier>> BertNLClassifier::CreateFromOptions(
+-- 
+2.46.0.792.g87dc391469-goog
+
