@@ -711,7 +711,7 @@ void RenderWidgetHostImpl::RendererWidgetCreated(bool for_frame_widget) {
   mojo::PendingRemote<blink::mojom::RenderInputRouterClient> browser_remote;
   mojo::PendingReceiver<blink::mojom::RenderInputRouterClient> viz_receiver =
       mojo::NullReceiver();
-  if (input::TransferInputToViz()) {
+  if (input::IsTransferInputToVizSupported()) {
     mojo::PendingRemote<blink::mojom::RenderInputRouterClient> viz_remote;
     viz_receiver = viz_remote.InitWithNewPipeAndPassReceiver();
     viz_rir_client_remote_ = std::move(viz_remote);
@@ -3531,7 +3531,7 @@ void RenderWidgetHostImpl::CreateFrameSink(
              blink::mojom::RenderInputRouterClient>> viz_rir_client_remote,
          const viz::FrameSinkId& frame_sink_id) {
         input::mojom::RenderInputRouterConfigPtr config;
-        if (input::TransferInputToViz()) {
+        if (input::IsTransferInputToVizSupported()) {
           DCHECK(viz_rir_client_remote.has_value());
           config = input::mojom::RenderInputRouterConfig::New();
           config->rir_client = std::move(viz_rir_client_remote.value());

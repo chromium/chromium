@@ -44,7 +44,7 @@ void InputManager::OnCreateCompositorFrameSink(
   }
 
   DCHECK(render_input_router_config->rir_client.is_valid());
-  DCHECK(input::TransferInputToViz() && !is_root);
+  DCHECK(input::IsTransferInputToVizSupported() && !is_root);
 
   auto render_input_router = std::make_unique<input::RenderInputRouter>(
       /* host */ nullptr,

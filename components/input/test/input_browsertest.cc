@@ -70,7 +70,7 @@ class AndroidInputBrowserTest : public InputBrowserTest,
 };
 
 IN_PROC_BROWSER_TEST_P(AndroidInputBrowserTest, RenderInputRouterCreation) {
-  const bool expected_creation = TransferInputToViz() ? true : false;
+  const bool expected_creation = IsTransferInputToVizSupported();
   EXPECT_EQ(IsRenderInputRouterCreatedOnViz(), expected_creation);
 }
 

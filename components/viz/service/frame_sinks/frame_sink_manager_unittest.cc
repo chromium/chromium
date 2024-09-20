@@ -163,7 +163,7 @@ TEST_F(FrameSinkManagerTest, CreateRootCompositorFrameSink) {
 }
 
 TEST_F(FrameSinkManagerTest, InputManagerCreation) {
-  ASSERT_FALSE(input::TransferInputToViz());
+  ASSERT_FALSE(input::IsTransferInputToVizSupported());
 
   manager_.RegisterFrameSinkId(kFrameSinkIdA, true /* report_activation */);
 
@@ -177,7 +177,8 @@ TEST_F(FrameSinkManagerTest, InputManagerCreation) {
       /* render_input_router_config= */ nullptr);
   EXPECT_TRUE(CompositorFrameSinkExists(kFrameSinkIdA));
 
-  // InputManager is not created since TransferInputToViz() returns false.
+  // InputManager is not created since IsTransferInputToVizSupported() returns
+  // false.
   EXPECT_FALSE(InputManagerExists());
 
   // Invalidating should destroy the CompositorFrameSinkImpl.
@@ -961,7 +962,9 @@ class AndroidFrameSinkManagerTest : public FrameSinkManagerTest,
                                               /* enabled= */ GetParam());
   }
 
-  bool ExpectedInputManagerCreation() { return input::TransferInputToViz(); }
+  bool ExpectedInputManagerCreation() {
+    return input::IsTransferInputToVizSupported();
+  }
 
  private:
   base::test::TracingEnvironment tracing_environment_;
@@ -1023,7 +1026,7 @@ TEST_P(AndroidFrameSinkManagerTest, RenderInputRouterLifecycle) {
   // "client_id", "sink_id"}, {"<num>", "<boolean>" "<clientId>", "<sinkId>"}}.
   EXPECT_EQ(result.value().size(), 2u);
   EXPECT_EQ(result.value()[1].size(), 4u);
-  if (input::TransferInputToViz()) {
+  if (input::IsTransferInputToVizSupported()) {
     // Checks if `InputManger::OnCreateCompositorFrameSink` was called for
     // kFrameSinkIdA.
     EXPECT_THAT(
@@ -1050,7 +1053,7 @@ TEST_P(AndroidFrameSinkManagerTest, RenderInputRouterLifecycle) {
   auto result2 = ttp.RunQuery(query2);
   EXPECT_TRUE(result2.has_value());
 
-  if (input::TransferInputToViz()) {
+  if (input::IsTransferInputToVizSupported()) {
     EXPECT_THAT(result2.value(),
                 testing::ElementsAre(
                     testing::ElementsAre("cnt", "client_id", "sink_id"),
@@ -1113,7 +1116,7 @@ TEST_P(AndroidFrameSinkManagerTest,
   // "client_id", "sink_id"}, {"<num>", "<boolean>" "<clientId>", "<sinkId>"}}.
   EXPECT_EQ(result.value().size(), 2u);
   EXPECT_EQ(result.value()[1].size(), 4u);
-  if (input::TransferInputToViz()) {
+  if (input::IsTransferInputToVizSupported()) {
     EXPECT_THAT(
         result.value(),
         testing::ElementsAre(

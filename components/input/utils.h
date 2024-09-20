@@ -12,7 +12,7 @@
 
 namespace input {
 
-COMPONENT_EXPORT(INPUT) bool TransferInputToViz();
+COMPONENT_EXPORT(INPUT) bool IsTransferInputToVizSupported();
 
 perfetto::protos::pbzero::ChromeLatencyInfo2::InputType InputEventTypeToProto(
     blink::WebInputEvent::Type event_type);
