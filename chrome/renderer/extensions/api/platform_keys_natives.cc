@@ -154,12 +154,9 @@ void PlatformKeysNatives::NormalizeAlgorithm(
     return;
   }
 
-  blink::WebString error_details;
-  int exception_code = 0;
-
-  blink::WebCryptoAlgorithm algorithm = blink::NormalizeCryptoAlgorithm(
-      v8::Local<v8::Object>::Cast(call_info[0]), operation, &exception_code,
-      &error_details, call_info.GetIsolate());
+  blink::WebCryptoAlgorithm algorithm =
+      blink::NormalizeCryptoAlgorithm(v8::Local<v8::Object>::Cast(call_info[0]),
+                                      operation, call_info.GetIsolate());
 
   if (algorithm.IsNull()) {
     return;

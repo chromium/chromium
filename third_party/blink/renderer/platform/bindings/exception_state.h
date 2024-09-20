@@ -98,6 +98,10 @@ class PLATFORM_EXPORT ExceptionState {
   // Sets the function to create a DOMException. Must be called only once.
   static void SetCreateDOMExceptionFunction(CreateDOMExceptionFunction);
 
+  explicit ExceptionState(v8::Isolate* isolate)
+      : main_context_(v8::ExceptionContext::kUnknown, nullptr, String()),
+        isolate_(isolate) {}
+
   ExceptionState(v8::Isolate* isolate, const ExceptionContext& context)
       : main_context_(context), isolate_(isolate) {}
 
@@ -254,6 +258,23 @@ class PLATFORM_EXPORT ExceptionState {
   friend class ContextScope;
 };
 
+// Syntactic sugar for creating an ExceptionState that will throw as soon as
+// the function it's passed to returns.
+// This is useful for when a v8::TryCatch is on the stack.
+class PassThroughException {
+  STACK_ALLOCATED();
+
+ public:
+  explicit PassThroughException(v8::Isolate* isolate)
+      : exception_state_(isolate) {}
+
+  operator ExceptionState&() & = delete;
+  operator ExceptionState&() && { return exception_state_; }
+
+ private:
+  ExceptionState exception_state_;
+};
+
 // NonThrowableExceptionState never allow call sites to throw an exception.
 // Should be used if an exception must not be thrown.
 class PLATFORM_EXPORT NonThrowableExceptionState final : public ExceptionState {
@@ -355,8 +376,12 @@ class PLATFORM_EXPORT DummyExceptionStateForTesting final
 // This can be used as a default value of an ExceptionState parameter like this:
 //
 //     Node* removeChild(Node*, ExceptionState& = IGNORE_EXCEPTION_FOR_TESTING);
-#define IGNORE_EXCEPTION_FOR_TESTING \
-  (::blink::DummyExceptionStateForTesting().ReturnThis())
+//
+// This is not strictly for testing - there are a few legitimate use cases for
+// ignore exceptions in delegated operations. But it should never be the default
+// to ignore exceptions.
+#define IGNORE_EXCEPTION (::blink::DummyExceptionStateForTesting().ReturnThis())
+#define IGNORE_EXCEPTION_FOR_TESTING IGNORE_EXCEPTION
 
 }  // namespace blink
 

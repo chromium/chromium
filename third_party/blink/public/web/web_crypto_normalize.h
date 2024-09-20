@@ -56,8 +56,6 @@ class WebString;
 BLINK_EXPORT WebCryptoAlgorithm
 NormalizeCryptoAlgorithm(v8::Local<v8::Object>,
                          WebCryptoOperation,
-                         int* exception_code,
-                         WebString* error_details,
                          v8::Isolate*);
 
 }  // namespace blink

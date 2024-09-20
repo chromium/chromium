@@ -301,16 +301,14 @@ void AnimationWorkletGlobalScope::MigrateAnimatorsTo(
     Animator* animator = animator_map.value;
     scoped_refptr<SerializedScriptValue> serialized_state;
     if (animator->IsStateful()) {
-      ExceptionState exception_state(script_state->GetIsolate(),
-                                     v8::ExceptionContext::kOperation,
-                                     "Animator", "state");
+      v8::TryCatch try_catch(isolate);
       // If an animator state function throws or the state is not
       // serializable, the animator will be removed from the global scope.
       // TODO(crbug.com/1090522): We should post an error message to console in
       // case of exceptions.
-      v8::Local<v8::Value> state = animator->State(isolate, exception_state);
-      if (exception_state.HadException()) {
-        exception_state.ClearException();
+      v8::Local<v8::Value> state =
+          animator->State(isolate, PassThroughException(isolate));
+      if (try_catch.HasCaught()) {
         continue;
       }
 
@@ -319,9 +317,8 @@ void AnimationWorkletGlobalScope::MigrateAnimatorsTo(
       if (!state->IsNullOrUndefined()) {
         serialized_state = SerializedScriptValue::Serialize(
             isolate, state, SerializedScriptValue::SerializeOptions(),
-            exception_state);
-        if (exception_state.HadException()) {
-          exception_state.ClearException();
+            PassThroughException(isolate));
+        if (try_catch.HasCaught()) {
           continue;
         }
       }

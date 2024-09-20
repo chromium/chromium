@@ -50,14 +50,11 @@ v8::Local<v8::Value> BuildDetails(
     return V8ObjectBuilder(script_state).V8Value();
   }
 
-  ExceptionState exception_state(script_state->GetIsolate(),
-                                 v8::ExceptionContext::kConstructor,
-                                 "PaymentResponse");
+  v8::TryCatch try_catch(script_state->GetIsolate());
   v8::Local<v8::Value> parsed_value =
       FromJSONString(script_state->GetIsolate(), script_state->GetContext(),
-                     json, exception_state);
-  if (exception_state.HadException()) {
-    exception_state.ClearException();
+                     json, PassThroughException(script_state->GetIsolate()));
+  if (try_catch.HasCaught()) {
     return V8ObjectBuilder(script_state).V8Value();
   }
 

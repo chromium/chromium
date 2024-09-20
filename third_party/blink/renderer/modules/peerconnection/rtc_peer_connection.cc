@@ -1626,8 +1626,7 @@ void RTCPeerConnection::addStream(ScriptState* script_state,
   MediaStreamVector streams;
   streams.push_back(stream);
   for (const auto& track : stream->getTracks()) {
-    addTrack(track, streams, exception_state);
-    exception_state.ClearException();
+    addTrack(track, streams, IGNORE_EXCEPTION);
   }
 
   stream->RegisterObserver(this);
@@ -1641,8 +1640,7 @@ void RTCPeerConnection::removeStream(MediaStream* stream,
     auto* sender = FindSenderForTrackAndStream(track, stream);
     if (!sender)
       continue;
-    removeTrack(sender, exception_state);
-    exception_state.ClearException();
+    removeTrack(sender, IGNORE_EXCEPTION);
   }
   stream->UnregisterObserver(this);
 }
