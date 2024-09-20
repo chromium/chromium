@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.tab_group_sync;
+package org.chromium.components.tab_group_sync;
 
 /**
  * Interface to handle tab group UI actions such as open tab groups from tab group revisit surface.

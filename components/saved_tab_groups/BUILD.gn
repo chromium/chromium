@@ -127,6 +127,7 @@ if (is_android) {
       "android/java/src/org/chromium/components/tab_group_sync/TabGroupSyncConversionsBridge.java",
       "android/java/src/org/chromium/components/tab_group_sync/TabGroupSyncService.java",
       "android/java/src/org/chromium/components/tab_group_sync/TabGroupSyncServiceImpl.java",
+      "android/java/src/org/chromium/components/tab_group_sync/TabGroupUiActionHandler.java",
     ]
 
     deps = [

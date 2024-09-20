@@ -59,7 +59,6 @@ if (is_android) {
       "android/java/src/org/chromium/chrome/browser/tab_group_sync/TabGroupSyncLocalObserver.java",
       "android/java/src/org/chromium/chrome/browser/tab_group_sync/TabGroupSyncRemoteObserver.java",
       "android/java/src/org/chromium/chrome/browser/tab_group_sync/TabGroupSyncUtils.java",
-      "android/java/src/org/chromium/chrome/browser/tab_group_sync/TabGroupUiActionHandler.java",
     ]
 
     deps = [
