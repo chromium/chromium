@@ -96,8 +96,17 @@ policy::URLBlocklist::URLBlocklistState OnTaskBlocklist::GetURLBlocklistState(
   return url_blocklist_manager_->GetURLBlocklistState(url);
 }
 
+bool OnTaskBlocklist::IsCurrentRestrictionOneLevelDeep() {
+  return (
+      current_page_restriction_level_ ==
+          OnTaskBlocklist::RestrictionLevel::kOneLevelDeepNavigation ||
+      current_page_restriction_level_ ==
+          OnTaskBlocklist::RestrictionLevel::kDomainAndOneLevelDeepNavigation);
+}
+
 bool OnTaskBlocklist::MaybeSetURLRestrictionLevel(
     content::WebContents* tab,
+    const GURL& url,
     OnTaskBlocklist::RestrictionLevel restriction_level) {
   const SessionID tab_id = sessions::SessionTabHelper::IdForTab(tab);
   if (!tab_id.is_valid()) {
@@ -115,13 +124,14 @@ bool OnTaskBlocklist::MaybeSetURLRestrictionLevel(
           OnTaskBlocklist::RestrictionLevel::kOneLevelDeepNavigation ||
       restriction_level ==
           OnTaskBlocklist::RestrictionLevel::kDomainAndOneLevelDeepNavigation) {
-    one_level_deep_original_url_[tab_id] = tab->GetVisibleURL();
+    one_level_deep_original_url_[tab_id] = url;
   }
   return true;
 }
 
 void OnTaskBlocklist::SetParentURLRestrictionLevel(
     content::WebContents* tab,
+    const GURL& url,
     OnTaskBlocklist::RestrictionLevel restriction_level) {
   const SessionID tab_id = sessions::SessionTabHelper::IdForTab(tab);
   if (!tab_id.is_valid()) {
@@ -132,7 +142,7 @@ void OnTaskBlocklist::SetParentURLRestrictionLevel(
           OnTaskBlocklist::RestrictionLevel::kOneLevelDeepNavigation ||
       restriction_level ==
           OnTaskBlocklist::RestrictionLevel::kDomainAndOneLevelDeepNavigation) {
-    one_level_deep_original_url_[tab_id] = tab->GetVisibleURL();
+    one_level_deep_original_url_[tab_id] = url;
   }
 }
 
@@ -205,6 +215,23 @@ void OnTaskBlocklist::RemoveChildFilter(content::WebContents* tab) {
   if (tab_id.is_valid() && base::Contains(child_tab_to_nav_filters_, tab_id)) {
     child_tab_to_nav_filters_.erase(tab_id);
   }
+}
+
+bool OnTaskBlocklist::CanPerformOneLevelNavigation(content::WebContents* tab) {
+  // This method should only be called if the current restriction level is set
+  // to either `kOneLevelDeepNavigation` or `kDomainAndOneLevelDeepNavigation`.
+  CHECK(IsCurrentRestrictionOneLevelDeep());
+
+  if (!tab) {
+    return false;
+  }
+
+  const SessionID tab_id = sessions::SessionTabHelper::IdForTab(tab);
+  if (tab_id.is_valid() &&
+      base::Contains(one_level_deep_original_url_, tab_id)) {
+    return one_level_deep_original_url_[tab_id] == tab->GetLastCommittedURL();
+  }
+  return true;
 }
 
 bool OnTaskBlocklist::IsParentTab(content::WebContents* tab) {

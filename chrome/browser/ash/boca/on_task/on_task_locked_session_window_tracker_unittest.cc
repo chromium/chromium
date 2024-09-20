@@ -108,19 +108,19 @@ TEST_F(OnTaskLockedSessionWindowTrackerTest, RegisterUrlsAndRestrictionLevels) {
   ASSERT_EQ(window_tracker->browser(), browser());
   auto* const on_task_blocklist = window_tracker->on_task_blocklist();
   on_task_blocklist->SetParentURLRestrictionLevel(
-      tab_strip_model->GetWebContentsAt(4),
+      tab_strip_model->GetWebContentsAt(4), url_a,
       OnTaskBlocklist::RestrictionLevel::kNoRestrictions);
   on_task_blocklist->SetParentURLRestrictionLevel(
-      tab_strip_model->GetWebContentsAt(3),
+      tab_strip_model->GetWebContentsAt(3), url_b,
       OnTaskBlocklist::RestrictionLevel::kLimitedNavigation);
   on_task_blocklist->SetParentURLRestrictionLevel(
-      tab_strip_model->GetWebContentsAt(2),
+      tab_strip_model->GetWebContentsAt(2), url_a_subdomain,
       OnTaskBlocklist::RestrictionLevel::kSameDomainNavigation);
   on_task_blocklist->SetParentURLRestrictionLevel(
-      tab_strip_model->GetWebContentsAt(1),
+      tab_strip_model->GetWebContentsAt(1), url_b_subdomain,
       OnTaskBlocklist::RestrictionLevel::kOneLevelDeepNavigation);
   on_task_blocklist->SetParentURLRestrictionLevel(
-      tab_strip_model->GetWebContentsAt(0),
+      tab_strip_model->GetWebContentsAt(0), url_a_subdomain2,
       OnTaskBlocklist::RestrictionLevel::kDomainAndOneLevelDeepNavigation);
   ASSERT_EQ(on_task_blocklist->parent_tab_to_nav_filters().size(), 5u);
   EXPECT_EQ(
@@ -167,10 +167,10 @@ TEST_F(OnTaskLockedSessionWindowTrackerTest,
   auto* const on_task_blocklist = window_tracker->on_task_blocklist();
 
   on_task_blocklist->SetParentURLRestrictionLevel(
-      tab_strip_model->GetWebContentsAt(1),
+      tab_strip_model->GetWebContentsAt(1), url_a,
       OnTaskBlocklist::RestrictionLevel::kNoRestrictions);
   on_task_blocklist->MaybeSetURLRestrictionLevel(
-      tab_strip_model->GetWebContentsAt(0),
+      tab_strip_model->GetWebContentsAt(0), url_a_child,
       OnTaskBlocklist::RestrictionLevel::kOneLevelDeepNavigation);
   ASSERT_EQ(on_task_blocklist->parent_tab_to_nav_filters().size(), 1u);
   ASSERT_EQ(on_task_blocklist->child_tab_to_nav_filters().size(), 1u);
@@ -205,10 +205,10 @@ TEST_F(OnTaskLockedSessionWindowTrackerTest,
   auto* const on_task_blocklist = window_tracker->on_task_blocklist();
 
   on_task_blocklist->SetParentURLRestrictionLevel(
-      tab_strip_model->GetWebContentsAt(0),
+      tab_strip_model->GetWebContentsAt(0), url,
       OnTaskBlocklist::RestrictionLevel::kNoRestrictions);
   on_task_blocklist->SetParentURLRestrictionLevel(
-      tab_strip_model->GetWebContentsAt(1),
+      tab_strip_model->GetWebContentsAt(1), url_subdomain,
       OnTaskBlocklist::RestrictionLevel::kLimitedNavigation);
   ASSERT_EQ(on_task_blocklist->parent_tab_to_nav_filters().size(), 2u);
   ASSERT_EQ(
@@ -220,7 +220,7 @@ TEST_F(OnTaskLockedSessionWindowTrackerTest,
   EXPECT_EQ(on_task_blocklist->current_page_restriction_level(),
             OnTaskBlocklist::RestrictionLevel::kNoRestrictions);
   on_task_blocklist->MaybeSetURLRestrictionLevel(
-      tab_strip_model->GetWebContentsAt(1),
+      tab_strip_model->GetWebContentsAt(1), url_subdomain,
       OnTaskBlocklist::RestrictionLevel::kLimitedNavigation);
   NavigateAndCommitActiveTab(url_subdomain);
   browser()->tab_strip_model()->UpdateWebContentsStateAt(0,
@@ -257,10 +257,10 @@ TEST_F(OnTaskLockedSessionWindowTrackerTest, NavigateNonParentTab) {
   auto* const on_task_blocklist = window_tracker->on_task_blocklist();
 
   on_task_blocklist->SetParentURLRestrictionLevel(
-      tab_strip_model->GetWebContentsAt(0),
+      tab_strip_model->GetWebContentsAt(0), url,
       OnTaskBlocklist::RestrictionLevel::kNoRestrictions);
   on_task_blocklist->MaybeSetURLRestrictionLevel(
-      tab_strip_model->GetWebContentsAt(1),
+      tab_strip_model->GetWebContentsAt(1), url_subdomain,
       OnTaskBlocklist::RestrictionLevel::kLimitedNavigation);
   ASSERT_EQ(on_task_blocklist->parent_tab_to_nav_filters().size(), 1u);
   ASSERT_EQ(
@@ -304,7 +304,7 @@ TEST_F(OnTaskLockedSessionWindowTrackerTest,
   auto* const on_task_blocklist = window_tracker->on_task_blocklist();
 
   on_task_blocklist->SetParentURLRestrictionLevel(
-      tab_strip_model->GetWebContentsAt(0),
+      tab_strip_model->GetWebContentsAt(0), url,
       OnTaskBlocklist::RestrictionLevel::kNoRestrictions);
   ASSERT_EQ(on_task_blocklist->parent_tab_to_nav_filters().size(), 1u);
   ASSERT_EQ(
@@ -341,7 +341,7 @@ TEST_F(OnTaskLockedSessionWindowTrackerTest,
   auto* const on_task_blocklist = window_tracker->on_task_blocklist();
 
   on_task_blocklist->SetParentURLRestrictionLevel(
-      tab_strip_model->GetWebContentsAt(0),
+      tab_strip_model->GetWebContentsAt(0), url,
       OnTaskBlocklist::RestrictionLevel::kOneLevelDeepNavigation);
   ASSERT_EQ(on_task_blocklist->parent_tab_to_nav_filters().size(), 1u);
   ASSERT_EQ(
@@ -380,7 +380,7 @@ TEST_F(OnTaskLockedSessionWindowTrackerTest,
   auto* const on_task_blocklist = window_tracker->on_task_blocklist();
 
   on_task_blocklist->SetParentURLRestrictionLevel(
-      tab_strip_model->GetWebContentsAt(0),
+      tab_strip_model->GetWebContentsAt(0), url_subdomain,
       OnTaskBlocklist::RestrictionLevel::kDomainAndOneLevelDeepNavigation);
   ASSERT_EQ(on_task_blocklist->parent_tab_to_nav_filters().size(), 1u);
   ASSERT_EQ(
@@ -439,10 +439,10 @@ TEST_F(OnTaskLockedSessionWindowTrackerTest, SwitchTabWithNewRestrictedLevel) {
   auto* const on_task_blocklist = window_tracker->on_task_blocklist();
 
   on_task_blocklist->SetParentURLRestrictionLevel(
-      tab_strip_model->GetWebContentsAt(1),
+      tab_strip_model->GetWebContentsAt(1), url_a,
       OnTaskBlocklist::RestrictionLevel::kNoRestrictions);
   on_task_blocklist->SetParentURLRestrictionLevel(
-      tab_strip_model->GetWebContentsAt(0),
+      tab_strip_model->GetWebContentsAt(0), url_b,
       OnTaskBlocklist::RestrictionLevel::kLimitedNavigation);
   window_tracker->RefreshUrlBlocklist();
   EXPECT_EQ(on_task_blocklist->current_page_restriction_level(),
@@ -467,7 +467,7 @@ TEST_F(OnTaskLockedSessionWindowTrackerTest,
   auto* const on_task_blocklist = window_tracker->on_task_blocklist();
 
   on_task_blocklist->SetParentURLRestrictionLevel(
-      tab_strip_model->GetWebContentsAt(0),
+      tab_strip_model->GetWebContentsAt(0), url_a,
       OnTaskBlocklist::RestrictionLevel::kLimitedNavigation);
   window_tracker->RefreshUrlBlocklist();
   task_environment()->RunUntilIdle();
@@ -496,7 +496,7 @@ TEST_F(OnTaskLockedSessionWindowTrackerTest,
   auto* const on_task_blocklist = window_tracker->on_task_blocklist();
 
   on_task_blocklist->SetParentURLRestrictionLevel(
-      tab_strip_model->GetWebContentsAt(0),
+      tab_strip_model->GetWebContentsAt(0), url_a,
       OnTaskBlocklist::RestrictionLevel::kSameDomainNavigation);
   window_tracker->RefreshUrlBlocklist();
   task_environment()->RunUntilIdle();
@@ -532,7 +532,7 @@ TEST_F(OnTaskLockedSessionWindowTrackerTest,
   auto* const on_task_blocklist = window_tracker->on_task_blocklist();
 
   on_task_blocklist->SetParentURLRestrictionLevel(
-      tab_strip_model->GetWebContentsAt(0),
+      tab_strip_model->GetWebContentsAt(0), url_a,
       OnTaskBlocklist::RestrictionLevel::kNoRestrictions);
   window_tracker->RefreshUrlBlocklist();
   task_environment()->RunUntilIdle();
@@ -566,7 +566,7 @@ TEST_F(OnTaskLockedSessionWindowTrackerTest,
   auto* const on_task_blocklist = window_tracker->on_task_blocklist();
 
   on_task_blocklist->SetParentURLRestrictionLevel(
-      tab_strip_model->GetWebContentsAt(0),
+      tab_strip_model->GetWebContentsAt(0), google_url,
       OnTaskBlocklist::RestrictionLevel::kSameDomainNavigation);
   window_tracker->RefreshUrlBlocklist();
   task_environment()->RunUntilIdle();
@@ -703,7 +703,7 @@ TEST_F(OnTaskNavigationThrottleTest, AllowUrlSuccessfullyForUnrestrictedNav) {
   ASSERT_EQ(window_tracker->browser(), browser());
   auto* const on_task_blocklist = window_tracker->on_task_blocklist();
   on_task_blocklist->SetParentURLRestrictionLevel(
-      tab_strip_model->GetWebContentsAt(0),
+      tab_strip_model->GetWebContentsAt(0), url_a,
       OnTaskBlocklist::RestrictionLevel::kNoRestrictions);
   window_tracker->RefreshUrlBlocklist();
   task_environment()->RunUntilIdle();
@@ -756,7 +756,7 @@ TEST_F(OnTaskNavigationThrottleTest, BlockUrlSuccessfullyForRestrictedNav) {
   auto* const on_task_blocklist = window_tracker->on_task_blocklist();
 
   on_task_blocklist->SetParentURLRestrictionLevel(
-      tab_strip_model->GetWebContentsAt(0),
+      tab_strip_model->GetWebContentsAt(0), url_a,
       OnTaskBlocklist::RestrictionLevel::kLimitedNavigation);
   window_tracker->RefreshUrlBlocklist();
   task_environment()->RunUntilIdle();
@@ -811,7 +811,7 @@ TEST_F(OnTaskNavigationThrottleTest,
   auto* const on_task_blocklist = window_tracker->on_task_blocklist();
 
   on_task_blocklist->SetParentURLRestrictionLevel(
-      tab_strip_model->GetWebContentsAt(0),
+      tab_strip_model->GetWebContentsAt(0), url_a,
       OnTaskBlocklist::RestrictionLevel::kSameDomainNavigation);
   window_tracker->RefreshUrlBlocklist();
   task_environment()->RunUntilIdle();
@@ -847,6 +847,230 @@ TEST_F(OnTaskNavigationThrottleTest,
   }
 }
 
+TEST_F(OnTaskNavigationThrottleTest,
+       BlockAndAllowUrlSuccessfullyForOneLevelDeepNav) {
+  CreateWindowTrackerServiceForTesting();
+  auto* const window_tracker =
+      LockedSessionWindowTrackerFactory::GetForBrowserContext(profile());
+  const GURL url_a(kTabUrl1);
+  const GURL url_b(kTabUrl2);
+  const GURL url_c(kTabUrlRedirectedUrl);
+
+  AddTab(browser(), url_a);
+  const auto* const tab_strip_model = browser()->tab_strip_model();
+  window_tracker->InitializeBrowserInfoForTracking(browser());
+  ASSERT_EQ(window_tracker->browser(), browser());
+  auto* const on_task_blocklist = window_tracker->on_task_blocklist();
+
+  on_task_blocklist->SetParentURLRestrictionLevel(
+      tab_strip_model->GetWebContentsAt(0), url_a,
+      OnTaskBlocklist::RestrictionLevel::kOneLevelDeepNavigation);
+  window_tracker->RefreshUrlBlocklist();
+  task_environment()->RunUntilIdle();
+
+  ASSERT_EQ(on_task_blocklist->current_page_restriction_level(),
+            OnTaskBlocklist::RestrictionLevel::kOneLevelDeepNavigation);
+  ASSERT_TRUE(on_task_blocklist->CanPerformOneLevelNavigation(
+      tab_strip_model->GetWebContentsAt(0)));
+  auto simulator = StartNavigation(
+      url_b, tab_strip_model->GetWebContentsAt(0)->GetPrimaryMainFrame());
+  simulator->Commit();
+  EXPECT_EQ(content::NavigationThrottle::PROCEED,
+            simulator->GetLastThrottleCheckResult());
+  EXPECT_FALSE(on_task_blocklist->CanPerformOneLevelNavigation(
+      tab_strip_model->GetWebContentsAt(0)));
+
+  // Attempt to navigate on this new page should fail.
+  auto simulator_on_new_page = StartNavigation(
+      url_c, tab_strip_model->GetWebContentsAt(0)->GetPrimaryMainFrame());
+  EXPECT_EQ(content::NavigationThrottle::CANCEL,
+            simulator_on_new_page->GetLastThrottleCheckResult());
+  EXPECT_FALSE(on_task_blocklist->CanPerformOneLevelNavigation(
+      tab_strip_model->GetWebContentsAt(0)));
+}
+
+TEST_F(OnTaskNavigationThrottleTest,
+       BlockAndAllowUrlSuccessfullyForOneLevelDeepNavOnNewPage) {
+  CreateWindowTrackerServiceForTesting();
+  auto* const window_tracker =
+      LockedSessionWindowTrackerFactory::GetForBrowserContext(profile());
+  const GURL url_a(kTabUrl1);
+  const GURL url_b(kTabUrl2);
+  const GURL url_c(kTabUrlRedirectedUrl);
+
+  AddTab(browser(), url_a);
+  const auto* const tab_strip_model = browser()->tab_strip_model();
+  window_tracker->InitializeBrowserInfoForTracking(browser());
+  ASSERT_EQ(window_tracker->browser(), browser());
+  auto* const on_task_blocklist = window_tracker->on_task_blocklist();
+
+  on_task_blocklist->SetParentURLRestrictionLevel(
+      tab_strip_model->GetWebContentsAt(0), url_a,
+      OnTaskBlocklist::RestrictionLevel::kOneLevelDeepNavigation);
+  window_tracker->RefreshUrlBlocklist();
+  task_environment()->RunUntilIdle();
+
+  ASSERT_EQ(on_task_blocklist->current_page_restriction_level(),
+            OnTaskBlocklist::RestrictionLevel::kOneLevelDeepNavigation);
+
+  // Add a new tab to the browser to simulate opening a link in a new tab
+  ASSERT_TRUE(on_task_blocklist->CanPerformOneLevelNavigation(
+      tab_strip_model->GetWebContentsAt(0)));
+  AddTab(browser(), url_a);
+
+  // The new tab can perform one level deep navigation because it is the same
+  // url as the previous tab's url.
+  EXPECT_TRUE(on_task_blocklist->CanPerformOneLevelNavigation(
+      tab_strip_model->GetWebContentsAt(0)));
+
+  // The original tab can still perform one level deep navigation because it
+  // didn't navigate away from the original url in the current tab.
+  EXPECT_TRUE(on_task_blocklist->CanPerformOneLevelNavigation(
+      tab_strip_model->GetWebContentsAt(1)));
+
+  auto simulator = StartNavigation(
+      url_b, tab_strip_model->GetWebContentsAt(0)->GetPrimaryMainFrame());
+  EXPECT_EQ(content::NavigationThrottle::PROCEED,
+            simulator->GetLastThrottleCheckResult());
+  simulator->Commit();
+  window_tracker->RefreshUrlBlocklist();
+  task_environment()->RunUntilIdle();
+  EXPECT_EQ(on_task_blocklist->current_page_restriction_level(),
+            OnTaskBlocklist::RestrictionLevel::kLimitedNavigation);
+
+  // Attempt to navigate on this new page should fail.
+  auto simulator_on_new_page = StartNavigation(
+      url_c, tab_strip_model->GetWebContentsAt(0)->GetPrimaryMainFrame());
+  EXPECT_EQ(content::NavigationThrottle::CANCEL,
+            simulator_on_new_page->GetLastThrottleCheckResult());
+
+  // One level deep navigation should still be possible for the original tab.
+  browser()->tab_strip_model()->ActivateTabAt(1);
+  EXPECT_TRUE(on_task_blocklist->CanPerformOneLevelNavigation(
+      tab_strip_model->GetWebContentsAt(1)));
+}
+
+TEST_F(OnTaskNavigationThrottleTest,
+       BlockAndAllowUrlSuccessfullyForSameDomainAndOneLevelDeepNav) {
+  CreateWindowTrackerServiceForTesting();
+  auto* const window_tracker =
+      LockedSessionWindowTrackerFactory::GetForBrowserContext(profile());
+  const GURL url_a(kTabUrl1);
+  const GURL url_a_front_subdomain(kTabUrl1FrontSubDomain1);
+  const GURL url_b(kTabUrl2);
+  const GURL url_c(kTabUrlRedirectedUrl);
+
+  AddTab(browser(), url_a);
+  const auto* const tab_strip_model = browser()->tab_strip_model();
+  window_tracker->InitializeBrowserInfoForTracking(browser());
+  ASSERT_EQ(window_tracker->browser(), browser());
+  auto* const on_task_blocklist = window_tracker->on_task_blocklist();
+
+  on_task_blocklist->SetParentURLRestrictionLevel(
+      tab_strip_model->GetWebContentsAt(0), url_a,
+      OnTaskBlocklist::RestrictionLevel::kDomainAndOneLevelDeepNavigation);
+  window_tracker->RefreshUrlBlocklist();
+  task_environment()->RunUntilIdle();
+
+  ASSERT_EQ(
+      on_task_blocklist->current_page_restriction_level(),
+      OnTaskBlocklist::RestrictionLevel::kDomainAndOneLevelDeepNavigation);
+
+  // Same domain and one level deep works on the current page.
+  ASSERT_TRUE(on_task_blocklist->CanPerformOneLevelNavigation(
+      tab_strip_model->GetWebContentsAt(0)));
+  auto simulator = StartNavigation(
+      url_a_front_subdomain,
+      tab_strip_model->GetWebContentsAt(0)->GetPrimaryMainFrame());
+  EXPECT_EQ(content::NavigationThrottle::PROCEED,
+            simulator->GetLastThrottleCheckResult());
+  EXPECT_TRUE(on_task_blocklist->CanPerformOneLevelNavigation(
+      tab_strip_model->GetWebContentsAt(0)));
+
+  // Attempt to navigate on this new page for a completely new domain should
+  // pass.
+  auto simulator_on_new_page = StartNavigation(
+      url_b, tab_strip_model->GetWebContentsAt(0)->GetPrimaryMainFrame());
+  simulator_on_new_page->Commit();
+  EXPECT_EQ(content::NavigationThrottle::PROCEED,
+            simulator_on_new_page->GetLastThrottleCheckResult());
+  EXPECT_FALSE(on_task_blocklist->CanPerformOneLevelNavigation(
+      tab_strip_model->GetWebContentsAt(0)));
+
+  // Further navigation on this page fails.
+  auto simulator_on_new_page_after_one_level_deep = StartNavigation(
+      url_c, tab_strip_model->GetWebContentsAt(0)->GetPrimaryMainFrame());
+  EXPECT_EQ(
+      content::NavigationThrottle::CANCEL,
+      simulator_on_new_page_after_one_level_deep->GetLastThrottleCheckResult());
+  EXPECT_FALSE(on_task_blocklist->CanPerformOneLevelNavigation(
+      tab_strip_model->GetWebContentsAt(0)));
+}
+
+TEST_F(OnTaskNavigationThrottleTest,
+       BlockAndAllowUrlSuccessfullyForSameDomainAndOneLevelDeepNavOnNewPage) {
+  CreateWindowTrackerServiceForTesting();
+  auto* const window_tracker =
+      LockedSessionWindowTrackerFactory::GetForBrowserContext(profile());
+  const GURL url_a(kTabUrl1);
+  const GURL url_a_front_subdomain(kTabUrl1FrontSubDomain1);
+  const GURL url_b(kTabUrl2);
+  const GURL url_c(kTabUrlRedirectedUrl);
+
+  AddTab(browser(), url_a);
+  const auto* const tab_strip_model = browser()->tab_strip_model();
+  window_tracker->InitializeBrowserInfoForTracking(browser());
+  ASSERT_EQ(window_tracker->browser(), browser());
+  auto* const on_task_blocklist = window_tracker->on_task_blocklist();
+
+  on_task_blocklist->SetParentURLRestrictionLevel(
+      tab_strip_model->GetWebContentsAt(0), url_a,
+      OnTaskBlocklist::RestrictionLevel::kDomainAndOneLevelDeepNavigation);
+  window_tracker->RefreshUrlBlocklist();
+  task_environment()->RunUntilIdle();
+
+  ASSERT_EQ(
+      on_task_blocklist->current_page_restriction_level(),
+      OnTaskBlocklist::RestrictionLevel::kDomainAndOneLevelDeepNavigation);
+
+  // Add a new tab to the browser to simulate opening a link in a new tab
+  ASSERT_TRUE(on_task_blocklist->CanPerformOneLevelNavigation(
+      tab_strip_model->GetWebContentsAt(0)));
+  AddTab(browser(), url_a);
+  EXPECT_TRUE(on_task_blocklist->CanPerformOneLevelNavigation(
+      tab_strip_model->GetWebContentsAt(0)));
+  auto simulator = StartNavigation(
+      url_a_front_subdomain,
+      tab_strip_model->GetWebContentsAt(0)->GetPrimaryMainFrame());
+  EXPECT_EQ(content::NavigationThrottle::PROCEED,
+            simulator->GetLastThrottleCheckResult());
+  EXPECT_TRUE(on_task_blocklist->CanPerformOneLevelNavigation(
+      tab_strip_model->GetWebContentsAt(0)));
+
+  // Attempt to navigate on this new page for a completely new domain should
+  // pass.
+  auto simulator_on_new_page = StartNavigation(
+      url_b, tab_strip_model->GetWebContentsAt(0)->GetPrimaryMainFrame());
+  simulator_on_new_page->Commit();
+  EXPECT_EQ(content::NavigationThrottle::PROCEED,
+            simulator_on_new_page->GetLastThrottleCheckResult());
+  EXPECT_FALSE(on_task_blocklist->CanPerformOneLevelNavigation(
+      tab_strip_model->GetWebContentsAt(0)));
+
+  // Further navigation on this page fails.
+  auto simulator_on_new_page_after_one_level_deep = StartNavigation(
+      url_c, tab_strip_model->GetWebContentsAt(0)->GetPrimaryMainFrame());
+  EXPECT_EQ(
+      content::NavigationThrottle::CANCEL,
+      simulator_on_new_page_after_one_level_deep->GetLastThrottleCheckResult());
+  EXPECT_FALSE(on_task_blocklist->CanPerformOneLevelNavigation(
+      tab_strip_model->GetWebContentsAt(0)));
+
+  // Sanity check to make sure child tabs aren't added as parent tabs.
+  EXPECT_FALSE(
+      on_task_blocklist->IsParentTab(tab_strip_model->GetWebContentsAt(0)));
+}
+
 TEST_F(OnTaskNavigationThrottleTest, ClosePopUpIfNotOauth) {
   CreateWindowTrackerServiceForTesting();
   auto* const window_tracker =
@@ -860,7 +1084,7 @@ TEST_F(OnTaskNavigationThrottleTest, ClosePopUpIfNotOauth) {
   ASSERT_EQ(window_tracker->browser(), browser());
   auto* const on_task_blocklist = window_tracker->on_task_blocklist();
   on_task_blocklist->SetParentURLRestrictionLevel(
-      main_browser_tab_strip_model->GetWebContentsAt(0),
+      main_browser_tab_strip_model->GetWebContentsAt(0), url_a,
       OnTaskBlocklist::RestrictionLevel::kOneLevelDeepNavigation);
   window_tracker->RefreshUrlBlocklist();
   ASSERT_TRUE(window_tracker->CanOpenNewPopup());
@@ -882,6 +1106,7 @@ TEST_F(OnTaskNavigationThrottleTest, ClosePopUpIfNotOauth) {
   simulator->Commit();
   EXPECT_TRUE(
       static_cast<TestBrowserWindow*>(popup_browser->window())->IsClosed());
+
   // Close all tabs to avoid a DCHECK in the destructor.
   popup_browser->tab_strip_model()->CloseAllTabs();
   BrowserList::GetInstance()->NotifyBrowserCloseStarted((popup_browser.get()));
@@ -902,7 +1127,7 @@ TEST_F(OnTaskNavigationThrottleTest, OauthPopupAllowed) {
   ASSERT_EQ(window_tracker->browser(), browser());
   auto* const on_task_blocklist = window_tracker->on_task_blocklist();
   on_task_blocklist->SetParentURLRestrictionLevel(
-      main_browser_tab_strip_model->GetWebContentsAt(0),
+      main_browser_tab_strip_model->GetWebContentsAt(0), url_a,
       OnTaskBlocklist::RestrictionLevel::kOneLevelDeepNavigation);
   window_tracker->RefreshUrlBlocklist();
   std::unique_ptr<Browser> popup_browser(CreateTestBrowser(/*popup=*/true));
@@ -950,7 +1175,7 @@ TEST_F(OnTaskNavigationThrottleTest, SuccessNavigationWorksEvenWithRedirects) {
   ASSERT_EQ(window_tracker->browser(), browser());
   auto* const on_task_blocklist = window_tracker->on_task_blocklist();
   on_task_blocklist->SetParentURLRestrictionLevel(
-      tab_strip_model->GetWebContentsAt(0),
+      tab_strip_model->GetWebContentsAt(0), url_a,
       OnTaskBlocklist::RestrictionLevel::kSameDomainNavigation);
   window_tracker->RefreshUrlBlocklist();
   task_environment()->RunUntilIdle();
@@ -978,7 +1203,7 @@ TEST_F(OnTaskNavigationThrottleTest, BlockUrlInNewTabShouldClose) {
   ASSERT_EQ(window_tracker->browser(), browser());
   auto* const on_task_blocklist = window_tracker->on_task_blocklist();
   on_task_blocklist->SetParentURLRestrictionLevel(
-      tab_strip_model->GetWebContentsAt(0),
+      tab_strip_model->GetWebContentsAt(0), url_a,
       OnTaskBlocklist::RestrictionLevel::kLimitedNavigation);
   window_tracker->RefreshUrlBlocklist();
   task_environment()->RunUntilIdle();
@@ -998,4 +1223,141 @@ TEST_F(OnTaskNavigationThrottleTest, BlockUrlInNewTabShouldClose) {
   EXPECT_EQ(content::NavigationThrottle::CANCEL,
             simulator->GetLastThrottleCheckResult());
   EXPECT_EQ(tab_strip_model->count(), 1);
+}
+
+TEST_F(OnTaskNavigationThrottleTest, BackForwardReloadNavigationSuccess) {
+  CreateWindowTrackerServiceForTesting();
+  auto* const window_tracker =
+      LockedSessionWindowTrackerFactory::GetForBrowserContext(profile());
+  const GURL url_a(kTabUrl1);
+  const GURL url_a_front_subdomain(kTabUrl1FrontSubDomain1);
+
+  AddTab(browser(), url_a);
+  const auto* const tab_strip_model = browser()->tab_strip_model();
+  window_tracker->InitializeBrowserInfoForTracking(browser());
+  ASSERT_EQ(window_tracker->browser(), browser());
+  auto* const on_task_blocklist = window_tracker->on_task_blocklist();
+
+  on_task_blocklist->SetParentURLRestrictionLevel(
+      tab_strip_model->GetWebContentsAt(0), url_a,
+      OnTaskBlocklist::RestrictionLevel::kSameDomainNavigation);
+  window_tracker->RefreshUrlBlocklist();
+  task_environment()->RunUntilIdle();
+
+  ASSERT_EQ(on_task_blocklist->current_page_restriction_level(),
+            OnTaskBlocklist::RestrictionLevel::kSameDomainNavigation);
+  auto simulator = StartNavigation(
+      url_a_front_subdomain,
+      tab_strip_model->GetWebContentsAt(0)->GetPrimaryMainFrame());
+  EXPECT_EQ(content::NavigationThrottle::PROCEED,
+            simulator->GetLastThrottleCheckResult());
+  simulator->Commit();
+
+  ASSERT_FALSE(
+      tab_strip_model->GetWebContentsAt(0)->GetController().GetPendingEntry());
+  EXPECT_EQ(
+      tab_strip_model->GetWebContentsAt(0)->GetController().GetEntryCount(), 2);
+
+  // Navigate back in history.
+  auto backward_navigation =
+      content::NavigationSimulator::CreateHistoryNavigation(
+          /*offset=*/-1, tab_strip_model->GetWebContentsAt(0),
+          /*is_renderer_initiated=*/false);
+  backward_navigation->Start();
+  backward_navigation->Commit();
+  EXPECT_EQ(content::NavigationThrottle::PROCEED,
+            backward_navigation->GetLastThrottleCheckResult());
+
+  // Navigate forward in history.
+  auto forward_navigation =
+      content::NavigationSimulator::CreateHistoryNavigation(
+          /*offset=*/1, tab_strip_model->GetWebContentsAt(0),
+          /*is_renderer_initiated=*/false);
+  forward_navigation->Start();
+  forward_navigation->Commit();
+  EXPECT_EQ(content::NavigationThrottle::PROCEED,
+            forward_navigation->GetLastThrottleCheckResult());
+
+  // Reload page.
+  auto reload_navigation = content::NavigationSimulator::CreateBrowserInitiated(
+      tab_strip_model->GetWebContentsAt(0)->GetLastCommittedURL(),
+      tab_strip_model->GetWebContentsAt(0));
+  reload_navigation->SetReloadType(content::ReloadType::NORMAL);
+  reload_navigation->Start();
+  reload_navigation->Commit();
+  EXPECT_EQ(content::NavigationThrottle::PROCEED,
+            reload_navigation->GetLastThrottleCheckResult());
+}
+
+TEST_F(OnTaskNavigationThrottleTest,
+       BackForwardReloadNavigationSuccessForOneLevelDeep) {
+  CreateWindowTrackerServiceForTesting();
+  auto* const window_tracker =
+      LockedSessionWindowTrackerFactory::GetForBrowserContext(profile());
+  const GURL url_a(kTabUrl1);
+  const GURL url_a_front_subdomain(kTabUrl1FrontSubDomain1);
+
+  AddTab(browser(), url_a);
+  const auto* const tab_strip_model = browser()->tab_strip_model();
+  window_tracker->InitializeBrowserInfoForTracking(browser());
+  ASSERT_EQ(window_tracker->browser(), browser());
+  auto* const on_task_blocklist = window_tracker->on_task_blocklist();
+
+  on_task_blocklist->SetParentURLRestrictionLevel(
+      tab_strip_model->GetWebContentsAt(0), url_a,
+      OnTaskBlocklist::RestrictionLevel::kOneLevelDeepNavigation);
+  window_tracker->RefreshUrlBlocklist();
+  task_environment()->RunUntilIdle();
+
+  ASSERT_EQ(on_task_blocklist->current_page_restriction_level(),
+            OnTaskBlocklist::RestrictionLevel::kOneLevelDeepNavigation);
+  auto simulator = StartNavigation(
+      url_a_front_subdomain,
+      tab_strip_model->GetWebContentsAt(0)->GetPrimaryMainFrame());
+  EXPECT_EQ(content::NavigationThrottle::PROCEED,
+            simulator->GetLastThrottleCheckResult());
+  simulator->Commit();
+
+  ASSERT_FALSE(
+      tab_strip_model->GetWebContentsAt(0)->GetController().GetPendingEntry());
+  EXPECT_EQ(
+      tab_strip_model->GetWebContentsAt(0)->GetController().GetEntryCount(), 2);
+  EXPECT_FALSE(on_task_blocklist->CanPerformOneLevelNavigation(
+      tab_strip_model->GetWebContentsAt(0)));
+
+  // Navigate back in history.
+  auto backward_navigation =
+      content::NavigationSimulator::CreateHistoryNavigation(
+          /*offset=*/-1, tab_strip_model->GetWebContentsAt(0),
+          /*is_renderer_initiated=*/false);
+  backward_navigation->Start();
+  backward_navigation->Commit();
+  EXPECT_EQ(content::NavigationThrottle::PROCEED,
+            backward_navigation->GetLastThrottleCheckResult());
+  EXPECT_TRUE(on_task_blocklist->CanPerformOneLevelNavigation(
+      tab_strip_model->GetWebContentsAt(0)));
+
+  // Navigate forward in history.
+  auto forward_navigation =
+      content::NavigationSimulator::CreateHistoryNavigation(
+          /*offset=*/1, tab_strip_model->GetWebContentsAt(0),
+          /*is_renderer_initiated=*/false);
+  forward_navigation->Start();
+  forward_navigation->Commit();
+  EXPECT_EQ(content::NavigationThrottle::PROCEED,
+            forward_navigation->GetLastThrottleCheckResult());
+  EXPECT_FALSE(on_task_blocklist->CanPerformOneLevelNavigation(
+      tab_strip_model->GetWebContentsAt(0)));
+
+  // Reload page.
+  auto reload_navigation = content::NavigationSimulator::CreateBrowserInitiated(
+      tab_strip_model->GetWebContentsAt(0)->GetLastCommittedURL(),
+      tab_strip_model->GetWebContentsAt(0));
+  reload_navigation->SetReloadType(content::ReloadType::NORMAL);
+  reload_navigation->Start();
+  reload_navigation->Commit();
+  EXPECT_EQ(content::NavigationThrottle::PROCEED,
+            reload_navigation->GetLastThrottleCheckResult());
+  EXPECT_FALSE(on_task_blocklist->CanPerformOneLevelNavigation(
+      tab_strip_model->GetWebContentsAt(0)));
 }

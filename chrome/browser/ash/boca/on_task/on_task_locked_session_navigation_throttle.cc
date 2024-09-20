@@ -22,6 +22,7 @@
 
 namespace ash {  // namespace
 namespace {
+using RestrictionLevel = OnTaskBlocklist::RestrictionLevel;
 
 // Returns whether all the given query parameters are found in the URL.
 bool DoAllQueryParamsExist(const std::set<std::string>& request_params,
@@ -97,8 +98,28 @@ OnTaskLockedSessionNavigationThrottle::MaybeCreateThrottleFor(
   return base::WrapUnique(new OnTaskLockedSessionNavigationThrottle(handle));
 }
 
+bool OnTaskLockedSessionNavigationThrottle::MaybeProceedForOneLevelDeep(
+    content::WebContents* tab,
+    const GURL& url) {
+  LockedSessionWindowTracker* const window_tracker =
+      LockedSessionWindowTrackerFactory::GetForBrowserContext(
+          navigation_handle()->GetWebContents()->GetBrowserContext());
+  if (!window_tracker) {
+    return false;
+  }
+  OnTaskBlocklist* const on_task_blocklist =
+      window_tracker->on_task_blocklist();
+  if (!on_task_blocklist->CanPerformOneLevelNavigation(tab)) {
+    return false;
+  }
+  on_task_blocklist->MaybeSetURLRestrictionLevel(
+      navigation_handle()->GetWebContents(), url,
+      OnTaskBlocklist::RestrictionLevel::kLimitedNavigation);
+  return true;
+}
+
 content::NavigationThrottle::ThrottleCheckResult
-OnTaskLockedSessionNavigationThrottle::CheckBlocklistFilter() {
+OnTaskLockedSessionNavigationThrottle::CheckRestrictions() {
   const GURL& url = navigation_handle()->GetURL();
 
   // Checks if the query is the end of an OAuth login. If so, then we want
@@ -136,8 +157,43 @@ OnTaskLockedSessionNavigationThrottle::CheckBlocklistFilter() {
     return PROCEED;
   }
 
+  // This is a page reload, let the navigation pass since if we were able to get
+  // to this page, then it was already filtered. This is so that one level deep
+  // navigation can still reload the current page even though we have already
+  // navigated one level deeper into the page.
+  // Note: this throttle allows reloads that redirect to a different URL; if
+  // that URL needs to be blocked by another blocklist, such as the one imposed
+  // by the device admin panel, this would be enforced by a different
+  // NavigationThrottle.
+  if (window_tracker->on_task_blocklist()->IsCurrentRestrictionOneLevelDeep() &&
+      navigation_handle()->GetReloadType() != content::ReloadType::NONE) {
+    should_redirects_pass_ = true;
+    return PROCEED;
+  }
+
+  // Check for history navigations via the back and forward shortcuts or via the
+  // context menu. Back needs to be explicitly allowed to go back in the case
+  // this was a one level deep navigation and we do not want to block the
+  // navigation from going back.
+  if (window_tracker->on_task_blocklist()->IsCurrentRestrictionOneLevelDeep() &&
+      navigation_handle()->GetNavigationEntry() &&
+      navigation_handle()->GetNavigationEntry()->GetTransitionType() &
+          ui::PageTransition::PAGE_TRANSITION_FORWARD_BACK) {
+    content::NavigationController& controller =
+        navigation_handle()->GetWebContents()->GetController();
+    int current_index = controller.GetLastCommittedEntryIndex();
+    int pending_index = controller.GetPendingEntryIndex();
+    if (pending_index < current_index) {
+      should_redirects_pass_ = true;
+      return PROCEED;
+    }
+  }
+
+  OnTaskBlocklist* const on_task_blocklist =
+      window_tracker->on_task_blocklist();
+
   policy::URLBlocklist::URLBlocklistState blocklist_state =
-      window_tracker->on_task_blocklist()->GetURLBlocklistState(url);
+      on_task_blocklist->GetURLBlocklistState(url);
   if (blocklist_state ==
       policy::URLBlocklist::URLBlocklistState::URL_IN_BLOCKLIST) {
     return content::NavigationThrottle::CANCEL;
@@ -145,9 +201,58 @@ OnTaskLockedSessionNavigationThrottle::CheckBlocklistFilter() {
 
   if (blocklist_state ==
       policy::URLBlocklist::URLBlocklistState::URL_IN_ALLOWLIST) {
-    window_tracker->on_task_blocklist()->MaybeSetURLRestrictionLevel(
-        navigation_handle()->GetWebContents(),
-        window_tracker->on_task_blocklist()->current_page_restriction_level());
+    // If this navigation occurs on a tab restricted to one level deep
+    // navigations, it will only be allowed if the tab hasn't performed a one
+    // level deep navigation yet, which is true if the tab's last committed URL
+    // hasn't changed from when the restrictions were enabled. Navigations in
+    // newly opened tabs, such as when ctrl-clicking a link, also count as
+    // navigating one level deep. For those cases, restrict the new tab to the
+    // exact URL for subsequent navigations. The exact URL matching will occur
+    // in `on_task_blocklist->CanPerformOneLevelNavigation()`.
+    if (on_task_blocklist->current_page_restriction_level() ==
+        RestrictionLevel::kOneLevelDeepNavigation) {
+      if (!MaybeProceedForOneLevelDeep(on_task_blocklist->previous_tab(),
+                                       url)) {
+        return content::NavigationThrottle::CANCEL;
+      }
+    } else if (on_task_blocklist->current_page_restriction_level() ==
+               RestrictionLevel::kDomainAndOneLevelDeepNavigation) {
+      // Similar conditions as the above, but we first check if it's the same
+      // domain first before checking the one level deep case since we allow
+      // same domain navigations as well.
+
+      // We pick the initiator origin if available in case we want to check if
+      // the current url we are attempting to check matches the domain of the
+      // initial url for the tab. For example if we have the initiator origin as
+      // google.com and the last committed url is en.google.com, we want to
+      // check the domain with google.com instead.
+      const GURL& source_url =
+          navigation_handle()->GetInitiatorOrigin()
+              ? navigation_handle()->GetInitiatorOrigin()->GetURL()
+              : window_tracker->browser()
+                    ->tab_strip_model()
+                    ->GetActiveWebContents()
+                    ->GetLastCommittedURL();
+      if (source_url.is_valid()) {
+        if (url.DomainIs(source_url.host())) {
+          on_task_blocklist->MaybeSetURLRestrictionLevel(
+              navigation_handle()->GetWebContents(), url,
+              RestrictionLevel::kDomainAndOneLevelDeepNavigation);
+        } else {
+          if (!MaybeProceedForOneLevelDeep(
+                  navigation_handle()->GetWebContents(), url)) {
+            return content::NavigationThrottle::CANCEL;
+          }
+        }
+      }
+    } else {
+      // Set the restrictions for this new url if possible with the parent tab's
+      // restrictions. This will be skipped if the tab which this
+      // navigation is occurring in is already set.
+      on_task_blocklist->MaybeSetURLRestrictionLevel(
+          navigation_handle()->GetWebContents(), url,
+          on_task_blocklist->current_page_restriction_level());
+    }
     should_redirects_pass_ = true;
     return PROCEED;
   }
@@ -156,7 +261,7 @@ OnTaskLockedSessionNavigationThrottle::CheckBlocklistFilter() {
 
 content::NavigationThrottle::ThrottleCheckResult
 OnTaskLockedSessionNavigationThrottle::WillStartRequest() {
-  return CheckBlocklistFilter();
+  return CheckRestrictions();
 }
 
 content::NavigationThrottle::ThrottleCheckResult
@@ -200,7 +305,7 @@ OnTaskLockedSessionNavigationThrottle::WillRedirectRequest() {
   // This catch all case is to catch navigations where we identify a case where
   // we should not always pass all redirects (such as blob schemes or page
   // reload in case of server redirects).
-  return CheckBlocklistFilter();
+  return CheckRestrictions();
 }
 
 }  // namespace ash

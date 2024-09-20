@@ -67,12 +67,14 @@ class OnTaskBlocklist {
   // otherwise. It should only be true if it's a new tab.
   bool MaybeSetURLRestrictionLevel(
       content::WebContents* tab,
+      const GURL& url,
       OnTaskBlocklist::RestrictionLevel restriction_level);
 
   // Sets the url restrictions for the given `url` with `restriction_level`.
   // Should only be called for the set of urls sent by the boca producer.
   void SetParentURLRestrictionLevel(
       content::WebContents* tab,
+      const GURL& url,
       OnTaskBlocklist::RestrictionLevel restriction_level);
 
   // Updates the blocklist that is associated with the given `tab`. This is
@@ -83,6 +85,14 @@ class OnTaskBlocklist {
   void RemoveChildFilter(content::WebContents* tab);
 
   void CleanupBlocklist();
+
+  // Returns true if the tab can perform one level deep. If the current
+  // restriction level is not `kOneLevelDeepNavigation`, then this will return
+  // false. This should only be called in a block that checks that the current
+  // restriction level is for one level deep navigation.
+  bool CanPerformOneLevelNavigation(content::WebContents* tab);
+
+  bool IsCurrentRestrictionOneLevelDeep();
 
   // Returns true if the `tab` is a parent tab. A parent tab is any tab that was
   // sent as part of a session bundle. Any other tab created (either via

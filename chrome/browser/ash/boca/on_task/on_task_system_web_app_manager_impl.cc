@@ -165,7 +165,7 @@ void OnTaskSystemWebAppManagerImpl::CreateBackgroundTabWithUrl(
     return;
   }
   window_tracker->on_task_blocklist()->SetParentURLRestrictionLevel(
-      tab, restriction_level);
+      tab, url, restriction_level);
 }
 
 }  // namespace ash::boca
