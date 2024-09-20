@@ -69,7 +69,7 @@ public abstract class SafetyHubSubpageFragment extends SafetyHubBaseFragment {
                     @Override
                     public void onClick(View view) {
                         mBulkActionConfirmed = true;
-                        getActivity().finish();
+                        getActivity().onBackPressed();
                     }
                 });
         view.addView(bottomView);
