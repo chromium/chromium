@@ -201,6 +201,7 @@ const CGFloat kClearButtonWidthAndHeight = 40;
   return UIStatusBarStyleLightContent;
 }
 
+#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
 - (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
   [super traitCollectionDidChange:previousTraitCollection];
   if (@available(iOS 17, *)) {
@@ -212,6 +213,7 @@ const CGFloat kClearButtonWidthAndHeight = 40;
         previousTraitCollection:previousTraitCollection];
   }
 }
+#endif
 
 #pragma mark - Private helpers
 
