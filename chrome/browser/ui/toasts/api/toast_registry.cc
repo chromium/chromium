@@ -24,7 +24,9 @@ void ToastRegistry::RegisterToast(
 const ToastSpecification* ToastRegistry::GetToastSpecification(
     ToastId id) const {
   auto iter = toast_specifications_.find(id);
-  CHECK(iter != toast_specifications_.end());
+  CHECK(iter != toast_specifications_.end())
+      << "Unable to find id " << static_cast<int>(id)
+      << " in list of toasts size " << toast_specifications_.size();
   return iter->second.get();
 }
 
