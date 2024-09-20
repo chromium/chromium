@@ -194,7 +194,6 @@ class PageInfoBubbleViewBrowserTest : public InProcessBrowserTest {
     // PageInfoBubbleViewBrowserTestCookiesSubpage.
     feature_list_.InitWithFeatures(
         {features::kFileSystemAccessPersistentPermissions,
-         features::kFileSystemAccessPersistentPermissionsUpdatedPageInfo,
          permissions::features::kOneTimePermission},
         {});
   }

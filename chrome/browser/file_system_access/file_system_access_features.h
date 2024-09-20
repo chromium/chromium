@@ -17,8 +17,6 @@ BASE_DECLARE_FEATURE(kFileSystemAccessLocalUNCPathBlock);
 
 BASE_DECLARE_FEATURE(kFileSystemAccessPersistentPermissions);
 
-BASE_DECLARE_FEATURE(kFileSystemAccessPersistentPermissionsUpdatedPageInfo);
-
 BASE_DECLARE_FEATURE(kFileSystemAccessSymbolicLinkCheck);
 }  // namespace features
 
