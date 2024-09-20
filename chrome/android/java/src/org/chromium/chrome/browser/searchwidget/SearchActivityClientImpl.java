@@ -75,10 +75,14 @@ public class SearchActivityClientImpl implements SearchActivityClient {
      * @param activity the current activity; may be {@code null}, in which case intent will not be
      *     issued
      * @param url the URL of the page to retrieve suggestions for
+     * @param intentOrigin The origin of the incoming intent.
      * @param referrer the referrer package name
      */
     public static void requestOmniboxForResult(
-            @Nullable Activity activity, @NonNull GURL currentUrl, @Nullable String referrer) {
+            @Nullable Activity activity,
+            @NonNull GURL currentUrl,
+            @IntentOrigin int intentOrigin,
+            @Nullable String referrer) {
         if (activity == null) return;
 
         if (referrer != null && !referrer.matches(SearchActivityExtras.REFERRER_VALIDATION_REGEX)) {
@@ -94,14 +98,11 @@ public class SearchActivityClientImpl implements SearchActivityClient {
         var intent =
                 buildTrustedIntent(
                                 activity,
-                                String.format(
-                                        ACTION_SEARCH_FORMAT,
-                                        IntentOrigin.CUSTOM_TAB,
-                                        SearchType.TEXT))
+                                String.format(ACTION_SEARCH_FORMAT, intentOrigin, SearchType.TEXT))
                         .putExtra(
                                 SearchActivityExtras.EXTRA_CURRENT_URL,
                                 GURL.isEmptyOrInvalid(currentUrl) ? null : currentUrl.getSpec())
-                        .putExtra(SearchActivityExtras.EXTRA_ORIGIN, IntentOrigin.CUSTOM_TAB)
+                        .putExtra(SearchActivityExtras.EXTRA_ORIGIN, intentOrigin)
                         .putExtra(
                                 SearchActivityExtras.EXTRA_REFERRER,
                                 TextUtils.isEmpty(referrer) ? null : referrer)

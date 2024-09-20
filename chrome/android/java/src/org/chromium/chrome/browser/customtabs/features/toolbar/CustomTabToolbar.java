@@ -99,6 +99,7 @@ import org.chromium.chrome.browser.toolbar.top.ToolbarLayout;
 import org.chromium.chrome.browser.toolbar.top.ToolbarPhone;
 import org.chromium.chrome.browser.toolbar.top.ToolbarSnapshotDifference;
 import org.chromium.chrome.browser.toolbar.top.TopToolbarCoordinator.ToolbarColorObserver;
+import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityExtras.IntentOrigin;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.components.browser_ui.styles.ChromeColors;
@@ -1928,6 +1929,7 @@ public class CustomTabToolbar extends ToolbarLayout implements View.OnLongClickL
                             SearchActivityClientImpl.requestOmniboxForResult(
                                     tab.getWindowAndroid().getActivity().get(),
                                     tab.getUrl(),
+                                    IntentOrigin.CUSTOM_TAB,
                                     clientPackageName);
                         }
                     });

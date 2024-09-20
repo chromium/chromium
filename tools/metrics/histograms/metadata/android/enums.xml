@@ -1338,6 +1338,7 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Search Widget"/>
   <int value="2" label="Shortcuts Widget"/>
   <int value="3" label="Custom Tab"/>
+  <int value="4" label="Hub"/>
 </enum>
 
 <enum name="SearchActivitySearchType">
