@@ -22576,18 +22576,33 @@
                     "name": "CrossSiteMainFrameNavigationBoolean_CANARY_DEV_20240916",
                     "enable_features": [
                         "SplitCacheByCrossSiteMainFrameNavigationBoolean"
+                    ],
+                    "disable_features": [
+                        "HttpCacheKeyingExperimentControlGroup2024",
+                        "SplitCacheByMainFrameNavigationInitiator",
+                        "SplitCacheByNavigationInitiator"
                     ]
                 },
                 {
                     "name": "MainFrameNavigationInitiator_CANARY_DEV_20240916",
                     "enable_features": [
                         "SplitCacheByMainFrameNavigationInitiator"
+                    ],
+                    "disable_features": [
+                        "HttpCacheKeyingExperimentControlGroup2024",
+                        "SplitCacheByCrossSiteMainFrameNavigationBoolean",
+                        "SplitCacheByNavigationInitiator"
                     ]
                 },
                 {
                     "name": "NavigationInitiator_CANARY_DEV_20240916",
                     "enable_features": [
                         "SplitCacheByNavigationInitiator"
+                    ],
+                    "disable_features": [
+                        "HttpCacheKeyingExperimentControlGroup2024",
+                        "SplitCacheByCrossSiteMainFrameNavigationBoolean",
+                        "SplitCacheByMainFrameNavigationInitiator"
                     ]
                 }
             ]
