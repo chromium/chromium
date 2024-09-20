@@ -475,6 +475,13 @@ std::set<GURL> ClusterManager::FindSimilarCandidateProducts(
 void ClusterManager::GetEntryPointInfoForNavigation(
     const GURL& url,
     GetEntryPointInfoCallback callback) {
+  // Don't trigger proactive entry points when the navigation url can be added
+  // to an existing cluster.
+  if (GetProductGroupForCandidateProduct(url).has_value()) {
+    std::move(callback).Run(std::nullopt);
+    return;
+  }
+
   std::set<GURL> similar_urls = FindSimilarCandidateProducts(url);
   if (similar_urls.size() == 0) {
     std::move(callback).Run(std::nullopt);
@@ -497,6 +504,13 @@ void ClusterManager::GetEntryPointInfoForSelection(
     const GURL& old_url,
     const GURL& new_url,
     GetEntryPointInfoCallback callback) {
+  // Don't trigger proactive entry points when the selection urls can be added
+  // to an existing cluster.
+  if (GetProductGroupForCandidateProduct(new_url).has_value()) {
+    std::move(callback).Run(std::nullopt);
+    return;
+  }
+
   std::set<GURL> similar_urls = FindSimilarCandidateProducts(old_url);
   if (similar_urls.find(new_url) == similar_urls.end()) {
     std::move(callback).Run(std::nullopt);
