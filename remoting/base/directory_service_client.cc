@@ -124,8 +124,8 @@ void DirectoryServiceClient::LegacyHeartbeat(
     std::optional<std::string> offline_reason,
     bool is_initial_heartbeat,
     bool set_fqdn,
-    const std::string& osname,
-    const std::string& osversion,
+    const std::string& os_name,
+    const std::string& os_version,
     LegacyHeartbeatCallback callback) {
   constexpr char path[] = "/v1/directory:heartbeat";
 
@@ -138,8 +138,8 @@ void DirectoryServiceClient::LegacyHeartbeat(
     request->set_host_offline_reason(*offline_reason);
   }
   request->set_host_version(STRINGIZE(VERSION));
-  request->set_host_os_name(osname);
-  request->set_host_os_version(osversion);
+  request->set_host_os_name(os_name);
+  request->set_host_os_version(os_version);
   request->set_host_cpu_type(base::SysInfo::OperatingSystemArchitecture());
   request->set_is_initial_heartbeat(is_initial_heartbeat);
 

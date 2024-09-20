@@ -71,8 +71,8 @@ class DirectoryServiceClient {
                        std::optional<std::string> offline_reason,
                        bool is_initial_heartbeat,
                        bool set_fqdn,
-                       const std::string& osname,
-                       const std::string& osversion,
+                       const std::string& os_name,
+                       const std::string& os_version,
                        LegacyHeartbeatCallback callback);
   void GetHostList(GetHostListCallback callback);
   void RegisterHost(const std::string& host_id,
