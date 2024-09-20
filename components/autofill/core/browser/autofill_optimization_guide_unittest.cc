@@ -741,7 +741,6 @@ TEST_F(
       *decider_,
       RegisterOptimizationTypes(testing::IsSupersetOf(
           {optimization_guide::proto::BUY_NOW_PAY_LATER_ALLOWLIST_AFFIRM})));
-
   autofill_optimization_guide_->OnDidParseForm(form_structure,
                                                personal_data_manager_.get());
 }
@@ -767,7 +766,6 @@ TEST_F(AutofillOptimizationGuideTest,
       *decider_,
       RegisterOptimizationTypes(testing::IsSupersetOf(
           {optimization_guide::proto::BUY_NOW_PAY_LATER_ALLOWLIST_ZIP})));
-
   autofill_optimization_guide_->OnDidParseForm(form_structure,
                                                personal_data_manager_.get());
 }
@@ -839,6 +837,108 @@ TEST_F(AutofillOptimizationGuideTest,
 
   autofill_optimization_guide_->OnDidParseForm(form_structure,
                                                personal_data_manager_.get());
+}
+
+// Test that we allow BNPL for Affirm on an allowlisted URL.
+TEST_F(AutofillOptimizationGuideTest,
+       IsEligibleForBuyNowPayLater_AffirmUrlAllowed) {
+  // Ensure that `IsEligibleForBuyNowPayLater()` returns the right
+  // response.
+  ON_CALL(
+      *decider_,
+      CanApplyOptimization(
+          testing::Eq(GURL("https://www.abercrombie.com")),
+          testing::Eq(
+              optimization_guide::proto::BUY_NOW_PAY_LATER_ALLOWLIST_AFFIRM),
+          testing::Matcher<optimization_guide::OptimizationMetadata*>(
+              testing::Eq(nullptr))))
+      .WillByDefault(testing::Return(
+          optimization_guide::OptimizationGuideDecision::kTrue));
+
+  // abercrombie.com is in the allowlist.
+  EXPECT_TRUE(autofill_optimization_guide_->IsEligibleForBuyNowPayLater(
+      /*issuer_id=*/"affirm", GURL("https://www.abercrombie.com")));
+}
+
+// Test that we do not allow BNPL for Affirm on a non-allowlisted URL.
+TEST_F(AutofillOptimizationGuideTest,
+       IsEligibleForBuyNowPayLater_AffirmUrlBlocked) {
+  // Ensure that `IsEligibleForBuyNowPayLater()` returns the right
+  // response.
+  ON_CALL(
+      *decider_,
+      CanApplyOptimization(
+          testing::Eq(GURL("https://www.abc.com")),
+          testing::Eq(
+              optimization_guide::proto::BUY_NOW_PAY_LATER_ALLOWLIST_AFFIRM),
+          testing::Matcher<optimization_guide::OptimizationMetadata*>(
+              testing::Eq(nullptr))))
+      .WillByDefault(testing::Return(
+          optimization_guide::OptimizationGuideDecision::kFalse));
+
+  // abc.com is not in the allowlist.
+  EXPECT_FALSE(autofill_optimization_guide_->IsEligibleForBuyNowPayLater(
+      /*issuer_id=*/"affirm", GURL("https://www.abc.com")));
+}
+
+// Test that we allow BNPL for Zip on an allowlisted URL.
+TEST_F(AutofillOptimizationGuideTest,
+       IsEligibleForBuyNowPayLater_ZipUrlAllowed) {
+  // Ensure that `IsEligibleForBuyNowPayLater()` returns the right
+  // response.
+  ON_CALL(*decider_,
+          CanApplyOptimization(
+              testing::Eq(GURL("https://www.abercrombie.com")),
+              testing::Eq(
+                  optimization_guide::proto::BUY_NOW_PAY_LATER_ALLOWLIST_ZIP),
+              testing::Matcher<optimization_guide::OptimizationMetadata*>(
+                  testing::Eq(nullptr))))
+      .WillByDefault(testing::Return(
+          optimization_guide::OptimizationGuideDecision::kTrue));
+
+  // abercrombie.com is in the allowlist.
+  EXPECT_TRUE(autofill_optimization_guide_->IsEligibleForBuyNowPayLater(
+      /*issuer_id=*/"zip", GURL("https://www.abercrombie.com")));
+}
+
+// Test that we do not allow BNPL for Zip on a non-allowlisted URL.
+TEST_F(AutofillOptimizationGuideTest,
+       IsEligibleForBuyNowPayLater_ZipUrlBlocked) {
+  // Ensure that `IsEligibleForBuyNowPayLater()` returns the right
+  // response.
+  ON_CALL(*decider_,
+          CanApplyOptimization(
+              testing::Eq(GURL("https://www.abc.com")),
+              testing::Eq(
+                  optimization_guide::proto::BUY_NOW_PAY_LATER_ALLOWLIST_ZIP),
+              testing::Matcher<optimization_guide::OptimizationMetadata*>(
+                  testing::Eq(nullptr))))
+      .WillByDefault(testing::Return(
+          optimization_guide::OptimizationGuideDecision::kFalse));
+
+  // abc.com is not in the allowlist.
+  EXPECT_FALSE(autofill_optimization_guide_->IsEligibleForBuyNowPayLater(
+      /*issuer_id=*/"zip", GURL("https://www.abc.com")));
+}
+
+// Test that we do not allow BNPL for unknown issuer id.
+TEST_F(AutofillOptimizationGuideTest,
+       IsEligibleForBuyNowPayLater_UnknownIssuerIdBlocked) {
+  // Ensure that `IsEligibleForBuyNowPayLater()` returns the right
+  // response.
+  ON_CALL(*decider_,
+          CanApplyOptimization(
+              testing::Eq(GURL("https://www.abercrombie.com")),
+              testing::Eq(
+                  optimization_guide::proto::BUY_NOW_PAY_LATER_ALLOWLIST_ZIP),
+              testing::Matcher<optimization_guide::OptimizationMetadata*>(
+                  testing::Eq(nullptr))))
+      .WillByDefault(testing::Return(
+          optimization_guide::OptimizationGuideDecision::kTrue));
+
+  // abercrombie.com is in the allowlist but issuer_id is not matched.
+  EXPECT_FALSE(autofill_optimization_guide_->IsEligibleForBuyNowPayLater(
+      /*issuer_id=*/"zipp", GURL("https://www.abercrombie.com")));
 }
 #endif
 

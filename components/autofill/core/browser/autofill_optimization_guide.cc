@@ -345,4 +345,23 @@ bool AutofillOptimizationGuide::ShouldBlockBenefitSuggestionLabelsForCardAndUrl(
   return false;
 }
 
+bool AutofillOptimizationGuide::IsEligibleForBuyNowPayLater(
+    std::string_view issuer_id,
+    const GURL& url) const {
+  // TODO(b/367815526): For the BNPL project, create issuer id constants.
+  if (issuer_id == "affirm") {
+    return decider_->CanApplyOptimization(
+               url,
+               optimization_guide::proto::BUY_NOW_PAY_LATER_ALLOWLIST_AFFIRM,
+               /*optimization_metadata=*/nullptr) ==
+           optimization_guide::OptimizationGuideDecision::kTrue;
+  } else if (issuer_id == "zip") {
+    return decider_->CanApplyOptimization(
+               url, optimization_guide::proto::BUY_NOW_PAY_LATER_ALLOWLIST_ZIP,
+               /*optimization_metadata=*/nullptr) ==
+           optimization_guide::OptimizationGuideDecision::kTrue;
+  }
+  return false;
+}
+
 }  // namespace autofill

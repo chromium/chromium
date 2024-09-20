@@ -86,6 +86,11 @@ class AutofillOptimizationGuide : public KeyedService {
       const GURL& url,
       optimization_guide::proto::OptimizationType type) const;
 
+  // Returns whether `url` is eligible for a buy now pay later flow
+  // with the provided issuer based on the `issuer_id`.
+  virtual bool IsEligibleForBuyNowPayLater(std::string_view issuer_id,
+                                           const GURL& url) const;
+
  private:
   // Raw pointer to a decider which is owned by the decider's factory.
   // The factory dependencies ensure that the `decider_` outlives this object.
