@@ -430,11 +430,12 @@ void ResolvedFrameData::RecomputeOffsetTagDamage() {
       offset_tag_added_damage_.Union(
           EnclosingOffsetRect(data.last_containing_rect, data.last_offset));
     } else if (!data.current_offset.IsZero()) {
-      // If the offset didn't change then adjust client provided damage to take
-      // into account quads that were offset. This assumes that any damage which
-      // intersects the tagged quads comes from the tagged quads. This isn't
-      // necessarily true but there isn't enough information in viz to know what
-      // layer/quads introduced the damage so this is pessimistic.
+      // If the offset didn't change and current offset is non-zero then adjust
+      // client provided damage to take into account quads that were offset.
+      // This assumes that any damage which intersects the tagged quads comes
+      // from the tagged quads. This isn't necessarily true but there isn't
+      // enough information here to know what layer/quads introduced the damage
+      // so this is pessimistic.
       offset_tag_added_damage_.Union(
           EnclosingOffsetRect(gfx::IntersectRects(data.current_containing_rect,
                                                   surface_damage_rect),
@@ -444,12 +445,12 @@ void ResolvedFrameData::RecomputeOffsetTagDamage() {
           !data.current_containing_rect.Contains(data.last_containing_rect)) {
         // This case aims to detect when a layer had a tag removed or a tagged
         // layer was deleted. The client will add damage for the removed layer
-        // at it's default location but that isn't necessarily where the layer
-        // was drawn last aggregation. Viz needs to add damage where the removed
-        // layer was drawn. There is no simple way to track when tagged layers
-        // are removed, so this uses an imperfect proxy of containing rect
-        // shrinking, and if that happens it adds damage for all tagged layers
-        // last frame.
+        // at it's default location but since `last_offset` is non-zero the
+        // content was drawn elsewhere. Viz needs to add damage where the
+        // removed layer was drawn. There is no simple way to track when tagged
+        // layers are removed, so this uses an imperfect proxy of containing
+        // rect shrinking, and if that happens it adds damage for all tagged
+        // layers last frame.
         //
         // It's possible the containing rect shrinks without removing a tagged
         // layer, eg. size or position of the tagged layers change. This case
