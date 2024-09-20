@@ -42,6 +42,7 @@ default_chrome_public_jinja_variables = [
   "enable_vr=$enable_vr",
   "enable_openxr=$enable_openxr",
   "enable_arcore=$enable_arcore",
+  "is_desktop_android=$is_desktop_android",
   "zygote_preload_class=org.chromium.content_public.app.ZygotePreload",
 ]
 

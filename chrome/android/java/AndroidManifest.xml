@@ -69,7 +69,11 @@ by a child template that "extends" this file.
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.DOWNLOAD_WITHOUT_NOTIFICATION" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
-
+    {% set is_desktop_android = is_desktop_android|default(0) %}
+    {% if is_desktop_android == "true" %}
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_CAMERA" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MICROPHONE" />
+    {% endif %}
     <!-- TODO(crbug.com/40259231): Remove this tools:ignore attribute once it's no longer necessary. -->
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK" tools:ignore="SystemPermissionTypo" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_DATA_SYNC" tools:ignore="SystemPermissionTypo" />
@@ -1136,6 +1140,9 @@ by a child template that "extends" this file.
             android:exported="false"/>
 
         <service android:name="org.chromium.chrome.browser.media.MediaCaptureNotificationService"
+            {% if is_desktop_android == "true" %}
+            android:foregroundServiceType="camera|microphone"
+            {% endif %}
             android:exported="false"/>
         <service android:name="org.chromium.chrome.browser.media.ui.ChromeMediaNotificationControllerServices$PlaybackListenerService"
             android:foregroundServiceType="mediaPlayback" android:exported="false">
