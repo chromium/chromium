@@ -5,11 +5,19 @@
 #ifndef COMPONENTS_SAVED_TAB_GROUPS_PREF_NAMES_H_
 #define COMPONENTS_SAVED_TAB_GROUPS_PREF_NAMES_H_
 
+#include <vector>
+
 #include "build/build_config.h"
+
+namespace signin {
+class GaiaIdHash;
+}
 
 namespace user_prefs {
 class PrefRegistrySyncable;
 }
+
+class PrefService;
 
 namespace tab_groups::prefs {
 
@@ -47,8 +55,20 @@ inline constexpr char kSavedTabGroupSpecificsToDataMigration[] =
 inline constexpr char kDeletedTabGroupIds[] =
     "saved_tab_groups.deleted_group_ids";
 
+// Stores the `saved_guid` of remote tab groups that have been closed locally,
+// keyed by a hash of the owning user's Gaia ID. If the user signs out and back
+// in again, these groups won't automatically be reopened.
+inline constexpr char kLocallyClosedRemoteTabGroupIds[] =
+    "saved_tab_groups.closed_remote_group_ids";
+
 // Registers the Clear Browsing Data UI prefs.
 void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
+
+// Drops all account-keyed pref entries for accounts that are *not* listed in
+// `available_gaia_ids`.
+void KeepAccountSettingsPrefsOnlyForUsers(
+    PrefService* pref_service,
+    const std::vector<signin::GaiaIdHash>& available_gaia_ids);
 
 }  // namespace tab_groups::prefs
 

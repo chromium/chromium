@@ -289,6 +289,11 @@ bool FakeTabGroupSyncService::IsRemoteDevice(
   return false;
 }
 
+bool FakeTabGroupSyncService::WasTabGroupClosedLocally(
+    const base::Uuid& sync_id) const {
+  return false;
+}
+
 void FakeTabGroupSyncService::RecordTabGroupEvent(
     const EventDetails& event_details) {
   // No op.

@@ -143,6 +143,8 @@ class TabGroupSyncServiceTest : public testing::Test {
         prefs::kSavedTabGroupSpecificsToDataMigration, false);
     pref_service_.registry()->RegisterDictionaryPref(prefs::kDeletedTabGroupIds,
                                                      base::Value::Dict());
+    pref_service_.registry()->RegisterDictionaryPref(
+        prefs::kLocallyClosedRemoteTabGroupIds, base::Value::Dict());
 
     auto metrics_logger =
         std::make_unique<TabGroupSyncMetricsLogger>(&device_info_tracker_);

@@ -64,6 +64,12 @@ void TabGroupSyncCoordinatorImpl::OnTabGroupAdded(const SavedTabGroup& group,
   if (source != TriggerSource::REMOTE) {
     return;
   }
+  // If the user has previously closed this tab group on this device, then don't
+  // automatically open it again. (This can happen if the user signs out and
+  // back in again.)
+  if (service_->WasTabGroupClosedLocally(group.saved_guid())) {
+    return;
+  }
   platform_delegate_->CreateLocalTabGroup(group);
 }
 

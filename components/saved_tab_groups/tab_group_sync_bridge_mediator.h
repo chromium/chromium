@@ -57,6 +57,7 @@ class TabGroupSyncBridgeMediator : public SavedTabGroupModelObserver {
   // SavedTabGroupSyncBridge specific getters.
   bool IsSavedBridgeSyncing() const;
   std::optional<std::string> GetLocalCacheGuidForSavedBridge() const;
+  std::optional<std::string> GetAccountIdForSavedBridge() const;
 
   // SavedTabGroupModelObserver overrides.
   void SavedTabGroupAddedLocally(const base::Uuid& guid) override;

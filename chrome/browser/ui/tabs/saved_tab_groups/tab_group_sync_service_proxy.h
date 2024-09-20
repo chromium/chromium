@@ -82,6 +82,7 @@ class TabGroupSyncServiceProxy : public TabGroupSyncService {
 
   bool IsRemoteDevice(
       const std::optional<std::string>& cache_guid) const override;
+  bool WasTabGroupClosedLocally(const base::Uuid& sync_id) const override;
   void RecordTabGroupEvent(const EventDetails& event_details) override;
   base::WeakPtr<syncer::DataTypeControllerDelegate>
   GetSavedTabGroupControllerDelegate() override;

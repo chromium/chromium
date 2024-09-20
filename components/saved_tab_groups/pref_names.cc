@@ -4,10 +4,14 @@
 
 #include "components/saved_tab_groups/pref_names.h"
 
+#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "components/pref_registry/pref_registry_syncable.h"
+#include "components/prefs/pref_service.h"
+#include "components/prefs/scoped_user_pref_update.h"
 #include "components/saved_tab_groups/features.h"
+#include "components/signin/public/base/gaia_id_hash.h"
 
 namespace tab_groups::prefs {
 
@@ -42,6 +46,30 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
                                 false);
   registry->RegisterDictionaryPref(prefs::kDeletedTabGroupIds,
                                    base::Value::Dict());
+  registry->RegisterDictionaryPref(prefs::kLocallyClosedRemoteTabGroupIds,
+                                   base::Value::Dict());
+}
+
+void KeepAccountSettingsPrefsOnlyForUsers(
+    PrefService* pref_service,
+    const std::vector<signin::GaiaIdHash>& available_gaia_ids) {
+  // TODO(crbug.com/363927991): Use syncer::KeepAccountSettingsPrefsOnlyForUsers
+  // once that has been moved to a place that's accessible from here.
+  std::vector<std::string> removed_identities;
+  for (std::pair<const std::string&, const base::Value&> account_settings :
+       pref_service->GetDict(kLocallyClosedRemoteTabGroupIds)) {
+    if (!base::Contains(available_gaia_ids, signin::GaiaIdHash::FromBase64(
+                                                account_settings.first))) {
+      removed_identities.push_back(account_settings.first);
+    }
+  }
+  if (!removed_identities.empty()) {
+    ScopedDictPrefUpdate update_account_dict(pref_service,
+                                             kLocallyClosedRemoteTabGroupIds);
+    for (const auto& account_id : removed_identities) {
+      update_account_dict->Remove(account_id);
+    }
+  }
 }
 
 }  // namespace tab_groups::prefs

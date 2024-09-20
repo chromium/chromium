@@ -239,6 +239,12 @@ bool TabGroupSyncServiceProxy::IsRemoteDevice(
   return false;
 }
 
+bool TabGroupSyncServiceProxy::WasTabGroupClosedLocally(
+    const base::Uuid& sync_id) const {
+  NOTIMPLEMENTED();
+  return false;
+}
+
 void TabGroupSyncServiceProxy::RecordTabGroupEvent(
     const EventDetails& event_details) {
   NOTIMPLEMENTED();

@@ -5,6 +5,7 @@ include_rules = [
   "+components/prefs",
   "+components/pref_registry",
   "+components/tab_groups",
+  "+components/signin/public/base",
   "+components/strings",
   "+components/sync",
   "+components/sync_device_info",

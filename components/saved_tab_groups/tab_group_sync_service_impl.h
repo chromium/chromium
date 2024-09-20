@@ -106,6 +106,10 @@ class TabGroupSyncServiceImpl : public TabGroupSyncService,
 
   bool IsRemoteDevice(
       const std::optional<std::string>& cache_guid) const override;
+
+  bool WasTabGroupClosedLocally(
+      const base::Uuid& sync_tab_group_id) const override;
+
   void RecordTabGroupEvent(const EventDetails& event_details) override;
 
   base::WeakPtr<syncer::DataTypeControllerDelegate>
@@ -171,6 +175,9 @@ class TabGroupSyncServiceImpl : public TabGroupSyncService,
   void AddDeletedGroupIdToPref(const LocalTabGroupID& local_id,
                                const base::Uuid& sync_id);
   void RemoveDeletedGroupIdFromPref(const LocalTabGroupID& local_id);
+
+  void AddLocallyClosedGroupIdToPref(const base::Uuid& sync_id);
+  void RemoveLocallyClosedGroupIdFromPref(const base::Uuid& sync_id);
 
   // Wrapper function that calls all metric recording functions.
   void RecordMetrics();

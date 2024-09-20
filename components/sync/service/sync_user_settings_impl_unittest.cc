@@ -11,6 +11,7 @@
 #include "build/chromeos_buildflags.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/saved_tab_groups/pref_names.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
@@ -70,6 +71,11 @@ class SyncUserSettingsImplTest : public testing::Test,
   SyncUserSettingsImplTest() {
     SyncPrefs::RegisterProfilePrefs(pref_service_.registry());
     SyncTransportDataPrefs::RegisterProfilePrefs(pref_service_.registry());
+    // TODO(crbug.com/363927991): Necessary for a workaround in
+    // SyncPrefs::KeepAccountSettingsPrefsOnlyForUsers(); see TODO there.
+    pref_service_.registry()->RegisterDictionaryPref(
+        tab_groups::prefs::kLocallyClosedRemoteTabGroupIds,
+        base::Value::Dict());
     // Pref is registered in signin internal `PrimaryAccountManager`.
     pref_service_.registry()->RegisterBooleanPref(
         ::prefs::kExplicitBrowserSignin, false);

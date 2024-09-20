@@ -75,6 +75,18 @@ TEST_F(TabGroupSyncCoordinatorTest, OnTabGroupAdded) {
   coordinator_->OnTabGroupAdded(group, TriggerSource::REMOTE);
 }
 
+TEST_F(TabGroupSyncCoordinatorTest, OnTabGroupAdded_DoesNotReopenClosedGroup) {
+  SavedTabGroup group(test::CreateTestSavedTabGroup());
+
+  ON_CALL(*service_, WasTabGroupClosedLocally(group.saved_guid()))
+      .WillByDefault(Return(true));
+
+  // Since the group is marked as locally-closed, it should *not* get opened!
+  EXPECT_CALL(*delegate_, CreateLocalTabGroup(UuidEq(group.saved_guid())))
+      .Times(0);
+  coordinator_->OnTabGroupAdded(group, TriggerSource::REMOTE);
+}
+
 TEST_F(TabGroupSyncCoordinatorTest, OnTabGroupUpdated) {
   SavedTabGroup group(test::CreateTestSavedTabGroup());
 

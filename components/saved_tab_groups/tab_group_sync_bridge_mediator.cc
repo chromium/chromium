@@ -142,6 +142,11 @@ TabGroupSyncBridgeMediator::GetLocalCacheGuidForSavedBridge() const {
   return saved_bridge_->GetLocalCacheGuid();
 }
 
+std::optional<std::string>
+TabGroupSyncBridgeMediator::GetAccountIdForSavedBridge() const {
+  return saved_bridge_->GetTrackedAccountId();
+}
+
 void TabGroupSyncBridgeMediator::SavedTabGroupAddedLocally(
     const base::Uuid& guid) {
   const SavedTabGroup* group = model_->Get(guid);

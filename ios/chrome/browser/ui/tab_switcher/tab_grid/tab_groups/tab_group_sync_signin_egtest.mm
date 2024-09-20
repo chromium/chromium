@@ -7,6 +7,7 @@
 #import "base/test/ios/wait_util.h"
 #import "base/threading/platform_thread.h"
 #import "base/time/time.h"
+#import "components/sync/base/command_line_switches.h"
 #import "components/sync/base/data_type.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
@@ -18,10 +19,12 @@
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 
+using chrome_test_util::CloseGroupButton;
 using chrome_test_util::CreateTabGroupAtIndex;
 using chrome_test_util::DeleteGroupButton;
 using chrome_test_util::DeleteGroupConfirmationButton;
 using chrome_test_util::TabGridGroupCellAtIndex;
+using chrome_test_util::TabGridGroupCellWithName;
 using chrome_test_util::TabGridOpenTabsPanelButton;
 using chrome_test_util::TabGridTabGroupsPanelButton;
 using chrome_test_util::TabGroupsPanelCellAtIndex;
@@ -75,6 +78,25 @@ void WaitForEntitiesOnFakeServer(int entity_count) {
              [ChromeEarlGrey numberOfSyncEntitiesWithType:entity_type]);
 }
 
+// Displays the group cell context menu by long pressing at the group cell at
+// `group_cell_index`.
+void DisplayContextMenuForGroupCellAtIndex(int group_cell_index) {
+  [[EarlGrey selectElementWithMatcher:TabGridGroupCellAtIndex(group_cell_index)]
+      performAction:grey_longPress()];
+}
+
+// Closes the group cell at index `group_cell_index`.
+void CloseGroupAtIndex(int group_cell_index) {
+  DisplayContextMenuForGroupCellAtIndex(group_cell_index);
+  [[EarlGrey selectElementWithMatcher:CloseGroupButton()]
+      performAction:grey_tap()];
+
+  // Waits until the tab group cell disappears at `group_cell_index`.
+  [ChromeEarlGrey
+      waitForUIElementToDisappearWithMatcher:TabGridGroupCellAtIndex(
+                                                 group_cell_index)];
+}
+
 }  // namespace
 
 @interface TabGroupSyncSignInTestCase : ChromeTestCase
@@ -87,6 +109,8 @@ void WaitForEntitiesOnFakeServer(int entity_count) {
   config.features_enabled.push_back(kTabGroupsIPad);
   config.features_enabled.push_back(kModernTabStrip);
   config.features_enabled.push_back(kTabGroupSync);
+  config.additional_args.push_back(std::string("--") +
+                                   syncer::kSyncShortNudgeDelayForTest);
   return config;
 }
 
@@ -297,6 +321,84 @@ void WaitForEntitiesOnFakeServer(int entity_count) {
   // Sync tabs again to clean up all saved groups.
   [SigninEarlGrey setSelectedType:syncer::UserSelectableType::kTabs
                           enabled:YES];
+  DeleteAllSavedGroups();
+  [SigninEarlGrey signOut];
+}
+
+// Tests that tab groups don't get reopened after signing out and back in
+- (void)testSignOutAndBackInDoesNotReopenGroups {
+  // Ensure that there are no tab groups initially.
+  [ChromeEarlGreyUI openTabGrid];
+  [[EarlGrey selectElementWithMatcher:TabGridTabGroupsPanelButton()]
+      performAction:grey_tap()];
+  DeleteAllSavedGroups();
+  [[EarlGrey selectElementWithMatcher:TabGridOpenTabsPanelButton()]
+      performAction:grey_tap()];
+
+  // Sign in.
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
+  [SigninEarlGrey setSelectedType:syncer::UserSelectableType::kTabs
+                          enabled:YES];
+
+  // Create two tab groups.
+  [ChromeEarlGrey openNewTab];
+  [ChromeEarlGrey openNewTab];
+  [ChromeEarlGreyUI openTabGrid];
+  CreateTabGroupAtIndex(0, kGroup1Name);
+  CreateTabGroupAtIndex(1, kGroup2Name, /*first_group=*/false);
+
+  // Wait for the Saved Tab Group entities to reach the sync server.
+  WaitForEntitiesOnFakeServer(4);
+
+  // Close the second group.
+  CloseGroupAtIndex(1);
+  [[EarlGrey selectElementWithMatcher:TabGridGroupCellWithName(kGroup2Name, 1)]
+      assertWithMatcher:grey_nil()];
+
+  // Exit the Tab Grid.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridDoneButton()]
+      assertWithMatcher:grey_notNil()];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridDoneButton()]
+      performAction:grey_tap()];
+
+  // Sign out.
+  [SigninEarlGrey signOut];
+
+  // Ensure both tab groups are gone.
+  [ChromeEarlGreyUI openTabGrid];
+  [[EarlGrey selectElementWithMatcher:TabGridTabGroupsPanelButton()]
+      performAction:grey_tap()];
+  [[EarlGrey
+      selectElementWithMatcher:TabGroupsPanelCellWithName(kGroup1Name, 1)]
+      assertWithMatcher:grey_nil()];
+  [[EarlGrey
+      selectElementWithMatcher:TabGroupsPanelCellWithName(kGroup2Name, 1)]
+      assertWithMatcher:grey_nil()];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridDoneButton()]
+      performAction:grey_tap()];
+
+  // Sign back in.
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
+
+  // Open the tab grid, and verify that only the first group is open.
+  [ChromeEarlGreyUI openTabGrid];
+  [[EarlGrey selectElementWithMatcher:TabGridGroupCellWithName(kGroup1Name, 1)]
+      assertWithMatcher:grey_notNil()];
+  [[EarlGrey selectElementWithMatcher:TabGridGroupCellWithName(kGroup2Name, 1)]
+      assertWithMatcher:grey_nil()];
+
+  // Verify that both groups do exist again in the Tab Groups panel.
+  [[EarlGrey selectElementWithMatcher:TabGridTabGroupsPanelButton()]
+      performAction:grey_tap()];
+  [[EarlGrey
+      selectElementWithMatcher:TabGroupsPanelCellWithName(kGroup1Name, 1)]
+      assertWithMatcher:grey_notNil()];
+  [[EarlGrey
+      selectElementWithMatcher:TabGroupsPanelCellWithName(kGroup2Name, 1)]
+      assertWithMatcher:grey_notNil()];
+
+  // Clean up all saved groups.
   DeleteAllSavedGroups();
   [SigninEarlGrey signOut];
 }

@@ -88,9 +88,13 @@ class SavedTabGroupSyncBridge : public syncer::DataTypeSyncBridge {
     return tabs_missing_groups_;
   }
 
-  // Returns the cache guid the change processor holds if metadata is tracked.
+  // Returns the cache guid the change processor holds if metadata is tracked,
   // otherwise returns a nullopt.
   std::optional<std::string> GetLocalCacheGuid() const;
+
+  // Returns the account ID from the change processor if metadata is tracked,
+  // otherwise returns a nullopt.
+  std::optional<std::string> GetTrackedAccountId() const;
 
   // Whether the sync is currently enabled and syncing for saved tab groups.
   // False before bridge initialization is completed.

@@ -50,12 +50,32 @@ source_set("core") {
   public_deps = [ ":model" ]
 }
 
-source_set("model") {
+source_set("features") {
   sources = [
     "features.cc",
     "features.h",
+  ]
+  deps = [ "//base" ]
+  public_deps = []
+}
+
+source_set("prefs") {
+  sources = [
     "pref_names.cc",
     "pref_names.h",
+  ]
+  deps = [
+    ":features",
+    "//base",
+    "//components/pref_registry",
+    "//components/prefs",
+    "//components/signin/public/base",
+  ]
+  public_deps = []
+}
+
+source_set("model") {
+  sources = [
     "saved_tab_group.cc",
     "saved_tab_group.h",
     "saved_tab_group_model.cc",
@@ -74,14 +94,16 @@ source_set("model") {
   ]
   deps = [
     "//base",
-    "//components/pref_registry",
     "//components/sync",
     "//components/sync_device_info",
     "//components/tab_groups",
     "//ui/gfx",
     "//url",
   ]
-  public_deps = []
+  public_deps = [
+    ":features",
+    ":prefs",
+  ]
 }
 
 source_set("string_utils") {

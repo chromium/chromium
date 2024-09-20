@@ -176,6 +176,12 @@ class TabGroupSyncService : public KeyedService, public base::SupportsUserData {
   virtual bool IsRemoteDevice(
       const std::optional<std::string>& cache_guid) const = 0;
 
+  // Returns whether a tab group with the given `sync_tab_group_id` was
+  // previously closed on this device. Reset to false whenever the user opens
+  // the group intentionally.
+  virtual bool WasTabGroupClosedLocally(
+      const base::Uuid& sync_tab_group_id) const = 0;
+
   // Helper method to record metrics for certain tab group events.
   // While metrics are implicitly recorded in the native for most of the tab
   // group events, there are certain events that don't have a clean way of

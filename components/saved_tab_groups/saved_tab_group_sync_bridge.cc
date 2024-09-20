@@ -523,6 +523,14 @@ std::optional<std::string> SavedTabGroupSyncBridge::GetLocalCacheGuid() const {
   return change_processor()->TrackedCacheGuid();
 }
 
+std::optional<std::string> SavedTabGroupSyncBridge::GetTrackedAccountId()
+    const {
+  if (!change_processor()->IsTrackingMetadata()) {
+    return std::nullopt;
+  }
+  return change_processor()->TrackedAccountId();
+}
+
 bool SavedTabGroupSyncBridge::IsSyncing() const {
   return change_processor()->IsTrackingMetadata();
 }

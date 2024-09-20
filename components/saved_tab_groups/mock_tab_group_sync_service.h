@@ -68,6 +68,10 @@ class MockTabGroupSyncService : public TabGroupSyncService {
               IsRemoteDevice,
               (const std::optional<std::string>&),
               (const));
+  MOCK_METHOD(bool,
+              WasTabGroupClosedLocally,
+              (const base::Uuid& sync_id),
+              (const));
   MOCK_METHOD(void, RecordTabGroupEvent, (const EventDetails&));
 
   MOCK_METHOD(syncer::DataTypeSyncBridge*, bridge, ());
