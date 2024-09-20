@@ -38,25 +38,22 @@ class TransformStream::FlushAlgorithm final : public StreamAlgorithm {
                              v8::Local<v8::Value> argv[]) override {
     DCHECK_EQ(argc, 0);
     DCHECK(controller_);
+    v8::Isolate* isolate = script_state->GetIsolate();
     auto* transformer_script_state = transformer_->GetScriptState();
     if (!transformer_script_state->ContextIsValid()) {
-      return PromiseReject(script_state,
-                           V8ThrowException::CreateTypeError(
-                               script_state->GetIsolate(), "invalid realm"));
+      return PromiseReject(script_state, V8ThrowException::CreateTypeError(
+                                             isolate, "invalid realm"));
     }
-    ExceptionState exception_state(script_state->GetIsolate(),
-                                   v8::ExceptionContext::kUnknown, "", "");
+    v8::TryCatch try_catch(isolate);
     ScriptPromiseUntyped promise;
     {
       // This is needed because the realm of the transformer can be different
       // from the realm of the transform stream.
       ScriptState::Scope scope(transformer_script_state);
-      promise = transformer_->Flush(controller_, exception_state);
+      promise = transformer_->Flush(controller_, PassThroughException(isolate));
     }
-    if (exception_state.HadException()) {
-      auto exception = exception_state.GetException();
-      exception_state.ClearException();
-      return PromiseReject(script_state, exception);
+    if (try_catch.HasCaught()) {
+      return PromiseReject(script_state, try_catch.Exception());
     }
 
     return promise.V8Promise();
@@ -90,20 +87,17 @@ class TransformStream::TransformAlgorithm final : public StreamAlgorithm {
                              v8::Local<v8::Value> argv[]) override {
     DCHECK_EQ(argc, 1);
     DCHECK(controller_);
+    v8::Isolate* isolate = script_state->GetIsolate();
     auto* transformer_script_state = transformer_->GetScriptState();
     if (!transformer_script_state->ContextIsValid()) {
-      return PromiseReject(script_state,
-                           V8ThrowException::CreateTypeError(
-                               script_state->GetIsolate(), "invalid realm"));
+      return PromiseReject(script_state, V8ThrowException::CreateTypeError(
+                                             isolate, "invalid realm"));
     }
-    ExceptionState exception_state(script_state->GetIsolate(),
-                                   v8::ExceptionContext::kUnknown, "", "");
-    ScriptPromiseUntyped promise =
-        transformer_->Transform(argv[0], controller_, exception_state);
-    if (exception_state.HadException()) {
-      auto exception = exception_state.GetException();
-      exception_state.ClearException();
-      return PromiseReject(script_state, exception);
+    v8::TryCatch try_catch(isolate);
+    auto promise = transformer_->Transform(argv[0], controller_,
+                                           PassThroughException(isolate));
+    if (try_catch.HasCaught()) {
+      return PromiseReject(script_state, try_catch.Exception());
     }
 
     return promise.V8Promise();

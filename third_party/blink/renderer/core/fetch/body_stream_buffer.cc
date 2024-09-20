@@ -479,19 +479,17 @@ void BodyStreamBuffer::Close(ExceptionState& exception_state) {
   // Close() can be called during construction, in which case `stream_`
   // will not be set yet.
   if (stream_) {
+    v8::Isolate* isolate = script_state_->GetIsolate();
+    v8::TryCatch try_catch(isolate);
     if (script_state_->ContextIsValid()) {
       ScriptState::Scope scope(script_state_);
-      stream_->CloseStream(script_state_, exception_state);
+      stream_->CloseStream(script_state_, PassThroughException(isolate));
     } else {
       // If the context is not valid then Close() will not try to resolve the
       // promises, and that is not a problem.
-      stream_->CloseStream(script_state_, exception_state);
+      stream_->CloseStream(script_state_, PassThroughException(isolate));
     }
-    if (exception_state.HadException()) {
-      DLOG(WARNING) << "Controller::close throws exception "
-                    << exception_state.Code() << ", "
-                    << exception_state.Message();
-      exception_state.ClearException();
+    if (try_catch.HasCaught()) {
       return;
     }
   }
@@ -578,19 +576,20 @@ void BodyStreamBuffer::ProcessData(ExceptionState& exception_state) {
           // Clear |stream_needs_more_| in order to detect a pull call.
           stream_needs_more_ = false;
           ScriptState::Scope scope(script_state_);
+          v8::TryCatch try_catch(script_state_->GetIsolate());
           auto* byte_controller =
               To<ReadableByteStreamController>(stream_->GetController());
           if (byob_view) {
             ReadableByteStreamController::Respond(
-                script_state_, byte_controller, available, exception_state);
+                script_state_, byte_controller, available,
+                PassThroughException(script_state_->GetIsolate()));
           } else {
             CHECK(array);
             ReadableByteStreamController::Enqueue(
                 script_state_, byte_controller, NotShared(array),
-                exception_state);
+                PassThroughException(script_state_->GetIsolate()));
           }
-          if (exception_state.HadException()) {
-            exception_state.ClearException();
+          if (try_catch.HasCaught()) {
             return;
           }
         }

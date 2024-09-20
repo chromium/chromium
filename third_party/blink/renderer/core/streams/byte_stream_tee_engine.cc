@@ -150,24 +150,24 @@ class ByteStreamTeeEngine::ByteTeeReadRequest final : public ReadRequest {
   void CloseSteps(ScriptState* script_state) const override {
     // 1. Set reading to false.
     engine_->reading_ = false;
-    ExceptionState exception_state(script_state->GetIsolate(),
-                                   v8::ExceptionContext::kUnknown, "", "");
+    v8::Isolate* isolate = script_state->GetIsolate();
+    v8::TryCatch try_catch(isolate);
     // 2. If canceled1 is false, perform !
     // ReadableByteStreamControllerClose(branch1.[[controller]]).
     // 3. If canceled2 is false, perform !
     // ReadableByteStreamControllerClose(branch2.[[controller]]).
     for (int branch = 0; branch < 2; ++branch) {
       if (!engine_->canceled_[branch]) {
-        engine_->controller_[branch]->Close(
-            script_state, engine_->controller_[branch], exception_state);
-        if (exception_state.HadException()) {
+        engine_->controller_[branch]->Close(script_state,
+                                            engine_->controller_[branch],
+                                            PassThroughException(isolate));
+        if (try_catch.HasCaught()) {
           // Instead of returning a rejection, which is inconvenient here,
           // call ControllerError(). The only difference this makes is that it
           // happens synchronously, but that should not be observable.
           ReadableByteStreamController::Error(script_state,
                                               engine_->controller_[branch],
-                                              exception_state.GetException());
-          exception_state.ClearException();
+                                              try_catch.Exception());
           return;
         }
       }
@@ -178,16 +178,16 @@ class ByteStreamTeeEngine::ByteTeeReadRequest final : public ReadRequest {
     // ! ReadableByteStreamControllerRespond(branch2.[[controller]], 0).
     for (int branch = 0; branch < 2; ++branch) {
       if (!engine_->controller_[branch]->pending_pull_intos_.empty()) {
-        ReadableByteStreamController::Respond(
-            script_state, engine_->controller_[branch], 0, exception_state);
-        if (exception_state.HadException()) {
+        ReadableByteStreamController::Respond(script_state,
+                                              engine_->controller_[branch], 0,
+                                              PassThroughException(isolate));
+        if (try_catch.HasCaught()) {
           // Instead of returning a rejection, which is inconvenient here,
           // call ControllerError(). The only difference this makes is that it
           // happens synchronously, but that should not be observable.
           ReadableByteStreamController::Error(script_state,
                                               engine_->controller_[branch],
-                                              exception_state.GetException());
-          exception_state.ClearException();
+                                              try_catch.Exception());
           return;
         }
       }
@@ -215,19 +215,18 @@ class ByteStreamTeeEngine::ByteTeeReadRequest final : public ReadRequest {
                       v8::Global<v8::Value> value,
                       const ExceptionContext& exception_context) const {
     ScriptState::Scope scope(script_state);
+    v8::Isolate* isolate = script_state->GetIsolate();
     // 1. Set readAgainForBranch1 to false.
     engine_->read_again_for_branch_[0] = false;
     // 2. Set readAgainForBranch2 to false.
     engine_->read_again_for_branch_[1] = false;
 
-    ExceptionState exception_state(script_state->GetIsolate(),
-                                   exception_context);
+    ExceptionState exception_state(isolate, exception_context);
 
     // 3. Let chunk1 and chunk2 be chunk.
     NotShared<DOMUint8Array> buffer_view =
         NativeValueTraits<NotShared<DOMUint8Array>>::NativeValue(
-            script_state->GetIsolate(), value.Get(script_state->GetIsolate()),
-            exception_state);
+            isolate, value.Get(isolate), exception_state);
     std::array<NotShared<DOMUint8Array>, 2> chunk = {buffer_view, buffer_view};
 
     // 4. If canceled1 is false and canceled2 is false,
@@ -258,17 +257,17 @@ class ByteStreamTeeEngine::ByteTeeReadRequest final : public ReadRequest {
     // ReadableByteStreamControllerEnqueue(branch2.[[controller]], chunk2).
     for (int branch = 0; branch < 2; ++branch) {
       if (!engine_->canceled_[branch]) {
-        ReadableByteStreamController::Enqueue(script_state,
-                                              engine_->controller_[branch],
-                                              chunk[branch], exception_state);
-        if (exception_state.HadException()) {
+        v8::TryCatch try_catch(isolate);
+        ReadableByteStreamController::Enqueue(
+            script_state, engine_->controller_[branch], chunk[branch],
+            PassThroughException(isolate));
+        if (try_catch.HasCaught()) {
           // Instead of returning a rejection, which is inconvenient here,
           // call ControllerError(). The only difference this makes is that it
           // happens synchronously, but that should not be observable.
           ReadableByteStreamController::Error(script_state,
                                               engine_->controller_[branch],
-                                              exception_state.GetException());
-          exception_state.ClearException();
+                                              try_catch.Exception());
           return;
         }
       }

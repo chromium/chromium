@@ -109,22 +109,20 @@ class TransformStreamDefaultController::DefaultTransformAlgorithm final
                              int argc,
                              v8::Local<v8::Value> argv[]) override {
     DCHECK_EQ(argc, 1);
-    ExceptionState exception_state(script_state->GetIsolate(),
-                                   v8::ExceptionContext::kUnknown, "", "");
+    v8::Isolate* isolate = script_state->GetIsolate();
+    v8::TryCatch try_catch(isolate);
 
     // https://streams.spec.whatwg.org/#set-up-transform-stream-default-controller-from-transformer
     // 3. Let transformAlgorithm be the following steps, taking a chunk
     //    argument:
     //    a. Let result be TransformStreamDefaultControllerEnqueue(controller,
     //       chunk).
-    Enqueue(script_state, controller_, argv[0], exception_state);
+    Enqueue(script_state, controller_, argv[0], PassThroughException(isolate));
 
     //    b. If result is an abrupt completion, return a promise rejected with
     //       result.[[Value]].
-    if (exception_state.HadException()) {
-      v8::Local<v8::Value> exception = exception_state.GetException();
-      exception_state.ClearException();
-      return PromiseReject(script_state, exception);
+    if (try_catch.HasCaught()) {
+      return PromiseReject(script_state, try_catch.Exception());
     }
 
     //    c. Otherwise, return a promise resolved with undefined.
@@ -307,16 +305,17 @@ void TransformStreamDefaultController::Enqueue(
 
   // 4. Let enqueueResult be ReadableStreamDefaultControllerEnqueue(
   //    readableController, chunk).
-  ReadableStreamDefaultController::Enqueue(script_state, readable_controller,
-                                           chunk, exception_state);
+  v8::TryCatch try_catch(script_state->GetIsolate());
+  ReadableStreamDefaultController::Enqueue(
+      script_state, readable_controller, chunk,
+      PassThroughException(script_state->GetIsolate()));
 
   // 5. If enqueueResult is an abrupt completion,
-  if (exception_state.HadException()) {
+  if (try_catch.HasCaught()) {
     // a. Perform ! TransformStreamErrorWritableAndUnblockWrite(stream,
     //    enqueueResult.[[Value]]).
-    TransformStream::ErrorWritableAndUnblockWrite(
-        script_state, stream, exception_state.GetException());
-    exception_state.ClearException();
+    TransformStream::ErrorWritableAndUnblockWrite(script_state, stream,
+                                                  try_catch.Exception());
 
     // b. Throw stream.[[readable]].[[storedError]].
     exception_state.RethrowV8Exception(

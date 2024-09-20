@@ -882,12 +882,13 @@ bool URLPattern::Match(ScriptState* script_state,
 
       inputs.push_back(MakeGarbageCollected<V8URLPatternInput>(init));
 
+      v8::TryCatch try_catch(script_state->GetIsolate());
       // Layer the URLPatternInit values on top of the default empty strings.
       ApplyInit(init, ValueType::kURL, protocol, username, password, hostname,
-                port, pathname, search, hash, exception_state);
-      if (exception_state.HadException()) {
+                port, pathname, search, hash,
+                PassThroughException(script_state->GetIsolate()));
+      if (try_catch.HasCaught()) {
         // Treat exceptions simply as a failure to match.
-        exception_state.ClearException();
         return false;
       }
       break;
