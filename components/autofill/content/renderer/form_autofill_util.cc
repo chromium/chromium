@@ -2227,16 +2227,11 @@ bool IsTextAreaElementOrTextInput(const WebFormControlElement& element) {
   return IsTextAreaElement(element) || IsTextInput(element);
 }
 
-bool IsAutofillableInputElement(const WebInputElement& element) {
-  return IsTextInput(element) || IsMonthInput(element) ||
-         IsCheckableElement(element);
-}
-
 bool IsAutofillableElement(const WebFormControlElement& element) {
   const WebInputElement input_element = element.DynamicTo<WebInputElement>();
-  return IsAutofillableInputElement(input_element) ||
-         IsSelectElement(element) || IsTextAreaElement(element) ||
-         IsSelectListElement(element);
+  return IsTextInput(input_element) || IsMonthInput(input_element) ||
+         IsCheckableElement(input_element) ||
+         IsSelectOrSelectListElement(element) || IsTextAreaElement(element);
 }
 
 FormControlType ToAutofillFormControlType(blink::mojom::FormControlType type) {
