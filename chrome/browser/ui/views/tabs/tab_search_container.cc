@@ -225,6 +225,10 @@ void TabSearchContainer::ShowOpacityAnimation() {
 }
 
 void TabSearchContainer::ExecuteHideTabOrganization() {
+  // Stop the timer since the chip might be getting hidden on user actions like
+  // dismissal or click and not timeout.
+  hide_tab_organization_timer_.Stop();
+
   expansion_animation_.SetSlideDuration(
       GetAnimationDuration(kExpansionOutDuration));
   expansion_animation_.Hide();
