@@ -12,7 +12,7 @@ namespace autofill::payments {
 
 namespace {
 const char kUnmaskIbanRequestPath[] =
-    "payments/apis-secure/ibanservice/"
+    "payments/apis-secure/chromepaymentsservice/"
     "getpaymentinstrument?s7e_suffix=chromewallet";
 
 const char kUnmaskIbanRequestFormat[] =

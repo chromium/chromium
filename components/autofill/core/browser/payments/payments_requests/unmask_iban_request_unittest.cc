@@ -43,7 +43,7 @@ class UnmaskIbanRequestTest : public testing::Test {
 
 TEST_F(UnmaskIbanRequestTest, GetRequestContent) {
   EXPECT_EQ(GetRequest()->GetRequestUrlPath(),
-            "payments/apis-secure/ibanservice/"
+            "payments/apis-secure/chromepaymentsservice/"
             "getpaymentinstrument?s7e_suffix=chromewallet");
   ASSERT_FALSE(GetRequest()->GetRequestContent().empty());
   EXPECT_NE(GetRequest()->GetRequestContent().find("billable_service"),
