@@ -389,7 +389,7 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
   }
   browsing_topics::BrowsingTopicsRedirectObserver::MaybeCreateForWebContents(
       web_contents);
-  chrome::ChainedBackNavigationTracker::CreateForWebContents(web_contents);
+  ChainedBackNavigationTracker::CreateForWebContents(web_contents);
   chrome_browser_net::NetErrorTabHelper::CreateForWebContents(web_contents);
   if (!autofill_client_provider.uses_platform_autofill()) {
     ChromePasswordManagerClient::CreateForWebContents(web_contents);
