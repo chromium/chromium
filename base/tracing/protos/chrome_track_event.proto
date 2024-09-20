@@ -1988,7 +1988,7 @@ message MainFramePipeline {
 message ChromeLatencyInfo2 {
   optional int64 trace_id = 1;
 
-  // NEXT ID: 14
+  // NEXT ID: 15
   // All step are optional but the enum is ordered (not by number) below in the
   // order we expect them to appear if they are emitted in trace in a blocking
   // fashion.
@@ -1998,6 +1998,7 @@ message ChromeLatencyInfo2 {
     STEP_SEND_INPUT_EVENT_UI = 3;
     // Happens on the renderer's compositor.
     STEP_HANDLE_INPUT_EVENT_IMPL = 5;
+    STEP_RESAMPLE_SCROLL_EVENTS = 14;
     STEP_DID_HANDLE_INPUT_AND_OVERSCROLL = 8;
     // Occurs on the Renderer's main thread.
     STEP_HANDLE_INPUT_EVENT_MAIN = 4;
@@ -2130,6 +2131,10 @@ message ChromeLatencyInfo2 {
   // If applicable, the result of handling the input corresponding to this
   // `ChromeLatencyInfo`.
   optional InputResultState input_result_state = 9;
+
+  // `trace_id` values corresponding to inputs that were coalesced/combined into
+  // the input for this `ChromeLatencyInfo`.
+  repeated int64 coalesced_trace_ids = 10;
 }
 
 message EventTiming {

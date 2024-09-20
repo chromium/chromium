@@ -63,8 +63,27 @@ std::unique_ptr<EventWithCallback> ScrollPredictor::ResampleScrollEvents(
   if (!should_resample_scroll_events_)
     return event_with_callback;
 
+  int64_t trace_id = event_with_callback->latency_info().trace_id();
   const EventWithCallback::OriginalEventList& original_events =
       event_with_callback->original_events();
+  TRACE_EVENT(
+      "input,benchmark,latencyInfo", "LatencyInfo.Flow",
+      [&](perfetto::EventContext ctx) {
+        auto* info = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>()
+                         ->set_chrome_latency_info();
+        info->set_trace_id(trace_id);
+        info->set_step(perfetto::protos::pbzero::ChromeLatencyInfo2::Step::
+                           STEP_RESAMPLE_SCROLL_EVENTS);
+        for (const EventWithCallback::OriginalEventWithCallback&
+                 coalesced_event : original_events) {
+          int64_t coalesced_event_trace_id =
+              coalesced_event.event_->latency_info().trace_id();
+          info->add_coalesced_trace_ids(coalesced_event_trace_id);
+        }
+        tracing::FillFlowEvent(
+            ctx, perfetto::protos::pbzero::TrackEvent::LegacyEvent::FLOW_INOUT,
+            trace_id);
+      });
 
   if (event_with_callback->event().GetType() ==
       WebInputEvent::Type::kGestureScrollUpdate) {
