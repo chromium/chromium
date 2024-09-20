@@ -8181,13 +8181,13 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
+                    "name": "Disabled",
                     "params": {
                         "guardrail_report_prob": "0.5",
                         "max_days_to_store_guardrails": "180",
                         "model_and_user_decline_report_prob": "0.5"
                     },
-                    "enable_features": [
+                    "disable_features": [
                         "WebAppsEnableMLModelForPromotion"
                     ]
                 }
