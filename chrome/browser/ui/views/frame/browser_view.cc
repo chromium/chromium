@@ -1093,6 +1093,8 @@ BrowserView::BrowserView(std::unique_ptr<Browser> browser)
 }
 
 void BrowserView::ToggleCompactModeUI() {
+  bool is_compact_mode = chrome::ShouldUseCompactMode(GetProfile());
+  GetBrowserViewLayout()->set_compact_mode(is_compact_mode);
   InvalidateLayout();
 }
 
