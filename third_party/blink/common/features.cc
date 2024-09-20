@@ -2131,10 +2131,14 @@ BASE_FEATURE(kShowHudDisplayForPausedPages,
              "ShowHudDisplayForPausedPages",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Controls script streaming.
+// Controls script streaming for http and https scripts.
 BASE_FEATURE(kScriptStreaming,
              "ScriptStreaming",
              base::FEATURE_ENABLED_BY_DEFAULT);
+// Enables script streaming for non-http scripts.
+BASE_FEATURE(kScriptStreamingForNonHTTP,
+             "ScriptStreamingForNonHTTP",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kSelectiveInOrderScript,
              "SelectiveInOrderScript",
