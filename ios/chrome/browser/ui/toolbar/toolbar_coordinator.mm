@@ -78,6 +78,8 @@
   ToolbarType _steadyStateOmniboxPosition;
   /// Whether the omnibox focusing should happen with animation.
   BOOL _enableAnimationsForOmniboxFocus;
+  //// Indicates whether the focus came from a tap on the NTP's fakebox.
+  BOOL _focusedFromFakebox;
   /// Indicates whether the fakebox was pinned on last signal to focus from
   /// the fakebox.
   BOOL _fakeboxPinned;
@@ -383,7 +385,8 @@
   }
 }
 
-- (void)focusOmniboxFromFakeboxPinned:(BOOL)pinned {
+- (void)focusOmniboxFromFakebox:(BOOL)fromFakebox pinned:(BOOL)pinned {
+  _focusedFromFakebox = fromFakebox;
   _fakeboxPinned = pinned;
   [self.locationBarCoordinator focusOmniboxFromFakebox];
 }
@@ -610,7 +613,8 @@
 - (OmniboxFocusTrigger)omniboxFocusTrigger {
   if (self.browser->GetBrowserState()->IsOffTheRecord() ||
       !IsSplitToolbarMode(self.traitEnvironment)) {
-    return OmniboxFocusTrigger::kOther;
+    return _focusedFromFakebox ? OmniboxFocusTrigger::kUnpinnedFakebox
+                               : OmniboxFocusTrigger::kOther;
   }
   web::WebState* webState =
       self.browser->GetWebStateList()->GetActiveWebState();

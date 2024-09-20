@@ -281,6 +281,8 @@
   HomeCustomizationCoordinator* _customizationCoordinator;
   // Coordinator for the tab group indicator.
   TabGroupIndicatorCoordinator* _tabGroupIndicatorCoordinator;
+  // Indicates whether the fakebox was tapped as part of an omnibox focus event.
+  BOOL _fakeboxTapped;
 }
 
 // Synthesize NewTabPageConfiguring properties.
@@ -508,6 +510,7 @@
   if (IsHomeCustomizationEnabled()) {
     [self dismissCustomizationMenu];
   }
+  _fakeboxTapped = NO;
   [self.NTPViewController focusOmnibox];
 }
 
@@ -887,7 +890,11 @@
 }
 
 - (void)fakeboxTapped {
-  [self focusFakebox];
+  if (IsHomeCustomizationEnabled()) {
+    [self dismissCustomizationMenu];
+  }
+  _fakeboxTapped = YES;
+  [self.NTPViewController focusOmnibox];
 }
 
 - (void)identityDiscWasTapped:(UIView*)identityDisc {
@@ -1222,7 +1229,8 @@
 - (void)focusOmnibox {
   id<FakeboxFocuser> fakeboxFocuserHandler =
       HandlerForProtocol(self.browser->GetCommandDispatcher(), FakeboxFocuser);
-  [fakeboxFocuserHandler focusOmniboxFromFakeboxPinned:[self isFakeboxPinned]];
+  [fakeboxFocuserHandler focusOmniboxFromFakebox:_fakeboxTapped
+                                          pinned:[self isFakeboxPinned]];
 }
 
 - (void)refreshNTPContent {
