@@ -454,8 +454,8 @@ String KURL::Query() const {
   return String();
 }
 
-String KURL::GetPath() const {
-  return ComponentString(parsed_.path);
+StringView KURL::GetPath() const {
+  return ComponentStringView(parsed_.path);
 }
 
 namespace {

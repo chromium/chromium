@@ -140,14 +140,15 @@ namespace blink {
 
 namespace {
 
-void LogJavaScriptUrlHistogram(LocalDOMWindow* origin_window, String script) {
+void LogJavaScriptUrlHistogram(LocalDOMWindow* origin_window,
+                               const StringView& script) {
   origin_window->CountUse(WebFeature::kExecutedJavaScriptURLFromFrame);
   if (script.length() > 6) {
     return;
   }
 
-  script = script.StripWhiteSpace().Replace(";", "");
-  if (script == "''" || script == "\"\"") {
+  String stripped_script = script.ToString().StripWhiteSpace().Replace(";", "");
+  if (stripped_script == "''" || stripped_script == "\"\"") {
     origin_window->CountUse(WebFeature::kExecutedEmptyJavaScriptURLFromFrame);
   }
 }

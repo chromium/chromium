@@ -181,7 +181,7 @@ class PLATFORM_EXPORT KURL {
   bool HasPort() const;
   String User() const;
   String Pass() const;
-  String GetPath() const;
+  StringView GetPath() const LIFETIME_BOUND;
   // This method handles "parameters" separated by a semicolon.
   String LastPathComponent() const;
   String Query() const;

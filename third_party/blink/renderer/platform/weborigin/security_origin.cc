@@ -86,7 +86,7 @@ KURL SecurityOrigin::ExtractInnerURL(const KURL& url) {
     return *url.InnerURL();
   // FIXME: Update this callsite to use the innerURL member function when
   // we finish implementing it.
-  return KURL(url.GetPath());
+  return KURL(url.GetPath().ToString());
 }
 
 // Note: When changing ShouldTreatAsOpaqueOrigin, consider also updating

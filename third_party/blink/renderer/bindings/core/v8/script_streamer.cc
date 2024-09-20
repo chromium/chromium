@@ -89,7 +89,8 @@ v8::ScriptType ScriptTypeForStreamingTask(ScriptResource* script_resource) {
       // of <link rel=modulepreload>. Try streaming parsing as module instead in
       // these cases (https://crbug.com/1178198).
       if (script_resource->IsUnusedPreload()) {
-        if (script_resource->Url().GetPath().EndsWithIgnoringCase(".mjs")) {
+        if (script_resource->Url().GetPath().ToString().EndsWithIgnoringCase(
+                ".mjs")) {
           return v8::ScriptType::kModule;
         }
       }

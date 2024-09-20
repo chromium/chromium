@@ -262,7 +262,7 @@ class ResponsesAccumulator : public RefCounted<ResponsesAccumulator> {
       requests = std::move(old_requests);
     } else {
       for (auto& request : old_requests) {
-        String urlPath(request->url.GetPath());
+        String urlPath(request->url.GetPath().ToString());
         if (!urlPath.Contains(params_.path_filter,
                               WTF::kTextCaseUnicodeInsensitive)) {
           continue;

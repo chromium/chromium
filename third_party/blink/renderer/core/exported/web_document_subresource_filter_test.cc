@@ -32,7 +32,7 @@ class TestDocumentSubresourceFilter : public WebDocumentSubresourceFilter {
 
   LoadPolicy GetLoadPolicy(const WebURL& resource_url,
                            mojom::blink::RequestContextType) override {
-    String resource_path = KURL(resource_url).GetPath();
+    String resource_path = KURL(resource_url).GetPath().ToString();
     if (!base::Contains(queried_subresource_paths_, resource_path)) {
       queried_subresource_paths_.push_back(resource_path);
     }

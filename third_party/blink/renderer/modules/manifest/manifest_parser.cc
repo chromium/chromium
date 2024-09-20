@@ -88,7 +88,7 @@ bool VerifyFiles(const Vector<mojom::blink::ManifestFileFilterPtr>& files) {
 // Determines whether |url| is within scope of |scope|.
 bool URLIsWithinScope(const KURL& url, const KURL& scope) {
   return SecurityOrigin::AreSameOrigin(url, scope) &&
-         url.GetPath().StartsWith(scope.GetPath());
+         url.GetPath().ToString().StartsWith(scope.GetPath());
 }
 
 bool IsHostValidForScopeExtension(String host) {
@@ -201,10 +201,11 @@ std::optional<std::vector<liburlpattern::Part>> ParsePatternInitField(
   return std::nullopt;
 }
 
-String EscapePatternString(String input) {
+String EscapePatternString(const StringView& input) {
   std::string result;
   result.reserve(input.length());
-  liburlpattern::EscapePatternStringAndAppend(input.Utf8(), result);
+  StringUTF8Adaptor utf8(input);
+  liburlpattern::EscapePatternStringAndAppend(utf8.AsStringView(), result);
   return String(result);
 }
 

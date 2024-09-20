@@ -91,9 +91,9 @@ bool IsProtocolDefaultPort(const String& protocol, const String& port) {
 // Base URL values that include pattern string characters should not blow
 // up pattern parsing.  Automatically escape them.  We must not escape inputs
 // for non-pattern base URLs, though.
-String EscapeBaseURLString(const String& input, ValueType type) {
+String EscapeBaseURLString(const StringView& input, ValueType type) {
   if (type != ValueType::kPattern || !input.length())
-    return input;
+    return input.ToString();
 
   std::string result;
   result.reserve(input.length());
@@ -176,7 +176,7 @@ void ApplyInit(const URLPatternInit* init,
     pathname = (init->hasProtocol() || init->hasHostname() || init->hasPort() ||
                 init->hasPathname())
                    ? String()
-               : base_url.GetPath()
+               : !base_url.GetPath().empty()
                    ? EscapeBaseURLString(base_url.GetPath(), type)
                    : g_empty_string;
     search = (init->hasProtocol() || init->hasHostname() || init->hasPort() ||
@@ -923,8 +923,9 @@ bool URLPattern::Match(ScriptState* script_state,
         hostname = url.Host();
       if (url.Port() > 0)
         port = String::Number(url.Port());
-      if (url.GetPath())
-        pathname = url.GetPath();
+      if (!url.GetPath().empty()) {
+        pathname = url.GetPath().ToString();
+      }
       if (url.Query())
         search = url.Query();
       if (url.FragmentIdentifier())
