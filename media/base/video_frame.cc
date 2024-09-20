@@ -496,10 +496,7 @@ scoped_refptr<VideoFrame> VideoFrame::WrapSharedImage(
 
   if (shared_image) {
     frame->mailbox_holder_ = gpu::MailboxHolder(
-        shared_image->mailbox(), sync_token,
-        base::FeatureList::IsEnabled(kVideoFrameUseClientSITextureTarget)
-            ? shared_image->GetTextureTarget()
-            : texture_target);
+        shared_image->mailbox(), sync_token, shared_image->GetTextureTarget());
     frame->shared_image_ = shared_image->MakeUnowned();
   }
   frame->mailbox_holder_and_gmb_release_cb_ =
@@ -529,10 +526,7 @@ scoped_refptr<VideoFrame> VideoFrame::WrapMappableSharedImage(
     return nullptr;
   }
   frame->mailbox_holder_ = gpu::MailboxHolder(
-      shared_image->mailbox(), sync_token,
-      base::FeatureList::IsEnabled(kVideoFrameUseClientSITextureTarget)
-          ? shared_image->GetTextureTarget()
-          : texture_target);
+      shared_image->mailbox(), sync_token, shared_image->GetTextureTarget());
 
   // Note that we can not use |shared_image|->MakeUnOwned() here since that
   // will not work for MappableSI due to it owning a GMB internally and we can
@@ -773,10 +767,7 @@ scoped_refptr<VideoFrame> VideoFrame::WrapExternalGpuMemoryBuffer(
 
   if (shared_image) {
     frame->mailbox_holder_ = gpu::MailboxHolder(
-        shared_image->mailbox(), sync_token,
-        base::FeatureList::IsEnabled(kVideoFrameUseClientSITextureTarget)
-            ? shared_image->GetTextureTarget()
-            : texture_target);
+        shared_image->mailbox(), sync_token, shared_image->GetTextureTarget());
     frame->shared_image_ = shared_image->MakeUnowned();
   }
   return frame;

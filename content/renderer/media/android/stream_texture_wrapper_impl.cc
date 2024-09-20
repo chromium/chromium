@@ -15,7 +15,6 @@
 #include "gpu/command_buffer/client/client_shared_image.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
-#include "media/base/media_switches.h"
 
 namespace {
 // Non-member function to allow it to run even after this class is deleted.
@@ -73,32 +72,18 @@ void StreamTextureWrapperImpl::CreateVideoFrame(
   // raster. The latter will be over GL if not using OOP-R. NOTE: GL usage can
   // be eliminated once OOP-R ships definitively.
   scoped_refptr<gpu::ClientSharedImage> shared_image;
-  if (base::FeatureList::IsEnabled(
-          media::kVideoFrameUseClientSITextureTarget)) {
-    // If the VideoFrame will be using the texture target from this
-    // ClientSharedImage, then we need to ensure that the ClientSI holds the
-    // correct texture target (which is *not* the texture target that
-    // ClientSharedImage would compute internally for these parameters).
-    // NOTE: We do this only under the killswitch because it changes the texture
-    // target that the ClientSI is holding and thus has potential other
-    // behavioral implications.
-    shared_image =
-        sii->NotifyMailboxAdded(mailbox, viz::SinglePlaneFormat::kRGBA_8888,
-                                coded_size, gfx::ColorSpace::CreateSRGB(),
-                                kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
-                                gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
-                                    gpu::SHARED_IMAGE_USAGE_GLES2_READ |
-                                    gpu::SHARED_IMAGE_USAGE_RASTER_READ,
-                                texture_target);
-  } else {
-    shared_image =
-        sii->NotifyMailboxAdded(mailbox, viz::SinglePlaneFormat::kRGBA_8888,
-                                coded_size, gfx::ColorSpace::CreateSRGB(),
-                                kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
-                                gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
-                                    gpu::SHARED_IMAGE_USAGE_GLES2_READ |
-                                    gpu::SHARED_IMAGE_USAGE_RASTER_READ);
-  }
+
+  // Ensure that the ClientSI holds the correct texture target (which is *not*
+  // the texture target that ClientSharedImage would compute internally for
+  // these parameters).
+  shared_image =
+      sii->NotifyMailboxAdded(mailbox, viz::SinglePlaneFormat::kRGBA_8888,
+                              coded_size, gfx::ColorSpace::CreateSRGB(),
+                              kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
+                              gpu::SHARED_IMAGE_USAGE_DISPLAY_READ |
+                                  gpu::SHARED_IMAGE_USAGE_GLES2_READ |
+                                  gpu::SHARED_IMAGE_USAGE_RASTER_READ,
+                              texture_target);
 
   // The pixel format doesn't matter here as long as it's valid for texture
   // frames. But SkiaRenderer wants to ensure that the format of the resource
