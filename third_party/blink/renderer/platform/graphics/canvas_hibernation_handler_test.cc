@@ -383,32 +383,6 @@ TEST_P(CanvasHibernationHandlerTest, ForegroundFlipForBeforeEncoding) {
   EXPECT_TRUE(bridge->IsHibernating());
 }
 
-TEST_P(CanvasHibernationHandlerTest, CanvasSnapshottedInBackground) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures({features::kCanvas2DHibernation}, {});
-
-  auto task_runner = base::MakeRefCounted<TestSingleThreadTaskRunner>();
-  ScopedTestingPlatformSupport<GpuMemoryBufferTestPlatform> platform;
-  std::unique_ptr<Canvas2DLayerBridge> bridge =
-      MakeBridge(gfx::Size(300, 300), RasterModeHint::kPreferGPU, kNonOpaque);
-  DrawSomething(bridge.get());
-
-  auto& handler = bridge->GetHibernationHandlerForTesting();
-  handler.SetTaskRunnersForTesting(task_runner, task_runner);
-
-  SetPageVisible(Host(), bridge.get(), platform, false);
-  // Wait for the canvas to be encoded.
-  EXPECT_EQ(1u, TestSingleThreadTaskRunner::RunAll(task_runner->delayed()));
-  EXPECT_EQ(2u, TestSingleThreadTaskRunner::RunAll(task_runner->immediate()));
-  EXPECT_TRUE(handler.is_encoded());
-
-  EXPECT_TRUE(bridge->IsHibernating());
-  auto image = bridge->NewImageSnapshot(FlushReason::kTesting);
-  EXPECT_TRUE(bridge->IsHibernating());
-  // Do not discard the encoded representation.
-  EXPECT_TRUE(handler.is_encoded());
-}
-
 TEST_P(CanvasHibernationHandlerTest, ClearEndsHibernation) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures({features::kCanvas2DHibernation}, {});

@@ -2099,6 +2099,63 @@ TEST_P(CanvasRenderingContext2DTestAccelerated,
   EXPECT_FALSE(handler.is_encoded());
 }
 
+TEST_P(CanvasRenderingContext2DTestAccelerated,
+       CanvasSnapshotInBackgroundDoesNotEndHibernation) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures({features::kCanvas2DHibernation}, {});
+
+  CreateContext(kNonOpaque);
+  ASSERT_TRUE(CanvasElement().GetOrCreateCanvasResourceProvider(
+      RasterModeHint::kPreferGPU));
+
+  auto* bridge = CanvasElement().GetCanvas2DLayerBridge();
+  auto& handler = bridge->GetHibernationHandlerForTesting();
+  base::RunLoop run_loop;
+
+  // Install a minimal delay for testing to ensure that the test remains fast
+  // to execute.
+  handler.SetBeforeCompressionDelayForTesting(base::Microseconds(10));
+
+  // NOTE: It is necessary to install the quit closure before running tasks
+  // below in order to avoid test flake, as it is possible that encoding occurs
+  // on a background thread *before* we run the run loop to wait for encoding.
+  // As long as the quit closure has been invoked as part of encoding in that
+  // case, the run loop will immediately exit out when Run() is invoked
+  // (otherwise it would spin until timing out).
+  handler.SetOnEncodedCallbackForTesting(run_loop.QuitClosure());
+
+  ASSERT_FALSE(handler.is_encoded());
+  ASSERT_FALSE(bridge->IsHibernating());
+
+  // Hide the page to trigger the hibernation task.
+  GetDocument().GetPage()->SetVisibilityState(
+      mojom::blink::PageVisibilityState::kHidden,
+      /*is_initial_state=*/false);
+
+  // Hibernation is triggered asynchronously.
+  ASSERT_FALSE(handler.is_encoded());
+  ASSERT_FALSE(bridge->IsHibernating());
+
+  // Run the task that initiates hibernation, which has been posted as an idle
+  // task.
+  ThreadScheduler::Current()
+      ->ToMainThreadScheduler()
+      ->StartIdlePeriodForTesting();
+  blink::test::RunPendingTasks();
+
+  ASSERT_FALSE(CanvasElement().ResourceProvider());
+  ASSERT_TRUE(bridge->IsHibernating());
+
+  // Wait for encoding to complete on a background thread.
+  run_loop.Run();
+  ASSERT_TRUE(handler.is_encoded());
+
+  // Taking a snapshot of the canvas should not cause hibernation to end.
+  EXPECT_TRUE(Context2D()->GetImage(FlushReason::kTesting));
+  EXPECT_TRUE(bridge->IsHibernating());
+  EXPECT_TRUE(handler.is_encoded());
+}
+
 sk_sp<SkImage> CreateSkImage(int width, int height, SkColor color) {
   sk_sp<SkSurface> surface =
       SkSurfaces::Raster(SkImageInfo::MakeN32Premul(width, height));
