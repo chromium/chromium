@@ -2027,8 +2027,8 @@ void SellerWorklet::OnTrustedScoringSignalsDownloaded(
     std::optional<std::string> error_msg) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(user_sequence_checker_);
 
-  task->trusted_scoring_signals_result = std::move(result);
   task->trusted_bidding_signals_fetch_failed = !result ? true : false;
+  task->trusted_scoring_signals_result = std::move(result);
   task->trusted_scoring_signals_error_msg = std::move(error_msg);
   // Clean up single-use object, now that it has done its job.
   task->trusted_scoring_signals_request.reset();

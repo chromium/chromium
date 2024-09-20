@@ -7870,5 +7870,40 @@ TEST_F(SellerWorkletRealTimeReportingEnabledTest,
       /*expected_pa_requests=*/{}, std::move(expected_real_time_contributions));
 }
 
+// No platform contribution for trusted scoring signals failure when getting the
+// signal succeeded.
+TEST_F(SellerWorkletRealTimeReportingEnabledTest,
+       TrustedScoringSignalSucceedsNoContributionAdded) {
+  trusted_scoring_signals_url_ =
+      GURL("https://url.test/trusted_scoring_signals");
+  const GURL kSignalsUrl = GURL(
+      "https://url.test/trusted_scoring_signals?hostname=window.test"
+      "&renderUrls=https%3A%2F%2Frender.url.test%2F");
+
+  // Successful download case.
+  AddJsonResponse(&url_loader_factory_, kSignalsUrl,
+                  kTrustedScoringSignalsResponse);
+
+  auction_worklet::mojom::RealTimeReportingContribution expected_histogram(
+      /*bucket=*/100, /*priority_weight=*/0.5,
+      /*latency_threshold=*/std::nullopt);
+  constexpr char kExtraCode[] = R"(
+realTimeReporting.contributeToHistogram({bucket: 100, priorityWeight: 0.5})
+)";
+
+  RealTimeReportingContributions expected_real_time_contributions;
+  expected_real_time_contributions.push_back(expected_histogram.Clone());
+
+  RunScoreAdWithJavascriptExpectingResult(
+      CreateScoreAdScript("trustedScoringSignals === null ? 1 : 0", kExtraCode),
+      0, /*expected_errors=*/
+      {}, mojom::ComponentAuctionModifiedBidParamsPtr(),
+      /*expected_data_version=*/std::nullopt,
+      /*expected_debug_loss_report_url=*/std::nullopt,
+      /*expected_debug_win_report_url=*/std::nullopt,
+      /*expected_reject_reason=*/mojom::RejectReason::kNotAvailable,
+      /*expected_pa_requests=*/{}, std::move(expected_real_time_contributions));
+}
+
 }  // namespace
 }  // namespace auction_worklet
