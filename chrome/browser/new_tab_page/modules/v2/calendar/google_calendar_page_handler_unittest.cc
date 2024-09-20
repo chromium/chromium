@@ -340,8 +340,8 @@ TEST_F(GoogleCalendarPageHandlerTest, GetEvents) {
       google_apis::test_util::CreateQuitCallback(&run_loop, callback.Get()));
   run_loop.Run();
 
-  // The test data has 10 events, but we never return more than 6.
-  ASSERT_EQ(response.size(), 6u);
+  // The test data has 10 events, but we never return more than 5.
+  ASSERT_EQ(response.size(), 5u);
   // The first event was an all day event, and the second event was declined by
   // the user. They were both filtered out, so the rest of the events should be
   // two numbers higher in their fields.

@@ -84,7 +84,7 @@ BASE_FEATURE(kNtpBackgroundImageErrorDetection,
 // If enabled, calendar module will be shown.
 BASE_FEATURE(kNtpCalendarModule,
              "NtpCalendarModule",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, chrome cart module will be shown.
 BASE_FEATURE(kNtpChromeCartModule,
@@ -355,7 +355,7 @@ const base::FeatureParam<std::string> kNtpCalendarModuleExperimentParam(
 const base::FeatureParam<int> kNtpCalendarModuleMaxEventsParam(
     &ntp_features::kNtpCalendarModule,
     "NtpCalendarModuleMaxEventsParam",
-    6);
+    5);
 const base::FeatureParam<base::TimeDelta> kNtpCalendarModuleWindowEndDeltaParam(
     &ntp_features::kNtpCalendarModule,
     "NtpCalendarModuleWindowEndDeltaParam",
