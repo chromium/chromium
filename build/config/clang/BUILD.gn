@@ -10,101 +10,84 @@ if (is_ios) {
   import("//build/config/ios/config.gni")  # For `target_environment`
 }
 
-config("raw_ptr_check") {
-  if (clang_use_chrome_plugins || clang_use_raw_ptr_plugin) {
-    cflags = []
+# Helper function for adding cflags to use a clang plugin.
+# - `plugin` is the name of the plugin.
+# - `plugin_arguments` is a list of arguments to pass to the plugin.
+template("clang_plugin") {
+  config(target_name) {
+    forward_variables_from(invoker,
+                           [
+                             "cflags",
+                             "configs",
+                           ])
+    if (!defined(cflags)) {
+      cflags = []
+    }
 
+    if (defined(invoker.plugin)) {
+      cflags += [
+        "-Xclang",
+        "-add-plugin",
+        "-Xclang",
+        invoker.plugin,
+      ]
+    }
+
+    if (defined(invoker.plugin_arguments)) {
+      foreach(flag, invoker.plugin_arguments) {
+        cflags += [
+          "-Xclang",
+          "-plugin-arg-${invoker.plugin}",
+          "-Xclang",
+          flag,
+        ]
+      }
+    }
+  }
+}
+
+clang_plugin("raw_ptr_check") {
+  if (clang_use_chrome_plugins || clang_use_raw_ptr_plugin) {
     # The plugin is built directly into clang, so there's no need to load it
     # dynamically.
-    cflags += [
-      "-Xclang",
-      "-add-plugin",
-      "-Xclang",
-      "raw-ptr-plugin",
-
-      "-Xclang",
-      "-plugin-arg-raw-ptr-plugin",
-      "-Xclang",
+    plugin = "raw-ptr-plugin"
+    plugin_arguments = [
       "check-raw-ptr-to-stack-allocated",
-
-      "-Xclang",
-      "-plugin-arg-raw-ptr-plugin",
-      "-Xclang",
       "disable-check-raw-ptr-to-stack-allocated-error",
 
-      # TODO(crbug.com/40944547): Remove when raw_ptr check has been
-      # enabled for the dawn repo.
-      "-Xclang",
-      "-plugin-arg-raw-ptr-plugin",
-      "-Xclang",
+      # TODO(crbug.com/40944547): Remove when raw_ptr check has been enabled
+      # for the dawn repo.
       "raw-ptr-exclude-path=" +
           rebase_path("//third_party/dawn/", root_build_dir),
     ]
 
     if (enable_check_raw_ptr_fields) {
-      cflags += [
-        "-Xclang",
-        "-plugin-arg-raw-ptr-plugin",
-        "-Xclang",
-        "check-raw-ptr-fields",
-      ]
+      plugin_arguments += [ "check-raw-ptr-fields" ]
     }
 
     if (enable_check_raw_ref_fields) {
-      cflags += [
-        "-Xclang",
-        "-plugin-arg-raw-ptr-plugin",
-        "-Xclang",
-        "check-raw-ref-fields",
-      ]
+      plugin_arguments += [ "check-raw-ref-fields" ]
     }
   }
 }
 
-config("find_bad_constructs") {
+clang_plugin("find_bad_constructs") {
   if (clang_use_chrome_plugins) {
-    configs = []
-    cflags = []
-
     # The plugin is built directly into clang, so there's no need to load it
     # dynamically.
-    cflags += [
-      "-Xclang",
-      "-add-plugin",
-      "-Xclang",
-      "find-bad-constructs",
-
-      "-Xclang",
-      "-plugin-arg-find-bad-constructs",
-      "-Xclang",
+    plugin = "find-bad-constructs"
+    plugin_arguments = [
       "span-ctor-from-string-literal",
-
-      "-Xclang",
-      "-plugin-arg-find-bad-constructs",
-      "-Xclang",
       "raw-ref-template-as-trivial-member",
-
-      "-Xclang",
-      "-plugin-arg-find-bad-constructs",
-      "-Xclang",
       "raw-span-template-as-trivial-member",
-
-      "-Xclang",
-      "-plugin-arg-find-bad-constructs",
-      "-Xclang",
       "check-stack-allocated",
     ]
 
     if (is_linux || is_chromeos || is_android || is_fuchsia) {
-      cflags += [
-        "-Xclang",
-        "-plugin-arg-find-bad-constructs",
-        "-Xclang",
-        "check-ipc",
-      ]
+      plugin_arguments += [ "check-ipc" ]
     }
 
-    configs += [ ":raw_ptr_check" ]
+    configs = [ ":raw_ptr_check" ]
   }
 }
 
@@ -121,22 +104,13 @@ config("find_bad_constructs") {
 # is on because the pragmas that enable and disable unsafe-buffers warnings are
 # not serialized to precompiled header files, and thus we get warnings that we
 # should not.
-config("unsafe_buffers") {
+clang_plugin("unsafe_buffers") {
   if (clang_use_chrome_plugins && clang_unsafe_buffers_paths != "" &&
       !enable_precompiled_headers) {
-    cflags = [
-      "-DUNSAFE_BUFFERS_BUILD",
-
-      "-Xclang",
-      "-add-plugin",
-      "-Xclang",
-      "unsafe-buffers",
-
-      "-Xclang",
-      "-plugin-arg-unsafe-buffers",
-      "-Xclang",
-      rebase_path(clang_unsafe_buffers_paths, root_build_dir),
-    ]
+    cflags = [ "-DUNSAFE_BUFFERS_BUILD" ]
+    plugin = "unsafe-buffers"
+    plugin_arguments =
+        [ rebase_path(clang_unsafe_buffers_paths, root_build_dir) ]
   }
 }
 
