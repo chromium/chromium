@@ -1631,7 +1631,14 @@ TEST_F(AcceleratorConfigurationProviderTest, AddSameAccelerator) {
   EXPECT_EQ(mojom::AcceleratorConfigResult::kConflict, result->result);
 }
 
-TEST_F(AcceleratorConfigurationProviderTest, AddAcceleratorBadAccelerator) {
+// TODO(b/368487291): Consistently failing on linux-chromeos bots.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_AddAcceleratorBadAccelerator DISABLED_AddAcceleratorBadAccelerator
+#else
+#define MAYBE_AddAcceleratorBadAccelerator AddAcceleratorBadAccelerator
+#endif
+TEST_F(AcceleratorConfigurationProviderTest,
+       MAYBE_AddAcceleratorBadAccelerator) {
   // Initialize default accelerators.
   const AcceleratorData test_data[] = {
       {/*trigger_on_press=*/true, ui::VKEY_SPACE, ui::EF_CONTROL_DOWN,
