@@ -39,6 +39,13 @@ class FakePlusAddressService : public PlusAddressService {
   static constexpr char kFacet[] = "https://facet.bar";
 
   // PlusAddressService:
+  void GetSuggestions(
+      const url::Origin& last_committed_primary_main_frame_origin,
+      bool is_off_the_record,
+      const autofill::PasswordFormClassification& focused_form_classification,
+      const autofill::FormFieldData& focused_field,
+      autofill::AutofillSuggestionTriggerSource trigger_source,
+      GetSuggestionsCallback callback) override;
   bool IsPlusAddressFillingEnabled(const url::Origin& origin) const override;
   bool IsPlusAddressCreationEnabled(const url::Origin& origin,
                                     bool is_off_the_record) const override;

@@ -6,12 +6,14 @@
 #import "base/strings/stringprintf.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/feature_engagement/public/feature_constants.h"
+#import "components/plus_addresses/fake_plus_address_service.h"
 #import "components/plus_addresses/features.h"
 #import "components/plus_addresses/metrics/plus_address_metrics.h"
 #import "components/plus_addresses/plus_address_test_utils.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/autofill/ui_bundled/autofill_app_interface.h"
 #import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
+#import "ios/chrome/browser/plus_addresses/ui/plus_address_app_interface.h"
 #import "ios/chrome/browser/plus_addresses/ui/plus_address_bottom_sheet_constants.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
@@ -23,6 +25,7 @@
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
+#import "ios/chrome/test/earl_grey/test_switches.h"
 #import "ios/chrome/test/earl_grey/web_http_server_chrome_test_case.h"
 #import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
@@ -78,19 +81,7 @@ void ExpectModalTimeSample(
 
 - (void)setUp {
   [super setUp];
-  net::test_server::RegisterDefaultHandlers(self.testServer);
-  self.testServer->RegisterRequestHandler(base::BindRepeating(
-      &net::test_server::HandlePrefixedRequest, "/v1/profiles",
-      base::BindRepeating(
-          &plus_addresses::test::HandleRequestToPlusAddressWithSuccess)));
   GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
-
-  if ([self isRunningTest:@selector
-            (DISABLED_testConfirmPlusAddressUsingBottomSheet)] ||
-      [self isRunningTest:@selector(DISABLED_testRefresh)] ||
-      [self isRunningTest:@selector(DISABLED_testCreatePlusAddressIPH)]) {
-    [self relaunchAppAndSetConfiguration];
-  }
 
   GREYAssertNil([MetricsAppInterface setupHistogramTester],
                 @"Failed to set up histogram tester.");
@@ -109,33 +100,10 @@ void ExpectModalTimeSample(
                 @"Cannot reset histogram tester.");
 }
 
-- (void)relaunchAppAndSetConfiguration {
-  AppLaunchConfiguration config = self.appConfigurationForTestCase;
-
-  config.features_enabled_and_params.clear();
-  config.features_enabled_and_params.push_back(
-      {plus_addresses::features::kPlusAddressesEnabled,
-       {{{"server-url", {self.testServer->base_url().spec()}},
-         {"oauth-scope", {plus_addresses::test::kFakeOauthScope}},
-         {"manage-url", {plus_addresses::test::kFakeManagementUrl}},
-         {"error-report-url", {plus_addresses::test::kFakeErrorReportUrl}}}}});
-
-  if ([self isRunningTest:@selector(DISABLED_testCreatePlusAddressIPH)]) {
-    config.iph_feature_enabled =
-        feature_engagement::kIPHPlusAddressCreateSuggestionFeature.name;
-  }
-
-  // Relaunch the app to take the configuration into account.
-  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
-}
-
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
-  // Ensure the feature is enabled, including a required param.
-  // TODO(crbug.com/40276862): Set up fake responses via `self.testServer`, or
-  // use an app interface to force different states without a backend
-  // dependency. The `chrome://version` part in the `server-url` param is just
-  // to force an invalid response, and must not be used long-term.
+  config.relaunch_policy = ForceRelaunchByCleanShutdown;
+
   std::string fakeLocalUrl =
       base::EscapeQueryParamValue("chrome://version", /*use_plus=*/false);
   config.features_enabled_and_params.push_back(
@@ -144,6 +112,15 @@ void ExpectModalTimeSample(
            {"server-url", {fakeLocalUrl}},
            {"manage-url", {fakeLocalUrl}},
        }}});
+
+  if ([self isRunningTest:@selector(testCreatePlusAddressIPH)]) {
+    config.iph_feature_enabled =
+        feature_engagement::kIPHPlusAddressCreateSuggestionFeature.name;
+  }
+
+  config.additional_args.push_back(std::string("-") +
+                                   test_switches::kAddFakePlusAddressService);
+
   return config;
 }
 
@@ -158,6 +135,9 @@ void ExpectModalTimeSample(
 
 // Taps on the create plus address suggestion to open the bottom sheet.
 - (void)openCreatePlusAddressBottomSheet {
+  // So that, create is offered.
+  [PlusAddressAppInterface setShouldOfferPlusAddressCreation:YES];
+
   // Tap an element that is eligible for plus_address autofilling.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
       performAction:chrome_test_util::TapWebElementWithId(kEmailFieldId)];
@@ -221,14 +201,14 @@ id<GREYMatcher> GetMatcherForPlusAddressLabel(NSString* labelText) {
 
 #pragma mark - Tests
 
-// TODO(crbug.com/364105204) Fix test failures.
 // Tests showing up a bottom sheet to confirm a plus address. Once, the plus
 // address is confirmed checks if it is filled in the file.d
-- (void)DISABLED_testConfirmPlusAddressUsingBottomSheet {
+- (void)testConfirmPlusAddressUsingBottomSheet {
   [self openCreatePlusAddressBottomSheet];
 
-  id<GREYMatcher> plusAddressLabelMatcher = GetMatcherForPlusAddressLabel(
-      base::SysUTF8ToNSString(plus_addresses::test::kFakePlusAddress));
+  id<GREYMatcher> plusAddressLabelMatcher =
+      GetMatcherForPlusAddressLabel(base::SysUTF8ToNSString(
+          plus_addresses::FakePlusAddressService::kFakePlusAddress));
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:plusAddressLabelMatcher];
 
   id<GREYMatcher> confirmButton =
@@ -240,8 +220,9 @@ id<GREYMatcher> GetMatcherForPlusAddressLabel(NSString* labelText) {
 
   [self verifyFieldWithIdHasBeenFilled:kEmailFieldId
                                  value:base::SysUTF8ToNSString(
-                                           plus_addresses::test::
-                                               kFakePlusAddress)];
+                                           plus_addresses::
+                                               FakePlusAddressService::
+                                                   kFakePlusAddress)];
 
   ExpectModalHistogram(
       plus_addresses::metrics::PlusAddressModalEvent::kModalShown, 1);
@@ -393,7 +374,9 @@ id<GREYMatcher> GetMatcherForPlusAddressLabel(NSString* labelText) {
 }
 
 // A test to check the plus address create suggestion IPH feature.
-- (void)DISABLED_testCreatePlusAddressIPH {
+- (void)testCreatePlusAddressIPH {
+  [PlusAddressAppInterface setShouldOfferPlusAddressCreation:YES];
+
   // Tap an element that is eligible for plus_address autofilling.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
       performAction:chrome_test_util::TapWebElementWithId(kEmailFieldId)];

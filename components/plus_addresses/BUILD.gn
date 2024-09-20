@@ -189,6 +189,8 @@ static_library("test_support") {
     "//base/test:test_support",
     "//components/affiliations/core/browser:test_support",
     "//components/autofill/core/browser",
+    "//components/feature_engagement/public",
+    "//components/strings:components_strings_grit",
     "//net:test_support",
     "//testing/gmock",
   ]

@@ -10,13 +10,18 @@
 
 #include "base/feature_list.h"
 #include "base/functional/callback.h"
+#include "components/feature_engagement/public/feature_constants.h"
 #include "components/plus_addresses/mock_plus_address_http_client.h"
 #include "components/plus_addresses/plus_address_types.h"
+#include "components/strings/grit/components_strings.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace plus_addresses {
 namespace {
 using affiliations::FacetURI;
+using autofill::Suggestion;
+using autofill::SuggestionType;
 }
 
 FakePlusAddressService::FakePlusAddressService(
@@ -34,6 +39,39 @@ FakePlusAddressService::FakePlusAddressService(
           base::BindRepeating(&base::FeatureList::IsEnabled)) {}
 
 FakePlusAddressService::~FakePlusAddressService() = default;
+
+void FakePlusAddressService::GetSuggestions(
+    const url::Origin& last_committed_primary_main_frame_origin,
+    bool is_off_the_record,
+    const autofill::PasswordFormClassification& focused_form_classification,
+    const autofill::FormFieldData& focused_field,
+    autofill::AutofillSuggestionTriggerSource trigger_source,
+    GetSuggestionsCallback callback) {
+  if (IsPlusAddressCreationEnabled(last_committed_primary_main_frame_origin,
+                                   is_off_the_record)) {
+    Suggestion suggestion(
+        l10n_util::GetStringUTF16(IDS_PLUS_ADDRESS_CREATE_SUGGESTION_MAIN_TEXT),
+        SuggestionType::kCreateNewPlusAddress);
+    suggestion.labels = {{Suggestion::Text(l10n_util::GetStringUTF16(
+        IDS_PLUS_ADDRESS_CREATE_SUGGESTION_SECONDARY_TEXT))}};
+    suggestion.icon = Suggestion::Icon::kPlusAddress;
+    suggestion.feature_for_iph =
+        &feature_engagement::kIPHPlusAddressCreateSuggestionFeature;
+    std::move(callback).Run({suggestion});
+    return;
+  }
+
+  if (IsPlusAddressFillingEnabled(last_committed_primary_main_frame_origin)) {
+    Suggestion suggestion = Suggestion(
+        kFakePlusAddress16, SuggestionType::kFillExistingPlusAddress);
+    if constexpr (!BUILDFLAG(IS_ANDROID)) {
+      suggestion.labels = {{Suggestion::Text(l10n_util::GetStringUTF16(
+          IDS_PLUS_ADDRESS_FILL_SUGGESTION_SECONDARY_TEXT))}};
+    }
+    suggestion.icon = Suggestion::Icon::kPlusAddress;
+    std::move(callback).Run({suggestion});
+  }
+}
 
 bool FakePlusAddressService::IsPlusAddressFillingEnabled(
     const url::Origin& origin) const {
