@@ -93,7 +93,7 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
       shouldFadeOutButtons: {
         type: Boolean,
         computed: 'computeShouldFadeOutButtons(isTranslateModeActive, ' +
-            'isTextLayerHighlightingText, isPointerDown)',
+            'isPointerDown)',
         reflectToAttribute: true,
       },
       isLensOverlayContextualSearchboxEnabled: {
@@ -131,9 +131,6 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
   // Whether the translate mode on the lens overlay has been activated. Updated
   // in response to events dispatched from the translate button.
   private isTranslateModeActive: boolean = false;
-  // Whether the text layer is highlighting text. Updated in response to events
-  // dispatched from the text layer.
-  private isTextLayerHighlightingText: boolean = false;
   // Whether the user is pressing down on the selection overlay. Updated in
   // response to events dispatched from the selection overlay.
   private isPointerDown: boolean = false;
@@ -183,10 +180,6 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
     this.eventTracker_.add(
         document, 'translate-mode-state-changed', (e: CustomEvent) => {
           this.isTranslateModeActive = e.detail.translateModeEnabled;
-        });
-    this.eventTracker_.add(
-        document, 'text-selection-state-changed', (e: CustomEvent) => {
-          this.isTextLayerHighlightingText = e.detail.highlightingText;
         });
     this.eventTracker_.add(document, 'text-copied', () => {
       this.showToast(this.i18n('copyToastMessage'));
@@ -329,8 +322,7 @@ export class LensOverlayAppElement extends LensOverlayAppElementBase {
   }
 
   private computeShouldFadeOutButtons(): boolean {
-    return !this.isTranslateModeActive &&
-        (this.isTextLayerHighlightingText || this.isPointerDown);
+    return !this.isTranslateModeActive && this.isPointerDown;
   }
 
   private async showToast(message: string) {
