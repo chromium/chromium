@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "ash/birch/birch_coral_item.h"
 #include "ash/birch/birch_item.h"
 #include "ash/constants/ash_switches.h"
 #include "base/check.h"

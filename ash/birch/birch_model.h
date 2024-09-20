@@ -11,6 +11,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/birch/birch_client.h"
+#include "ash/birch/birch_coral_item.h"
 #include "ash/birch/birch_item.h"
 #include "ash/public/cpp/session/session_observer.h"
 #include "base/functional/callback.h"

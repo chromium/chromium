@@ -383,6 +383,8 @@ component("ash") {
     "birch/birch_client.h",
     "birch/birch_coral_grouped_icon_image.cc",
     "birch/birch_coral_grouped_icon_image.h",
+    "birch/birch_coral_item.cc",
+    "birch/birch_coral_item.h",
     "birch/birch_coral_provider.cc",
     "birch/birch_coral_provider.h",
     "birch/birch_data_provider.cc",
