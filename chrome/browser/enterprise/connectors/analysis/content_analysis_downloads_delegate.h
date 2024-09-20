@@ -10,6 +10,7 @@
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_delegate_base.h"
 #include "components/download/public/common/download_item.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
+#include "components/enterprise/obfuscation/core/download_obfuscator.h"
 
 namespace enterprise_connectors {
 
@@ -62,6 +63,13 @@ class ContentAnalysisDownloadsDelegate
   // (which may be undefined).
   void ResetCallbacks();
 
+  // Called when the user opts to open the downloaded file.
+  void Open();
+
+  // Callback for when deobfuscation of the file is complete.
+  void OnDeobfuscationComplete(
+      base::expected<void, enterprise_obfuscation::Error> deobfuscation_result);
+
   // Custom message for rule.
   ContentAnalysisResponse::Result::TriggeredRule::CustomRuleMessage
       custom_rule_message_;
@@ -73,6 +81,9 @@ class ContentAnalysisDownloadsDelegate
   base::OnceCallback<void()> open_file_callback_;
   base::OnceCallback<void()> discard_file_callback_;
   raw_ptr<download::DownloadItem> download_item_;
+
+  base::WeakPtrFactory<ContentAnalysisDownloadsDelegate> weak_ptr_factory_{
+      this};
 };
 
 }  // namespace enterprise_connectors

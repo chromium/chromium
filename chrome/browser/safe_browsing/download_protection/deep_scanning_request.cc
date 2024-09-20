@@ -13,6 +13,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/observer_list.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/task/thread_pool.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/download/bubble/download_bubble_ui_controller.h"
 #include "chrome/browser/download/chrome_download_manager_delegate.h"
@@ -43,7 +44,6 @@
 #include "chrome/common/pref_names.h"
 #include "components/download/public/common/download_item.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
-#include "components/enterprise/obfuscation/core/download_obfuscator.h"
 #include "components/policy/core/common/cloud/dm_token.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/content/browser/web_ui/safe_browsing_ui.h"
@@ -868,6 +868,42 @@ void DeepScanningRequest::FinishRequest(DownloadCheckResult result) {
 
   AcknowledgeRequest(event_result);
 
+  // For obfuscated download files, deobfuscate it if the scan returns a safe
+  // verdict.
+  enterprise_obfuscation::DownloadObfuscationData* obfuscation_data =
+      static_cast<enterprise_obfuscation::DownloadObfuscationData*>(
+          item_->GetUserData(
+              enterprise_obfuscation::DownloadObfuscationData::kUserDataKey));
+
+  // Bypassed verdicts are given when a user continues a download after being
+  // warned by WP, so it is considered safe here.
+  if ((event_result == EventResult::ALLOWED ||
+       event_result == EventResult::BYPASSED) &&
+      obfuscation_data && obfuscation_data->is_obfuscated) {
+    base::ThreadPool::PostTaskAndReplyWithResult(
+        FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
+        base::BindOnce(&enterprise_obfuscation::DeobfuscateFileInPlace,
+                       item_->GetFullPath()),
+        base::BindOnce(&DeepScanningRequest::OnDeobfuscationComplete,
+                       weak_ptr_factory_.GetWeakPtr(), result));
+    return;
+  }
+
+  CallbackAndCleanup(result);
+}
+
+void DeepScanningRequest::OnDeobfuscationComplete(
+    DownloadCheckResult result,
+    base::expected<void, enterprise_obfuscation::Error> deobfuscation_result) {
+  if (!deobfuscation_result.has_value()) {
+    // TODO(b/367259664): Add better error handling for deobfuscation.
+    DVLOG(1) << "Failed to deobfuscate downloaded file.";
+  }
+
+  CallbackAndCleanup(result);
+}
+
+void DeepScanningRequest::CallbackAndCleanup(DownloadCheckResult result) {
   if (!callback_.is_null()) {
     callback_.Run(result);
   }
