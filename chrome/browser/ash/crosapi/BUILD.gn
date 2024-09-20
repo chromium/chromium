@@ -678,6 +678,8 @@ static_library("test_support") {
     "test_crosapi_dependency_registry.h",
     "test_crosapi_environment.cc",
     "test_crosapi_environment.h",
+    "test_local_printer_ash.cc",
+    "test_local_printer_ash.h",
   ]
 
   allow_circular_includes_from = [ "//chrome/test:test_support" ]
@@ -767,8 +769,6 @@ source_set("unit_tests") {
     "screen_ai_downloader_ash_unittest.cc",
     "search_controller_ash_unittest.cc",
     "stateful_lacros_loader_unittest.cc",
-    "test_local_printer_ash.cc",
-    "test_local_printer_ash.h",
     "test_mojo_connection_manager_unittest.cc",
     "wallpaper_ash_unittest.cc",
   ]
