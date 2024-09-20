@@ -106,7 +106,7 @@ GURL TestOmniboxClient::GetNavigationEntryURL() const {
 }
 
 metrics::OmniboxEventProto::PageClassification
-TestOmniboxClient::GetPageClassification(bool is_prefetch) {
+TestOmniboxClient::GetPageClassification(bool is_prefetch) const {
   return location_bar_model_.GetPageClassification(is_prefetch);
 }
 

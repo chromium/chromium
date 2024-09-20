@@ -163,7 +163,7 @@ GURL LensOmniboxClient::GetNavigationEntryURL() const {
 }
 
 metrics::OmniboxEventProto::PageClassification
-LensOmniboxClient::GetPageClassification(bool is_prefetch) {
+LensOmniboxClient::GetPageClassification(bool is_prefetch) const {
   return metrics::OmniboxEventProto::LENS_SIDE_PANEL_SEARCHBOX;
 }
 

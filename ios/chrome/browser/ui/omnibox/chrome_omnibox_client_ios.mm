@@ -153,7 +153,7 @@ GURL ChromeOmniboxClientIOS::GetNavigationEntryURL() const {
 }
 
 metrics::OmniboxEventProto::PageClassification
-ChromeOmniboxClientIOS::GetPageClassification(bool is_prefetch) {
+ChromeOmniboxClientIOS::GetPageClassification(bool is_prefetch) const {
   return location_bar_->GetLocationBarModel()->GetPageClassification(
       is_prefetch);
 }

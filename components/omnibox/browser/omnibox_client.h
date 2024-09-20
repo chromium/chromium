@@ -154,7 +154,7 @@ class OmniboxClient {
   // UMA opted-in users.  Examines the user's profile to determine if the
   // current page is the user's home page.
   virtual metrics::OmniboxEventProto::PageClassification GetPageClassification(
-      bool is_prefetch) = 0;
+      bool is_prefetch) const = 0;
 
   // Returns the security level that the toolbar should display.
   virtual security_state::SecurityLevel GetSecurityLevel() const = 0;

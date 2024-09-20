@@ -95,7 +95,7 @@ class RealboxOmniboxClient final : public OmniboxClient {
   std::u16string GetURLForDisplay() const override;
   GURL GetNavigationEntryURL() const override;
   metrics::OmniboxEventProto::PageClassification GetPageClassification(
-      bool is_prefetch) override;
+      bool is_prefetch) const override;
   security_state::SecurityLevel GetSecurityLevel() const override;
   net::CertStatus GetCertStatus() const override;
   const gfx::VectorIcon& GetVectorIcon() const override;
@@ -233,7 +233,7 @@ GURL RealboxOmniboxClient::GetNavigationEntryURL() const {
 }
 
 metrics::OmniboxEventProto::PageClassification
-RealboxOmniboxClient::GetPageClassification(bool is_prefetch) {
+RealboxOmniboxClient::GetPageClassification(bool is_prefetch) const {
   if (lens_searchbox_client_) {
     return lens_searchbox_client_->GetPageClassification();
   }

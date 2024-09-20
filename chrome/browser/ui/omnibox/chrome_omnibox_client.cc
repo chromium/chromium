@@ -264,7 +264,7 @@ GURL ChromeOmniboxClient::GetNavigationEntryURL() const {
 }
 
 metrics::OmniboxEventProto::PageClassification
-ChromeOmniboxClient::GetPageClassification(bool is_prefetch) {
+ChromeOmniboxClient::GetPageClassification(bool is_prefetch) const {
   return location_bar_->GetLocationBarModel()->GetPageClassification(
       is_prefetch);
 }
