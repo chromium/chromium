@@ -1021,7 +1021,6 @@ source_set("extensions") {
       "api/passwords_private/passwords_private_utils_chromeos.h",
       "api/platform_keys_core/platform_keys_utils.cc",
       "api/platform_keys_core/platform_keys_utils.h",
-      "api/shared_storage/shared_storage_private_api.h",
 
       # TODO(crbug.com/40230380): Find an appropriate spot for this.
       "api/chromeos_api_browser_context_keyed_service_factories.cc",
@@ -1173,7 +1172,6 @@ source_set("extensions") {
       "api/settings_private/chromeos_resolve_time_zone_by_geolocation_on_off.h",
       "api/settings_private/generated_time_zone_pref_base.cc",
       "api/settings_private/generated_time_zone_pref_base.h",
-      "api/shared_storage/shared_storage_private_api_ash.cc",
       "api/terminal/startup_status.cc",
       "api/terminal/startup_status.h",
       "api/terminal/terminal_private_api.cc",
@@ -1394,7 +1392,6 @@ source_set("extensions") {
       "api/messaging/native_message_host_lacros.cc",
       "api/quick_unlock_private/quick_unlock_private_api_lacros.cc",
       "api/quick_unlock_private/quick_unlock_private_api_lacros.h",
-      "api/shared_storage/shared_storage_private_api_lacros.cc",
       "api/virtual_keyboard_private/lacros_virtual_keyboard_delegate.cc",
       "api/virtual_keyboard_private/lacros_virtual_keyboard_delegate.h",
       "chrome_kiosk_delegate.cc",

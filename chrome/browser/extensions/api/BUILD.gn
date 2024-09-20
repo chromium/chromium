@@ -68,6 +68,7 @@ group("api_implementations") {
       "//chrome/browser/extensions/api/enterprise_kiosk_input",
       "//chrome/browser/extensions/api/enterprise_platform_keys",
       "//chrome/browser/extensions/api/platform_keys",
+      "//chrome/browser/extensions/api/shared_storage",
     ]
   }
 
