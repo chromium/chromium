@@ -79,10 +79,9 @@ import org.chromium.content_public.browser.test.util.JavaScriptUtils;
 import org.chromium.content_public.browser.test.util.TouchCommon;
 import org.chromium.content_public.browser.test.util.UiUtils;
 import org.chromium.content_public.common.ContentSwitches;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.ui.test.util.UiDisableIf;
-import org.chromium.ui.test.util.UiRestriction;
 
 import java.io.File;
 import java.util.Locale;
@@ -222,7 +221,7 @@ public class TabsTest {
     @Test
     @LargeTest
     @Feature({"Android-TabSwitcher"})
-    @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
+    @Restriction(DeviceFormFactor.PHONE)
     public void testOpenAndCloseNewTabButton() {
         sActivityTestRule.loadUrl(getUrl(TEST_FILE_PATH));
         Tab tab0 =
@@ -296,9 +295,9 @@ public class TabsTest {
      */
     @Test
     @LargeTest
-    @Restriction(UiRestriction.RESTRICTION_TYPE_TABLET)
+    @Restriction(DeviceFormFactor.TABLET)
     @Feature({"Android-TabSwitcher"})
-    @DisableIf.Device(type = {UiDisableIf.TABLET}) // crbug.com/353910783
+    @DisableIf.Device(type = {DeviceFormFactor.TABLET}) // crbug.com/353910783
     public void testHideKeyboard() throws Exception {
         // Open a new tab(The 1st tab) and click node.
         sActivityTestRule.loadUrlInNewTab(getUrl(TEST_FILE_PATH), false);
@@ -398,7 +397,7 @@ public class TabsTest {
      */
     @Test
     @MediumTest
-    @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
+    @Restriction(DeviceFormFactor.PHONE)
     @Feature({"Android-TabSwitcher"})
     public void testTabSwitcherCollapseSelection() throws Exception {
         sActivityTestRule.loadUrlInNewTab(getUrl(TEST_FILE_PATH), false);
@@ -487,7 +486,7 @@ public class TabsTest {
 
     @Test
     @MediumTest
-    @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
+    @Restriction(DeviceFormFactor.PHONE)
     @DisabledTest(message = "https://crbug.com/1347598")
     public void testQuickSwitchBetweenTabAndSwitcherMode() {
         final String[] urls = {
@@ -624,7 +623,7 @@ public class TabsTest {
     // Regression test for https://crbug.com/1394372.
     @Test
     @MediumTest
-    @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE, RESTRICTION_TYPE_NON_LOW_END_DEVICE})
+    @Restriction({DeviceFormFactor.PHONE, RESTRICTION_TYPE_NON_LOW_END_DEVICE})
     @Feature({"Android-TabSwitcher"})
     public void testRequestFocusOnCloseTab() throws Exception {
         final View urlBar = sActivityTestRule.getActivity().findViewById(R.id.url_bar);
@@ -732,7 +731,7 @@ public class TabsTest {
 
     @Test
     @MediumTest
-    @Restriction({UiRestriction.RESTRICTION_TYPE_PHONE, RESTRICTION_TYPE_NON_LOW_END_DEVICE})
+    @Restriction({DeviceFormFactor.PHONE, RESTRICTION_TYPE_NON_LOW_END_DEVICE})
     @Feature({"Android-TabSwitcher"})
     public void testRequestFocusOnSwitchTab() {
         final TabModel model =
