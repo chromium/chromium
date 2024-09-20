@@ -10,13 +10,13 @@ assert(is_chromeos_ash, "Non-Chrome-OS builds must not depend on //chromeos")
 component("update_engine") {
   output_name = "ash_update_engine"
   defines = [ "IS_ASH_DBUS_UPDATE_ENGINE_IMPL" ]
+  public_deps = [ "//dbus" ]
   deps = [
     ":proto",
     "//base",
     "//chromeos/dbus/common",
     "//chromeos/dbus/constants",
     "//chromeos/version",
-    "//dbus",
   ]
   sources = [
     "fake_update_engine_client.cc",

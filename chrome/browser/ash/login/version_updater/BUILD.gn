@@ -16,7 +16,6 @@ static_library("version_updater") {
 
   public_deps = [
     "//base",
-    "//chrome/browser/ash/login/screens",
     "//chromeos/ash/components/dbus/update_engine",
     "//chromeos/ash/components/network",
   ]
@@ -27,8 +26,6 @@ static_library("version_updater") {
     "//chromeos/ash/components/network/portal_detector",
     "//ui/base",
   ]
-
-  allow_circular_includes_from = [ "//chrome/browser/ash/login/screens" ]
 }
 
 static_library("test_support") {
