@@ -214,7 +214,7 @@ class PinSetupScreenTest : public OobeBaseTest {
   void ExpectExitResultAndMetric(PinSetupScreen::Result result) {
     EXPECT_EQ(screen_result_.value(), result);
 
-    if (result == PinSetupScreen::Result::NOT_APPLICABLE) {
+    if (result == PinSetupScreen::Result::kNotApplicable) {
       histogram_tester_.ExpectTotalCount(kPinSetupScreenCompletionTime,
                                          /*expected_count=*/0);
     } else {
@@ -255,7 +255,7 @@ IN_PROC_BROWSER_TEST_F(PinSetupScreenTest, ShownByDefault) {
   TapSkipButton();
   WaitForScreenExit();
 
-  ExpectExitResultAndMetric(PinSetupScreen::Result::USER_SKIP);
+  ExpectExitResultAndMetric(PinSetupScreen::Result::kUserSkip);
 }
 
 // The screen should be skipped when the 'extra_factors_token' isn't present.
@@ -267,7 +267,7 @@ IN_PROC_BROWSER_TEST_F(PinSetupScreenTest, SkipWhenExtraFactorsTokenMissing) {
   ShowPinSetupScreen();
   WaitForScreenExit();
 
-  ExpectExitResultAndMetric(PinSetupScreen::Result::NOT_APPLICABLE);
+  ExpectExitResultAndMetric(PinSetupScreen::Result::kNotApplicable);
 }
 
 // The screen should be skipped when the token is invalid.
@@ -280,7 +280,7 @@ IN_PROC_BROWSER_TEST_F(PinSetupScreenTest, SkipWhenTokenInvalid) {
   ShowPinSetupScreen();
   WaitForScreenExit();
 
-  ExpectExitResultAndMetric(PinSetupScreen::Result::NOT_APPLICABLE);
+  ExpectExitResultAndMetric(PinSetupScreen::Result::kNotApplicable);
 }
 
 // If the PIN setup screen is shown, auth session should be cleared afterwards.
@@ -292,7 +292,7 @@ IN_PROC_BROWSER_TEST_F(PinSetupScreenTest, AuthSessionIsClearedOnManualSkip) {
   TapSkipButton();
   WaitForScreenExit();
 
-  ExpectExitResultAndMetric(PinSetupScreen::Result::USER_SKIP);
+  ExpectExitResultAndMetric(PinSetupScreen::Result::kUserSkip);
   CheckCredentialsWereCleared();
 }
 
@@ -305,7 +305,7 @@ IN_PROC_BROWSER_TEST_F(PinSetupScreenTest, SkipWhenNotAllowedByPolicy) {
   ShowPinSetupScreen();
   WaitForScreenExit();
 
-  ExpectExitResultAndMetric(PinSetupScreen::Result::NOT_APPLICABLE);
+  ExpectExitResultAndMetric(PinSetupScreen::Result::kNotApplicable);
 }
 
 // The PIN screen should be shown when policy allows PIN for unlock.
@@ -317,7 +317,7 @@ IN_PROC_BROWSER_TEST_F(PinSetupScreenTest, ShowWhenPinAllowedForUnlock) {
   TapSkipButton();
   WaitForScreenExit();
 
-  ExpectExitResultAndMetric(PinSetupScreen::Result::USER_SKIP);
+  ExpectExitResultAndMetric(PinSetupScreen::Result::kUserSkip);
 }
 
 // The PIN screen should be shown when policy allows PIN for WebAuthN.
@@ -329,7 +329,7 @@ IN_PROC_BROWSER_TEST_F(PinSetupScreenTest, ShowWhenPinAllowedForWebAuthn) {
   TapSkipButton();
   WaitForScreenExit();
 
-  ExpectExitResultAndMetric(PinSetupScreen::Result::USER_SKIP);
+  ExpectExitResultAndMetric(PinSetupScreen::Result::kUserSkip);
 }
 
 // Skip the flow in the beginning and expect the proper metrics.
@@ -340,7 +340,7 @@ IN_PROC_BROWSER_TEST_F(PinSetupScreenTest, ManualSkipOnStart) {
   TapSkipButton();
   WaitForScreenExit();
 
-  ExpectExitResultAndMetric(PinSetupScreen::Result::USER_SKIP);
+  ExpectExitResultAndMetric(PinSetupScreen::Result::kUserSkip);
   ExpectUserActionMetric(PinSetupScreen::UserAction::kSkipButtonClickedOnStart);
 }
 
@@ -354,7 +354,7 @@ IN_PROC_BROWSER_TEST_F(PinSetupScreenTest, ManualSkipInFlow) {
   TapSkipButton();
   WaitForScreenExit();
 
-  ExpectExitResultAndMetric(PinSetupScreen::Result::USER_SKIP);
+  ExpectExitResultAndMetric(PinSetupScreen::Result::kUserSkip);
   ExpectUserActionMetric(PinSetupScreen::UserAction::kSkipButtonClickedInFlow);
 }
 
@@ -370,7 +370,7 @@ IN_PROC_BROWSER_TEST_F(PinSetupScreenTest, FinishedFlow) {
   TapDoneButton();
   WaitForScreenExit();
 
-  ExpectExitResultAndMetric(PinSetupScreen::Result::DONE);
+  ExpectExitResultAndMetric(PinSetupScreen::Result::kDone);
   ExpectUserActionMetric(PinSetupScreen::UserAction::kDoneButtonClicked);
 }
 
@@ -389,7 +389,7 @@ IN_PROC_BROWSER_TEST_F(PinSetupScreenTestWithoutLoginSupport,
   ShowPinSetupScreen();
   WaitForScreenExit();
 
-  ExpectExitResultAndMetric(PinSetupScreen::Result::NOT_APPLICABLE);
+  ExpectExitResultAndMetric(PinSetupScreen::Result::kNotApplicable);
 }
 
 IN_PROC_BROWSER_TEST_F(PinSetupScreenTestWithoutLoginSupport,
@@ -398,7 +398,7 @@ IN_PROC_BROWSER_TEST_F(PinSetupScreenTestWithoutLoginSupport,
   ShowPinSetupScreen();
   WaitForScreenExit();
 
-  ExpectExitResultAndMetric(PinSetupScreen::Result::NOT_APPLICABLE);
+  ExpectExitResultAndMetric(PinSetupScreen::Result::kNotApplicable);
   CheckCredentialsWereCleared();
 }
 
@@ -413,7 +413,7 @@ IN_PROC_BROWSER_TEST_F(PinSetupScreenTestWithoutLoginSupport,
   TapSkipButton();
   WaitForScreenExit();
 
-  ExpectExitResultAndMetric(PinSetupScreen::Result::USER_SKIP);
+  ExpectExitResultAndMetric(PinSetupScreen::Result::kUserSkip);
 }
 
 }  // namespace ash
