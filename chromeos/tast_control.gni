@@ -127,53 +127,6 @@ tast_disabled_tests_from_chrome_all = [
   # READ COMMENT AT TOP BEFORE ADDING NEW TESTS HERE.
 ]
 
-# To create filters to be used on specific builders add them like this:
-# tast_disabled_tests_from_lacros_example = [ "lacros.Basic" ]
-# and add the name (i.e. 'tast_disabled_tests_from_lacros_example') to the
-# test config as 'tast_expr_key'
-# To disable a specific test in lacros_all_tast_tests, add it the following
-# list and cite a bug.
-# The test disabled here will not impact it running in chrome on chromeOS
-# pipeline.
-tast_disabled_tests_from_lacros_all = [
-  # https://crbug.com/1361163
-  "lacros.AudioPinnedStream.play",
-  "lacros.AudioPinnedStream.record",
-
-  # https://crbug.com/1236234
-  "lacros.AudioPlay",
-
-  # https://crbug.com/1376638
-  "lacros.AudioRecord",
-
-  # https://crbug.com/1446233
-  "arc.IntentForward.lacros_vm",
-
-  # https://crbug.com/1470305
-  "inputs.VirtualKeyboardTypingOmnibox.a11y_lacros",
-
-  # https:/b/322119286
-  "crostini.LaunchBrowser.bookworm_stable_lacros",
-  "crostini.LaunchBrowser.bullseye_stable_lacros",
-  "crostini.VerifyAppWayland.bookworm_stable_lacros",
-  "crostini.VerifyAppWayland.bullseye_stable_lacros",
-
-  # On branch day, Lacros is +3 newer than ash which break the test.
-  "lacros.CompareVersionWithAsh",
-
-  # b/269177409: This is flaky on the Chromium builders, but works on the
-  # ChromeOS builders.
-  "nacl.Pnacl.lacros",
-
-  # THIS IS THE LACROS LIST, SCROLL UP FOR CHROME/CHROMEOS.
-]
-
-if (!is_official_build) {
-  # b/274341001: By design, ui.ChromeCrashEarly.strict fails on non-official
-  # builds.
-  tast_disabled_tests_from_lacros_all += [ "ui.ChromeCrashEarly.strict_lacros" ]
-}
-
 if (is_cfi) {
   # b/350872890: pending investigation and fixes for is_cfi builders on betty.
   tast_disabled_tests_from_chrome_all +=
