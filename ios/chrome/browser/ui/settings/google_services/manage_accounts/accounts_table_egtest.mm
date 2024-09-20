@@ -69,7 +69,9 @@ using chrome_test_util::SettingsSignInRowMatcher;
 
 // Tests that the Accounts list screen is correctly popped if the signed in
 // account is removed.
-- (void)testPopUpAccountsListViewOnSignOut {
+//
+// TODO(crbug.com/368597885): Disabled due to flakiness.
+- (void)FLAKY_testPopUpAccountsListViewOnSignOut {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
 
   // Sign In identity, then open the Sync Settings.
@@ -91,7 +93,9 @@ using chrome_test_util::SettingsSignInRowMatcher;
 
 // Tests that the Accounts list screen is correctly reloaded when one of
 // the non-primary account is removed.
-- (void)testReloadOnRemoveSecondaryAccount {
+//
+// TODO(crbug.com/368597885): Disabled due to flakiness.
+- (void)FLAKY_testReloadOnRemoveSecondaryAccount {
   FakeSystemIdentity* fakeIdentity1 = [FakeSystemIdentity fakeIdentity1];
   FakeSystemIdentity* fakeIdentity2 = [FakeSystemIdentity fakeIdentity2];
   [SigninEarlGrey addFakeIdentity:fakeIdentity2];
@@ -120,7 +124,9 @@ using chrome_test_util::SettingsSignInRowMatcher;
 
 // Tests that the Account Settings screen is popped and the user signed out
 // when the primary account is removed.
-- (void)testSignOutOnRemovePrimaryAccount {
+//
+// TODO(crbug.com/368597885): Disabled due to flakiness.
+- (void)FLAKY_testSignOutOnRemovePrimaryAccount {
   FakeSystemIdentity* fakeIdentity1 = [FakeSystemIdentity fakeIdentity1];
   FakeSystemIdentity* fakeIdentity2 = [FakeSystemIdentity fakeIdentity2];
   [SigninEarlGrey addFakeIdentity:fakeIdentity2];
@@ -157,7 +163,9 @@ using chrome_test_util::SettingsSignInRowMatcher;
 // identity. And finally the remove identity confirmation dialog is opened a
 // third time to remove a second identity.
 // The goal of this test is to confirm the dialog can be opened several times.
-- (void)testRemoveAccountSeveralTime {
+//
+// TODO(crbug.com/368597885): Disabled due to flakiness.
+- (void)FLAKY_testRemoveAccountSeveralTime {
   FakeSystemIdentity* fakeIdentity1 = [FakeSystemIdentity fakeIdentity1];
   FakeSystemIdentity* fakeIdentity2 = [FakeSystemIdentity fakeIdentity2];
   FakeSystemIdentity* fakeIdentity3 = [FakeSystemIdentity fakeIdentity3];
@@ -218,7 +226,9 @@ using chrome_test_util::SettingsSignInRowMatcher;
 }
 
 // Tests add account flow.
-- (void)testAddAccount {
+//
+// TODO(crbug.com/368597885): Disabled due to flakiness.
+- (void)FLAKY_testAddAccount {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
 
   // Sign In identity, then open the Sync Settings.
