@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/data_sharing/internal/fake_data_sharing_sdk_delegate.h"
+#include "components/data_sharing/test_support/fake_data_sharing_sdk_delegate.h"
 
 #include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_runner.h"

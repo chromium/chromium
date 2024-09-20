@@ -27,6 +27,8 @@ source_set("test_support") {
   testonly = true
 
   sources = [
+    "test_support/fake_data_sharing_sdk_delegate.cc",
+    "test_support/fake_data_sharing_sdk_delegate.h",
     "test_support/mock_data_sharing_network_loader.cc",
     "test_support/mock_data_sharing_network_loader.h",
     "test_support/mock_data_sharing_service.cc",
@@ -38,6 +40,7 @@ source_set("test_support") {
     "//components/data_sharing/public",
     "//net/traffic_annotation",
     "//testing/gmock",
+    "//testing/gtest",
     "//url",
   ]
 }
