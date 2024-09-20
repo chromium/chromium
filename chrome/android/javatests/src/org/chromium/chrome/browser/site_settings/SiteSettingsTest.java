@@ -75,6 +75,7 @@ import org.mockito.MockitoAnnotations;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisableIf;
@@ -2771,7 +2772,7 @@ public class SiteSettingsTest {
         // resolved.
     }
 
-    public void testTwoStateToggleDisabledByPolicy(@SiteSettingsCategory.Type int type) {
+    private void testTwoStateToggleDisabledByPolicy(@SiteSettingsCategory.Type int type) {
         final SettingsActivity settingsActivity =
                 SiteSettingsTestUtils.startSiteSettingsCategory(type);
         SingleCategorySettings singleCategorySettings =
@@ -2782,6 +2783,8 @@ public class SiteSettingsTest {
                                 SingleCategorySettings.BINARY_TOGGLE_KEY);
 
         Assert.assertFalse(binaryToggle.isEnabled());
+
+        ApplicationTestUtils.finishActivity(settingsActivity);
     }
 
     /**
