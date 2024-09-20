@@ -10,4 +10,7 @@ package ash.babelorca;
 
 message TestingMessage {
   int32 int_field = 1;
+  fixed32 fixed32_field = 401;
+  fixed64 fixed64_field = 402;
+  int64 int64_field = 403;
 }
