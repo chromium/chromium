@@ -39,7 +39,6 @@
 #include "gpu/config/gpu_finch_features.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/platform.h"
-#include "third_party/blink/renderer/platform/graphics/gpu/shared_context_rate_limiter.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
 #include "third_party/blink/renderer/platform/graphics/memory_managed_paint_recorder.h"
 #include "third_party/blink/renderer/platform/graphics/unaccelerated_static_bitmap_image.h"
@@ -283,33 +282,6 @@ void Canvas2DLayerBridge::PageVisibilityChanged() {
 
   if (page_is_visible && IsHibernating()) {
     GetOrCreateResourceProvider();  // Rude awakening
-  }
-}
-
-void Canvas2DLayerBridge::FinalizeFrame(FlushReason reason) {
-  TRACE_EVENT0("blink", "Canvas2DLayerBridge::FinalizeFrame");
-
-  // Make sure surface is ready for painting: fix the rendering mode now
-  // because it will be too late during the paint invalidation phase.
-  if (!GetOrCreateResourceProvider())
-    return;
-
-  resource_host_->FlushRecording(reason);
-  if (reason == FlushReason::kCanvasPushFrame) {
-    if (resource_host_->IsDisplayed()) {
-      // Make sure the GPU is never more than two animation frames behind.
-      constexpr unsigned kMaxCanvasAnimationBacklog = 2;
-      if (resource_host_->IncrementFramesSinceLastCommit() >=
-          static_cast<int>(kMaxCanvasAnimationBacklog)) {
-        if (resource_host_->IsComposited() && !resource_host_->RateLimiter()) {
-          resource_host_->CreateRateLimiter();
-        }
-      }
-    }
-
-    if (resource_host_->RateLimiter()) {
-      resource_host_->RateLimiter()->Tick();
-    }
   }
 }
 

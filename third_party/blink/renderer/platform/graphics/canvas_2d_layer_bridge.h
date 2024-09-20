@@ -52,7 +52,6 @@ class PLATFORM_EXPORT Canvas2DLayerBridge {
 
   virtual ~Canvas2DLayerBridge();
 
-  void FinalizeFrame(FlushReason);
   void PageVisibilityChanged();
 
   bool IsHibernating() const { return hibernation_handler_.IsHibernating(); }
