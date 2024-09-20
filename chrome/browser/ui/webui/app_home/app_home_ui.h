@@ -6,8 +6,6 @@
 #define CHROME_BROWSER_UI_WEBUI_APP_HOME_APP_HOME_UI_H_
 
 #include "chrome/browser/ui/webui/app_home/app_home.mojom.h"
-#include "chrome/common/url_constants.h"
-#include "chrome/common/webui_url_constants.h"
 #include "content/public/browser/webui_config.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"

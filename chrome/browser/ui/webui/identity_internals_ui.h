@@ -6,6 +6,15 @@
 #define CHROME_BROWSER_UI_WEBUI_IDENTITY_INTERNALS_UI_H_
 
 #include "content/public/browser/web_ui_controller.h"
+#include "content/public/browser/webui_config.h"
+
+class IdentityInternalsUI;
+
+class IdentityInternalsUIConfig
+    : public content::DefaultWebUIConfig<IdentityInternalsUI> {
+ public:
+  IdentityInternalsUIConfig();
+};
 
 // The WebUI for chrome://identity-internals
 class IdentityInternalsUI

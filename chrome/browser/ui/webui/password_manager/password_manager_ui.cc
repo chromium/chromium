@@ -72,6 +72,10 @@
 #include "chrome/grit/settings_shared_resources_map.h"
 #endif
 
+PasswordManagerUIConfig::PasswordManagerUIConfig()
+    : DefaultWebUIConfig(content::kChromeUIScheme,
+                         password_manager::kChromeUIPasswordManagerHost) {}
+
 namespace {
 
 std::u16string InsertBrandedPasswordManager(int message_id) {

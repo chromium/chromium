@@ -392,14 +392,6 @@ WebUIFactoryFunction GetWebUIFactoryFunction(WebUI* web_ui,
        url.host_piece() == password_manager::kChromeUIPasswordManagerHost)) {
     return &NewWebUI<PageNotAvailableForGuestUI>;
   }
-  if (url.host_piece() == chrome::kChromeUIAppServiceInternalsHost)
-    return &NewWebUI<AppServiceInternalsUI>;
-  if (url.host_piece() == password_manager::kChromeUIPasswordManagerHost) {
-    return &NewWebUI<PasswordManagerUI>;
-  }
-  // Identity API is not available on Android.
-  if (url.host_piece() == chrome::kChromeUIIdentityInternalsHost)
-    return &NewWebUI<IdentityInternalsUI>;
   if (url.host_piece() == chrome::kChromeUINewTabHost) {
     // The URL chrome://newtab/ can be either a virtual or a real URL,
     // depending on the context. In this case, it is always a real URL that
