@@ -285,6 +285,10 @@ extern const char kDefaultBrowserPromoIPadExperimentalStringDescription[];
 extern const char kDefaultBrowserTriggerCriteriaExperimentName[];
 extern const char kDefaultBrowserTriggerCriteriaExperimentDescription[];
 
+// Title and description for blue dot promo on tools menu button.
+extern const char kBlueDotOnToolsMenuButtonName[];
+extern const char kBlueDotOnToolsMenuButtonDescription[];
+
 // Title and description for the flag to control if a crash report is generated
 // on main thread freeze.
 extern const char kDetectMainThreadFreezeName[];

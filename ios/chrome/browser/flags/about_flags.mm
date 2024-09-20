@@ -1389,6 +1389,10 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(
          feature_engagement::kDefaultBrowserTriggerCriteriaExperiment)},
+    {"blue-dot-on-tools-menu-button",
+     flag_descriptions::kBlueDotOnToolsMenuButtonName,
+     flag_descriptions::kBlueDotOnToolsMenuButtonDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kBlueDotOnToolsMenuButton)},
 #if BUILDFLAG(IOS_BACKGROUND_MODE_ENABLED)
     {"feed-background-refresh-ios",
      flag_descriptions::kFeedBackgroundRefreshName,

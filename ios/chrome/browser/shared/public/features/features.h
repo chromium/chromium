@@ -804,4 +804,10 @@ extern const base::FeatureParam<base::TimeDelta>
 // 'traitCollectionDidChange' which was deprecated in iOS 17.
 BASE_DECLARE_FEATURE(kEnableTraitCollectionRegistration);
 
+// Feature flag to enable displaying blue dot on tools menu button on toolbar.
+BASE_DECLARE_FEATURE(kBlueDotOnToolsMenuButton);
+
+// Returns whether `kBlueDotOnToolsMenuButton` is enabled.
+bool IsBlueDotOnToolsMenuButtoneEnabled();
+
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_FEATURES_FEATURES_H_

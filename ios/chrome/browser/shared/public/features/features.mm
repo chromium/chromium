@@ -1007,3 +1007,11 @@ constexpr base::FeatureParam<base::TimeDelta>
 BASE_FEATURE(kEnableTraitCollectionRegistration,
              "EnableTraitCollectionRegistration",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kBlueDotOnToolsMenuButton,
+             "BlueDotOnToolsMenuButton",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsBlueDotOnToolsMenuButtoneEnabled() {
+  return base::FeatureList::IsEnabled(kBlueDotOnToolsMenuButton);
+}

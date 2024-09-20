@@ -162,6 +162,10 @@ extern const char kBlueDotPromoSettingsDismissed[];
 // showing.
 extern const char kBlueDotOverflowMenuCustomized[];
 
+// The user has dismissed the blue dot default browser promo on the overflow
+// carousel.
+extern const char kBlueDotPromoOverflowMenuDismissed[];
+
 // The user snoozed the Credential Provider Extension Promo.
 extern const char kCredentialProviderExtensionPromoSnoozed[];
 
