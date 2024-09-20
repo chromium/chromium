@@ -299,7 +299,6 @@ try_.builder(
         "chromium.luci_analysis_v2": 100,
     },
     main_list_view = "try",
-    tryjob = try_.job(),
 )
 
 try_.builder(
@@ -458,7 +457,6 @@ try_.orchestrator_builder(
     # TODO(crbug.com/40241638): Use orchestrator pool once overloaded test pools
     # are addressed
     # use_orchestrator_pool = True,
-    tryjob = try_.job(),
     use_clang_coverage = True,
 )
 

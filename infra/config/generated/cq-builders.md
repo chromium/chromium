@@ -51,13 +51,9 @@ These builders must pass before a CL may land that affects files outside of
 
 * [ios-simulator](https://ci.chromium.org/p/chromium/builders/try/ios-simulator) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""ios-simulator""))
 
-* [lacros-arm-generic-rel](https://ci.chromium.org/p/chromium/builders/try/lacros-arm-generic-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""lacros-arm-generic-rel""))
-
 * [linux-chromeos-compile-dbg](https://ci.chromium.org/p/chromium/builders/try/linux-chromeos-compile-dbg) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""linux-chromeos-compile-dbg""))
 
 * [linux-chromeos-rel](https://ci.chromium.org/p/chromium/builders/try/linux-chromeos-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""linux-chromeos-rel""))
-
-* [linux-lacros-rel](https://ci.chromium.org/p/chromium/builders/try/linux-lacros-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""linux-lacros-rel""))
 
 * [linux-libfuzzer-asan-rel](https://ci.chromium.org/p/chromium/builders/try/linux-libfuzzer-asan-rel) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""linux-libfuzzer-asan-rel""))
 
