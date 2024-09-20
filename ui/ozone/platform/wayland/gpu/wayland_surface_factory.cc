@@ -251,8 +251,8 @@ scoped_refptr<gfx::NativePixmap> WaylandSurfaceFactory::CreateNativePixmap(
   }
 #if defined(WAYLAND_GBM)
   auto* gbm_device = buffer_manager_->GetGbmDevice();
-  if (gbm_device->CanCreateBufferForFormat(
-          GetFourCCFormatFromBufferFormat(format))) {
+  if (gbm_device && gbm_device->CanCreateBufferForFormat(
+                        GetFourCCFormatFromBufferFormat(format))) {
     scoped_refptr<GbmPixmapWayland> pixmap =
         base::MakeRefCounted<GbmPixmapWayland>(buffer_manager_);
 
@@ -287,8 +287,8 @@ WaylandSurfaceFactory::CreateNativePixmapFromHandle(
     gfx::NativePixmapHandle handle) {
 #if defined(WAYLAND_GBM)
   auto* gbm_device = buffer_manager_->GetGbmDevice();
-  if (gbm_device->CanCreateBufferForFormat(
-          GetFourCCFormatFromBufferFormat(format))) {
+  if (gbm_device && gbm_device->CanCreateBufferForFormat(
+                        GetFourCCFormatFromBufferFormat(format))) {
     scoped_refptr<GbmPixmapWayland> pixmap =
         base::MakeRefCounted<GbmPixmapWayland>(buffer_manager_);
     if (pixmap->InitializeBufferFromHandle(widget, size, format,
