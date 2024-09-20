@@ -244,7 +244,7 @@ void BirchRanker::RankLostMediaItems(std::vector<BirchLostMediaItem>* items) {
 
 void BirchRanker::RankWeatherItems(std::vector<BirchWeatherItem>* items) {
   if (!items->empty() && IsMorning()) {
-    (*items)[0].set_ranking(5.f);
+    (*items)[0].set_ranking(4.f);
   }
 
   // TODO(b/305094126): Figure out how to query the next day's weather and show
@@ -261,8 +261,7 @@ void BirchRanker::RankReleaseNotesItems(
 void BirchRanker::RankCoralItems(std::vector<BirchCoralItem>* items) {
   CHECK(items);
   for (BirchCoralItem& item : *items) {
-    // TODO(yulunwu) Set ranking for coral items
-    item.set_ranking(100.0f);
+    item.set_ranking(5.0f);
   }
 }
 
