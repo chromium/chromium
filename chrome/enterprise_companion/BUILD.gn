@@ -417,8 +417,12 @@ artifact_zip("enterprise_companion_zip") {
       "$root_build_dir/${enterprise_companion_product_full_name}.app/Contents/Info.plist",
       "$root_build_dir/${enterprise_companion_product_full_name}.app/Contents/MacOS/${enterprise_companion_product_full_name}",
       "$root_build_dir/${enterprise_companion_product_full_name}.app/Contents/PkgInfo",
+      "$root_build_dir/EnterpriseCompanionSigning/sign.py",
     ]
-    deps = [ "//chrome/enterprise_companion/mac:enterprise_companion_bundle" ]
+    deps = [
+      "//chrome/enterprise_companion/mac:copy_signing",
+      "//chrome/enterprise_companion/mac:enterprise_companion_bundle",
+    ]
   } else if (is_win) {
     inputs = [ "$root_build_dir/enterprise_companion.exe" ]
     deps = [ ":enterprise_companion" ]

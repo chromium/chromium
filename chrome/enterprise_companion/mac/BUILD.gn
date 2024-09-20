@@ -53,3 +53,8 @@ if (host_os == "mac") {
     postinstall_script_target = ":postinstall"
   }
 }
+
+copy("copy_signing") {
+  sources = [ "sign.py" ]
+  outputs = [ "$root_out_dir/EnterpriseCompanionSigning/sign.py" ]
+}
