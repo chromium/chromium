@@ -13,6 +13,7 @@
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/grit/ios_branded_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/device_form_factor.h"
 #import "ui/base/l10n/l10n_util_mac.h"
 
 namespace {
@@ -29,6 +30,8 @@ struct CellConfig {
 CGFloat const kTableViewCornerRadius = 10;
 // Table view separator inset.
 CGFloat const kTableViewSeparatorInset = 16.0;
+// Table view separator inset to use to hide the separator.
+CGFloat const kTableViewSeparatorInsetHide = 10000;
 // Space above the title.
 CGFloat const kSpaceAboveTitle = 20.0;
 // Accessibility identifier.
@@ -47,6 +50,13 @@ NSString* BannerImageName(bool landscape) {
   return landscape ? kChromiumNotificationsOptInBannerLandscapeImage
                    : kChromiumNotificationsOptInBannerImage;
 #endif
+}
+
+// Returns true if the view is too narrow to show the banner.
+bool TooNarrowForBanner(UIView* view) {
+  CGFloat minWidth =
+      ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET ? 450 : 300;
+  return view.bounds.size.width < minWidth;
 }
 
 }  // namespace
@@ -77,10 +87,8 @@ NSString* BannerImageName(bool landscape) {
   self.secondaryActionString =
       l10n_util::GetNSString(IDS_IOS_NOTIFICATIONS_ALERT_CANCEL);
   self.titleTopMarginWhenNoHeaderImage = kSpaceAboveTitle;
-  self.bannerName = BannerImageName(IsLandscape(self.view.window));
-  self.bannerSize = BannerImageSizeType::kShort;
+  [self configureBanner];
   self.shouldBannerFillTopSpace = YES;
-  self.shouldHideBanner = IsCompactHeight(self.traitCollection);
   self.view.accessibilityIdentifier = kNotificationsOptInScreenAxId;
   _tableView = [self createTableView];
   [self.specificContentView addSubview:_tableView];
@@ -108,35 +116,13 @@ NSString* BannerImageName(bool landscape) {
   ]];
 
   self.view.backgroundColor = [UIColor colorNamed:kSecondaryBackgroundColor];
-
-  if (@available(iOS 17, *)) {
-    __weak __typeof(self) weakSelf = self;
-    UITraitChangeHandler handler = ^(id<UITraitEnvironment> traitEnvironment,
-                                     UITraitCollection* previousCollection) {
-      weakSelf.shouldHideBanner = IsCompactHeight(traitEnvironment);
-    };
-    NSArray<UITrait>* traits =
-        TraitCollectionSetForTraits(@[ UITraitVerticalSizeClass.self ]);
-    [self registerForTraitChanges:traits withHandler:handler];
-  }
 }
 
 - (void)viewWillLayoutSubviews {
   [super viewWillLayoutSubviews];
+  [self configureBanner];
   [self updateTableViewHeightConstraint];
-  self.bannerName = BannerImageName(IsLandscape(self.view.window));
 }
-
-#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
-- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
-  [super traitCollectionDidChange:previousTraitCollection];
-  if (@available(iOS 17, *)) {
-    return;
-  }
-
-  self.shouldHideBanner = IsCompactHeight(self.traitCollection);
-}
-#endif
 
 #pragma mark - PromoStyleViewController
 
@@ -295,10 +281,10 @@ NSString* BannerImageName(bool landscape) {
   cell.switchView.tag = itemIdentifier;
 
   // Make the separator invisible on the last row.
+  BOOL lastRow =
+      indexPath.row == [tableView numberOfRowsInSection:indexPath.section] - 1;
   CGFloat separatorInset =
-      itemIdentifier == NotificationsOptInItemIdentifier::kMaxValue
-          ? tableView.frame.size.width
-          : kTableViewSeparatorInset;
+      lastRow ? kTableViewSeparatorInsetHide : kTableViewSeparatorInset;
   cell.separatorInset = UIEdgeInsetsMake(0.f, separatorInset, 0.f, 0.f);
 
   [cell.switchView addTarget:self
@@ -321,6 +307,7 @@ NSString* BannerImageName(bool landscape) {
 
 // Updates the tableView's height constraint.
 - (void)updateTableViewHeightConstraint {
+  [_tableView layoutIfNeeded];
   _tableViewHeightConstraint.constant = _tableView.contentSize.height;
 }
 
@@ -357,6 +344,23 @@ NSString* BannerImageName(bool landscape) {
 - (void)updatePrimaryButtonState {
   self.primaryButtonEnabled =
       _contentToggle.isOn || _tipsToggle.isOn || _priceTrackingToggle.isOn;
+}
+
+// Configures the banner based on the view's size.
+- (void)configureBanner {
+  if (IsCompactHeight(self.traitCollection) || TooNarrowForBanner(self.view)) {
+    self.bannerName = nil;
+    self.shouldHideBanner = YES;
+  } else if (IsCompactWidth(self.traitCollection)) {
+    self.bannerSize = BannerImageSizeType::kShort;
+    self.bannerName = BannerImageName(false);
+    self.shouldHideBanner = NO;
+  } else {
+    // iPad, full window.
+    self.bannerSize = BannerImageSizeType::kStandard;
+    self.bannerName = BannerImageName(true);
+    self.shouldHideBanner = NO;
+  }
 }
 
 @end

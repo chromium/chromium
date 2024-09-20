@@ -34,6 +34,8 @@ enum SectionIdentifier {
 };
 // Table view separator inset.
 CGFloat const kTableViewSeparatorInset = 16.0;
+// Table view separator inset to use to hide the separator.
+CGFloat const kTableViewSeparatorInsetHide = 10000;
 // Title's horizontal margin.
 CGFloat const kTitleHorizontalMargin = 25.0;
 // Constant for the content's width anchor.
@@ -41,7 +43,7 @@ CGFloat const kContentWidthConstant = 23.0;
 //  Radius size of the table view.
 CGFloat const kTableViewCornerRadius = 10;
 // Space above the title.
-CGFloat const kSpaceAboveTitle = 20.0;
+CGFloat const kSpaceAboveTitle = 40.0;
 
 // Returns the name of the banner image above the title.
 NSString* BannerImageName(bool landscape) {
@@ -52,6 +54,13 @@ NSString* BannerImageName(bool landscape) {
   return landscape ? kChromiumNotificationsOptInBannerLandscapeImage
                    : kChromiumNotificationsOptInBannerImage;
 #endif
+}
+
+// Returns true if the view is too narrow to show the banner.
+bool TooNarrowForBanner(UIView* view) {
+  CGFloat minWidth =
+      ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET ? 450 : 300;
+  return view.bounds.size.width < minWidth;
 }
 
 }  // namespace
@@ -87,13 +96,9 @@ NSString* BannerImageName(bool landscape) {
   self.actionButtonsVisibility = ActionButtonsVisibility::kHidden;
   self.titleHorizontalMargin = kTitleHorizontalMargin;
   self.titleTopMarginWhenNoHeaderImage = kSpaceAboveTitle;
-  self.bannerName = BannerImageName(IsLandscape(self.view.window));
-  self.bannerSize = ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET
-                        ? BannerImageSizeType::kStandard
-                        : BannerImageSizeType::kShort;
+  [self configureBanner];
   self.shouldBannerFillTopSpace = YES;
   self.layoutBehindNavigationBar = YES;
-  self.shouldHideBanner = IsCompactHeight(self.traitCollection);
   self.view.accessibilityIdentifier = kNotificationsBannerTableViewId;
   _tableView = [self tableView];
   [self.specificContentView addSubview:_tableView];
@@ -134,20 +139,8 @@ NSString* BannerImageName(bool landscape) {
 
 - (void)viewWillLayoutSubviews {
   [super viewWillLayoutSubviews];
+  [self configureBanner];
   [self updateTableViewHeightConstraint];
-  self.bannerName = BannerImageName(IsLandscape(self.view.window));
-}
-
-- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
-  [super traitCollectionDidChange:previousTraitCollection];
-  self.shouldHideBanner = IsCompactHeight(self.traitCollection);
-}
-
-- (void)viewWillAppear:(BOOL)animated {
-  [super viewWillAppear:animated];
-  // Make the navigation bar buttons white when the banner is visible.
-  self.navigationController.navigationBar.tintColor =
-      self.shouldHideBanner ? nil : UIColor.whiteColor;
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -347,10 +340,10 @@ NSString* BannerImageName(bool landscape) {
     cell = [self detailCellForTableView:tableView item:item];
   }
   // Make the separator invisible on the last row.
+  BOOL lastRow =
+      indexPath.row == [tableView numberOfRowsInSection:indexPath.section] - 1;
   CGFloat separatorInset =
-      itemIdentifier == NotificationsItemIdentifier::ItemIdentifierMaxValue
-          ? tableView.frame.size.width
-          : kTableViewSeparatorInset;
+      lastRow ? kTableViewSeparatorInsetHide : kTableViewSeparatorInset;
   cell.separatorInset = UIEdgeInsetsMake(0.f, separatorInset, 0.f, 0.f);
   cell.selectionStyle = UITableViewCellSelectionStyleNone;
   cell.backgroundColor = [UIColor colorNamed:kSecondaryBackgroundColor];
@@ -405,6 +398,7 @@ NSString* BannerImageName(bool landscape) {
 
 // Updates the tableView's height constraint.
 - (void)updateTableViewHeightConstraint {
+  [_tableView layoutIfNeeded];
   _tableViewHeightConstraint.constant = _tableView.contentSize.height;
 }
 
@@ -416,6 +410,25 @@ NSString* BannerImageName(bool landscape) {
         [UIColor colorNamed:kPrimaryBackgroundColor];
   }
   return _tableViewStyler;
+}
+
+// Configures the banner based on the view's size.
+- (void)configureBanner {
+  if (IsCompactHeight(self.traitCollection) || TooNarrowForBanner(self.view)) {
+    self.bannerName = nil;
+    self.shouldHideBanner = YES;
+  } else if (IsCompactWidth(self.traitCollection)) {
+    self.bannerSize = BannerImageSizeType::kShort;
+    self.bannerName = BannerImageName(false);
+    self.shouldHideBanner = NO;
+  } else {
+    // iPad, full window.
+    self.bannerSize = BannerImageSizeType::kStandard;
+    self.bannerName = BannerImageName(true);
+    self.shouldHideBanner = NO;
+  }
+  self.navigationController.navigationBar.tintColor =
+      self.shouldHideBanner ? nil : UIColor.whiteColor;
 }
 
 @end
