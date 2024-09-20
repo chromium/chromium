@@ -10454,7 +10454,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Wm.WindowSplitting.DragDuration.PerNoSplit" units="ms"
-    expires_after="2024-09-29">
+    expires_after="2025-09-20">
   <owner>aluh@chromium.org</owner>
   <owner>homi@chromium.org</owner>
   <summary>
@@ -10463,7 +10463,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Wm.WindowSplitting.DragDuration.PerSplit" units="ms"
-    expires_after="2024-09-29">
+    expires_after="2025-09-20">
   <owner>aluh@chromium.org</owner>
   <owner>homi@chromium.org</owner>
   <summary>
@@ -10472,7 +10472,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Wm.WindowSplitting.DragType"
-    enum="WindowSplittingDragType" expires_after="2024-12-08">
+    enum="WindowSplittingDragType" expires_after="2025-09-20">
   <owner>aluh@chromium.org</owner>
   <owner>homi@chromium.org</owner>
   <summary>
@@ -10482,7 +10482,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Wm.WindowSplitting.PreviewsShownCount.PerNoSplit"
-    units="previews" expires_after="2024-09-29">
+    units="previews" expires_after="2025-09-20">
   <owner>aluh@chromium.org</owner>
   <owner>homi@chromium.org</owner>
   <summary>
@@ -10491,7 +10491,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Wm.WindowSplitting.PreviewsShownCount.PerSplit"
-    units="previews" expires_after="2024-09-29">
+    units="previews" expires_after="2025-09-20">
   <owner>aluh@chromium.org</owner>
   <owner>homi@chromium.org</owner>
   <summary>
@@ -10500,7 +10500,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Wm.WindowSplitting.SplitRegion"
-    enum="WindowSplittingSplitRegion" expires_after="2024-09-29">
+    enum="WindowSplittingSplitRegion" expires_after="2025-09-20">
   <owner>aluh@chromium.org</owner>
   <owner>homi@chromium.org</owner>
   <summary>Records the window region where a window is split.</summary>
