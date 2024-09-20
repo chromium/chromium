@@ -16,11 +16,11 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "components/ip_protection/common/ip_protection_config_getter.h"
+#include "components/ip_protection/common/ip_protection_control.h"
 #include "components/ip_protection/common/ip_protection_core.h"
 #include "components/ip_protection/common/ip_protection_data_types.h"
 #include "components/ip_protection/common/ip_protection_proxy_config_manager.h"
 #include "components/ip_protection/common/ip_protection_token_manager.h"
-#include "mojo/public/cpp/bindings/receiver.h"
 #include "net/base/features.h"
 #include "net/base/network_change_notifier.h"
 #include "net/base/proxy_chain.h"
@@ -32,13 +32,11 @@ namespace ip_protection {
 // IpProtectionConfigGetter in the browser process.
 class IpProtectionCoreImpl : public IpProtectionCore,
                              net::NetworkChangeNotifier::NetworkChangeObserver,
-                             network::mojom::IpProtectionProxyDelegate {
+                             public IpProtectionControl {
  public:
   // If `config_getter` is unbound, no tokens will be provided.
   explicit IpProtectionCoreImpl(
       std::unique_ptr<IpProtectionConfigGetter> config_getter,
-      mojo::PendingReceiver<network::mojom::IpProtectionProxyDelegate>
-          pending_receiver,
       bool is_ip_protection_enabled);
   ~IpProtectionCoreImpl() override;
 
@@ -65,17 +63,20 @@ class IpProtectionCoreImpl : public IpProtectionCore,
   void OnNetworkChanged(
       net::NetworkChangeNotifier::ConnectionType type) override;
 
-  // `mojom::IpProtectionProxyDelegate` implementation.
+  // `IpProtectionControl` implementation.
   void VerifyIpProtectionConfigGetterForTesting(
-      VerifyIpProtectionConfigGetterForTestingCallback callback) override;
+      network::mojom::IpProtectionProxyDelegate::
+          VerifyIpProtectionConfigGetterForTestingCallback callback) override;
   void InvalidateIpProtectionConfigCacheTryAgainAfterTime() override;
   void SetIpProtectionEnabled(bool enabled) override;
   void IsIpProtectionEnabledForTesting(
-      IsIpProtectionEnabledForTestingCallback callback) override;
+      network::mojom::IpProtectionProxyDelegate::
+          IsIpProtectionEnabledForTestingCallback callback) override;
 
  private:
   void OnIpProtectionConfigAvailableForTesting(
-      VerifyIpProtectionConfigGetterForTestingCallback callback);
+      network::mojom::IpProtectionProxyDelegate::
+          VerifyIpProtectionConfigGetterForTestingCallback callback);
 
   // Source of auth tokens and proxy list, when needed.
   std::unique_ptr<IpProtectionConfigGetter> config_getter_;
@@ -96,8 +97,6 @@ class IpProtectionCoreImpl : public IpProtectionCore,
 
   // Feature flag to safely introduce token caching by geo.
   const bool enable_token_caching_by_geo_;
-
-  const mojo::Receiver<network::mojom::IpProtectionProxyDelegate> receiver_;
 
   base::WeakPtrFactory<IpProtectionCoreImpl> weak_ptr_factory_{this};
 };

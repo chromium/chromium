@@ -46,6 +46,7 @@
 #include "components/cookie_config/cookie_store_util.h"
 #include "components/domain_reliability/monitor.h"
 #include "components/ip_protection/common/ip_protection_config_getter_mojo_impl.h"
+#include "components/ip_protection/common/ip_protection_control_mojo.h"
 #include "components/ip_protection/common/ip_protection_core_impl.h"
 #include "components/network_session_configurator/browser/network_session_configurator.h"
 #include "components/network_session_configurator/common/network_switches.h"
@@ -2536,14 +2537,18 @@ URLRequestContextOwner NetworkContext::MakeURLRequestContext(
   // IP Protection, or for any network context when the IP Protection feature is
   // disabled).
   auto* nspal = network_service_->masked_domain_list_manager();
+  std::unique_ptr<ip_protection::IpProtectionControlMojo>
+      ip_protection_control_mojo;
   if (!params_->initial_custom_proxy_config && nspal->IsEnabled()) {
+    auto ipp_core = std::make_unique<ip_protection::IpProtectionCoreImpl>(
+        std::make_unique<ip_protection::IpProtectionConfigGetterMojoImpl>(
+            std::move(params_->ip_protection_config_getter)),
+        params_->enable_ip_protection);
+    ip_protection_control_mojo =
+        std::make_unique<ip_protection::IpProtectionControlMojo>(
+            std::move(params_->ip_protection_proxy_delegate), ipp_core.get());
     builder.set_proxy_delegate(std::make_unique<IpProtectionProxyDelegate>(
-        nspal,
-        std::make_unique<ip_protection::IpProtectionCoreImpl>(
-            std::make_unique<ip_protection::IpProtectionConfigGetterMojoImpl>(
-                std::move(params_->ip_protection_config_getter)),
-            std::move(params_->ip_protection_proxy_delegate),
-            params_->enable_ip_protection)));
+        nspal, std::move(ipp_core)));
   } else if (params_->initial_custom_proxy_config ||
              params_->custom_proxy_config_client_receiver) {
     builder.set_proxy_delegate(std::make_unique<NetworkServiceProxyDelegate>(
@@ -2857,8 +2862,8 @@ URLRequestContextOwner NetworkContext::MakeURLRequestContext(
   if (on_url_request_context_builder_configured) {
     std::move(on_url_request_context_builder_configured).Run(&builder);
   }
-  auto result =
-      URLRequestContextOwner(std::move(pref_service), builder.Build());
+  auto result = URLRequestContextOwner(std::move(pref_service), builder.Build(),
+                                       std::move(ip_protection_control_mojo));
 
   // Subscribe the CertVerifier to configuration changes that are exposed via
   // the mojom::SSLConfig, but which are not part of the

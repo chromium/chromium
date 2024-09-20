@@ -67,14 +67,11 @@ std::vector<net::ProxyChain> MakeQuicProxyList(
 
 IpProtectionCoreImpl::IpProtectionCoreImpl(
     std::unique_ptr<IpProtectionConfigGetter> config_getter,
-    mojo::PendingReceiver<network::mojom::IpProtectionProxyDelegate>
-        pending_receiver,
     bool is_ip_protection_enabled)
     : is_ip_protection_enabled_(is_ip_protection_enabled),
       ipp_over_quic_(net::features::kIpPrivacyUseQuicProxies.Get()),
       enable_token_caching_by_geo_(
-          net::features::kIpPrivacyCacheTokensByGeo.Get()),
-      receiver_(this, std::move(pending_receiver)) {
+          net::features::kIpPrivacyCacheTokensByGeo.Get()) {
   ipp_proxy_config_manager_ = nullptr;
 
   // This type may be constructed with the `config_getter` being a `nullptr`,
@@ -234,7 +231,8 @@ void IpProtectionCoreImpl::OnNetworkChanged(
 }
 
 void IpProtectionCoreImpl::VerifyIpProtectionConfigGetterForTesting(
-    VerifyIpProtectionConfigGetterForTestingCallback callback) {
+    network::mojom::IpProtectionProxyDelegate::
+        VerifyIpProtectionConfigGetterForTestingCallback callback) {
   auto* ipp_token_manager_impl =
       static_cast<ip_protection::IpProtectionTokenManagerImpl*>(
           GetIpProtectionTokenManagerForTesting(  // IN-TEST
@@ -250,7 +248,8 @@ void IpProtectionCoreImpl::VerifyIpProtectionConfigGetterForTesting(
     ipp_token_manager_impl->DisableCacheManagementForTesting(  // IN-TEST
         base::BindOnce(
             [](base::WeakPtr<IpProtectionCoreImpl> ipp_core,
-               VerifyIpProtectionConfigGetterForTestingCallback callback) {
+               network::mojom::IpProtectionProxyDelegate::
+                   VerifyIpProtectionConfigGetterForTestingCallback callback) {
               DCHECK(ipp_core);
               // Drain auth tokens.
               ipp_core->InvalidateIpProtectionConfigCacheTryAgainAfterTime();
@@ -307,12 +306,14 @@ void IpProtectionCoreImpl::SetIpProtectionEnabled(bool enabled) {
 }
 
 void IpProtectionCoreImpl::IsIpProtectionEnabledForTesting(
-    IsIpProtectionEnabledForTestingCallback callback) {
+    network::mojom::IpProtectionProxyDelegate::
+        IsIpProtectionEnabledForTestingCallback callback) {
   std::move(callback).Run(is_ip_protection_enabled_);
 }
 
 void IpProtectionCoreImpl::OnIpProtectionConfigAvailableForTesting(
-    VerifyIpProtectionConfigGetterForTestingCallback callback) {
+    network::mojom::IpProtectionProxyDelegate::
+        VerifyIpProtectionConfigGetterForTestingCallback callback) {
   auto* ipp_token_manager_impl =
       static_cast<ip_protection::IpProtectionTokenManagerImpl*>(
           GetIpProtectionTokenManagerForTesting(  // IN-TEST
