@@ -833,7 +833,7 @@
     },
     {
       name: "ContinueEventTimingRecordingWhenBufferIsFull",
-      status: "experimental",
+      status: "stable",
     },
     {
       // Enable support for Controlled Frame, providing the Controlled
