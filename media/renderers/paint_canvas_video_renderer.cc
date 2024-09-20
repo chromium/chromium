@@ -46,6 +46,7 @@
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "media/base/data_buffer.h"
 #include "media/base/video_frame.h"
+#include "media/base/video_util.h"
 #include "media/base/wait_and_replace_sync_token_client.h"
 #include "media/renderers/video_frame_yuv_mailboxes_holder.h"
 #include "third_party/libyuv/include/libyuv.h"
@@ -62,12 +63,11 @@
 #include "ui/gfx/geometry/skia_conversions.h"
 
 // Skia internal format depends on a platform. On Android it is ABGR, on others
-// it's ARGB. YUV_MATRIX(), YUV_ORDER() conditionally remap YUV to YVU for ABGR.
+// it's ARGB. YUV_ORDER() conditionally remap YUV to YVU for ABGR.
 #if SK_B32_SHIFT == 0 && SK_G32_SHIFT == 8 && SK_R32_SHIFT == 16 && \
     SK_A32_SHIFT == 24
 #define OUTPUT_ARGB 1
 #define LIBYUV_ABGR_TO_ARGB libyuv::ABGRToARGB
-#define YUV_MATRIX(matrix) matrix
 #define YUV_ORDER(y, y_stride, u, u_stride, v, v_stride) \
   (y), (y_stride), (u), (u_stride), (v), (v_stride)
 #define GBR_TO_RGB_ORDER(y, y_stride, u, u_stride, v, v_stride) \
@@ -78,7 +78,6 @@
     SK_A32_SHIFT == 24
 #define OUTPUT_ARGB 0
 #define LIBYUV_ABGR_TO_ARGB libyuv::ARGBToABGR
-#define YUV_MATRIX(matrix) matrix##VU
 #define YUV_ORDER(y, y_stride, u, u_stride, v, v_stride) \
   (y), (y_stride), (v), (v_stride), (u), (u_stride)
 #define GBR_TO_RGB_ORDER(y, y_stride, u, u_stride, v, v_stride) \
@@ -300,51 +299,6 @@ void SynchronizeVideoFrameRead(scoped_refptr<VideoFrame> video_frame,
   gl->DeleteQueriesEXT(1, &query_id);
 }
 
-const libyuv::YuvConstants* GetYuvContantsForColorSpace(SkYUVColorSpace cs) {
-  switch (cs) {
-    case kJPEG_Full_SkYUVColorSpace:
-      return &YUV_MATRIX(libyuv::kYuvJPEGConstants);
-    case kRec601_Limited_SkYUVColorSpace:
-      return &YUV_MATRIX(libyuv::kYuvI601Constants);
-    case kRec709_Full_SkYUVColorSpace:
-      return &YUV_MATRIX(libyuv::kYuvF709Constants);
-    case kRec709_Limited_SkYUVColorSpace:
-      return &YUV_MATRIX(libyuv::kYuvH709Constants);
-    case kBT2020_8bit_Full_SkYUVColorSpace:
-    case kBT2020_10bit_Full_SkYUVColorSpace:
-    case kBT2020_12bit_Full_SkYUVColorSpace:
-    case kBT2020_16bit_Full_SkYUVColorSpace:
-      return &YUV_MATRIX(libyuv::kYuvV2020Constants);
-    case kBT2020_8bit_Limited_SkYUVColorSpace:
-    case kBT2020_10bit_Limited_SkYUVColorSpace:
-    case kBT2020_12bit_Limited_SkYUVColorSpace:
-    case kBT2020_16bit_Limited_SkYUVColorSpace:
-      return &YUV_MATRIX(libyuv::kYuv2020Constants);
-    case kFCC_Full_SkYUVColorSpace:
-    case kFCC_Limited_SkYUVColorSpace:
-    case kSMPTE240_Full_SkYUVColorSpace:
-    case kSMPTE240_Limited_SkYUVColorSpace:
-    case kYDZDX_Full_SkYUVColorSpace:
-    case kYDZDX_Limited_SkYUVColorSpace:
-    case kGBR_Full_SkYUVColorSpace:
-    case kGBR_Limited_SkYUVColorSpace:
-    case kYCgCo_8bit_Full_SkYUVColorSpace:
-    case kYCgCo_8bit_Limited_SkYUVColorSpace:
-    case kYCgCo_10bit_Full_SkYUVColorSpace:
-    case kYCgCo_10bit_Limited_SkYUVColorSpace:
-    case kYCgCo_12bit_Full_SkYUVColorSpace:
-    case kYCgCo_12bit_Limited_SkYUVColorSpace:
-    case kYCgCo_16bit_Full_SkYUVColorSpace:
-    case kYCgCo_16bit_Limited_SkYUVColorSpace:
-      // TODO(crbug.com/41486014): Return color space for default
-      // kRec601_SkYUVColorSpace as libyuv does not have FCC, SMPTE240M, YDZDX,
-      // GBR, YCgCo equivalent support.
-      return &YUV_MATRIX(libyuv::kYuvI601Constants);
-    case kIdentity_SkYUVColorSpace:
-      NOTREACHED();
-  };
-}
-
 libyuv::FilterMode ToLibyuvFilterMode(
     PaintCanvasVideoRenderer::FilterMode filter) {
   switch (filter) {
@@ -454,7 +408,8 @@ void ConvertVideoFrameToRGBPixelsTask(const VideoFrame* video_frame,
   // TODO(crbug.com/41380578): This should default to BT.709 color space.
   auto yuv_cs = kRec601_SkYUVColorSpace;
   video_frame->ColorSpace().ToSkYUVColorSpace(video_frame->BitDepth(), &yuv_cs);
-  const libyuv::YuvConstants* matrix = GetYuvContantsForColorSpace(yuv_cs);
+  const libyuv::YuvConstants* matrix =
+      GetYuvContantsForColorSpace(yuv_cs, OUTPUT_ARGB);
 
   if (!video_frame->data(VideoFrame::Plane::kU) &&
       !video_frame->data(VideoFrame::Plane::kV)) {

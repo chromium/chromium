@@ -29,6 +29,10 @@ class RasterInterface;
 }  // namespace raster
 }  // namespace gpu
 
+namespace libyuv {
+struct YuvConstants;
+}
+
 namespace media {
 
 class VideoFramePool;
@@ -217,6 +221,16 @@ MEDIA_EXPORT scoped_refptr<VideoFrame> CreateFromSkImage(
 // Utility to convert a media pixel format to SkYUVAInfo.
 MEDIA_EXPORT std::tuple<SkYUVAInfo::PlaneConfig, SkYUVAInfo::Subsampling>
 VideoPixelFormatToSkiaValues(VideoPixelFormat video_format);
+
+// Returns the libyuv RGB conversion matrix for a given skia YUV color space.
+// If `output_argb_matrix` is true a ARGB matrix will be provided, if false a
+// ABGR matrix will be provided.
+//
+// NOTE: When using the ABGR matrix, you must also swap the V,U parameters to
+// whichever libyuv function you're using.
+MEDIA_EXPORT const libyuv::YuvConstants* GetYuvContantsForColorSpace(
+    SkYUVColorSpace cs,
+    bool output_argb_matrix);
 
 }  // namespace media
 
