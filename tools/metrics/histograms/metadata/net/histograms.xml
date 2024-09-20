@@ -851,8 +851,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.CountOfBrokenAlternativeServices" units="services"
-    expires_after="2024-09-29">
-  <owner>dschinazi@chromium.org</owner>
+    expires_after="2025-09-19">
+  <owner>bashi@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
     The number of broken alternative services loaded from the prefs file on
