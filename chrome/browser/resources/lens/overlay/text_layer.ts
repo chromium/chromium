@@ -406,7 +406,7 @@ export class TextLayerElement extends PolymerElement {
     return true;
   }
 
-  handleRightClick(event: PointerEvent) {
+  handleRightClick(event: PointerEvent): boolean {
     // If the user right-clicks a highlighted word, restore the selected text
     // context menu.
     const translatedWordIndex =
@@ -421,7 +421,9 @@ export class TextLayerElement extends PolymerElement {
         bubbles: true,
         composed: true,
       }));
+      return true;
     }
+    return false;
   }
 
   handleGestureDrag(event: GestureEvent) {

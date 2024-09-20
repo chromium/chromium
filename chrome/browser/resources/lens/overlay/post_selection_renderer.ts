@@ -300,6 +300,22 @@ export class PostSelectionRendererElement extends PolymerElement {
     this.currentDragTarget = DragTarget.NONE;
   }
 
+  handleRightClick(event: PointerEvent) {
+    const boundingRect = this.$.postSelection.getBoundingClientRect();
+    if (this.dragTargetFromPoint(event.clientX, event.clientY) !==
+            DragTarget.NONE ||
+        (event.clientX >= boundingRect.left &&
+         event.clientX <= boundingRect.right &&
+         event.clientY >= boundingRect.top &&
+         event.clientY <= boundingRect.bottom)) {
+      this.dispatchEvent(
+          new CustomEvent('restore-selected-region-context-menu', {
+            bubbles: true,
+            composed: true,
+          }));
+    }
+  }
+
   private setSelection(region: CenterRotatedBox) {
     const normalizedTop = region.box.y - (region.box.height / 2);
     const normalizedLeft = region.box.x - (region.box.width / 2);

@@ -173,14 +173,10 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
       },
       enableCopyAsImage: {
         type: Boolean,
-        readOnly: true,
-        value: loadTimeData.getBoolean('enableCopyAsImage'),
         reflectToAttribute: true,
       },
       enableSaveAsImage: {
         type: Boolean,
-        readOnly: true,
-        value: loadTimeData.getBoolean('enableSaveAsImage'),
         reflectToAttribute: true,
       },
       isClosing: {
@@ -258,8 +254,10 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
   private currentGesture: GestureEvent = emptyGestureEvent();
   private disableShimmer: boolean;
   private useShimmerCanvas: boolean;
-  private enableCopyAsImage: boolean;
-  private enableSaveAsImage: boolean;
+  private enableCopyAsImage: boolean =
+      loadTimeData.getBoolean('enableCopyAsImage');
+  private enableSaveAsImage: boolean =
+      loadTimeData.getBoolean('enableSaveAsImage');
   private suppressCopyAndSaveAsImage: boolean =
       loadTimeData.getString('invocationSource') ===
       'ContentAreaContextMenuImage';
@@ -383,6 +381,18 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
               (!this.suppressCopyAndSaveAsImage &&
                (this.enableCopyAsImage || this.enableSaveAsImage)) ||
               this.showDetectedTextContextMenuOptions;
+        });
+    this.eventTracker_.add(
+        document, 'restore-selected-region-context-menu', () => {
+          // show-selected-region-context-menu may not have been called yet if
+          // we are still waiting for the text layer to receive text. Check for
+          // this condition by checking if the box has been set.
+          if (this.selectedRegionContextMenuBox !== undefined) {
+            this.showSelectedRegionContextMenu =
+                (!this.suppressCopyAndSaveAsImage &&
+                 (this.enableCopyAsImage || this.enableSaveAsImage)) ||
+                this.showDetectedTextContextMenuOptions;
+          }
         });
     this.eventTracker_.add(
         document, 'hide-selected-region-context-menu', () => {
@@ -621,7 +631,10 @@ export class SelectionOverlayElement extends SelectionOverlayElementBase {
     }
 
     if (event.button === 2 /* right button */) {
-      this.$.textSelectionLayer.handleRightClick(event);
+      if (this.$.textSelectionLayer.handleRightClick(event)) {
+        return;
+      }
+      this.$.postSelectionRenderer.handleRightClick(event);
       return;
     }
 

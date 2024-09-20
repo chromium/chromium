@@ -45,9 +45,14 @@ suite('SelectionOverlay', function() {
         testBrowserProxy.callbackRouter.$.bindNewPipeAndPassRemote();
     BrowserProxyImpl.setInstance(testBrowserProxy);
 
-    // Turn off the shimmer. Since the shimmer is resource intensive, turn off
-    // to prevent from causing issues in the tests.
-    loadTimeData.overrideValues({'enableShimmer': false});
+    loadTimeData.overrideValues({
+      // Turn off the shimmer. Since the shimmer is resource intensive, turn off
+      // to prevent from causing issues in the tests.
+      'enableShimmer': false,
+      'enableCopyAsImage': true,
+      'enableSaveAsImage': true,
+    });
+
 
     selectionOverlayElement = document.createElement('lens-selection-overlay');
     document.body.appendChild(selectionOverlayElement);
@@ -445,6 +450,18 @@ suite('SelectionOverlay', function() {
         // Verify context menu hides when an option is selected.
         assertFalse(selectionOverlayElement
                         .getShowSelectedRegionContextMenuForTesting());
+
+        // Verify context menu is restored when selection region is
+        // right-clicked.
+        await simulateClick(
+            selectionOverlayElement, {
+              x: 40,
+              y: 20,
+            },
+            /* button = */ 2);
+
+        assertTrue(selectionOverlayElement
+                       .getShowSelectedRegionContextMenuForTesting());
       });
 
   test(
@@ -461,6 +478,18 @@ suite('SelectionOverlay', function() {
         // Verify context menu hides when an option is selected.
         assertFalse(selectionOverlayElement
                         .getShowSelectedRegionContextMenuForTesting());
+
+        // Verify context menu is restored when selection region is
+        // right-clicked.
+        await simulateClick(
+            selectionOverlayElement, {
+              x: 40,
+              y: 20,
+            },
+            /* button = */ 2);
+
+        assertTrue(selectionOverlayElement
+                       .getShowSelectedRegionContextMenuForTesting());
       });
   // </if>
 
