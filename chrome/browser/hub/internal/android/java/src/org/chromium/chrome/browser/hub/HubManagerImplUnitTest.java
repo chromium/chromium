@@ -44,6 +44,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController.MenuOrKeyboardActionHandler;
@@ -88,6 +89,8 @@ public class HubManagerImplUnitTest {
             new ObservableSupplierImpl<>();
     private final OneshotSupplierImpl<ProfileProvider> mProfileProviderSupplier =
             new OneshotSupplierImpl<>();
+    private final ObservableSupplierImpl<EdgeToEdgeController> mEdgeToEdgeSupplier =
+            new ObservableSupplierImpl<>();
     private final int mSnackbarOverrideToken = 1;
 
     private Activity mActivity;
@@ -154,7 +157,8 @@ public class HubManagerImplUnitTest {
                         mSnackbarManager,
                         mTabSupplier,
                         mMenuButtonCoordinator,
-                        mHubShowPaneHelper);
+                        mHubShowPaneHelper,
+                        mEdgeToEdgeSupplier);
 
         PaneManager paneManager = hubManager.getPaneManager();
         assertNotNull(paneManager);
@@ -184,7 +188,8 @@ public class HubManagerImplUnitTest {
                         mSnackbarManager,
                         mTabSupplier,
                         mMenuButtonCoordinator,
-                        mHubShowPaneHelper);
+                        mHubShowPaneHelper,
+                        mEdgeToEdgeSupplier);
         hubManager.getPaneManager().focusPane(PaneId.TAB_SWITCHER);
 
         HubController hubController = hubManager.getHubController();
@@ -245,7 +250,8 @@ public class HubManagerImplUnitTest {
                         mSnackbarManager,
                         mTabSupplier,
                         mMenuButtonCoordinator,
-                        mHubShowPaneHelper);
+                        mHubShowPaneHelper,
+                        mEdgeToEdgeSupplier);
         HubController hubController = hubManager.getHubController();
         hubController.setHubLayoutController(mHubLayoutController);
 
@@ -282,7 +288,8 @@ public class HubManagerImplUnitTest {
                         mSnackbarManager,
                         mTabSupplier,
                         mMenuButtonCoordinator,
-                        mHubShowPaneHelper);
+                        mHubShowPaneHelper,
+                        mEdgeToEdgeSupplier);
         hubManager.getPaneManager().focusPane(PaneId.TAB_SWITCHER);
 
         HubController hubController = hubManager.getHubController();
@@ -323,7 +330,8 @@ public class HubManagerImplUnitTest {
                         mSnackbarManager,
                         mTabSupplier,
                         mMenuButtonCoordinator,
-                        mHubShowPaneHelper);
+                        mHubShowPaneHelper,
+                        mEdgeToEdgeSupplier);
         hubManager.getPaneManager().focusPane(PaneId.TAB_SWITCHER);
 
         HubController hubController = hubManager.getHubController();
@@ -371,7 +379,8 @@ public class HubManagerImplUnitTest {
                         mSnackbarManager,
                         mTabSupplier,
                         mMenuButtonCoordinator,
-                        mHubShowPaneHelper);
+                        mHubShowPaneHelper,
+                        mEdgeToEdgeSupplier);
         hubManager.getPaneManager().focusPane(PaneId.TAB_SWITCHER);
 
         HubController hubController = hubManager.getHubController();

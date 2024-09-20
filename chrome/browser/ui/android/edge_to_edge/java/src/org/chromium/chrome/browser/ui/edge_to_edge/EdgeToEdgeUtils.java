@@ -158,8 +158,8 @@ public class EdgeToEdgeUtils {
     static boolean shouldDrawToEdge(
             boolean isPageOptedIntoEdgeToEdge, @LayoutType int layoutType, int bottomInset) {
         return (isEdgeToEdgeWebOptInEnabled() && isPageOptedIntoEdgeToEdge)
-                || (isEdgeToEdgeBottomChinEnabled()
-                        && isBottomChinAllowed(layoutType, bottomInset));
+                || (isEdgeToEdgeBottomChinEnabled() && isBottomChinAllowed(layoutType, bottomInset))
+                || (layoutType == LayoutType.TAB_SWITCHER && isDrawKeyNativePageToEdgeEnabled());
     }
 
     /**

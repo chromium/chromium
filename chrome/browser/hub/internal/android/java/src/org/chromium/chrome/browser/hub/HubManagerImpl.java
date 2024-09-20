@@ -20,6 +20,7 @@ import org.chromium.chrome.browser.back_press.BackPressManager;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController.MenuOrKeyboardActionHandler;
@@ -48,6 +49,7 @@ public class HubManagerImpl implements HubManager, HubController {
     private final @NonNull ObservableSupplier<Tab> mTabSupplier;
     private final @NonNull MenuButtonCoordinator mMenuButtonCoordinator;
     private final @NonNull HubShowPaneHelper mHubShowPaneHelper;
+    private final @NonNull ObservableSupplier<EdgeToEdgeController> mEdgeToEdgeSupplier;
 
     // This is effectively NonNull and final once the HubLayout is initialized.
     private HubLayoutController mHubLayoutController;
@@ -66,7 +68,8 @@ public class HubManagerImpl implements HubManager, HubController {
             @NonNull SnackbarManager snackbarManager,
             @NonNull ObservableSupplier<Tab> tabSupplier,
             @NonNull MenuButtonCoordinator menuButtonCoordinator,
-            @NonNull HubShowPaneHelper hubShowPaneHelper) {
+            @NonNull HubShowPaneHelper hubShowPaneHelper,
+            @NonNull ObservableSupplier<EdgeToEdgeController> edgeToEdgeSupplier) {
         mContext = context;
         mProfileProviderSupplier = profileProviderSupplier;
         mPaneManager = new PaneManagerImpl(paneListBuilder, mHubVisibilitySupplier);
@@ -76,6 +79,7 @@ public class HubManagerImpl implements HubManager, HubController {
         mTabSupplier = tabSupplier;
         mMenuButtonCoordinator = menuButtonCoordinator;
         mHubShowPaneHelper = hubShowPaneHelper;
+        mEdgeToEdgeSupplier = edgeToEdgeSupplier;
 
         // TODO(crbug.com/40283238): Consider making this a xml file so the entire core UI is
         // inflated.
@@ -200,7 +204,8 @@ public class HubManagerImpl implements HubManager, HubController {
                         mPaneManager,
                         mHubLayoutController,
                         mTabSupplier,
-                        mMenuButtonCoordinator);
+                        mMenuButtonCoordinator,
+                        mEdgeToEdgeSupplier);
         mBackPressManager.addHandler(mHubCoordinator, BackPressHandler.Type.HUB);
         Pane pane = mPaneManager.getFocusedPaneSupplier().get();
         attachPaneDependencies(pane);

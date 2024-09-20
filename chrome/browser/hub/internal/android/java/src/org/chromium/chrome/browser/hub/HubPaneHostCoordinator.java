@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
@@ -24,10 +25,12 @@ public class HubPaneHostCoordinator {
      * @param paneSupplier A way to observe and get the current {@link Pane}.
      */
     public HubPaneHostCoordinator(
-            HubPaneHostView hubPaneHostView, ObservableSupplier<Pane> paneSupplier) {
+            HubPaneHostView hubPaneHostView,
+            ObservableSupplier<Pane> paneSupplier,
+            ObservableSupplier<EdgeToEdgeController> edgeToEdgeSupplier) {
         PropertyModel model = new PropertyModel.Builder(HubPaneHostProperties.ALL_KEYS).build();
         PropertyModelChangeProcessor.create(model, hubPaneHostView, HubPaneHostViewBinder::bind);
-        mMediator = new HubPaneHostMediator(model, paneSupplier);
+        mMediator = new HubPaneHostMediator(model, paneSupplier, edgeToEdgeSupplier);
     }
 
     /** Cleans up observers and resources. */

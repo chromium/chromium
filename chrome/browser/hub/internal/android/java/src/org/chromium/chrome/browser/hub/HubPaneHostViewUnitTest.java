@@ -13,6 +13,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 
 import static org.chromium.chrome.browser.hub.HubPaneHostProperties.ACTION_BUTTON_DATA;
+import static org.chromium.chrome.browser.hub.HubPaneHostProperties.EDGE_TO_EDGE_BOTTOM_INSETS;
 import static org.chromium.chrome.browser.hub.HubPaneHostProperties.FLOATING_ACTION_BUTTON_SUPPLIER_CALLBACK;
 import static org.chromium.chrome.browser.hub.HubPaneHostProperties.HAIRLINE_VISIBILITY;
 import static org.chromium.chrome.browser.hub.HubPaneHostProperties.PANE_ROOT_VIEW;
@@ -253,6 +254,27 @@ public class HubPaneHostViewUnitTest {
         ShadowLooper.runUiThreadTasks();
 
         assertEquals(oldMargin, getBottomMargin(mActionButton));
+    }
+
+    @Test
+    public void testBottomMarginForFloatingActionButton() {
+        int fixedMargin =
+                mActivity
+                        .getResources()
+                        .getDimensionPixelSize(
+                                org.chromium.chrome.browser.hub.R.dimen
+                                        .floating_action_button_margin);
+        assertEquals(fixedMargin, getBottomMargin(mActionButton));
+
+        // Bottom margin use the larger insets since larger than the original.
+        int largerBottomInset = fixedMargin + 10;
+        mPropertyModel.set(EDGE_TO_EDGE_BOTTOM_INSETS, largerBottomInset);
+        assertEquals(largerBottomInset, getBottomMargin(mActionButton));
+
+        // Bottom margin should use the origin fixedMargin since bottom insets is smaller.
+        int smallerBottomInset = fixedMargin / 2;
+        mPropertyModel.set(EDGE_TO_EDGE_BOTTOM_INSETS, smallerBottomInset);
+        assertEquals(fixedMargin, getBottomMargin(mActionButton));
     }
 
     private int getBottomMargin(View view) {

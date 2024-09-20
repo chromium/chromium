@@ -38,6 +38,8 @@ class HubPaneHostProperties {
 
     public static final WritableObjectPropertyKey<Callback<ViewGroup>> SNACKBAR_CONTAINER_CALLBACK =
             new WritableObjectPropertyKey<>();
+    public static final WritableIntPropertyKey EDGE_TO_EDGE_BOTTOM_INSETS =
+            new WritableIntPropertyKey();
 
     static final PropertyKey[] ALL_KEYS = {
         PANE_ROOT_VIEW,
@@ -46,5 +48,6 @@ class HubPaneHostProperties {
         HAIRLINE_VISIBILITY,
         FLOATING_ACTION_BUTTON_SUPPLIER_CALLBACK,
         SNACKBAR_CONTAINER_CALLBACK,
+        EDGE_TO_EDGE_BOTTOM_INSETS
     };
 }

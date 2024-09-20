@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.hub;
 
 import static org.chromium.chrome.browser.hub.HubPaneHostProperties.ACTION_BUTTON_DATA;
 import static org.chromium.chrome.browser.hub.HubPaneHostProperties.COLOR_SCHEME;
+import static org.chromium.chrome.browser.hub.HubPaneHostProperties.EDGE_TO_EDGE_BOTTOM_INSETS;
 import static org.chromium.chrome.browser.hub.HubPaneHostProperties.FLOATING_ACTION_BUTTON_SUPPLIER_CALLBACK;
 import static org.chromium.chrome.browser.hub.HubPaneHostProperties.HAIRLINE_VISIBILITY;
 import static org.chromium.chrome.browser.hub.HubPaneHostProperties.PANE_ROOT_VIEW;
@@ -31,6 +32,8 @@ public class HubPaneHostViewBinder {
                     model.get(FLOATING_ACTION_BUTTON_SUPPLIER_CALLBACK));
         } else if (key == SNACKBAR_CONTAINER_CALLBACK) {
             view.setSnackbarContainerConsumer(model.get(SNACKBAR_CONTAINER_CALLBACK));
+        } else if (key == EDGE_TO_EDGE_BOTTOM_INSETS) {
+            view.setEdgeToEdgeBottomInsets(model.get(EDGE_TO_EDGE_BOTTOM_INSETS));
         }
     }
 }
