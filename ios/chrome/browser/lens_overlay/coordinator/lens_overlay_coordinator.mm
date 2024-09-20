@@ -270,7 +270,9 @@ const CGFloat kMenuSymbolSize = 18;
                   animated:(BOOL)animated
                 completion:(void (^)(BOOL))completion {
   if (!snapshot) {
-    completion(NO);
+    if (completion) {
+      completion(NO);
+    }
     return;
   }
 
@@ -726,8 +728,7 @@ const CGFloat kMenuSymbolSize = 18;
   _associatedTabHelper->SetSnapshotController(
       std::make_unique<LensOverlaySnapshotController>(
           SnapshotTabHelper::FromWebState(activeWebState),
-          FullscreenController::FromBrowser(browser),
-          base::SequencedTaskRunner::GetCurrentDefault()));
+          FullscreenController::FromBrowser(browser)));
 
   _associatedTabHelper->CaptureFullscreenSnapshot(base::BindOnce(completion));
 }

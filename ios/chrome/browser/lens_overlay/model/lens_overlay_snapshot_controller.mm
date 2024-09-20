@@ -12,11 +12,10 @@
 
 LensOverlaySnapshotController::LensOverlaySnapshotController(
     SnapshotTabHelper* snapshot_tab_helper,
-    FullscreenController* fullscreen_controller,
-    scoped_refptr<base::SequencedTaskRunner> task_runner)
+    FullscreenController* fullscreen_controller)
     : snapshot_tab_helper_(snapshot_tab_helper),
       fullscreen_controller_(fullscreen_controller),
-      task_runner_(std::move(task_runner)) {}
+      task_runner_(base::SequencedTaskRunner::GetCurrentDefault()) {}
 
 LensOverlaySnapshotController::~LensOverlaySnapshotController() {
   fullscreen_controller_->RemoveObserver(this);
@@ -25,32 +24,6 @@ LensOverlaySnapshotController::~LensOverlaySnapshotController() {
 
 void LensOverlaySnapshotController::CaptureFullscreenSnapshot(
     SnapshotCallback callback) {
-  task_tracker_.PostTask(
-      task_runner_.get(), FROM_HERE,
-      base::BindOnce(&LensOverlaySnapshotController::OnSnapshotCallbackRecorded,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
-}
-
-void LensOverlaySnapshotController::FullscreenDidAnimate(
-    FullscreenController* controller,
-    FullscreenAnimatorStyle style) {
-  DCHECK(controller == this->fullscreen_controller_);
-
-  // Progress of 0.0 means that the toolbar is completely hidden.
-  bool is_fullscreen = fullscreen_controller_->GetProgress() == 0.0;
-  if (!is_fullscreen) {
-    return;
-  }
-
-  task_tracker_.PostTask(
-      task_runner_.get(), FROM_HERE,
-      base::BindOnce(&LensOverlaySnapshotController::OnFullscreenStateSettled,
-                     weak_ptr_factory_.GetWeakPtr()));
-}
-
-// - Private -
-void LensOverlaySnapshotController::OnSnapshotCallbackRecorded(
-    SnapshotCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   pending_snapshot_callbacks_.push_back(std::move(callback));
 
@@ -58,6 +31,10 @@ void LensOverlaySnapshotController::OnSnapshotCallbackRecorded(
   if (is_capturing_) {
     return;
   }
+
+  // All the steps should be synchronized on the same sequence as the one that
+  // initiated the capture.
+  task_runner_ = base::SequencedTaskRunner::GetCurrentDefault();
 
   BeginCapturing();
 
@@ -78,6 +55,23 @@ void LensOverlaySnapshotController::OnSnapshotCallbackRecorded(
     // small to enlarge the view. Go straight to fetching a screenshot.
     OnFullscreenStateSettled();
   }
+}
+
+void LensOverlaySnapshotController::FullscreenDidAnimate(
+    FullscreenController* controller,
+    FullscreenAnimatorStyle style) {
+  DCHECK(controller == this->fullscreen_controller_);
+
+  // Progress of 0.0 means that the toolbar is completely hidden.
+  bool is_fullscreen = fullscreen_controller_->GetProgress() == 0.0;
+  if (!is_fullscreen) {
+    return;
+  }
+
+  task_tracker_.PostTask(
+      task_runner_.get(), FROM_HERE,
+      base::BindOnce(&LensOverlaySnapshotController::OnFullscreenStateSettled,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 // The inset amount of the content relative to the device screen when the
@@ -113,24 +107,17 @@ void LensOverlaySnapshotController::OnFullscreenStateSettled() {
     return;
   }
 
-  // Use Webkit-based asynchronous API only for PDF pages where the UIKit
-  // counterpart would otherwise fail.
-  if (is_pdf_document_) {
-    base::OnceCallback<void(UIImage*)> snapshotCapturedCallback =
-        base::BindOnce(&LensOverlaySnapshotController::OnSnapshotCaptured,
-                       weak_ptr_factory_.GetWeakPtr());
+  base::OnceCallback<void(UIImage*)> snapshotCapturedCallback =
+      base::BindOnce(&LensOverlaySnapshotController::OnSnapshotCaptured,
+                     weak_ptr_factory_.GetWeakPtr());
 
-    auto callbackOnWorkingSequence = base::BindPostTask(
-        task_runner_.get(), std::move(snapshotCapturedCallback));
+  auto callbackOnWorkingSequence = base::BindPostTask(
+      task_runner_.get(), std::move(snapshotCapturedCallback));
 
-    // TODO(crbug.com/365732763): Replace call to `UpdateSnapshotWithCallback`
-    // once the new API method is exposed.
-    snapshot_tab_helper_->UpdateSnapshotWithCallback(
-        base::CallbackToBlock(std::move(callbackOnWorkingSequence)));
-  } else {
-    UIImage* snapshot = snapshot_tab_helper_->GenerateSnapshotWithoutOverlays();
-    OnSnapshotCaptured(snapshot);
-  }
+  // TODO(crbug.com/365732763): Replace call to `UpdateSnapshotWithCallback`
+  // once the new API method is exposed.
+  snapshot_tab_helper_->UpdateSnapshotWithCallback(
+      base::CallbackToBlock(std::move(callbackOnWorkingSequence)));
 }
 
 void LensOverlaySnapshotController::OnSnapshotCaptured(UIImage* snapshot) {

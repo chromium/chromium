@@ -21,10 +21,8 @@ enum class FullscreenAnimatorStyle : short;
 class LensOverlaySnapshotController final
     : public FullscreenControllerObserver {
  public:
-  LensOverlaySnapshotController(
-      SnapshotTabHelper* snapshot_tab_helper,
-      FullscreenController* fullscreen_controller,
-      scoped_refptr<base::SequencedTaskRunner> task_runner);
+  LensOverlaySnapshotController(SnapshotTabHelper* snapshot_tab_helper,
+                                FullscreenController* fullscreen_controller);
 
   LensOverlaySnapshotController(const SnapshotTabHelper&) = delete;
   LensOverlaySnapshotController& operator=(const SnapshotTabHelper&) = delete;
@@ -62,7 +60,7 @@ class LensOverlaySnapshotController final
   base::WeakPtr<LensOverlaySnapshotControllerDelegate> delegate_ = nullptr;
 
   base::CancelableTaskTracker task_tracker_;
-  const scoped_refptr<base::SequencedTaskRunner> task_runner_;
+  scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
   std::vector<SnapshotCallback> pending_snapshot_callbacks_;
   bool is_capturing_ = false;
@@ -71,8 +69,6 @@ class LensOverlaySnapshotController final
 
   void FullscreenDidAnimate(FullscreenController* controller,
                             FullscreenAnimatorStyle style) override;
-
-  void OnSnapshotCallbackRecorded(SnapshotCallback);
 
   void OnFullscreenStateSettled();
 
