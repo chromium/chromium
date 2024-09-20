@@ -184,7 +184,7 @@ bool OmniboxController::IsSuggestionHidden(
 
 bool OmniboxController::IsSuggestionGroupHidden(
     omnibox::GroupId suggestion_group_id) const {
-  PrefService* prefs = client_->GetPrefs();
+  const PrefService* prefs = client_->GetPrefs();
   return prefs && autocomplete_controller_->result().IsSuggestionGroupHidden(
                       prefs, suggestion_group_id);
 }

@@ -128,7 +128,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry);
 // instead, which passes the server-provided group ID to this method and takes
 // the server-provided hint on default visibility of the group into account.
 SuggestionGroupVisibility GetUserPreferenceForSuggestionGroupVisibility(
-    PrefService* prefs,
+    const PrefService* prefs,
     int suggestion_group_id);
 
 // Sets the stored visibility preference for |suggestion_group_id| to

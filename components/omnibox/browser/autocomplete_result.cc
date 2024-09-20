@@ -1249,7 +1249,7 @@ std::u16string AutocompleteResult::GetHeaderForSuggestionGroup(
 }
 
 bool AutocompleteResult::IsSuggestionGroupHidden(
-    PrefService* prefs,
+    const PrefService* prefs,
     omnibox::GroupId suggestion_group_id) const {
   auto it = suggestion_groups_map().find(suggestion_group_id);
   if (it == suggestion_groups_map().end()) {

@@ -74,6 +74,10 @@ PrefService* ChromeBrowserState::GetPrefs() {
   return GetSyncablePrefs();
 }
 
+const PrefService* ChromeBrowserState::GetPrefs() const {
+  return GetSyncablePrefs();
+}
+
 base::FilePath ChromeBrowserState::GetOffTheRecordStatePath() const {
   if (IsOffTheRecord()) {
     return state_path_;

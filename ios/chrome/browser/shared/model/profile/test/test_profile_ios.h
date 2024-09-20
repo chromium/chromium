@@ -118,6 +118,8 @@ class TestChromeBrowserState final : public ChromeBrowserState {
   PrefProxyConfigTracker* GetProxyConfigTracker() override;
   BrowserStatePolicyConnector* GetPolicyConnector() override;
   sync_preferences::PrefServiceSyncable* GetSyncablePrefs() override;
+  const sync_preferences::PrefServiceSyncable* GetSyncablePrefs()
+      const override;
   ProfileIOSIOData* GetIOData() override;
   void ClearNetworkingHistorySince(base::Time time,
                                    base::OnceClosure completion) override;

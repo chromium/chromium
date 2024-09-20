@@ -48,7 +48,7 @@ bool OmniboxPopupSelection::IsAction() const {
 
 bool OmniboxPopupSelection::IsControlPresentOnMatch(
     const AutocompleteResult& result,
-    PrefService* pref_service) const {
+    const PrefService* pref_service) const {
   if (line >= result.size()) {
     return false;
   }
@@ -108,7 +108,7 @@ bool OmniboxPopupSelection::IsControlPresentOnMatch(
 
 OmniboxPopupSelection OmniboxPopupSelection::GetNextSelection(
     const AutocompleteResult& result,
-    PrefService* pref_service,
+    const PrefService* pref_service,
     TemplateURLService* template_url_service,
     Direction direction,
     Step step) const {
@@ -179,7 +179,7 @@ OmniboxPopupSelection OmniboxPopupSelection::GetNextSelection(
 std::vector<OmniboxPopupSelection>
 OmniboxPopupSelection::GetAllAvailableSelectionsSorted(
     const AutocompleteResult& result,
-    PrefService* pref_service,
+    const PrefService* pref_service,
     TemplateURLService* template_url_service,
     Direction direction,
     Step step) {

@@ -111,12 +111,12 @@ struct OmniboxPopupSelection {
   // Returns true if the control represented by this selection's `state` is
   // present on the match for `line` in given `result`.
   bool IsControlPresentOnMatch(const AutocompleteResult& result,
-                               PrefService* pref_service) const;
+                               const PrefService* pref_service) const;
 
   // Returns the next selection after this one in given `result`.
   OmniboxPopupSelection GetNextSelection(
       const AutocompleteResult& result,
-      PrefService* pref_service,
+      const PrefService* pref_service,
       TemplateURLService* template_url_service,
       Direction direction,
       Step step) const;
@@ -125,7 +125,7 @@ struct OmniboxPopupSelection {
   //  This is a utility function to support `GetNextSelection`.
   static std::vector<OmniboxPopupSelection> GetAllAvailableSelectionsSorted(
       const AutocompleteResult& result,
-      PrefService* pref_service,
+      const PrefService* pref_service,
       TemplateURLService* template_url_service,
       Direction direction,
       Step step);

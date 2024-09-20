@@ -290,6 +290,11 @@ TestChromeBrowserState::GetSyncablePrefs() {
   return prefs_.get();
 }
 
+const sync_preferences::PrefServiceSyncable*
+TestChromeBrowserState::GetSyncablePrefs() const {
+  return prefs_.get();
+}
+
 ProfileIOSIOData* TestChromeBrowserState::GetIOData() {
   return nullptr;
 }

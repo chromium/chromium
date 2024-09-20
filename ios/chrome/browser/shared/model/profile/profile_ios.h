@@ -148,10 +148,13 @@ class ChromeBrowserState : public web::BrowserState {
 
   // Retrieves a pointer to the PrefService that manages the preferences.
   virtual PrefService* GetPrefs();
+  virtual const PrefService* GetPrefs() const;
 
   // Retrieves a pointer to the PrefService that manages the preferences as
   // a sync_preferences::PrefServiceSyncable.
   virtual sync_preferences::PrefServiceSyncable* GetSyncablePrefs() = 0;
+  virtual const sync_preferences::PrefServiceSyncable* GetSyncablePrefs()
+      const = 0;
 
   // Allows access to ProfileIOSIOData without going through
   // ResourceContext that is not compiled on iOS. This method must be called on

@@ -98,6 +98,10 @@ PrefService* LensOmniboxClient::GetPrefs() {
   return browser_state_->GetPrefs();
 }
 
+const PrefService* LensOmniboxClient::GetPrefs() const {
+  return browser_state_->GetPrefs();
+}
+
 bookmarks::BookmarkModel* LensOmniboxClient::GetBookmarkModel() {
   return ios::BookmarkModelFactory::GetForBrowserState(browser_state_);
 }

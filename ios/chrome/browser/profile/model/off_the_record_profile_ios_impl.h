@@ -47,6 +47,8 @@ class OffTheRecordChromeBrowserStateImpl final : public ChromeBrowserState {
   BrowserStatePolicyConnector* GetPolicyConnector() override;
   policy::UserCloudPolicyManager* GetUserCloudPolicyManager() override;
   sync_preferences::PrefServiceSyncable* GetSyncablePrefs() override;
+  const sync_preferences::PrefServiceSyncable* GetSyncablePrefs()
+      const override;
   ProfileIOSIOData* GetIOData() override;
   void ClearNetworkingHistorySince(base::Time time,
                                    base::OnceClosure completion) override;

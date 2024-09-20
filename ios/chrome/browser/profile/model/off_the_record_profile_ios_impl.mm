@@ -116,6 +116,11 @@ OffTheRecordChromeBrowserStateImpl::GetSyncablePrefs() {
   return prefs_.get();
 }
 
+const sync_preferences::PrefServiceSyncable*
+OffTheRecordChromeBrowserStateImpl::GetSyncablePrefs() const {
+  return prefs_.get();
+}
+
 bool OffTheRecordChromeBrowserStateImpl::IsOffTheRecord() const {
   return true;
 }

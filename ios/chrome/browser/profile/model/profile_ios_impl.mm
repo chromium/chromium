@@ -333,6 +333,12 @@ ChromeBrowserStateImpl::GetSyncablePrefs() {
   return prefs_.get();
 }
 
+const sync_preferences::PrefServiceSyncable*
+ChromeBrowserStateImpl::GetSyncablePrefs() const {
+  DCHECK(prefs_);  // Should explicitly be initialized.
+  return prefs_.get();
+}
+
 bool ChromeBrowserStateImpl::IsOffTheRecord() const {
   return false;
 }

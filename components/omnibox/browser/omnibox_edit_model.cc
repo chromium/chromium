@@ -2143,7 +2143,11 @@ void OmniboxEditModel::SetPopupSuggestionGroupVisibility(
   }
 }
 
-PrefService* OmniboxEditModel::GetPrefService() const {
+PrefService* OmniboxEditModel::GetPrefService() {
+  return controller_->client()->GetPrefs();
+}
+
+const PrefService* OmniboxEditModel::GetPrefService() const {
   return controller_->client()->GetPrefs();
 }
 

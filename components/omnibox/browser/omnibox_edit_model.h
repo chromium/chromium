@@ -469,7 +469,8 @@ class OmniboxEditModel {
  protected:
   // Utility method to get current PrefService; protected instead of private
   // because it may be overridden by derived test classes.
-  virtual PrefService* GetPrefService() const;
+  virtual PrefService* GetPrefService();
+  virtual const PrefService* GetPrefService() const;
 
  private:
   friend class OmniboxControllerTest;
