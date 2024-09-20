@@ -109,9 +109,6 @@
   <message name="IDS_SETTINGS_CAPTIONS_LIVE_TRANSLATE_TARGET_LANGUAGE_SUBTITLE" desc="Description of the target language setting for the Live Translate feature.">
     Only supported Live Caption languages can be translated
   </message>
-  <message name="IDS_SETTINGS_CAPTIONS_REMOVE_LANGUAGE_ARIA_LABEL" desc="Text read by screen readers when focusing on the remove icon for language packs. Activating this button will remove the selected language pack. This text only announced by screen readers and is not visible in the UI.">
-    Remove <ph name="LANGUAGE_NAME">$1<ex>English</ex></ph>
-  </message>
   <message name="IDS_SETTINGS_CAPTIONS_REMOVE_LANGUAGE_LABEL" desc="Label for the button to remove a language pack.">
     Remove
   </message>
