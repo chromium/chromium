@@ -37,6 +37,11 @@ using security_interstitials::https_only_mode::SiteEngagementHeuristicState;
 
 // Tests for HTTPS First Mode settings, such as enabling HFM through Site
 // Engagement scores.
+//
+// Most of these tests don't need to enable the feature flags for HFM heuristics
+// because they call the feature-flag gated functions directly (
+// MaybeEnableHttpsFirstModeForEngagedSitesAndWait() and
+// CheckUserIsTypicallySecureAndMaybeEnableHttpsFirstMode()).
 class HttpsFirstModeSettingsTrackerTest : public testing::Test {
  protected:
   void SetUp() override {
@@ -90,10 +95,6 @@ TEST_F(HttpsFirstModeSettingsTrackerTest,
   HttpsFirstModeService* service =
       HttpsFirstModeServiceFactory::GetForProfile(profile());
   ASSERT_TRUE(service);
-
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      features::kHttpsFirstModeV2ForTypicallySecureUsers);
 
   site_engagement::SiteEngagementService* engagement_service =
       site_engagement::SiteEngagementService::Get(profile());
@@ -184,10 +185,6 @@ TEST_F(HttpsFirstModeSettingsTrackerTest,
   ASSERT_TRUE(service);
 
   base::HistogramTester histograms;
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      features::kHttpsFirstModeV2ForTypicallySecureUsers);
-
   site_engagement::SiteEngagementService* engagement_service =
       site_engagement::SiteEngagementService::Get(profile());
   ASSERT_TRUE(engagement_service);
@@ -422,10 +419,6 @@ TEST_F(HttpsFirstModeSettingsTrackerTest,
   ASSERT_TRUE(service);
 
   base::HistogramTester histograms;
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      features::kHttpsFirstModeV2ForTypicallySecureUsers);
-
   site_engagement::SiteEngagementService* engagement_service =
       site_engagement::SiteEngagementService::Get(profile());
   ASSERT_TRUE(engagement_service);
@@ -468,7 +461,6 @@ TEST_F(HttpsFirstModeSettingsTrackerTest,
 TEST_F(HttpsFirstModeSettingsTrackerTest,
        TypicallySecureUser_DisabledByDefault) {
   base::test::ScopedFeatureList feature_list;
-
   feature_list.InitAndDisableFeature(
       features::kHttpsFirstModeV2ForTypicallySecureUsers);
 
@@ -522,9 +514,6 @@ TEST_F(HttpsFirstModeSettingsTrackerTest, TypicallySecureUser_NewProfile) {
   base::Time now = base::Time::NowFromSystemTime();
   clock.SetNow(now);
 
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      features::kHttpsFirstModeV2ForTypicallySecureUsers);
   HttpsFirstModeService* hfm_service =
       HttpsFirstModeServiceFactory::GetForProfile(profile());
   profile()->SetCreationTimeForTesting(now);
@@ -567,9 +556,11 @@ TEST_F(HttpsFirstModeSettingsTrackerTest, TypicallySecureUser_OldVersion) {
   clock.SetNow(now);
   profile()->SetCreationTimeForTesting(now - base::Days(20));
 
+  // Enable the feature flag explicitly for this test.
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(
       features::kHttpsFirstModeV2ForTypicallySecureUsers);
+
   HttpsFirstModeService* hfm_service =
       CreateHttpsFirstModeServiceAndWaitForTypicallySecureUserPrefInitialized(
           profile(), &clock);
