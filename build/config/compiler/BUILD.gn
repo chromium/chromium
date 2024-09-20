@@ -1944,9 +1944,6 @@ config("default_warnings") {
         cflags_cc += [
           # TODO(crbug.com/42050603): fix and reenable
           "-Wno-missing-field-initializers",
-
-          # TODO(https://crbug.com/324953188): fix and reenable
-          "-Wno-extra-qualification",
         ]
       }
 
