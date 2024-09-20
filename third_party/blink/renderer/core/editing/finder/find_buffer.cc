@@ -95,6 +95,19 @@ bool ShouldIgnoreContents(const Node& node) {
               DisplayLockActivationReason::kFindInPage));
 }
 
+std::optional<UChar> CharConstantForNode(const Node& node) {
+  if (!IsA<HTMLElement>(node)) {
+    return std::nullopt;
+  }
+  if (IsA<HTMLWBRElement>(To<HTMLElement>(node))) {
+    return std::nullopt;
+  }
+  if (IsA<HTMLBRElement>(To<HTMLElement>(node))) {
+    return kNewlineCharacter;
+  }
+  return kNonCharacter;
+}
+
 // Returns the first ancestor element that isn't searchable. In other words,
 // either ShouldIgnoreContents() returns true for it or it has a display: none
 // style.  Returns nullptr if no such ancestor exists.
@@ -459,18 +472,9 @@ void FindBuffer::CollectTextUntilBlockBoundary(
 
 void FindBuffer::ReplaceNodeWithCharConstants(const Node& node,
                                               Vector<UChar>& buffer) {
-  if (!IsA<HTMLElement>(node))
-    return;
-
-  if (IsA<HTMLWBRElement>(To<HTMLElement>(node)))
-    return;
-
-  if (IsA<HTMLBRElement>(To<HTMLElement>(node))) {
-    buffer.push_back(kNewlineCharacter);
-    return;
+  if (std::optional<UChar> ch = CharConstantForNode(node)) {
+    buffer.push_back(*ch);
   }
-
-  buffer.push_back(kNonCharacter);
 }
 
 EphemeralRangeInFlatTree FindBuffer::RangeFromBufferIndex(
