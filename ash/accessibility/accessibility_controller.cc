@@ -3663,7 +3663,8 @@ void AccessibilityController::ScrollAtPoint(
 }
 
 void AccessibilityController::UpdateFaceGazeBubble(const std::u16string& text) {
-  if (!facegaze_bubble_controller_) {
+  if (!facegaze_bubble_controller_ ||
+      !::features::IsAccessibilityFaceGazeEnabled()) {
     return;
   }
 

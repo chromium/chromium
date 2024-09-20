@@ -1122,6 +1122,18 @@
             "description": "The recognized facial gestures and their associated confidence values."
           }
         ]
+      },
+      {
+        "name": "updateFaceGazeBubble",
+        "type": "function",
+        "description": "Updates FaceGaze's bubble UI.",
+        "parameters": [
+          {
+            "name": "text",
+            "type": "string",
+            "description": "The text to be displayed in the bubble UI."
+          }
+        ]
       }
     ],
     "events": [

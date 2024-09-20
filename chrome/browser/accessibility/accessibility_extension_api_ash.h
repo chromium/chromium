@@ -378,6 +378,15 @@ class AccessibilityPrivateUpdateDictationBubbleFunction
                              ACCESSIBILITY_PRIVATE_UPDATEDICTATIONBUBBLE)
 };
 
+// API function that updates the FaceGaze bubble UI.
+class AccessibilityPrivateUpdateFaceGazeBubbleFunction
+    : public ExtensionFunction {
+  ~AccessibilityPrivateUpdateFaceGazeBubbleFunction() override = default;
+  ResponseAction Run() override;
+  DECLARE_EXTENSION_FUNCTION("accessibilityPrivate.updateFaceGazeBubble",
+                             ACCESSIBILITY_PRIVATE_UPDATEFACEGAZEBUBBLE)
+};
+
 // API function that updates properties of the Select-to-speak panel.
 class AccessibilityPrivateUpdateSelectToSpeakPanelFunction
     : public ExtensionFunction {

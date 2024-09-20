@@ -812,6 +812,12 @@ chrome.accessibilityPrivate.scrollAtPoint = function(target, direction) {};
 chrome.accessibilityPrivate.sendGestureInfoToSettings = function(gestureInfo) {};
 
 /**
+ * Updates FaceGaze's bubble UI.
+ * @param {string} text The text to be displayed in the bubble UI.
+ */
+chrome.accessibilityPrivate.updateFaceGazeBubble = function(text) {};
+
+/**
  * Fired whenever ChromeVox should output introduction.
  * @type {!ChromeEvent}
  */

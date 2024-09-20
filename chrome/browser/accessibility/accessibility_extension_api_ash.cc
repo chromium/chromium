@@ -1160,6 +1160,17 @@ AccessibilityPrivateUpdateDictationBubbleFunction::Run() {
 }
 
 ExtensionFunction::ResponseAction
+AccessibilityPrivateUpdateFaceGazeBubbleFunction::Run() {
+  std::optional<accessibility_private::UpdateFaceGazeBubble::Params> params(
+      accessibility_private::UpdateFaceGazeBubble::Params::Create(args()));
+  EXTENSION_FUNCTION_VALIDATE(params);
+
+  ash::AccessibilityController::Get()->UpdateFaceGazeBubble(
+      base::UTF8ToUTF16(params->text));
+  return RespondNow(NoArguments());
+}
+
+ExtensionFunction::ResponseAction
 AccessibilityPrivateUpdateSelectToSpeakPanelFunction::Run() {
   std::optional<accessibility_private::UpdateSelectToSpeakPanel::Params>
       params = accessibility_private::UpdateSelectToSpeakPanel::Params::Create(

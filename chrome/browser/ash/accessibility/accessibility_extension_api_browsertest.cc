@@ -6,6 +6,8 @@
 #include "ash/accessibility/ui/accessibility_confirmation_dialog.h"
 #include "ash/display/screen_orientation_controller_test_api.h"
 #include "ash/shell.h"
+#include "ash/system/accessibility/facegaze_bubble_controller.h"
+#include "ash/system/accessibility/facegaze_bubble_view.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/test/scoped_feature_list.h"
@@ -71,6 +73,14 @@ class AccessibilityPrivateApiTest
 
   DictationBubbleTestHelper* dictation_bubble_test_helper() {
     return dictation_bubble_test_helper_.get();
+  }
+
+  const std::u16string& GetFaceGazeBubbleText() {
+    FaceGazeBubbleController* controller =
+        Shell::Get()
+            ->accessibility_controller()
+            ->GetFaceGazeBubbleControllerForTest();
+    return controller->facegaze_bubble_view_->GetTextForTesting();
   }
 
  private:
@@ -485,6 +495,31 @@ IN_PROC_BROWSER_TEST_P(AccessibilityPrivateApiTest,
       "Fake mediapipe web assembly"));
 
   ASSERT_TRUE(RunSubtest("testInstallFaceGazeAssetsSuccess")) << message_;
+}
+
+IN_PROC_BROWSER_TEST_P(AccessibilityPrivateApiTest, UpdateFaceGazeBubble) {
+  // Enable FaceGaze to allow the API to work.
+  Shell::Get()->accessibility_controller()->face_gaze().SetEnabled(true);
+
+  // This test requires some back and forth communication between C++ and JS.
+  // Use message listeners to force the synchronicity of this test.
+  ExtensionTestMessageListener hello_world_listener("Confirm hello world",
+                                                    ReplyBehavior::kWillReply);
+  ExtensionTestMessageListener empty_text_listener("Confirm empty text",
+                                                   ReplyBehavior::kWillReply);
+
+  extensions::ResultCatcher result_catcher;
+  ASSERT_TRUE(RunSubtest("testUpdateFaceGazeBubble")) << message_;
+
+  ASSERT_TRUE(hello_world_listener.WaitUntilSatisfied());
+  EXPECT_EQ(GetFaceGazeBubbleText(), u"Hello world");
+  hello_world_listener.Reply("Continue");
+
+  ASSERT_TRUE(empty_text_listener.WaitUntilSatisfied());
+  EXPECT_EQ(GetFaceGazeBubbleText(), u"");
+  empty_text_listener.Reply("Continue");
+
+  ASSERT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
 }
 
 INSTANTIATE_TEST_SUITE_P(

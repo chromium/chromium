@@ -35,6 +35,7 @@ class ASH_EXPORT FaceGazeBubbleController : public views::ViewObserver {
   void UpdateBubble(const std::u16string& text);
 
  private:
+  friend class AccessibilityPrivateApiTest;
   friend class FaceGazeBubbleControllerTest;
 
   // Performs initialization if necessary.
