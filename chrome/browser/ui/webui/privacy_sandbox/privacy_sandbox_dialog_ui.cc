@@ -217,6 +217,11 @@ PrivacySandboxDialogUI::PrivacySandboxDialogUI(content::WebUI* web_ui)
       // Shared for all dialogs.
       {"m1DialogMoreButton", IDS_PRIVACY_SANDBOX_M1_DIALOG_MORE_BUTTON}};
 
+  // TODO(crbug.com/358087159): Make sure the privacy policy page is activated
+  // as the expand section containing the link is open.
+  source->AddBoolean("isPrivacySandboxPrivacyPolicyEnabled",
+                     base::FeatureList::IsEnabled(
+                         privacy_sandbox::kPrivacySandboxPrivacyPolicy));
   source->AddLocalizedStrings(kStrings);
   if (base::FeatureList::IsEnabled(
           privacy_sandbox::kPrivacySandboxPrivacyPolicy)) {

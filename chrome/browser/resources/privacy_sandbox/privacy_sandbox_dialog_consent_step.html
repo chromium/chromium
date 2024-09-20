@@ -6,6 +6,7 @@
   .iframe.hidden {
     position: absolute;
     z-index: -1;
+    opacity: 0;
   }
 
   .iframe.visible {
@@ -22,20 +23,13 @@
     pointer-events: none;
     z-index: -1;
     position: absolute;
+    opacity: 0;
   }
 
   .back-button.visible {
     pointer-events: auto;
     z-index: auto;
     position: relative;
-  }
-
-  .content-area {
-    background-color: white;
-  }
-
-  .buttons-container {
-    background-color: white;
   }
 
   .iframe-container {
@@ -96,8 +90,4 @@
  fix the spacing and visual of the back button, this is currently a
  placeholder for functionality. -->
 <div class="iframe-container">
-  <cr-icon-button id="backButton" class="icon-arrow-back back-button hidden"
-    on-click="onBackToNotice_"></cr-icon-button>
-  <iframe id="privacyPolicy" class="iframe hidden"
-    tabindex="-1" frameBorder="0"></iframe>
 </div>
