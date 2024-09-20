@@ -472,6 +472,46 @@ class RTCVideoEncoderTest {
     return codec;
   }
 
+  webrtc::VideoCodec GetSimulcastCodec(webrtc::VideoCodecType codec_type,
+                                       size_t num_simulcast_streams) {
+    webrtc::VideoCodec codec{};
+    codec.codecType = codec_type;
+    codec.width = kInputFrameWidth;
+    codec.height = kInputFrameHeight;
+    codec.startBitrate = kStartBitrate;
+    codec.maxBitrate = codec.startBitrate * 2;
+    codec.minBitrate = codec.startBitrate / 2;
+    codec.maxFramerate = 24;
+    codec.active = true;
+    codec.qpMax = 30;
+    codec.numberOfSimulcastStreams = num_simulcast_streams;
+    codec.mode = webrtc::VideoCodecMode::kRealtimeVideo;
+    switch (codec_type) {
+      case webrtc::kVideoCodecVP9: {
+        webrtc::VideoCodecVP9& vp9 = *codec.VP9();
+        vp9.numberOfTemporalLayers = 3;
+        vp9.numberOfSpatialLayers = 1;
+        num_spatial_layers_ = 3;
+        for (size_t sid = 0; sid < num_simulcast_streams; ++sid) {
+          const int denom = 1 << (num_simulcast_streams - (sid + 1));
+          webrtc::SimulcastStream& sl = codec.simulcastStream[sid];
+          sl.width = kInputFrameWidth / denom;
+          sl.height = kInputFrameHeight / denom;
+          sl.maxFramerate = 24;
+          sl.numberOfTemporalLayers = vp9.numberOfTemporalLayers;
+          sl.targetBitrate = kStartBitrate / denom;
+          sl.maxBitrate = sl.targetBitrate / denom;
+          sl.minBitrate = sl.targetBitrate / denom;
+          sl.qpMax = 30;
+          sl.active = true;
+        }
+      } break;
+      default:
+        NOTREACHED_IN_MIGRATION();
+    }
+    return codec;
+  }
+
   void FillFrameBuffer(rtc::scoped_refptr<webrtc::I420Buffer> frame) {
     CHECK(libyuv::I420Rect(frame->MutableDataY(), frame->StrideY(),
                            frame->MutableDataU(), frame->StrideU(),
@@ -2101,6 +2141,62 @@ TEST_F(RTCVideoEncoderFrameSizeChangeTest,
                                    &frame_types));
     event.Wait();
   }
+}
+
+// Simulcast requires SVC support
+TEST_F(RTCVideoEncoderEncodeTest, CreateAndInitVP9Simulcast) {
+  webrtc::VideoCodec tl_codec = GetSimulcastCodec(webrtc::kVideoCodecVP9,
+                                                  /*num_simulcast_streams=*/3);
+  CreateEncoder(tl_codec.codecType);
+
+  ExpectCreateInitAndDestroyVEA();
+  EXPECT_EQ(WEBRTC_VIDEO_CODEC_OK,
+            rtc_encoder_->InitEncode(&tl_codec, kVideoEncoderSettings));
+  // Simulcast is implemented via SVC, so expect spatial layers configuration.
+  EXPECT_THAT(
+      *config_,
+      Field(&media::VideoEncodeAccelerator::Config::spatial_layers,
+            ElementsAre(
+                AllOf(Field(&SpatialLayer::width, kInputFrameWidth / 4),
+                      Field(&SpatialLayer::height, kInputFrameHeight / 4)),
+                AllOf(Field(&SpatialLayer::width, kInputFrameWidth / 2),
+                      Field(&SpatialLayer::height, kInputFrameHeight / 2)),
+                AllOf(Field(&SpatialLayer::width, kInputFrameWidth),
+                      Field(&SpatialLayer::height, kInputFrameHeight)))));
+}
+
+// Simulcast requires SVC support
+TEST_F(RTCVideoEncoderEncodeTest, CreateAndInitVP9SimulcastOneStream) {
+  webrtc::VideoCodec tl_codec = GetSimulcastCodec(webrtc::kVideoCodecVP9,
+                                                  /*num_simulcast_streams=*/3);
+  tl_codec.simulcastStream[1].active = false;
+  tl_codec.simulcastStream[2].active = false;
+  CreateEncoder(tl_codec.codecType);
+
+  ExpectCreateInitAndDestroyVEA();
+  EXPECT_EQ(WEBRTC_VIDEO_CODEC_OK,
+            rtc_encoder_->InitEncode(&tl_codec, kVideoEncoderSettings));
+  // Simulcast is implemented via SVC, so expect spatial layers configuration.
+  EXPECT_THAT(*config_,
+              Field(&media::VideoEncodeAccelerator::Config::spatial_layers,
+                    ElementsAre(AllOf(
+                        Field(&SpatialLayer::width, kInputFrameWidth / 4),
+                        Field(&SpatialLayer::height, kInputFrameHeight / 4)))));
+}
+
+// Simulcast requires SVC support
+TEST_F(RTCVideoEncoderEncodeTest,
+       FallbacksOnInconsistentSimulcastConfiguration) {
+  webrtc::VideoCodec tl_codec = GetSimulcastCodec(webrtc::kVideoCodecVP9,
+                                                  /*num_simulcast_streams=*/3);
+  tl_codec.simulcastStream[1].numberOfTemporalLayers = 1;
+  tl_codec.simulcastStream[2].numberOfTemporalLayers = 3;
+  CreateEncoder(tl_codec.codecType);
+
+  // Inconsistent parameters should be reported as parameters error, not as a
+  // software fallback request.
+  EXPECT_EQ(WEBRTC_VIDEO_CODEC_ERR_SIMULCAST_PARAMETERS_NOT_SUPPORTED,
+            rtc_encoder_->InitEncode(&tl_codec, kVideoEncoderSettings));
 }
 
 #endif  // defined(ARCH_CPU_X86_FAMILY) && BUILDFLAG(IS_CHROMEOS_ASH)
