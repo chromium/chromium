@@ -122,6 +122,11 @@ class AutofillWalletSyncBridge : public base::SupportsUserData::Data,
   // local data and if so, writes the server data to the local database.
   bool SetBankAccountsData(const std::vector<BankAccount>& bank_accounts);
 
+  // Checks whether `payment_instruments` returned by the server are different
+  // from local data and if so, writes the server data to the local database.
+  bool SetPaymentInstrumentsData(
+      const std::vector<sync_pb::PaymentInstrument>& payment_instruments);
+
   // Returns the table associated with the |web_data_backend_|.
   PaymentsAutofillTable* GetAutofillTable();
 

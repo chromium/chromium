@@ -110,6 +110,12 @@ void SetAutofillWalletSpecificsFromBankAccount(
     const BankAccount& bank_account,
     sync_pb::AutofillWalletSpecifics* wallet_specifics);
 
+// Populates an `AutofillWalletSpecifics` object from a `PaymentInstrument`
+// object.
+void SetAutofillWalletSpecificsFromPaymentInstrument(
+    const sync_pb::PaymentInstrument& payment_instrument,
+    sync_pb::AutofillWalletSpecifics& wallet_specifics);
+
 // TODO(sebsg): This should probably copy the converted state for the address
 // too.
 // Copies the metadata and the CVC data from the local cards (if
@@ -147,6 +153,10 @@ template <class Item>
 bool AreAnyItemsDifferent(const std::vector<Item>& old_data,
                           const std::vector<Item>& new_data);
 
+bool AreAnyItemsDifferent(
+    const std::vector<sync_pb::PaymentInstrument>& old_instruments,
+    const std::vector<sync_pb::PaymentInstrument>& new_instruments);
+
 // Returns whether the Virtual Card Usage Data |specifics| is valid data.
 bool IsVirtualCardUsageDataSpecificsValid(
     const sync_pb::AutofillWalletUsageSpecifics::VirtualCardUsageData&
@@ -168,6 +178,8 @@ bool IsAutofillWalletCredentialDataSpecificsValid(
 bool AreMaskedBankAccountSupported();
 
 bool IsEwalletAccountSupported();
+
+bool IsGenericPaymentInstrumentSupported();
 
 }  // namespace autofill
 

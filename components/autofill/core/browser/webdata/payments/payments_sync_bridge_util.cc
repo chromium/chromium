@@ -835,6 +835,13 @@ void SetAutofillWalletSpecificsFromBankAccount(
       ConvertBankAccountTypeToSyncBankAccountType(bank_account.account_type()));
 }
 
+void SetAutofillWalletSpecificsFromPaymentInstrument(
+    const sync_pb::PaymentInstrument& payment_instrument,
+    sync_pb::AutofillWalletSpecifics& wallet_specifics) {
+  wallet_specifics.set_type(AutofillWalletSpecifics::PAYMENT_INSTRUMENT);
+  *wallet_specifics.mutable_payment_instrument() = payment_instrument;
+}
+
 void CopyRelevantWalletMetadataAndCvc(
     const PaymentsAutofillTable& table,
     std::vector<CreditCard>* cards_from_server) {
@@ -990,6 +997,27 @@ bool AreAnyItemsDifferent(const std::vector<Item>& old_data,
 template bool AreAnyItemsDifferent<>(const std::vector<CreditCardBenefit>&,
                                      const std::vector<CreditCardBenefit>&);
 
+template bool AreAnyItemsDifferent<>(const std::vector<std::string>&,
+                                     const std::vector<std::string>&);
+
+bool AreAnyItemsDifferent(
+    const std::vector<sync_pb::PaymentInstrument>& old_instruments,
+    const std::vector<sync_pb::PaymentInstrument>& new_instruments) {
+  if (old_instruments.size() != new_instruments.size()) {
+    return true;
+  }
+
+  std::vector<std::string> old_instrument_strings, new_instrument_strings;
+  for (const auto& instrument : old_instruments) {
+    old_instrument_strings.push_back(instrument.SerializeAsString());
+  }
+  for (const auto& instrument : new_instruments) {
+    new_instrument_strings.push_back(instrument.SerializeAsString());
+  }
+
+  return AreAnyItemsDifferent(old_instrument_strings, new_instrument_strings);
+}
+
 bool IsOfferSpecificsValid(const sync_pb::AutofillOfferSpecifics specifics) {
   // A valid offer has a non-empty id.
   if (!specifics.has_id())
@@ -1076,6 +1104,12 @@ bool IsEwalletAccountSupported() {
 #else
   return false;
 #endif  // BUILDFLAG(IS_ANDROID)
+}
+
+bool IsGenericPaymentInstrumentSupported() {
+  // Currently only eWallet account is using generic payment instrument proto
+  // for read/write.
+  return IsEwalletAccountSupported();
 }
 
 }  // namespace autofill

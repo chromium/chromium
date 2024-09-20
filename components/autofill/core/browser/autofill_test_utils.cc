@@ -1037,5 +1037,20 @@ sync_pb::PaymentInstrument CreatePaymentInstrumentWithIban(
   return payment_instrument;
 }
 
+sync_pb::PaymentInstrument CreatePaymentInstrumentWithEwalletAccount(
+    int64_t instrument_id) {
+  sync_pb::PaymentInstrument payment_instrument;
+  payment_instrument.set_instrument_id(instrument_id);
+  sync_pb::DeviceDetails* device_details =
+      payment_instrument.mutable_device_details();
+  device_details->set_is_fido_enrolled(true);
+  sync_pb::EwalletDetails* ewallet =
+      payment_instrument.mutable_ewallet_details();
+  ewallet->set_ewallet_name("ewallet_name");
+  ewallet->set_account_display_name("account_display_name");
+  ewallet->add_supported_payment_link_uris("supported_payment_link_uri_1");
+  return payment_instrument;
+}
+
 }  // namespace test
 }  // namespace autofill

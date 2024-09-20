@@ -1722,6 +1722,45 @@ TEST_F(PaymentsAutofillTableTest,
 }
 
 TEST_F(PaymentsAutofillTableTest,
+       PaymentInstrument_StoresPaymentInstrumentWithEwalletAccount) {
+  // Add an eWallet payment instrument to the table.
+  sync_pb::PaymentInstrument payment_instrument =
+      test::CreatePaymentInstrumentWithEwalletAccount(1234);
+  std::vector<sync_pb::PaymentInstrument> payment_instruments{
+      payment_instrument};
+  table_->SetPaymentInstruments(payment_instruments);
+
+  // Retrieve the payment instruments.
+  std::vector<sync_pb::PaymentInstrument> payment_instruments_from_table;
+  table_->GetPaymentInstruments(payment_instruments_from_table);
+
+  // Check that the payment instruments are equal.
+  ASSERT_EQ(payment_instruments_from_table.size(), 1u);
+  EXPECT_EQ(payment_instrument.instrument_id(),
+            payment_instruments_from_table[0].instrument_id());
+  EXPECT_EQ(
+      payment_instrument.device_details().is_fido_enrolled(),
+      payment_instruments_from_table[0].device_details().is_fido_enrolled());
+  const sync_pb::EwalletDetails& table_ewallet =
+      payment_instruments_from_table[0].ewallet_details();
+  EXPECT_EQ(payment_instrument.ewallet_details().ewallet_name(),
+            table_ewallet.ewallet_name());
+  EXPECT_EQ(payment_instrument.ewallet_details().account_display_name(),
+            table_ewallet.account_display_name());
+  EXPECT_EQ(
+      payment_instrument.ewallet_details().supported_payment_link_uris().size(),
+      table_ewallet.supported_payment_link_uris().size());
+  for (int i = 0; i < payment_instrument.ewallet_details()
+                          .supported_payment_link_uris()
+                          .size();
+       ++i) {
+    EXPECT_EQ(
+        payment_instrument.ewallet_details().supported_payment_link_uris()[i],
+        table_ewallet.supported_payment_link_uris()[i]);
+  }
+}
+
+TEST_F(PaymentsAutofillTableTest,
        PaymentInstrument_StoresMultiplePaymentInstruments) {
   // Add multiple payment instruments with details to the table.
   sync_pb::PaymentInstrument bank_account_payment_instrument =

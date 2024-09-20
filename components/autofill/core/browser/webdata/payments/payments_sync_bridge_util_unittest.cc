@@ -1202,5 +1202,78 @@ TEST_F(PaymentsSyncBridgeUtilTest,
   EXPECT_EQ(autofill::kGenericCard, wallet_cards.front().network());
 }
 
+TEST_F(PaymentsSyncBridgeUtilTest,
+       AreAnyPaymentInstrumentsDifferent_ReturnFalseForSameData) {
+  sync_pb::PaymentInstrument payment_instrument_1 =
+      test::CreatePaymentInstrumentWithEwalletAccount(/*instrument_id=*/1234);
+  sync_pb::PaymentInstrument payment_instrument_2 =
+      test::CreatePaymentInstrumentWithEwalletAccount(/*instrument_id=*/2345);
+  std::vector<sync_pb::PaymentInstrument> payment_instruments_1 = {
+      payment_instrument_1, payment_instrument_2};
+
+  sync_pb::PaymentInstrument payment_instrument_3 =
+      test::CreatePaymentInstrumentWithEwalletAccount(/*instrument_id=*/1234);
+  sync_pb::PaymentInstrument payment_instrument_4 =
+      test::CreatePaymentInstrumentWithEwalletAccount(/*instrument_id=*/2345);
+  std::vector<sync_pb::PaymentInstrument> payment_instruments_2 = {
+      payment_instrument_3, payment_instrument_4};
+
+  EXPECT_FALSE(
+      AreAnyItemsDifferent(payment_instruments_1, payment_instruments_2));
+}
+
+TEST_F(PaymentsSyncBridgeUtilTest,
+       AreAnyPaymentInstrumentsDifferent_ReturnTrueForDifferentDataSize) {
+  sync_pb::PaymentInstrument payment_instrument_1 =
+      test::CreatePaymentInstrumentWithEwalletAccount(/*instrument_id=*/1234);
+  sync_pb::PaymentInstrument payment_instrument_2 =
+      test::CreatePaymentInstrumentWithEwalletAccount(/*instrument_id=*/2345);
+  std::vector<sync_pb::PaymentInstrument> payment_instruments_1 = {
+      payment_instrument_1, payment_instrument_2};
+
+  sync_pb::PaymentInstrument payment_instrument_3 =
+      test::CreatePaymentInstrumentWithEwalletAccount(/*instrument_id=*/1234);
+  std::vector<sync_pb::PaymentInstrument> payment_instruments_2 = {
+      payment_instrument_3};
+
+  EXPECT_TRUE(
+      AreAnyItemsDifferent(payment_instruments_1, payment_instruments_2));
+}
+
+TEST_F(PaymentsSyncBridgeUtilTest,
+       AreAnyPaymentInstrumentsDifferent_ReturnTrueForDifferentInstrumentId) {
+  sync_pb::PaymentInstrument payment_instrument_1 =
+      test::CreatePaymentInstrumentWithEwalletAccount(/*instrument_id=*/1234);
+  std::vector<sync_pb::PaymentInstrument> payment_instruments_1 = {
+      payment_instrument_1};
+
+  sync_pb::PaymentInstrument payment_instrument_2 =
+      test::CreatePaymentInstrumentWithEwalletAccount(/*instrument_id=*/2345);
+  std::vector<sync_pb::PaymentInstrument> payment_instruments_2 = {
+      payment_instrument_2};
+
+  EXPECT_TRUE(
+      AreAnyItemsDifferent(payment_instruments_1, payment_instruments_2));
+}
+
+TEST_F(PaymentsSyncBridgeUtilTest,
+       AreAnyPaymentInstrumentsDifferent_ReturnTrueForDifferentEwalletDetails) {
+  sync_pb::PaymentInstrument payment_instrument_1 =
+      test::CreatePaymentInstrumentWithEwalletAccount(/*instrument_id=*/1234);
+  std::vector<sync_pb::PaymentInstrument> payment_instruments_1 = {
+      payment_instrument_1};
+
+  sync_pb::PaymentInstrument payment_instrument_2 =
+      test::CreatePaymentInstrumentWithEwalletAccount(/*instrument_id=*/1234);
+  sync_pb::EwalletDetails* ewallet_2 =
+      payment_instrument_2.mutable_ewallet_details();
+  ewallet_2->set_ewallet_name("different_ewallet_name");
+  std::vector<sync_pb::PaymentInstrument> payment_instruments_2 = {
+      payment_instrument_2};
+
+  EXPECT_TRUE(
+      AreAnyItemsDifferent(payment_instruments_1, payment_instruments_2));
+}
+
 }  // namespace
 }  // namespace autofill

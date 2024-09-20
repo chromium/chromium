@@ -395,6 +395,10 @@ sync_pb::PaymentInstrument CreatePaymentInstrumentWithBankAccount(
 sync_pb::PaymentInstrument CreatePaymentInstrumentWithIban(
     int64_t instrument_id);
 
+// Returns a payment instrument with an eWallet account filled with fake data.
+sync_pb::PaymentInstrument CreatePaymentInstrumentWithEwalletAccount(
+    int64_t instrument_id);
+
 }  // namespace test
 }  // namespace autofill
 
