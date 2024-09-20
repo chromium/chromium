@@ -329,15 +329,14 @@ TEST(PdfInkUndoRedoModelTest, DrawDrawUndoEraseUndo) {
               ElementsAreArray({5}));
 }
 
-// TODO(crbug.com/335521182): Re-enable the test for debug builds with a smaller
-// `kCycles` count.
+TEST(PdfInkUndoRedoModelTest, Stress) {
 #if defined(NDEBUG)
-#define MAYBE_Stress Stress
-#else
-#define MAYBE_Stress DISABLED_Stress
-#endif
-TEST(PdfInkUndoRedoModelTest, MAYBE_Stress) {
   constexpr size_t kCycles = 10000;
+#else
+  // The larger non-debug value is too slow for "dbg" bots.
+  constexpr size_t kCycles = 1000;
+#endif
+
   PdfInkUndoRedoModel undo_redo;
   size_t id = 0;
   for (size_t i = 0; i < kCycles; ++i) {
