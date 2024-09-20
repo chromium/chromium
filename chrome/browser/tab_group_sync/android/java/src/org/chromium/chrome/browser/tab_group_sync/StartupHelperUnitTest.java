@@ -65,6 +65,7 @@ public class StartupHelperUnitTest {
         Mockito.doReturn(tabId).when(tab).getId();
         Mockito.doReturn(rootId).when(tab).getRootId();
         Mockito.doReturn(GURL.emptyGURL()).when(tab).getUrl();
+        Mockito.doReturn(System.currentTimeMillis()).when(tab).getTimestampMillis();
         return tab;
     }
 

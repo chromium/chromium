@@ -5,6 +5,8 @@
 package org.chromium.chrome.browser.tab_group_sync;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.never;
@@ -26,9 +28,12 @@ import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
+import org.chromium.base.FeatureList;
 import org.chromium.base.Token;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModel;
@@ -42,11 +47,14 @@ import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.url.GURL;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /** Unit tests for the {@link TabGroupSyncUtils}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class TabGroupSyncUtilsUnitTest {
+    private static final long DAY_IN_MILLIS = TimeUnit.MILLISECONDS.convert(1, TimeUnit.DAYS);
+
     private static final int TAB_ID_1 = 1;
     private static final int TAB_ID_2 = 2;
     private static final int TAB_ID_3 = 2;
@@ -76,6 +84,42 @@ public class TabGroupSyncUtilsUnitTest {
         mTab1 = mTabModel.addTab(TAB_ID_1);
         mTab2 = mTabModel.addTab(TAB_ID_2);
         createTabGroup(List.of(mTab1, mTab2), ROOT_ID_1, TOKEN_1);
+    }
+
+    @Test
+    public void testStaleGroupsNotAddedToSync() {
+        // Override the finch param to 90 days.
+        FeatureList.TestValues testValues = new FeatureList.TestValues();
+        testValues.addFeatureFlagOverride(ChromeFeatureList.TAB_GROUP_SYNC_ANDROID, true);
+        testValues.addFieldTrialParamOverride(
+                ChromeFeatureList.TAB_GROUP_SYNC_ANDROID,
+                TabGroupSyncUtils
+                        .PARAM_MAX_DAYS_OF_STALENESS_ACCEPTED_FOR_ADDING_TAB_GROUP_TO_SYNC_ON_STARTUP,
+                String.valueOf(90));
+        FeatureList.setTestValues(testValues);
+
+        long now = System.currentTimeMillis();
+
+        // Both tabs are recent.
+        ((MockTab) mTab1).setTimestampMillis(now);
+        ((MockTab) mTab2).setTimestampMillis(now);
+        assertTrue(
+                TabGroupSyncUtils.isTabGroupEligibleForSyncing(
+                        LOCAL_TAB_GROUP_ID_1, mTabGroupModelFilter));
+
+        // Both tabs are very old.
+        ((MockTab) mTab1).setTimestampMillis(now - DAY_IN_MILLIS * 1000);
+        ((MockTab) mTab2).setTimestampMillis(now - DAY_IN_MILLIS * 2000);
+        assertFalse(
+                TabGroupSyncUtils.isTabGroupEligibleForSyncing(
+                        LOCAL_TAB_GROUP_ID_1, mTabGroupModelFilter));
+
+        // One tab is recent and one very old.
+        ((MockTab) mTab1).setTimestampMillis(now - DAY_IN_MILLIS * 1);
+        ((MockTab) mTab2).setTimestampMillis(now - DAY_IN_MILLIS * 2000);
+        assertTrue(
+                TabGroupSyncUtils.isTabGroupEligibleForSyncing(
+                        LOCAL_TAB_GROUP_ID_1, mTabGroupModelFilter));
     }
 
     @Test

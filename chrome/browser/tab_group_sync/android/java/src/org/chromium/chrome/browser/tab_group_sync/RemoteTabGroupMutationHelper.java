@@ -114,6 +114,8 @@ public class RemoteTabGroupMutationHelper {
         LogUtils.log(TAG, "updateTabIdMappingsOnStartup, localGroupId = " + localGroupId);
         // Update tab ID mapping for tabs in the group.
         SavedTabGroup group = mTabGroupSyncService.getGroup(localGroupId);
+        if (group == null) return;
+
         int rootId = TabGroupSyncUtils.getRootId(mTabGroupModelFilter, localGroupId);
         List<Tab> tabs = mTabGroupModelFilter.getRelatedTabListForRootId(rootId);
         // We just reconciled local state with sync. The tabs should match.

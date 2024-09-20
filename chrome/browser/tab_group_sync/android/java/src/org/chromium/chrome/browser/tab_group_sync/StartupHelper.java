@@ -102,6 +102,13 @@ public class StartupHelper {
             SavedTabGroup savedTabGroup = mTabGroupSyncService.getGroup(tabGroupId);
             if (savedTabGroup != null) continue;
 
+            // Skip if the group is ineligible for syncing, e.g. hasn't been accessed in recent
+            // times.
+            if (!TabGroupSyncUtils.isTabGroupEligibleForSyncing(tabGroupId, mTabGroupModelFilter)) {
+                LogUtils.log(TAG, "Skipping the tab group as it is too old");
+                return;
+            }
+
             mRemoteTabGroupMutationHelper.createRemoteTabGroup(tabGroupId);
         }
     }
@@ -110,7 +117,8 @@ public class StartupHelper {
         LogUtils.log(TAG, "reconcileGroupsToSync");
         for (LocalTabGroupId tabGroupId : getLocalTabGroupIds()) {
             SavedTabGroup savedTabGroup = mTabGroupSyncService.getGroup(tabGroupId);
-            assert savedTabGroup != null;
+            // At this point every tab group should be already in sync unless they are too old.
+            if (savedTabGroup == null) continue;
             mLocalTabGroupMutationHelper.reconcileGroupOnStartup(savedTabGroup);
         }
     }
