@@ -13,7 +13,7 @@
     // ID names for UA shadow elements
     //
     {
-      // This has an experimental pseudo-element to expose it to the Web.
+      // This name is used both as an ID and as a web-exposed pseudo-element.
       name: "details-content",
       Symbol: "kIdDetailsContent",
     },
@@ -89,15 +89,15 @@
       name: "select-popover-options",
       Symbol: "kSelectPopoverOptions",
     },
-    {
-      name: "picker(select)",
-      Symbol: "kPickerSelect",
-    },
 
     //
     // Pseudo names for UA shadow elements.
     // These are web-exposed as pseudo element selectors.
     //
+    {
+      name: "picker(select)",
+      Symbol: "kPickerSelect",
+    },
     {
       name: "-webkit-details-marker",
       Symbol: "kPseudoWebKitDetailsMarker",
