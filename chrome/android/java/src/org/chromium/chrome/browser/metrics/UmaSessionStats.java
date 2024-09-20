@@ -9,6 +9,8 @@ import android.content.Context;
 import android.content.res.Configuration;
 import android.view.InputDevice;
 
+import androidx.annotation.VisibleForTesting;
+
 import org.jni_zero.CalledByNative;
 import org.jni_zero.NativeMethods;
 
@@ -288,8 +290,9 @@ public class UmaSessionStats {
         return ApplicationStatus.hasVisibleActivities();
     }
 
+    @VisibleForTesting
     @NativeMethods
-    interface Natives {
+    public interface Natives {
         long init();
 
         void changeMetricsReportingConsent(boolean consent, int calledFrom);
