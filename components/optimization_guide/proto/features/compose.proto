@@ -99,7 +99,7 @@ message ComposeResponse {
 
 // Any data collected on the client outside of the model request and response.
 // This includes user feedback, and metrics about feature usage.
-// Next Id: 10
+// Next Id: 11
 message ComposeQuality {
   FinalStatus final_status = 1;
 
@@ -123,6 +123,9 @@ message ComposeQuality {
 
   // Was this session started with a proactive nudge UI.
   bool started_with_proactive_nudge = 9;
+
+  // Was this session a successful session.
+  FinalModelStatus final_model_status = 10;
 
   reserved 3;
 }

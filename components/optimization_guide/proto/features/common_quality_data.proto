@@ -214,6 +214,10 @@ message FormFieldData {
 
   // The AX node ID of the form control for this field.
   int32 form_control_ax_node_id = 9;
+
+  // Whether the field is eligible for filling and importing. This flag does not
+  // take the value of the field into consideration.
+  bool is_eligible = 10;
 }
 
 // Represents an option in a select field. See below for example.

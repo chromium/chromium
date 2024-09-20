@@ -41,7 +41,7 @@ message HistoryQueryResponse {
   reserved 1, 2;
 }
 
-// Next Id: 10
+// Next Id: 11
 message HistoryQueryQuality {
   // The history search query entered by the user.
   string query = 4;
@@ -75,6 +75,10 @@ message HistoryQueryQuality {
   // The session id of the user query. Use this to join with HistoryAnswer
   // protos from the same session.
   string session_id = 9;
+
+  // The final model status of the query. Used to determine if the query result
+  // is successful/accepted or not.
+  FinalModelStatus final_model_status = 10;
 }
 
 // Next ID: 5

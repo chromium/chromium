@@ -40,6 +40,19 @@ message FormsPredictionsRequest {
   repeated UserAnnotationsEntry entries = 5;
 }
 
+message FormsPredictionsResponse {
+  // The confidence of the prediction. Will be between 0 and 1, inclusive.
+  float confidence = 1;
+
+  // The filled out form.
+  FilledFormData form_data = 2;
+}
+
+message FilledFormData {
+  // The data for each field that was filled out.
+  repeated FilledFormFieldData filled_form_field_data = 1;
+}
+
 message FilledFormFieldData {
   // The field that was filled out.
   FormFieldData field_data = 1;
@@ -50,19 +63,6 @@ message FilledFormFieldData {
 
 message PredictedValue {
   string value = 1;
-}
-
-message FilledFormData {
-  // The data for each field that was filled out.
-  repeated FilledFormFieldData filled_form_field_data = 1;
-}
-
-message FormsPredictionsResponse {
-  // The confidence of the prediction. Will be between 0 and 1, inclusive.
-  float confidence = 1;
-
-  // The filled out form.
-  FilledFormData form_data = 2;
 }
 
 message FormsPredictionsQuality {

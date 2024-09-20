@@ -27,7 +27,7 @@ message TabOrganizationLoggingData {
   TabOrganizationQuality quality = 3;
 }
 
-// Next ID: 5
+// Next ID: 6
 message TabOrganizationRequest {
   // The ungrouped tabs that are requested to be organized.
   repeated Tab tabs = 1;
@@ -41,6 +41,23 @@ message TabOrganizationRequest {
   // Whether or not the tab organization response can include reorganizing
   // existing tab groups.
   bool allow_reorganizing_existing_groups = 4;
+
+  // The clustering algorithm that the user prefers the model to use for
+  // grouping the tabs. For now it is an experimental field and should not be
+  // used in prod.
+  TabOrganizationModelStrategy model_strategy = 5;
+
+  // The clustering algorithm that the user prefers the model to use for
+  // grouping the tabs.
+  enum TabOrganizationModelStrategy {
+    STRATEGY_UNSPECIFIED = 0;
+
+    STRATEGY_TOPIC_BASED = 1;
+
+    STRATEGY_TASK_BASED = 2;
+
+    STRATEGY_DOMAIN_BASED = 3;
+  }
 }
 
 // Next ID: 2
