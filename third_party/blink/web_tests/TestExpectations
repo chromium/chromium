@@ -2595,9 +2595,9 @@ crbug.com/364700192 external/wpt/css/css-fonts/parsing/font-feature-settings-com
 crbug.com/364677549 external/wpt/css/css-properties-values-api/register-property-syntax-parsing.html [ Crash Pass Timeout ]
 
 # ====== New tests from wpt-importer added here ======
-external/wpt/css/css-sizing/intrinsic-percent-replaced-022.html [ Failure ]
-external/wpt/css/css-sizing/intrinsic-percent-replaced-023.html [ Failure ]
-[ Mac14-arm64 ] virtual/webnn-service-on-cpu/external/wpt/webnn/validation_tests/destroyGraph.https.any.worker.html?cpu [ Skip Timeout ]
+crbug.com/368131302 external/wpt/css/css-sizing/intrinsic-percent-replaced-022.html [ Failure ]
+crbug.com/368131302 external/wpt/css/css-sizing/intrinsic-percent-replaced-023.html [ Failure ]
+crbug.com/368464068 [ Mac14-arm64 ] virtual/webnn-service-on-cpu/external/wpt/webnn/validation_tests/destroyGraph.https.any.worker.html?cpu [ Skip Timeout ]
 crbug.com/368076862 external/wpt/webcodecs/audioDecoder-codec-specific.https.any.worker.html?flac [ Timeout ]
 [ Mac15-arm64 ] wpt_internal/webcodecs/avc_encoder_config.https.any.html [ Timeout ]
 [ Mac15-arm64 ] wpt_internal/webcodecs/avc_encoder_config.https.any.worker.html [ Timeout ]
