@@ -9,10 +9,14 @@
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/sync/sync_service_factory.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/sync/base/user_selectable_type.h"
+#include "components/sync/service/sync_service.h"
+#include "components/sync/service/sync_user_settings.h"
 #include "extensions/browser/blocklist_extension_prefs.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_prefs_factory.h"
@@ -109,11 +113,11 @@ void AccountExtensionTracker::OnExtensionInstalled(
     return;
   }
 
-  auto* identity_manager = IdentityManagerFactory::GetForProfileIfExists(
-      Profile::FromBrowserContext(context));
-  bool signed_in_and_syncing =
-      identity_manager &&
-      identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync);
+  syncer::SyncService* sync_service =
+      SyncServiceFactory::GetForProfile(Profile::FromBrowserContext(context));
+  bool extension_sync_enabled =
+      sync_service && sync_service->GetUserSettings()->GetSelectedTypes().Has(
+                          syncer::UserSelectableType::kExtensions);
   bool is_syncable_extension =
       ExtensionSyncService::ShouldSync(context, *extension);
 
@@ -121,7 +125,7 @@ void AccountExtensionTracker::OnExtensionInstalled(
   // ExtensionSyncService) that was installed when a user is signed in and has
   // sync enabled. Otherwise, set to `kLocal`.
   AccountExtensionType type =
-      (is_syncable_extension && signed_in_and_syncing)
+      (is_syncable_extension && extension_sync_enabled)
           ? AccountExtensionType::kAccountInstalledSignedIn
           : AccountExtensionType::kLocal;
   SetAccountExtensionType(extension->id(), type);
