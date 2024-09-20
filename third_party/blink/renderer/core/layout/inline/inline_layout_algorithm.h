@@ -118,7 +118,7 @@ class CORE_EXPORT InlineLayoutAlgorithm final
   const ColumnSpannerPath* column_spanner_path_;
 
   MarginStrut end_margin_strut_;
-  std::optional<int> lines_until_clamp_;
+  std::optional<LineClampData::UntilClamp> state_until_clamp_;
 
   FontBaseline baseline_type_ = FontBaseline::kAlphabeticBaseline;
 
