@@ -124,7 +124,7 @@ namespace {
 
 BASE_FEATURE(kSkipUnnecessaryThreadHopsForParseHeaders,
              "SkipUnnecessaryThreadHopsForParseHeaders",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 class NavigationLoaderInterceptorBrowserContainer
     : public NavigationLoaderInterceptor {
