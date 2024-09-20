@@ -54,7 +54,7 @@ device_test::mojom::ControllerFrameDataPtr DeviceToMojoControllerFrameData(
     }
   }
 
-  if (!data.hand_data.empty()) {
+  if (data.has_hand_data) {
     device::mojom::XRHandTrackingDataPtr hand_tracking_data =
         device::mojom::XRHandTrackingData::New();
     hand_tracking_data->hand_joint_data =
@@ -63,7 +63,7 @@ device_test::mojom::ControllerFrameDataPtr DeviceToMojoControllerFrameData(
 
     // We need to use `resize` here to create default data fields so we can use
     // [] indexing to ensure things are added to the right spot.
-    joint_data.resize(data.hand_data.size());
+    joint_data.resize(std::size(data.hand_data));
     for (const auto& joint_entry : data.hand_data) {
       uint32_t joint_index = static_cast<uint32_t>(joint_entry.joint);
 

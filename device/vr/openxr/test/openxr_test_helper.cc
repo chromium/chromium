@@ -984,7 +984,8 @@ device::ControllerFrameData OpenXrTestHelper::GetControllerDataFromPath(
     role = device::kControllerRoleRight;
   } else {
     NOTREACHED_IN_MIGRATION()
-        << "Currently Path should belong to either left or right";
+        << "Currently Path should belong to either left or right, received: "
+        << path_string;
   }
   device::ControllerFrameData data;
   for (uint32_t i = 0; i < data_arr_.size(); i++) {
@@ -1041,9 +1042,53 @@ void OpenXrTestHelper::UpdateInteractionProfile(
   }
 }
 
-void OpenXrTestHelper::LocateSpace(XrSpace space, XrPosef* pose) {
-  DCHECK_NE(pose, nullptr);
-  *pose = device::PoseIdentity();
+void OpenXrTestHelper::LocateJoints(
+    XrHandTrackerEXT hand_tracker,
+    const XrHandJointsLocateInfoEXT* locate_info,
+    XrHandJointLocationsEXT* locations) {
+  DCHECK_NE(locations, nullptr);
+  locations->isActive = false;
+  std::string controller_string =
+      left_hand_ == hand_tracker ? "/user/hand/left/" : "/user/hand/right/";
+  const auto& controller =
+      GetControllerDataFromPath(std::move(controller_string));
+  if (!controller.has_hand_data) {
+    return;
+  }
+
+  // Our test/mojom interface sends the "palm" joint separate from the rest of
+  // the finger joints, and thus sends one less joint than we need to populate.
+  if (std::size(controller.hand_data) + 1 > locations->jointCount) {
+    return;
+  }
+
+  base::span<XrHandJointLocationEXT> out_locations{locations->jointLocations,
+                                                   locations->jointCount};
+  if (controller.pose_data.is_valid) {
+    auto& palm_location = out_locations[0];
+    palm_location.locationFlags = kValidTrackedPoseFlags;
+    palm_location.radius = 1.0f;
+    palm_location.pose = device::GfxTransformToXrPose(
+        PoseFrameDataToTransform(controller.pose_data));
+  }
+  for (const auto& data : controller.hand_data) {
+    if (!data.mojo_from_joint) {
+      // If we're missing the pose, don't fill in any data about this joint.
+      continue;
+    }
+    // The OpenXR joints and mojom joints have the same base number offset by 1.
+    auto& joint_location = out_locations[static_cast<uint32_t>(data.joint) + 1];
+    joint_location.locationFlags = kValidTrackedPoseFlags;
+    joint_location.radius = data.radius;
+    joint_location.pose =
+        device::GfxTransformToXrPose(data.mojo_from_joint.value());
+  }
+
+  locations->isActive = true;
+}
+
+std::optional<gfx::Transform> OpenXrTestHelper::GetTransformForSpace(
+    XrSpace space) {
   std::optional<gfx::Transform> transform = std::nullopt;
 
   if (reference_spaces_.count(space) == 1) {
@@ -1076,19 +1121,15 @@ void OpenXrTestHelper::LocateSpace(XrSpace space, XrPosef* pose) {
            "space for controller";
   }
 
-  if (transform) {
-    std::optional<gfx::DecomposedTransform> decomposed_transform =
-        transform->Decompose();
-    DCHECK(decomposed_transform);
+  return transform;
+}
 
-    pose->orientation.x = decomposed_transform->quaternion.x();
-    pose->orientation.y = decomposed_transform->quaternion.y();
-    pose->orientation.z = decomposed_transform->quaternion.z();
-    pose->orientation.w = decomposed_transform->quaternion.w();
-
-    pose->position.x = decomposed_transform->translate[0];
-    pose->position.y = decomposed_transform->translate[1];
-    pose->position.z = decomposed_transform->translate[2];
+void OpenXrTestHelper::LocateSpace(XrSpace space, XrPosef* pose) {
+  DCHECK_NE(pose, nullptr);
+  if (auto transform = GetTransformForSpace(space); transform) {
+    *pose = device::GfxTransformToXrPose(transform.value());
+  } else {
+    *pose = device::PoseIdentity();
   }
 }
 

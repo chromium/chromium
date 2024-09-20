@@ -20,6 +20,9 @@
 #include "device/vr/public/cpp/features.h"
 #include "device/vr/public/mojom/browser_test_interfaces.mojom.h"
 #include "device/vr/public/mojom/openxr_interaction_profile_type.mojom.h"
+#include "device/vr/test/test_hook.h"
+#include "ui/gfx/geometry/decomposed_transform.h"
+#include "ui/gfx/geometry/transform.h"
 
 // Browser test equivalent of
 // chrome/android/javatests/src/.../browser/vr/WebXrVrInputTest.java.
@@ -173,6 +176,34 @@ class WebXrControllerInputMock : public MockXRDeviceHookBase {
     auto controller_data = GetCurrentControllerData(index);
     controller_data.pose_data.is_valid = is_valid;
     device_to_origin.GetColMajorF(controller_data.pose_data.device_to_origin);
+    UpdateControllerAndWait(index, controller_data);
+  }
+
+  void AssignDefaultHandData(auto& controller_data,
+                             gfx::Quaternion orientation = gfx::Quaternion()) {
+    gfx::DecomposedTransform decomposed_transform;
+    decomposed_transform.quaternion = orientation;
+    auto& joint_data = controller_data.hand_data;
+    for (uint32_t i = 0; i < std::size(joint_data); i++) {
+      decomposed_transform.translate[0] = i / 100.0;
+      joint_data[i] = {static_cast<device::mojom::XRHandJoint>(i),
+                       gfx::Transform::Compose(decomposed_transform),
+                       static_cast<float>(i)};
+    }
+
+    controller_data.has_hand_data = true;
+  }
+
+  void SetDefaultHandData(unsigned int index,
+                          gfx::Quaternion orientation = gfx::Quaternion()) {
+    auto controller_data = GetCurrentControllerData(index);
+    AssignDefaultHandData(controller_data, orientation);
+    UpdateControllerAndWait(index, controller_data);
+  }
+
+  void ClearHandData(unsigned int index) {
+    auto controller_data = GetCurrentControllerData(index);
+    controller_data.has_hand_data = false;
     UpdateControllerAndWait(index, controller_data);
   }
 
@@ -846,6 +877,110 @@ WEBXR_VR_ALL_RUNTIMES_BROWSER_TEST_F(TestControllerPositionTracking) {
                         base::NumberToString(controller_index - 1) + ", " +
                         TransformToColMajorString(pose) + ")");
   t->AssertNoJavaScriptErrors();
+}
+
+// Test that the `hand` property on the Input Source remains null, even if the
+// runtime reports it, without the appropriate feature request.
+WEBXR_VR_ALL_RUNTIMES_BROWSER_TEST_F(TestHandDataNotVisibleWithoutFeature) {
+  WebXrControllerInputMock my_mock;
+
+  auto controller_data = my_mock.CreateValidController(
+      device::ControllerRole::kControllerRoleRight);
+  my_mock.AssignDefaultHandData(controller_data);
+
+  my_mock.ConnectController(controller_data);
+
+  t->LoadFileAndAwaitInitialization("test_webxr_hand_tracking");
+  t->EnterSessionWithUserGestureOrFail();
+
+  // We should only have seen the first change indicating we have input sources.
+  uint32_t expected_change_events = 1;
+  t->PollJavaScriptBooleanOrFail(
+      "inputChangeEvents === " + base::NumberToString(expected_change_events),
+      WebXrVrBrowserTestBase::kPollTimeoutShort);
+
+  t->RunJavaScriptOrFail("assertHandTrackingFeatureState(false)");
+  t->RunJavaScriptOrFail("assertHandsNotPresent()");
+  t->AssertNoJavaScriptErrors();
+
+  t->RunJavaScriptOrFail("done()");
+  t->EndTest();
+}
+
+// Test that the `hand` property on the Input Source is not null, if the
+// runtime reports it, with the appropriate feature request.
+WEBXR_VR_ALL_RUNTIMES_BROWSER_TEST_F(TestHandDataVisibleWithFeature) {
+  WebXrControllerInputMock my_mock;
+
+  auto controller_data = my_mock.CreateValidController(
+      device::ControllerRole::kControllerRoleRight);
+  my_mock.AssignDefaultHandData(controller_data);
+
+  my_mock.ConnectController(controller_data);
+
+  t->LoadFileAndAwaitInitialization("test_webxr_hand_tracking");
+  t->RunJavaScriptOrFail("setupRequestHandTracking()");
+  t->EnterSessionWithUserGestureOrFail();
+
+  // We should only have seen the first change indicating we have input sources.
+  uint32_t expected_change_events = 1;
+  t->PollJavaScriptBooleanOrFail(
+      "inputChangeEvents === " + base::NumberToString(expected_change_events),
+      WebXrVrBrowserTestBase::kPollTimeoutShort);
+
+  t->RunJavaScriptOrFail("assertHandTrackingFeatureState(true)");
+  t->RunJavaScriptOrFail("assertHandsPresent()");
+  t->AssertNoJavaScriptErrors();
+
+  t->RunJavaScriptOrFail("done()");
+  t->EndTest();
+}
+
+// Test that the `hand` property on the Input Source is null when hand data
+// cannot be provided, with the appropriate feature request.
+WEBXR_VR_ALL_RUNTIMES_BROWSER_TEST_F(TestHandDataVisibleToggle) {
+  WebXrControllerInputMock my_mock;
+
+  auto controller_data = my_mock.CreateValidController(
+      device::ControllerRole::kControllerRoleRight);
+
+  unsigned int index = my_mock.ConnectController(controller_data);
+
+  t->LoadFileAndAwaitInitialization("test_webxr_hand_tracking");
+  t->RunJavaScriptOrFail("setupRequestHandTracking()");
+  t->EnterSessionWithUserGestureOrFail();
+
+  // We should only have seen the first change indicating we have input sources.
+  uint32_t expected_change_events = 1;
+  t->PollJavaScriptBooleanOrFail(
+      "inputChangeEvents === " + base::NumberToString(expected_change_events),
+      WebXrVrBrowserTestBase::kPollTimeoutShort);
+
+  t->RunJavaScriptOrFail("assertHandTrackingFeatureState(true)");
+  t->RunJavaScriptOrFail("assertHandsNotPresent()");
+
+  // Add hand data, it should now be visible.
+  my_mock.SetDefaultHandData(index);
+  expected_change_events++;
+  t->PollJavaScriptBooleanOrFail(
+      "inputChangeEvents === " + base::NumberToString(expected_change_events),
+      WebXrVrBrowserTestBase::kPollTimeoutShort);
+
+  t->RunJavaScriptOrFail("assertHandsPresent()");
+
+  // Remove hand data, it should no longer be visible.
+  my_mock.ClearHandData(index);
+  expected_change_events++;
+  t->PollJavaScriptBooleanOrFail(
+      "inputChangeEvents === " + base::NumberToString(expected_change_events),
+      WebXrVrBrowserTestBase::kPollTimeoutShort);
+
+  t->RunJavaScriptOrFail("assertHandsNotPresent()");
+
+  t->AssertNoJavaScriptErrors();
+
+  t->RunJavaScriptOrFail("done()");
+  t->EndTest();
 }
 
 class WebXrHeadPoseMock : public MockXRDeviceHookBase {

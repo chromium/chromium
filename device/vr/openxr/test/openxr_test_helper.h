@@ -117,6 +117,10 @@ class OpenXrTestHelper : public device::ServiceTestHook {
   void UpdateEventQueue();
   XrResult PollEvent(XrEventDataBuffer* event_data);
 
+  void LocateJoints(XrHandTrackerEXT hand_tracker,
+                    const XrHandJointsLocateInfoEXT* locate_info,
+                    XrHandJointLocationsEXT* locations);
+
   // Methods that validate the parameter with the current state of the runtime.
   XrResult ValidateAction(XrAction action) const;
   XrResult ValidateActionCreateInfo(
@@ -178,6 +182,12 @@ class OpenXrTestHelper : public device::ServiceTestHook {
 
   static constexpr uint32_t kNumExtensionsSupported = std::size(kExtensions);
 
+  static constexpr XrSpaceLocationFlags kValidTrackedPoseFlags =
+      XR_SPACE_LOCATION_ORIENTATION_VALID_BIT |
+      XR_SPACE_LOCATION_POSITION_VALID_BIT |
+      XR_SPACE_LOCATION_ORIENTATION_TRACKED_BIT |
+      XR_SPACE_LOCATION_POSITION_TRACKED_BIT;
+
  private:
   struct ActionProperties {
     std::unordered_map<XrPath, XrPath> profile_binding_map;
@@ -207,6 +217,7 @@ class OpenXrTestHelper : public device::ServiceTestHook {
       uint32_t view_count,
       uint32_t index);
   bool GetCanCreateSession();
+  std::optional<gfx::Transform> GetTransformForSpace(XrSpace space);
 
   // Properties of the mock OpenXR runtime that doesn't change throughout the
   // lifetime of the instance. However, these aren't static because they are

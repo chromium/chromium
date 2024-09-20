@@ -20,9 +20,10 @@
 
 namespace device {
 
-// Update this string whenever either interface changes.
 constexpr unsigned int kMaxTrackedDevices = 64;
 constexpr unsigned int kMaxNumAxes = 5;
+constexpr unsigned int kNumJointsForTest =
+    static_cast<unsigned int>(device::mojom::XRHandJoint::kMaxValue) + 1;
 
 // These are largely the same as the OpenVR button/axis constants, but kept
 // separate so they're more runtime-agnostic.
@@ -128,6 +129,12 @@ struct XRHandJointData {
   float radius = 0;
 };
 
+// Overall struct for all data that may be sent up for a controller per frame.
+// Note that some complex times (e.g. vectors), cannot be used, since this data
+// ends up being transferred out of the browser process and into a separate DLL.
+// This means that we need PODs that do not have complex destructors that would
+// cause issues with data being freed in a different heap than where it was
+// allocated.
 struct COMPONENT_EXPORT(VR_TEST_HOOK) ControllerFrameData {
   unsigned int packet_number = 0;
   uint64_t buttons_pressed = 0;
@@ -136,7 +143,8 @@ struct COMPONENT_EXPORT(VR_TEST_HOOK) ControllerFrameData {
   ControllerAxisData axis_data[kMaxNumAxes];
   PoseFrameData pose_data = {};
   ControllerRole role = kControllerRoleInvalid;
-  std::vector<XRHandJointData> hand_data = {};
+  XRHandJointData hand_data[kNumJointsForTest];
+  bool has_hand_data = false;
   bool is_valid = false;
 
   ControllerFrameData();
