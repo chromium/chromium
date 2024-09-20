@@ -23,7 +23,6 @@ import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.base.AccountCapabilities;
 import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.base.CoreAccountId;
-import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.AccountInfoServiceProvider;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.test.util.AccountCapabilitiesBuilder;
@@ -85,7 +84,8 @@ public class AccountManagerTestRule implements TestRule {
 
     public static final AccountInfo TEST_ACCOUNT_NO_NAME =
             new AccountInfo.Builder(
-                            "test@gmail.com", FakeAccountManagerFacade.toGaiaId("test@gmail.com"))
+                            "test.noname@gmail.com",
+                            FakeAccountManagerFacade.toGaiaId("test.noname@gmail.com"))
                     .build();
 
     public static final AccountInfo TEST_ACCOUNT_NON_DISPLAYABLE_EMAIL =
@@ -339,17 +339,10 @@ public class AccountManagerTestRule implements TestRule {
         return mFakeAccountManagerFacade.blockGetCoreAccountInfos(populateCache);
     }
 
-    /** Converts an account email to its corresponding CoreAccountInfo object. */
-    public CoreAccountInfo toCoreAccountInfo(String accountEmail) {
-        String accountGaiaId = FakeAccountManagerFacade.toGaiaId(accountEmail);
-        return CoreAccountInfo.createFromEmailAndGaiaId(accountEmail, accountGaiaId);
-    }
-
     /**
-     * Creates an email used to identify child accounts in tests.
-     * A child-specific prefix will be appended to the base name so that the created account
-     * will be considered as {@link ChildAccountStatus#REGULAR_CHILD} in
-     * {@link FakeAccountManagerFacade}.
+     * Creates an email used to identify child accounts in tests. A child-specific prefix will be
+     * appended to the base name so that the created account will be considered as {@link
+     * ChildAccountStatus#REGULAR_CHILD} in {@link FakeAccountManagerFacade}.
      */
     public static String generateChildEmail(String baseName) {
         return FakeAccountManagerFacade.generateChildEmail(baseName);
