@@ -246,6 +246,12 @@ source_set("profile_statistics") {
     "//components/browsing_data/core",
     "//components/keyed_service/core",
   ]
+
+  deps = [
+    "//components/autofill/core/browser",
+    "//components/password_manager/core/browser/password_store:password_store_interface",
+    "//device/fido:fido",
+  ]
 }
 
 source_set("profile_statistics_impl") {
