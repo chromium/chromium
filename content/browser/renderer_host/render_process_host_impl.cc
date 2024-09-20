@@ -1243,10 +1243,6 @@ bool IsKeepAliveRefCountAllowed() {
              blink::features::kAttributionReportingInBrowserMigration);
 }
 
-BASE_FEATURE(kEnsureExistingRendererAlive,
-             "EnsureExistingRendererAlive",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 }  // namespace
 
 RenderProcessHostImpl::IOThreadHostImpl::IOThreadHostImpl(
@@ -4773,7 +4769,7 @@ RenderProcessHost* RenderProcessHostImpl::GetProcessHostForSiteInstance(
     base::UmaHistogramBoolean(
         "BrowserRenderProcessHost.ExistingRendererIsInitializedAndNotDead",
         render_process_host->IsInitializedAndNotDead());
-    if (base::FeatureList::IsEnabled(kEnsureExistingRendererAlive)) {
+    if (base::FeatureList::IsEnabled(features::kEnsureExistingRendererAlive)) {
       render_process_host->Init();
     }
   }
