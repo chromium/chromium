@@ -684,16 +684,8 @@ CroStatus V4L2VideoDecoder::SetupOutputFormat(const gfx::Size& size,
       continue;
     }
 
-    std::optional<struct v4l2_format> format =
-        output_queue_->TryFormat(pixfmt, size, 0);
-    if (!format)
-      continue;
-
-    gfx::Size adjusted_size(format->fmt.pix_mp.width,
-                            format->fmt.pix_mp.height);
-
     candidates.emplace_back(
-        PixelLayoutCandidate{.fourcc = *candidate, .size = adjusted_size});
+        PixelLayoutCandidate{.fourcc = *candidate, .size = size});
   }
 
   // Ask the pipeline to pick the output format.
