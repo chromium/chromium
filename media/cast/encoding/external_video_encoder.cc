@@ -780,8 +780,7 @@ void ExternalVideoEncoder::OnCreateVideoEncodeAccelerator(
       codec_profile = media::VP8PROFILE_ANY;
       break;
     case VideoCodec::kVP9:
-      // NOTE: Profile 2 is 10 or 12 bit 4:2:0.
-      codec_profile = media::VP9PROFILE_PROFILE2;
+      codec_profile = media::VP9PROFILE_PROFILE0;
       break;
     case VideoCodec::kH264:
       codec_profile = media::H264PROFILE_MAIN;
