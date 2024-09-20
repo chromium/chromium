@@ -162,7 +162,8 @@ void PinSetupScreen::ShowImpl() {
       user_manager::UserManager::Get()->IsLoggedInAsChildUser();
 
   if (view_) {
-    view_->Show(token, is_child_account, has_login_support_.value_or(false));
+    view_->Show(token, is_child_account, has_login_support_.value_or(false),
+                using_pin_as_main_factor_);
   }
 }
 

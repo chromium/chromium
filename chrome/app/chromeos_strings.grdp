@@ -1644,14 +1644,23 @@
   <message name="IDS_DISCOVER_PIN_SETUP_TITLE1_CHILD" desc="A title of the dialog that starts 'PIN-unlock' setup process, and asks user to type their pin, when a child account is in use.">
     Choose a PIN
   </message>
+  <message name="IDS_DISCOVER_PIN_SETUP_PIN_AS_MAIN_FACTOR_TITLE" desc="A title of the dialog asking the user to set up a PIN as the main factor for signing in.">
+    Set a PIN to make it easier to sign in
+  </message>
   <message name="IDS_DISCOVER_PIN_SETUP_SUBTITLE1" desc="A sub-title of the dialog that starts 'PIN-unlock' setup process. Subtitle explains to the user how this feature can be configured.">
     Use a number (PIN) instead of a password to unlock your device. To set your PIN later, go to Settings.
   </message>
   <message name="IDS_DISCOVER_PIN_SETUP_SUBTITLE1_CHILD" desc="A sub-title of the dialog that starts 'PIN-unlock' setup process, when a child account is in use. Subtitle explains to the user how this feature can be configured.">
     Your child can use a number (PIN) instead of a password to unlock this device. To set a PIN later, go to Settings.
   </message>
+  <message name="IDS_DISCOVER_PIN_SETUP_PIN_AS_MAIN_FACTOR_SUBTITLE" desc="A sub-title of the dialog asking the user to set up a PIN as the main factor for signing in.">
+    Instead of entering your Google Account password to sign in, you can create a PIN for this <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>
+  </message>
   <message name="IDS_DISCOVER_PIN_SETUP_SKIP" desc="A label on the button that interrupts current setup flow.">
     Skip
+  </message>
+  <message name="IDS_DISCOVER_PIN_SETUP_PIN_AS_MAIN_FACTOR_SKIP" desc="A label on the button of the PIN setup screen allowing the user to use a password instead of a PIN">
+    Use password instead
   </message>
   <message name="IDS_DISCOVER_PIN_SETUP_TITLE2" desc="A title of the dialog that continues 'PIN-unlock' setup process, and asks user to type their pin again for verification.">
     Type your PIN again

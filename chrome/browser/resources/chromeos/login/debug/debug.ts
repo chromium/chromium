@@ -1549,6 +1549,26 @@ const KNOWN_SCREENS: ScreenDefType[] = [
               MessageType.TOO_LONG, ProblemType.ERROR);
         },
       },
+      {
+        id: 'pin-as-main-factor',
+        trigger: (screen: any) => {
+          screen.setUsingPinAsMainFactor(true);
+        },
+      },
+      {
+        id: 'pin-for-unlock-only',
+        trigger: (screen: any) => {
+          screen.setUsingPinAsMainFactor(false);
+          screen.setHasLoginSupport(false);
+        },
+      },
+      {
+        id: 'pin-default',
+        trigger: (screen: any) => {
+          screen.setUsingPinAsMainFactor(false);
+          screen.setHasLoginSupport(true);
+        },
+      },
     ],
   },
   {

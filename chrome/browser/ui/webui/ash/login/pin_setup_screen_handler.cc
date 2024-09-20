@@ -14,6 +14,7 @@
 #include "chrome/browser/ash/login/screens/pin_setup_screen.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/login/localized_values_builder.h"
+#include "ui/chromeos/devicetype_utils.h"
 
 namespace ash {
 
@@ -49,6 +50,13 @@ void PinSetupScreenHandler::DeclareLocalizedValues(
                IDS_DISCOVER_PIN_SETUP_SUBTITLE3_WITH_LOGIN);
   builder->Add("discoverPinSetupSubtitle3WithLoginForChild",
                IDS_DISCOVER_PIN_SETUP_SUBTITLE3_WITH_LOGIN_CHILD);
+  builder->Add("discoverPinSetupPinAsMainFactorTitle",
+               IDS_DISCOVER_PIN_SETUP_PIN_AS_MAIN_FACTOR_TITLE);
+  builder->AddF("discoverPinSetupPinAsMainFactorSubtitle",
+                IDS_DISCOVER_PIN_SETUP_PIN_AS_MAIN_FACTOR_SUBTITLE,
+                ui::GetChromeOSDeviceName());
+  builder->Add("discoverPinSetupPinAsMainFactorSkip",
+               IDS_DISCOVER_PIN_SETUP_PIN_AS_MAIN_FACTOR_SKIP);
 
   // Format numbers to be used on the pin keyboard.
   for (int j = 0; j <= 9; j++) {
@@ -76,11 +84,13 @@ void PinSetupScreenHandler::DeclareLocalizedValues(
 
 void PinSetupScreenHandler::Show(const std::string& token,
                                  bool is_child_account,
-                                 bool has_login_support) {
+                                 bool has_login_support,
+                                 bool using_pin_as_main_factor) {
   ShowInWebUI(base::Value::Dict()
                   .Set("authToken", base::Value(token))
                   .Set("isChildAccount", is_child_account)
-                  .Set("hasLoginSupport", has_login_support));
+                  .Set("hasLoginSupport", has_login_support)
+                  .Set("usingPinAsMainSignInFactor", using_pin_as_main_factor));
 }
 
 void PinSetupScreenHandler::SetLoginSupportAvailable(bool available) {

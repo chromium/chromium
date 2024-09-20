@@ -86,6 +86,14 @@ class PinSetup extends PinSetupBase {
       },
 
       /**
+       * True when PIN is being offered as the main sign-in factor.
+       */
+      usingPinAsMainSignInFactor: {
+        type: Boolean,
+        value: false,
+      },
+
+      /**
        * Indicates whether user is a child account.
        */
       isChildAccount: {
@@ -100,6 +108,7 @@ class PinSetup extends PinSetupBase {
   authToken: string;
   private quickUnlockPrivate: typeof chrome.quickUnlockPrivate;
   private hasLoginSupport: boolean;
+  private usingPinAsMainSignInFactor: boolean;
   isChildAccount: boolean;
 
   override get EXTERNAL_API(): string[] {
@@ -138,6 +147,7 @@ class PinSetup extends PinSetupBase {
     this.authToken = data.authToken;
     this.isChildAccount = data.isChildAccount;
     this.hasLoginSupport = data.hasLoginSupport;
+    this.usingPinAsMainSignInFactor = data.usingPinAsMainSignInFactor;
   }
 
   /**
@@ -146,6 +156,14 @@ class PinSetup extends PinSetupBase {
    */
   setHasLoginSupport(hasLoginSupport: boolean): void {
     this.hasLoginSupport = hasLoginSupport;
+  }
+
+  /**
+   * Configures the screen to show strings letting the user know that PIN is
+   * being set up as a main factor for signing in.
+   */
+  setUsingPinAsMainFactor(usingPinAsMainFactor: boolean): void {
+    this.usingPinAsMainSignInFactor = usingPinAsMainFactor;
   }
 
   private onIsConfirmStepChanged(): void {
@@ -160,6 +178,11 @@ class PinSetup extends PinSetupBase {
 
   private onSetPinDone(): void {
     this.setUIStep(PinSetupState.DONE);
+  }
+
+  private getSkipButtonLabel(usingPinAsMainSignInFactor: boolean): string {
+    return usingPinAsMainSignInFactor ? 'discoverPinSetupPinAsMainFactorSkip' :
+                                        'discoverPinSetupSkip';
   }
 
   private onSkipButton(): void {

@@ -90,6 +90,7 @@ export namespace OobeTypes {
     authToken: string;
     isChildAccount: boolean;
     hasLoginSupport: boolean;
+    usingPinAsMainSignInFactor: boolean;
   }
 
   /**
