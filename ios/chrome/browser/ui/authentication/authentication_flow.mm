@@ -78,6 +78,15 @@ enum class SigninAccountType {
   kMaxValue = kManaged,
 };
 
+enum class CancelationReason {
+  // Not canceled.
+  kNotCanceled,
+  // Canceled by the user.
+  kUserCanceled,
+  // Canceled, but not by the user.
+  kFailed,
+};
+
 // Returns yes if the browser has machine level policies.
 bool HasMachineLevelPolicies() {
   BrowserPolicyConnectorIOS* policy_connector =
@@ -107,7 +116,7 @@ bool HasMachineLevelPolicies() {
 - (void)completeSignInWithSuccess:(BOOL)success;
 
 // Cancels the current sign-in flow.
-- (void)cancelFlow;
+- (void)cancelFlowWithReason:(CancelationReason)byUser;
 
 // Handles an authentication error and show an alert to the user.
 - (void)handleAuthenticationError:(NSError*)error;
@@ -122,7 +131,7 @@ bool HasMachineLevelPolicies() {
   // State machine tracking.
   AuthenticationState _state;
   BOOL _didSignIn;
-  BOOL _failedOrCancelled;
+  CancelationReason _cancelationReason;
   BOOL _shouldSignOut;
   BOOL _alreadySignedInWithTheSameAccount;
   // YES if the signed in account is a managed account and the sign-in flow
@@ -215,7 +224,7 @@ bool HasMachineLevelPolicies() {
     // The performer might not have been able to continue the flow if it was
     // waiting for a callback (e.g. waiting for AccountReconcilor). In this
     // case, we force the flow to finish synchronously.
-    [self cancelFlow];
+    [self cancelFlowWithReason:CancelationReason::kFailed];
   }
   DCHECK_EQ(DONE, _state);
 }
@@ -227,8 +236,8 @@ bool HasMachineLevelPolicies() {
 
 #pragma mark - State machine management
 
-- (AuthenticationState)nextStateFailedOrCancelled {
-  DCHECK(_failedOrCancelled);
+- (AuthenticationState)nextStateFailedOrCanceled {
+  DCHECK([self canceled]);
   switch (_state) {
     case BEGIN:
     case CHECK_SIGNIN_STEPS:
@@ -252,10 +261,10 @@ bool HasMachineLevelPolicies() {
 
 - (AuthenticationState)nextState {
   DCHECK(!self.handlingError);
-  if (_failedOrCancelled) {
-    return [self nextStateFailedOrCancelled];
+  if ([self canceled]) {
+    return [self nextStateFailedOrCanceled];
   }
-  DCHECK(!_failedOrCancelled);
+  DCHECK(![self canceled]);
   switch (_state) {
     case BEGIN:
       return CHECK_SIGNIN_STEPS;
@@ -465,22 +474,27 @@ bool HasMachineLevelPolicies() {
   [self continueSignin];
 }
 
-- (void)cancelFlow {
-  if (_failedOrCancelled) {
+- (BOOL)canceled {
+  return _cancelationReason != CancelationReason::kNotCanceled;
+}
+
+- (void)cancelFlowWithReason:(CancelationReason)reason {
+  CHECK_NE(reason, CancelationReason::kNotCanceled);
+  if ([self canceled]) {
     // Avoid double handling of cancel or error.
     return;
   }
-  _failedOrCancelled = YES;
+  _cancelationReason = reason;
   [self continueSignin];
 }
 
 - (void)handleAuthenticationError:(NSError*)error {
-  if (_failedOrCancelled) {
+  if ([self canceled]) {
     // Avoid double handling of cancel or error.
     return;
   }
   DCHECK(error);
-  _failedOrCancelled = YES;
+  _cancelationReason = CancelationReason::kFailed;
   self.handlingError = YES;
   __weak AuthenticationFlow* weakSelf = self;
   [_performer showAuthenticationError:error
@@ -541,7 +555,7 @@ bool HasMachineLevelPolicies() {
 }
 
 - (void)didCancelManagedConfirmation {
-  [self cancelFlow];
+  [self cancelFlowWithReason:CancelationReason::kUserCanceled];
 }
 
 - (void)didRegisterForUserPolicyWithDMToken:(NSString*)dmToken
