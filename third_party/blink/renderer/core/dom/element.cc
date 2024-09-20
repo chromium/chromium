@@ -110,6 +110,7 @@
 #include "third_party/blink/renderer/core/dom/presentation_attribute_style.h"
 #include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/scriptable_document_parser.h"
+#include "third_party/blink/renderer/core/dom/scroll_marker_pseudo_element.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/dom/slot_assignment.h"
 #include "third_party/blink/renderer/core/dom/space_split_string.h"
@@ -4135,11 +4136,11 @@ StyleRecalcChange Element::RecalcOwnStyle(
 
   // If element doesn't have ::column rules anymore clear column pseudo
   // elements.
-  if (old_style && old_style->CanGeneratePseudoElement(kPseudoIdColumn) &&
-      new_style && !new_style->CanGeneratePseudoElement(kPseudoIdColumn)) {
-    if (ElementRareDataVector* data = GetElementRareData()) {
-      data->ClearColumnPseudoElements();
-    }
+  if ((old_style && old_style->CanGeneratePseudoElement(kPseudoIdColumn) &&
+       new_style && !new_style->CanGeneratePseudoElement(kPseudoIdColumn)) ||
+      (old_style && old_style->CanGeneratePseudoElement(kPseudoIdColumn) &&
+       !new_style)) {
+    ClearColumnPseudoElements();
   }
 
   ProcessContainIntrinsicSizeChanges();
@@ -6957,6 +6958,20 @@ PseudoElement* Element::CreateColumnPseudoElement() {
   data.AddColumnPseudoElement(*column_pseudo_element);
   column_pseudo_element->InsertedInto(*this);
   probe::PseudoElementCreated(column_pseudo_element);
+
+  const ComputedStyle* scroll_marker_style =
+      CachedStyleForPseudoElement(kPseudoIdColumnScrollMarker);
+  if (!scroll_marker_style) {
+    return column_pseudo_element;
+  }
+  auto* scroll_marker =
+      MakeGarbageCollected<ScrollMarkerPseudoElement>(column_pseudo_element);
+  scroll_marker->SetComputedStyle(scroll_marker_style);
+  column_pseudo_element->EnsureElementRareData().SetPseudoElement(
+      kPseudoIdScrollMarker, scroll_marker);
+  scroll_marker->InsertedInto(*column_pseudo_element);
+  probe::PseudoElementCreated(scroll_marker);
+
   return column_pseudo_element;
 }
 
@@ -6973,6 +6988,15 @@ void Element::ClearColumnPseudoElements() {
   ElementRareDataVector* data = GetElementRareData();
   if (!data) {
     return;
+  }
+  if (const PseudoElementData::ColumnPseudoElementsVector*
+          column_pseudo_elements = data->GetColumnPseudoElements()) {
+    for (PseudoElement* column_pseudo_element : *column_pseudo_elements) {
+      if (ElementRareDataVector* column_data =
+              column_pseudo_element->GetElementRareData()) {
+        column_data->ClearPseudoElements();
+      }
+    }
   }
   data->ClearColumnPseudoElements();
 }

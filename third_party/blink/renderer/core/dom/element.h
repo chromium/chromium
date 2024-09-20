@@ -1375,8 +1375,10 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
 
   // Create per column (fragmentainer) ::column pseudo element during layout,
   // and add it to the end of the list of generated column pseudo elements.
-  // ClearColumnPseudoElements() needs to be called before each layout pass that
-  // generate these pseudo elements.
+  // Also, if ::column::scroll-marker is specified, it creates one
+  // ::scroll-marker per ::column pseudo element. ClearColumnPseudoElements()
+  // needs to be called before each layout pass that generate these pseudo
+  // elements.
   PseudoElement* CreateColumnPseudoElement();
   const HeapVector<Member<PseudoElement>>* GetColumnPseudoElements() const;
   void ClearColumnPseudoElements();

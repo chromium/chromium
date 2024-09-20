@@ -1184,6 +1184,7 @@ TEST_F(ElementTest, ColumnPseudoElements) {
   GetDocument().body()->setInnerHTML(R"HTML(
     <style id="test-style">
     #test::column { content: "*"; opacity: 0.5; }
+    #test::column::scroll-marker { content: "+"; opacity: 0.3; }
     </style>
     <div id="test"></div>
     )HTML");
@@ -1195,21 +1196,45 @@ TEST_F(ElementTest, ColumnPseudoElements) {
   PseudoElement* first_column_pseudo_element =
       element->CreateColumnPseudoElement();
   ASSERT_TRUE(first_column_pseudo_element);
+  EXPECT_EQ(first_column_pseudo_element->GetComputedStyle()->Opacity(), 0.5f);
+  ASSERT_TRUE(
+      first_column_pseudo_element->GetPseudoElement(kPseudoIdScrollMarker));
+  EXPECT_EQ(first_column_pseudo_element->GetPseudoElement(kPseudoIdScrollMarker)
+                ->GetComputedStyle()
+                ->Opacity(),
+            0.3f);
+
   PseudoElement* second_column_pseudo_element =
       element->CreateColumnPseudoElement();
   ASSERT_TRUE(second_column_pseudo_element);
+  EXPECT_EQ(second_column_pseudo_element->GetComputedStyle()->Opacity(), 0.5f);
+  ASSERT_TRUE(
+      second_column_pseudo_element->GetPseudoElement(kPseudoIdScrollMarker));
+  EXPECT_EQ(
+      second_column_pseudo_element->GetPseudoElement(kPseudoIdScrollMarker)
+          ->GetComputedStyle()
+          ->Opacity(),
+      0.3f);
+
   PseudoElement* third_column_pseudo_element =
       element->CreateColumnPseudoElement();
   ASSERT_TRUE(third_column_pseudo_element);
+  EXPECT_EQ(third_column_pseudo_element->GetComputedStyle()->Opacity(), 0.5f);
+  ASSERT_TRUE(
+      third_column_pseudo_element->GetPseudoElement(kPseudoIdScrollMarker));
+  EXPECT_EQ(third_column_pseudo_element->GetPseudoElement(kPseudoIdScrollMarker)
+                ->GetComputedStyle()
+                ->Opacity(),
+            0.3f);
 
   ASSERT_TRUE(element->GetColumnPseudoElements());
-  ASSERT_EQ(element->GetColumnPseudoElements()->size(), 3u);
+  EXPECT_EQ(element->GetColumnPseudoElements()->size(), 3u);
 
   Element* style = GetElementById("test-style");
   style->setInnerHTML("");
   GetDocument().UpdateStyleAndLayoutTree();
 
-  ASSERT_EQ(element->GetColumnPseudoElements()->size(), 0u);
+  EXPECT_EQ(element->GetColumnPseudoElements()->size(), 0u);
 }
 
 }  // namespace blink
