@@ -1747,23 +1747,45 @@ void HostProcess::InitializeSignaling() {
   ftl_signaling_connector_->Start();
 
   // Create the appropriate API service client (corp, cloud or me2me) for the
-  // HeartbeatSender, based on available OAuth scope.
+  // HeartbeatSender.
   std::unique_ptr<HeartbeatServiceClient> service_client;
+  bool use_cloud_api_service = false;
+  bool use_corp_api_service = false;
+  // First, check if we have the appropriate OAuth scope that can tell us which
+  // service client to create.
   if (HasScope(kChromotingOAuthCloudScope)) {
+    use_cloud_api_service = true;
+  } else if (HasScope(kChromotingOAuthCorpScope)) {
+    use_corp_api_service = true;
+  } else if (!HasScope(kChromotingOAuthMe2MeScope)) {
+    // No useful scopes found, so rely on our hints.
+    if (is_cloud_host_) {
+      use_cloud_api_service = true;
+    } else if (is_corp_host_) {
+      use_corp_api_service = true;
+    }
+    // Otherwise we default to me2me host.
+  }
+
+  if (use_cloud_api_service) {
     service_client = std::make_unique<CloudHeartbeatServiceClient>(
         host_id_, cloud_api_key_, oauth_token_getter_.get(),
         context_->url_loader_factory());
-  } else if (HasScope(kChromotingOAuthCorpScope)) {
-    service_client = std::make_unique<CorpHeartbeatServiceClient>(
-        host_id_, oauth_token_getter_.get(), context_->url_loader_factory());
-  } else if (HasScope(kChromotingOAuthMe2MeScope)) {
+  } else if (use_corp_api_service) {
+    // TODO garykac: The corp heartbeat api service client is NYI. Uncomment
+    // this out once it is implemented.
+    // For now, fall back to a basic me2me host.
+    // service_client = std::make_unique<CorpHeartbeatServiceClient>(
+    //    host_id_, oauth_token_getter_.get(),
+    //    context_->url_loader_factory());
     service_client = std::make_unique<Me2MeHeartbeatServiceClient>(
         host_id_, is_corp_host_, oauth_token_getter_.get(),
         context_->url_loader_factory());
   } else {
-    LOG(ERROR) << "Missing required OAuth scope - can't launch host";
-    ShutdownHost(kInvalidOauthCredentialsExitCode);
-    return;
+    // Default: Me2Me host
+    service_client = std::make_unique<Me2MeHeartbeatServiceClient>(
+        host_id_, is_corp_host_, oauth_token_getter_.get(),
+        context_->url_loader_factory());
   }
 
   heartbeat_sender_ = std::make_unique<HeartbeatSender>(
