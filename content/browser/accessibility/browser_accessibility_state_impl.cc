@@ -161,9 +161,21 @@ ui::AXMode FilterAccessibilityModeInvariants(ui::AXMode mode) {
   // WebContents if that WebContents also has the kWebContents mode enabled;
   // see `content::RenderFrameHostImpl::UpdateAccessibilityMode()` and
   // `content::RenderAccessibilityManager::SetMode()`.
-  return mode.has_mode(ui::AXMode::kWebContents)
-             ? mode
-             : (mode & ui::AXMode::kNativeAPIs);
+  if (!mode.has_mode(ui::AXMode::kWebContents)) {
+    return mode & ui::AXMode::kNativeAPIs;
+  }
+
+  // Form controls mode is restrictive. There are other modes that should not be
+  // used in combination with it. This could occur if something that needs
+  // screen reader mode is turned on after forms control mode. In that case,
+  // forms mode must be removed.
+  if (mode.has_mode(ui::AXMode::kInlineTextBoxes) ||
+      mode.has_mode(ui::AXMode::kScreenReader)) {
+    return ui::AXMode(mode.flags(), mode.experimental_flags() &
+                                        ~ui::AXMode::kExperimentalFormControls);
+  }
+
+  return mode;
 }
 
 
@@ -561,13 +573,6 @@ void BrowserAccessibilityStateImpl::SetProcessMode(ui::AXMode new_mode) {
   const ui::AXMode previous_mode = GetAccessibilityMode();
   if (new_mode == previous_mode) {
     return;
-  }
-
-  // Form controls mode is restrictive. There are other modes that should not be
-  // used in combination with it.
-  if (new_mode.HasExperimentalFlags(ui::AXMode::kExperimentalFormControls)) {
-    CHECK(!new_mode.has_mode(ui::AXMode::kInlineTextBoxes));
-    CHECK(!new_mode.has_mode(ui::AXMode::kScreenReader));
   }
 
   process_accessibility_mode_ = CreateScopedModeForProcess(new_mode);

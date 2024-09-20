@@ -436,27 +436,35 @@ void DumpAccessibilityTestBase::RunTestForPlatform(
       "/" + std::string(file_dir) + "/" + file_path.BaseName().MaybeAsASCII()));
   WebContentsImpl* web_contents = GetWebContents();
 
+  // Start with no AXMode, so that in case the test was run with
+  // --force-renderer-accessibility, we can still set the correct mode for the
+  // test, e.g. form controls mode.
+  BrowserAccessibilityState::GetInstance()->DisableAccessibility();
+
   if (enable_accessibility_after_navigating_ &&
       web_contents->GetAccessibilityMode().is_mode_off()) {
     // Load the url, then enable accessibility.
     EXPECT_TRUE(NavigateToURL(shell(), url));
     AccessibilityNotificationWaiter accessibility_waiter(
         web_contents, mode, ax::mojom::Event::kNone);
+    static_cast<BrowserAccessibilityStateImpl*>(
+        BrowserAccessibilityState::GetInstance())
+        ->SetAXModeChangeAllowed(false);
     ASSERT_TRUE(accessibility_waiter.WaitForNotification());
   } else {
     // Enable accessibility, then load the test html and wait for the
     // "load complete" AX event.
     AccessibilityNotificationWaiter accessibility_waiter(
         web_contents, mode, ax::mojom::Event::kLoadComplete);
+    static_cast<BrowserAccessibilityStateImpl*>(
+        BrowserAccessibilityState::GetInstance())
+        ->SetAXModeChangeAllowed(false);
     EXPECT_TRUE(NavigateToURL(shell(), url));
     // TODO(crbug.com/40844856): Investigate why this does not return
     // true.
     ASSERT_TRUE(accessibility_waiter.WaitForNotification());
   }
 
-  static_cast<BrowserAccessibilityStateImpl*>(
-      BrowserAccessibilityState::GetInstance())
-      ->SetAXModeChangeAllowed(false);
   WaitForAllFramesLoaded(mode);
 
   // Call the subclass to dump the output.

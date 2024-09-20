@@ -17,6 +17,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "content/browser/accessibility/accessibility_tree_formatter_blink.h"
+#include "content/browser/accessibility/browser_accessibility_state_impl.h"
 #include "content/browser/accessibility/dump_accessibility_browsertest_base.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/web_contents.h"
@@ -3263,6 +3264,20 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
                        AccessibilityRoleGroupFormControls) {
+  RunFormControlsTest(FILE_PATH_LITERAL("role-group.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityRoleGroupFormControlsWithInitialFullA11y) {
+  // First turn on full a11y, including screen reader mode.
+  WebContentsImpl* web_contents = GetWebContents();
+  static_cast<WebContentsImpl*>(web_contents)
+      ->AddAccessibilityModeForTesting(ui::kAXModeComplete);
+  BrowserAccessibilityState::GetInstance()->AddAccessibilityModeFlags(
+      ui::kAXModeComplete);
+
+  // Ensure that a form controls test can still set form controls mode even
+  // if incompatible modes were set previously.
   RunFormControlsTest(FILE_PATH_LITERAL("role-group.html"));
 }
 
