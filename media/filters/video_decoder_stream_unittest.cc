@@ -629,8 +629,8 @@ TEST_P(VideoDecoderStreamTest, ConfigChangeSwToHw) {
   EnablePlatformDecoders({1});
 
   // Create a demuxer stream with a config that increases in size
-  auto const size_delta = TestVideoConfig::ExtraLargeCodedSize() -
-                          TestVideoConfig::NormalCodedSize();
+  auto const size_delta =
+      TestVideoConfig::LargeCodedSize() - TestVideoConfig::NormalCodedSize();
   auto const width_delta = size_delta.width() / (kNumConfigs - 1);
   auto const height_delta = size_delta.height() / (kNumConfigs - 1);
   CreateDemuxerStream(TestVideoConfig::NormalCodedSize(),
@@ -647,7 +647,7 @@ TEST_P(VideoDecoderStreamTest, ConfigChangeSwToHw) {
   // We should end up on a hardware decoder
   EXPECT_TRUE(decoder_->IsPlatformDecoder());
 
-  // Test goes through 3 size changes from the initial ExtraLargeCodedSize, each
+  // Test goes through 3 size changes from the initial kHDSize, each
   // step increases by [width_delta, height_delta].
   auto expected_config = base_config;
   auto expected_size =
@@ -665,17 +665,17 @@ TEST_P(VideoDecoderStreamTest, ConfigChangeSwToHw) {
   EXPECT_TRUE(decoder_->eos_next_configs().back().Matches(expected_config));
 }
 
-// Tests that the decoder stream will switch from a hardware decoder to a
-// software decoder if the config size decreases
+// Tests that the decoder stream will stay on a hardware decoder when the config
+// size decreases.
 TEST_P(VideoDecoderStreamTest, ConfigChangeHwToSw) {
   EnablePlatformDecoders({1});
 
   // Create a demuxer stream with a config that progressively decreases in size
-  auto const size_delta = TestVideoConfig::ExtraLargeCodedSize() -
-                          TestVideoConfig::NormalCodedSize();
+  auto const size_delta =
+      TestVideoConfig::LargeCodedSize() - TestVideoConfig::NormalCodedSize();
   auto const width_delta = size_delta.width() / (kNumConfigs - 1);
   auto const height_delta = size_delta.height() / (kNumConfigs - 1);
-  CreateDemuxerStream(TestVideoConfig::ExtraLargeCodedSize(),
+  CreateDemuxerStream(TestVideoConfig::LargeCodedSize(),
                       gfx::Vector2dF(-width_delta, -height_delta));
   Initialize();
 
@@ -684,8 +684,8 @@ TEST_P(VideoDecoderStreamTest, ConfigChangeHwToSw) {
   EXPECT_TRUE(decoder_->IsPlatformDecoder());
   ReadAllFrames();
 
-  // We should end up on a software decoder
-  EXPECT_FALSE(decoder_->IsPlatformDecoder());
+  // We should remain on a hardware decoder.
+  EXPECT_TRUE(decoder_->IsPlatformDecoder());
 }
 
 TEST_P(VideoDecoderStreamTest, Read_ProperMetadata) {

@@ -48,13 +48,7 @@ enum class DecoderPriority {
 
 DecoderPriority SelectDecoderPriority(const VideoDecoderConfig& config,
                                       const VideoDecoder& decoder) {
-#if BUILDFLAG(IS_ANDROID)
   constexpr auto kSoftwareDecoderHeightCutoff = 360;
-#elif BUILDFLAG(IS_CHROMEOS_ASH)
-  constexpr auto kSoftwareDecoderHeightCutoff = 360;
-#else
-  constexpr auto kSoftwareDecoderHeightCutoff = 720;
-#endif
 
   // We only do a height check to err on the side of prioritizing platform
   // decoders.
@@ -171,6 +165,7 @@ void DecoderSelector<StreamType>::FinalizeDecoderSelection() {
 
   // Discard any remaining decoder instances, they won't be used.
   decoders_.clear();
+  prefer_prepended_platform_decoder_ = false;
 }
 
 template <DemuxerStream::Type StreamType>
@@ -178,11 +173,13 @@ void DecoderSelector<StreamType>::PrependDecoder(
     std::unique_ptr<Decoder> decoder) {
   DVLOG(2) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(decoders_.empty());
 
-  // Decoders inserted directly should be given priority over those returned by
-  // |create_decoders_cb_|.
+  // Prefer the existing decoder if it's a platform decoder, regardless of the
+  // current resolution. This avoids the potential for graphical glitches when
+  // temporaily adapting below the hardware decoder threshold.
+  prefer_prepended_platform_decoder_ = decoder->IsPlatformDecoder();
   decoders_.insert(decoders_.begin(), std::move(decoder));
-  FilterAndSortAvailableDecoders();
 }
 
 template <DemuxerStream::Type StreamType>
@@ -266,6 +263,7 @@ void DecoderSelector<StreamType>::ReturnSelectionError(DecoderStatus error) {
 
   decrypting_demuxer_stream_.reset();
   decoders_.clear();
+  prefer_prepended_platform_decoder_ = false;
   RunSelectDecoderCB(std::move(error));
 }
 
@@ -339,7 +337,10 @@ void DecoderSelector<StreamType>::FilterAndSortAvailableDecoders() {
   std::vector<std::unique_ptr<Decoder>> decoders = std::move(decoders_);
   std::vector<std::unique_ptr<Decoder>> deprioritized_decoders;
 
+  size_t decoder_index = 0;
   for (auto& decoder : decoders) {
+    ++decoder_index;
+
     // If the config is encrypted, skip decoders which don't support encryption.
     if (config_.is_encrypted() && !decoder->SupportsDecryption()) {
       continue;
@@ -350,16 +351,21 @@ void DecoderSelector<StreamType>::FilterAndSortAvailableDecoders() {
       continue;
     }
 
+    if (prefer_prepended_platform_decoder_ && decoder_index == 1) {
+      decoders_.push_back(std::move(decoder));
+      continue;
+    }
+
     // Run the predicate on this decoder.
     switch (SelectDecoderPriority(config_, *decoder)) {
       case DecoderPriority::kSkipped:
         continue;
       case DecoderPriority::kNormal:
         decoders_.push_back(std::move(decoder));
-        break;
+        continue;
       case DecoderPriority::kDeprioritized:
         deprioritized_decoders.push_back(std::move(decoder));
-        break;
+        continue;
     }
   }
 

@@ -156,6 +156,10 @@ class MEDIA_EXPORT DecoderSelector {
 
   const bool enable_priority_based_selection_;
 
+  // Indicates that the first decoder in `decoders_` is a platform decoder and
+  // should maintain its place when FilterAndSortAvailableDecoders() runs.
+  bool prefer_prepended_platform_decoder_ = false;
+
   base::WeakPtrFactory<DecoderSelector> weak_this_factory_{this};
 };
 
