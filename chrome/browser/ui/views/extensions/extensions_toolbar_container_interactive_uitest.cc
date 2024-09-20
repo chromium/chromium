@@ -20,8 +20,10 @@
 #include "chrome/browser/extensions/permissions/scripting_permissions_modifier.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_controller.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_coordinator.h"
@@ -29,12 +31,16 @@
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_button.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_interactive_uitest.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "chrome/test/interaction/interactive_browser_test.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
 #include "extensions/browser/disable_reason.h"
@@ -927,6 +933,11 @@ IN_PROC_BROWSER_TEST_P(ExtensionsToolbarRuntimeHostPermissionsBrowserTest,
   EXPECT_EQ(tooltip_has_access, GetActionTooltip());
 }
 
+// Avoid adding test to this class. Instead, prefer using
+// ExtensionsToolbarContainerFeatureInteractiveTest that uses a better test
+// framework.
+// TODO(crbug.com/368205259): Migrate tests to use
+// ExtensionsToolbarContainerFeatureInteractiveTest.
 class ExtensionsToolbarContainerFeatureUITest
     : public ExtensionsToolbarContainerUITest {
  public:
@@ -1292,75 +1303,6 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_FALSE(request_access_button()->GetVisible());
 }
 
-// Verifies extensions can add site access requests on active and inactive tabs,
-// but the request access button only shows extensions's requests for the
-// current tab.
-IN_PROC_BROWSER_TEST_F(ExtensionsToolbarContainerFeatureUITest,
-                       SiteAccessRequestsForMultipleTabs) {
-  // Install two extensions and withhold their host permissions.
-  auto extensionA =
-      InstallExtensionWithHostPermissions("Extension A", "<all_urls>");
-  auto extensionB =
-      InstallExtensionWithHostPermissions("Extension B", "<all_urls>");
-  ScriptingPermissionsModifier(profile(), extensionA)
-      .SetWithholdHostPermissions(true);
-  ScriptingPermissionsModifier(profile(), extensionB)
-      .SetWithholdHostPermissions(true);
-
-  // Open two tabs.
-  int tab1_index = 0;
-  int tab2_index = 1;
-  content::WebContents* tab1_web_contents = chrome::AddAndReturnTabAt(
-      browser(), GURL("https://cero.com/"), tab1_index,
-      /*foreground=*/true);
-  content::WebContents* tab2_web_contents =
-      chrome::AddAndReturnTabAt(browser(), GURL("https://one.com/"), tab2_index,
-                                /*foreground=*/false);
-  int tab1_id = extensions::ExtensionTabUtil::GetTabId(tab1_web_contents);
-  int tab2_id = extensions::ExtensionTabUtil::GetTabId(tab2_web_contents);
-
-  // Activate the first tab. Verify request access button is not visible
-  // since no extension has added a request for such tab.
-  browser()->tab_strip_model()->ActivateTabAt(tab1_index);
-  EXPECT_FALSE(request_access_button()->GetVisible());
-
-  // Add a site access request for extension A on the (active) first tab. Verify
-  // extension A is visible on the request access button.
-  auto* permissions_manager = PermissionsManager::Get(browser()->profile());
-  permissions_manager->AddSiteAccessRequest(tab1_web_contents, tab1_id,
-                                            *extensionA);
-  EXPECT_TRUE(request_access_button()->GetVisible());
-  EXPECT_THAT(request_access_button()->GetExtensionIdsForTesting(),
-              testing::ElementsAre(extensionA->id()));
-
-  // Add a site access request for extension B on the (inactive) second tab.
-  // Verify only extension A is visible on the request access button.
-  permissions_manager->AddSiteAccessRequest(tab2_web_contents, tab2_id,
-                                            *extensionB);
-  EXPECT_TRUE(request_access_button()->GetVisible());
-  EXPECT_THAT(request_access_button()->GetExtensionIdsForTesting(),
-              testing::ElementsAre(extensionA->id()));
-
-  // Activate the second tab. Verify extension B is visible on the request
-  // access button.
-  browser()->tab_strip_model()->ActivateTabAt(tab2_index);
-  EXPECT_TRUE(request_access_button()->GetVisible());
-  EXPECT_THAT(request_access_button()->GetExtensionIdsForTesting(),
-              testing::ElementsAre(extensionB->id()));
-
-  // Remove site access request from the second tab. Verify request access
-  // button is no longer visible since no extension have a request for such tab.
-  permissions_manager->RemoveSiteAccessRequest(tab2_id, extensionB->id());
-  EXPECT_FALSE(request_access_button()->GetVisible());
-
-  // Activate the first tab. Verify request access button is visible because
-  // Extension A request wasn't removed from that tab.
-  browser()->tab_strip_model()->ActivateTabAt(tab1_index);
-  EXPECT_TRUE(request_access_button()->GetVisible());
-  EXPECT_THAT(request_access_button()->GetExtensionIdsForTesting(),
-              testing::ElementsAre(extensionA->id()));
-}
-
 // Tests that the container has its visible children in the correct order when
 // there are dynamic updates (e.g extension is installed).
 IN_PROC_BROWSER_TEST_F(ExtensionsToolbarContainerFeatureUITest,
@@ -1443,4 +1385,155 @@ IN_PROC_BROWSER_TEST_F(ExtensionsToolbarContainerFeatureUITest,
   EXPECT_TRUE(
       views::IsViewClass<ExtensionsRequestAccessButton>(visible_children[2]));
   EXPECT_TRUE(views::IsViewClass<ExtensionsToolbarButton>(visible_children[3]));
+}
+
+class ExtensionsToolbarContainerFeatureInteractiveTest
+    : public InteractiveBrowserTest {
+ public:
+  ExtensionsToolbarContainerFeatureInteractiveTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        extensions_features::kExtensionsMenuAccessControl);
+  }
+  ExtensionsToolbarContainerFeatureInteractiveTest(
+      const ExtensionsToolbarContainerFeatureInteractiveTest&) = delete;
+  ExtensionsToolbarContainerFeatureInteractiveTest& operator=(
+      const ExtensionsToolbarContainerFeatureInteractiveTest&) = delete;
+
+  void SetUpOnMainThread() override {
+    InteractiveBrowserTest::SetUpOnMainThread();
+    ASSERT_TRUE(embedded_test_server()->Start());
+
+    permissions_manager_ = PermissionsManager::Get(browser()->profile());
+  }
+
+  void TearDownOnMainThread() override {
+    // Null explicitly to avoid dangling pointers.
+    permissions_manager_ = nullptr;
+    InProcessBrowserTest::TearDownOnMainThread();
+  }
+
+  scoped_refptr<const extensions::Extension>
+  InstallExtensionWithHostPermissions(const std::string& name,
+                                      const std::string& host_permission) {
+    extensions::TestExtensionDir extension_dir;
+    extension_dir.WriteManifest(base::StringPrintf(
+        R"({
+              "name": "%s",
+              "manifest_version": 3,
+              "host_permissions": ["%s"],
+              "version": "0.1"
+            })",
+        name.c_str(), host_permission.c_str()));
+    scoped_refptr<const extensions::Extension> extension =
+        extensions::ChromeTestExtensionLoader(browser()->profile())
+            .LoadExtension(extension_dir.UnpackedPath());
+    return extension;
+  }
+
+  // Adds a site access request for `extension` on `tab_index`.
+  void AddSiteAccessRequest(int tab_index,
+                            const extensions::Extension& extension) {
+    content::WebContents* web_contents =
+        browser()->tab_strip_model()->GetWebContentsAt(tab_index);
+    CHECK(web_contents);
+    int tab_id = extensions::ExtensionTabUtil::GetTabId(web_contents);
+    permissions_manager_->AddSiteAccessRequest(web_contents, tab_id, extension);
+  }
+
+  // Removes site access requests for `extension` on `tab_index`.
+  void RemoveSiteAccessRequest(int tab_index,
+                               const extensions::Extension& extension) {
+    content::WebContents* web_contents =
+        browser()->tab_strip_model()->GetWebContentsAt(tab_index);
+    CHECK(web_contents);
+    int tab_id = extensions::ExtensionTabUtil::GetTabId(web_contents);
+    permissions_manager_->RemoveSiteAccessRequest(tab_id, extension.id());
+  }
+
+  // Returns whether `expected_extensions` match the extensions in the request
+  // access button.
+  static base::OnceCallback<bool(ExtensionsRequestAccessButton*)>
+  CheckExtensionsInRequestAccessButton(
+      const std::vector<extensions::ExtensionId>& expected_extensions) {
+    return base::BindOnce(
+        [](const std::vector<extensions::ExtensionId>& expected_extensions,
+           ExtensionsRequestAccessButton* request_access_button) {
+          std::vector<extensions::ExtensionId> actual_extensions =
+              request_access_button->GetExtensionIdsForTesting();
+          return expected_extensions == actual_extensions;
+        },
+        expected_extensions);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+  raw_ptr<PermissionsManager> permissions_manager_;
+};
+
+// Verifies extensions can add site access requests on active and inactive tabs,
+// but the request access button only shows extensions's requests for the
+// current tab.
+IN_PROC_BROWSER_TEST_F(ExtensionsToolbarContainerFeatureInteractiveTest,
+                       SiteAccessRequestsForMultipleTabs) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kFirstTab);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSecondTab);
+  const GURL first_url("https://one.com/");
+  const GURL second_url("https://two.com/");
+  int first_tab_index = 0;
+  int second_tab_index = 1;
+
+  // Install two extensions and withhold their host permissions, so extensions
+  // can add site access requests.
+  auto extensionA =
+      InstallExtensionWithHostPermissions("Extension A", "<all_urls>");
+  auto extensionB =
+      InstallExtensionWithHostPermissions("Extension B", "<all_urls>");
+  extensions::ScriptingPermissionsModifier(browser()->profile(), extensionA)
+      .SetWithholdHostPermissions(true);
+  extensions::ScriptingPermissionsModifier(browser()->profile(), extensionB)
+      .SetWithholdHostPermissions(true);
+
+  RunTestSequence(
+      // Open two tabs.
+      InstrumentTab(kFirstTab), NavigateWebContents(kFirstTab, first_url),
+      AddInstrumentedTab(kSecondTab, second_url),
+
+      // Activate the first tab. Verify request access button is not visible
+      // since no extension has added a request for such tab.
+      SelectTab(kTabStripElementId, first_tab_index),
+      EnsureNotPresent(kExtensionsRequestAccessButtonElementId),
+
+      // Add a site access request for extension A on the (active) first tab.
+      // Verify extension A is visible on the request access button.
+      Do([&]() { AddSiteAccessRequest(first_tab_index, *extensionA); }),
+      WaitForShow(kExtensionsRequestAccessButtonElementId),
+      CheckView(kExtensionsRequestAccessButtonElementId,
+                CheckExtensionsInRequestAccessButton({extensionA->id()})),
+
+      // Add a site access request for extension B on the (inactive) second tab.
+      // Verify only extension A is visible on the request access button.
+      Do([&]() { AddSiteAccessRequest(second_tab_index, *extensionB); }),
+      WaitForShow(kExtensionsRequestAccessButtonElementId),
+      CheckView(kExtensionsRequestAccessButtonElementId,
+                CheckExtensionsInRequestAccessButton({extensionA->id()})),
+
+      // Activate the second tab. Verify extension B is visible on the request
+      // access button.
+      SelectTab(kTabStripElementId, second_tab_index),
+      WaitForShow(kExtensionsRequestAccessButtonElementId),
+      CheckView(kExtensionsRequestAccessButtonElementId,
+                CheckExtensionsInRequestAccessButton({extensionB->id()})),
+
+      // Remove site access request from the second tab. Verify request access
+      // button is no longer visible since no extension have a request for such
+      // tab.
+      Do([&]() { RemoveSiteAccessRequest(second_tab_index, *extensionB); }),
+      WaitForHide(kExtensionsRequestAccessButtonElementId),
+
+      // Activate the first tab. Verify request access button is visible because
+      // Extension A request wasn't removed from that tab.
+      SelectTab(kTabStripElementId, first_tab_index),
+      WaitForShow(kExtensionsRequestAccessButtonElementId),
+      CheckView(kExtensionsRequestAccessButtonElementId,
+                CheckExtensionsInRequestAccessButton({extensionA->id()})));
 }
