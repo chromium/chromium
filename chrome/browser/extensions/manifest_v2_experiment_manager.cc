@@ -230,6 +230,19 @@ bool ShouldDisableLegacyExtensions(MV2ExperimentStage stage) {
   }
 }
 
+// Returns true if the user is allowed to re-enable disabled extensions in the
+// given experiment `stage`.
+bool UserCanReEnableExtensionsForStage(MV2ExperimentStage stage) {
+  switch (stage) {
+    case MV2ExperimentStage::kNone:
+    case MV2ExperimentStage::kWarning:
+    case MV2ExperimentStage::kDisableWithReEnable:
+      return true;
+    case MV2ExperimentStage::kUnsupported:
+      return false;
+  }
+}
+
 }  // namespace
 
 ManifestV2ExperimentManager::ManifestV2ExperimentManager(
@@ -401,14 +414,18 @@ void ManifestV2ExperimentManager::DisableAffectedExtensions() {
   ExtensionRegistry* extension_registry =
       ExtensionRegistry::Get(browser_context_);
   std::set<scoped_refptr<const Extension>> extensions_to_disable;
+
+  bool user_reenable_allowed =
+      UserCanReEnableExtensionsForStage(experiment_stage_);
   for (const auto& extension : extension_registry->enabled_extensions()) {
     if (!impact_checker_.IsExtensionAffected(*extension)) {
       continue;
     }
 
-    if (DidUserReEnableExtension(extension->id())) {
+    if (user_reenable_allowed && DidUserReEnableExtension(extension->id())) {
       // The user explicitly chose to re-enable the extension after it was
-      // disabled. Allow it to remain enabled.
+      // disabled, and that's allowed in this experiment stage. Allow it to
+      // remain enabled.
       continue;
     }
 
@@ -481,6 +498,14 @@ void ManifestV2ExperimentManager::EmitMetricsForProfileReady() {
   if (!ShouldDisableLegacyExtensions(experiment_stage_)) {
     // Don't bother reporting MV2-specific metrics if the user isn't in an
     // environment in which extensions could be disabled.
+    return;
+  }
+
+  if (experiment_stage_ == MV2ExperimentStage::kUnsupported) {
+    // We don't yet differentiate between unsupported and disable-with-reenable
+    // phases, so just early out for unsupported.
+    // TODO(https://crbug.com/367395349): Add differentiated metrics for
+    // MV2ExperimentStage::kUnsupported and remove this early-return.
     return;
   }
 
