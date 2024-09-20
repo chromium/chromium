@@ -774,10 +774,12 @@ void RenderFrameHostManager::DidNavigateFrame(
     bool is_same_document_navigation,
     bool clear_proxies_on_commit,
     const blink::FramePolicy& frame_policy,
-    bool allow_paint_holding) {
+    bool allow_subframe_paint_holding,
+    bool is_initiated_by_animated_transition) {
   CommitPendingIfNecessary(render_frame_host, was_caused_by_user_gesture,
                            is_same_document_navigation, clear_proxies_on_commit,
-                           allow_paint_holding);
+                           allow_subframe_paint_holding,
+                           is_initiated_by_animated_transition);
 
   // Make sure any dynamic changes to this frame's sandbox flags and permissions
   // policy that were made prior to navigation take effect.  This should only
@@ -814,7 +816,8 @@ void RenderFrameHostManager::CommitPendingIfNecessary(
     bool was_caused_by_user_gesture,
     bool is_same_document_navigation,
     bool clear_proxies_on_commit,
-    bool allow_paint_holding) {
+    bool allow_subframe_paint_holding,
+    bool is_initiated_by_animated_transition) {
   if (!speculative_render_frame_host_) {
     // There's no speculative RenderFrameHost so it must be that the current
     // RenderFrameHost completed a navigation.
@@ -825,7 +828,8 @@ void RenderFrameHostManager::CommitPendingIfNecessary(
     // A cross-RenderFrameHost navigation completed, so show the new renderer.
     CommitPending(std::move(speculative_render_frame_host_),
                   std::move(stored_page_to_restore_), clear_proxies_on_commit,
-                  allow_paint_holding);
+                  allow_subframe_paint_holding,
+                  is_initiated_by_animated_transition);
 
     if (GetNavigationQueueingFeatureLevel() >=
         NavigationQueueingFeatureLevel::kAvoidRedundantCancellations) {
@@ -882,15 +886,9 @@ void RenderFrameHostManager::CommitPendingIfNecessary(
     // output on prerender activation.
     if (render_frame_host_->lifecycle_state() !=
         LifecycleStateImpl::kPrerendering) {
-      auto* rwhi = static_cast<RenderWidgetHostImpl*>(
-          render_frame_host_->GetView()->GetRenderWidgetHost());
-
-      rwhi->StartNewContentRenderingTimeout();
-      // Force the timer to expire immediately if we don't allow main frame
-      // paint holding.
-      if (frame_tree_node_->IsMainFrame() && !allow_paint_holding) {
-        rwhi->ForceFirstFrameAfterNavigationTimeout();
-      }
+      static_cast<RenderWidgetHostImpl*>(
+          render_frame_host_->GetView()->GetRenderWidgetHost())
+          ->StartNewContentRenderingTimeout();
     }
   }
 
@@ -1520,7 +1518,9 @@ void RenderFrameHostManager::PerformEarlyRenderFrameHostSwapIfNeeded(
       std::move(speculative_render_frame_host_),
       /*pending_stored_page=*/nullptr,
       request->browsing_context_group_swap().ShouldClearProxiesOnCommit(),
-      /*allow_paint_holding=*/false);
+      /* allow_subframe_paint_holding */ false,
+      /*is_initiated_by_animated_transition=*/
+      request->was_initiated_by_animated_transition());
   request->SetAssociatedRFHType(
       NavigationRequest::AssociatedRenderFrameHostType::CURRENT);
 
@@ -4658,7 +4658,8 @@ void RenderFrameHostManager::CommitPending(
     std::unique_ptr<RenderFrameHostImpl> pending_rfh,
     std::unique_ptr<StoredPage> pending_stored_page,
     bool clear_proxies_on_commit,
-    bool allow_paint_holding) {
+    bool allow_subframe_paint_holding,
+    bool is_initiated_by_animated_transition) {
   TRACE_EVENT1("navigation", "RenderFrameHostManager::CommitPending",
                "FrameTreeNode id", frame_tree_node_->frame_tree_node_id());
   CHECK(pending_rfh);
@@ -4956,11 +4957,9 @@ void RenderFrameHostManager::CommitPending(
   // valid surface id, because it already has that surface embedded through
   // `RenderFrameHostImpl::WillLeaveBackForwardCache` and the timeout that
   // would be set here will clear that frame (incorrectly).
-  if (is_main_frame && allow_paint_holding && old_view &&
-      old_view != new_view) {
-    // If allowed, we should take the fallback in any of the following cases:
-    //  - We're not coming from BFCache
-    //  - We don't have a valid surface id to display.
+  if (is_main_frame && old_view && old_view != new_view) {
+    // We should take the fallback if we're not coming from BFCache or if we
+    // don't have a valid surface id to display.
     auto* render_widget_host_view_base =
         static_cast<RenderWidgetHostViewBase*>(render_frame_host_->GetView());
     should_take_fallback_content =
@@ -4974,6 +4973,11 @@ void RenderFrameHostManager::CommitPending(
   // the RFH so that we can clean up RendererResources related to the RFH first.
   delegate_->NotifySwappedFromRenderManager(old_render_frame_host.get(),
                                             render_frame_host_.get());
+
+  // Disable paint holding if the committing request is being animated.
+  if (is_initiated_by_animated_transition) {
+    should_take_fallback_content = false;
+  }
 
   if (should_take_fallback_content) {
     new_view->TakeFallbackContentFrom(old_view);
@@ -5095,7 +5099,7 @@ void RenderFrameHostManager::CommitPending(
   if (proxy_to_parent_or_outer_delegate) {
     proxy_to_parent_or_outer_delegate->SetChildRWHView(
         static_cast<RenderWidgetHostViewChildFrame*>(new_view),
-        old_size ? &*old_size : nullptr, allow_paint_holding);
+        old_size ? &*old_size : nullptr, allow_subframe_paint_holding);
   }
 
   if (render_frame_host_->is_local_root()) {
@@ -5504,7 +5508,8 @@ void RenderFrameHostManager::CreateNewFrameForInnerDelegateAttachIfNecessary() {
   CommitPending(std::move(speculative_render_frame_host_),
                 /*pending_stored_page=*/nullptr,
                 /*clear_proxies_on_commit=*/false,
-                /*allow_paint_holding=*/false);
+                /*allow_subframe_paint_holding=*/false,
+                /*is_initiated_by_animated_transition=*/false);
   NotifyPrepareForInnerDelegateAttachComplete(true /* success */);
 }
 

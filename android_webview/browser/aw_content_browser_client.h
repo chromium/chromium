@@ -299,7 +299,6 @@ class AwContentBrowserClient : public content::ContentBrowserClient {
                                  content::WebContents* web_contents,
                                  const GURL& url,
                                  const blink::StorageKey& storage_key) override;
-  bool AllowNonActivatedCrossOriginPaintHolding() override;
 
   AwFeatureListCreator* aw_feature_list_creator() {
     return aw_feature_list_creator_;

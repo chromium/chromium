@@ -3043,10 +3043,6 @@ class CONTENT_EXPORT ContentBrowserClient {
   // satisfied, and false when the request was refused.
   virtual void OnUiaProviderRequested(bool uia_provider_enabled);
 #endif
-
-  // Indicates whether this client allows paint holding in cross-origin
-  // navigations even if there was no user activation.
-  virtual bool AllowNonActivatedCrossOriginPaintHolding();
 };
 
 }  // namespace content

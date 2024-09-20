@@ -8252,11 +8252,6 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTestWithBFCache,
   bool timer_should_set =
       !rwhvb_a->GetLocalSurfaceId().is_valid() || rwhvb_a->is_evicted();
 
-  // Ensure there is an activation to allow cross-origin paint holding.
-  web_contents()->GetPrimaryMainFrame()->ActivateUserActivation(
-      blink::mojom::UserActivationNotificationType::kInteraction,
-      /*sticky_only=*/true);
-
   // Navigate back to A.
   ASSERT_TRUE(HistoryGoBack(web_contents()));
   EXPECT_EQ(rfh_a, web_contents()->GetPrimaryMainFrame());
@@ -8281,47 +8276,12 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTestWithBFCache,
       static_cast<RenderViewHostImpl*>(rfh_a->GetRenderViewHost());
   std::vector<viz::SurfaceId> ids = rvh_a->CollectSurfaceIdsForEviction();
 
-  web_contents()->GetPrimaryMainFrame()->ActivateUserActivation(
-      blink::mojom::UserActivationNotificationType::kInteraction,
-      /*sticky_only=*/true);
-
   // Navigate back to A.
   ASSERT_TRUE(HistoryGoBack(web_contents()));
   EXPECT_EQ(rfh_a, web_contents()->GetPrimaryMainFrame());
   RenderWidgetHostImpl* rwhi_a =
       RenderWidgetHostImpl::From(rfh_a->GetView()->GetRenderWidgetHost());
   EXPECT_TRUE(rwhi_a->IsContentRenderingTimeoutRunning());
-}
-
-// Test that the new content timeout only applies when there is a user
-// activation, since cross-origin paint holding does not apply otherwise. See
-// also NewContentTimeoutIsSetWhenLeavingBFCacheWithoutSurface and
-// crbug.com/40942531.
-IN_PROC_BROWSER_TEST_F(
-    RenderFrameHostImplBrowserTestWithBFCache,
-    IsNotSetWhenLeavingBFCacheWithoutSurfaceOrUserActivation) {
-  GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
-  GURL url_b(embedded_test_server()->GetURL("b.com", "/title2.html"));
-
-  // Navigate to A.
-  EXPECT_TRUE(NavigateToURL(shell(), url_a));
-  RenderFrameHostImpl* rfh_a = web_contents()->GetPrimaryMainFrame();
-
-  // Navigate to B.
-  EXPECT_TRUE(NavigateToURL(shell(), url_b));
-  EXPECT_TRUE(rfh_a->IsInBackForwardCache());
-  RenderViewHostImpl* rvh_a =
-      static_cast<RenderViewHostImpl*>(rfh_a->GetRenderViewHost());
-  std::vector<viz::SurfaceId> ids = rvh_a->CollectSurfaceIdsForEviction();
-
-  // Navigate back to A.
-  ASSERT_TRUE(HistoryGoBack(web_contents()));
-  EXPECT_EQ(rfh_a, web_contents()->GetPrimaryMainFrame());
-  RenderWidgetHostImpl* rwhi_a =
-      RenderWidgetHostImpl::From(rfh_a->GetView()->GetRenderWidgetHost());
-  // Here we verify that the timeout is not running as a proxy to say that there
-  // is no paint holding. It would be nice to directly check this instead.
-  EXPECT_FALSE(rwhi_a->IsContentRenderingTimeoutRunning());
 }
 
 namespace {
