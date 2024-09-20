@@ -374,7 +374,7 @@ BASE_FEATURE(kSaveRawFilesOnTracing,
 // When enabled, skip dropping ARCVM page cache after boot.
 BASE_FEATURE(kSkipDropCaches,
              "ArcSkipDropPageCache",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // When enabled, CertStoreService will talk to KeyMint instead of Keymaster on
 // ARC-T.
