@@ -96,6 +96,8 @@ class VIEWS_EXPORT EditableCombobox : public View,
   const std::u16string& GetText() const;
   void SetText(const std::u16string& text);
 
+  void SetInvalid(bool invalid);
+
   const std::u16string& GetPlaceholderText() const;
   void SetPlaceholderText(const std::u16string& text);
 

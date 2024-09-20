@@ -311,7 +311,7 @@ void PasswordGenerationPopupViewViews::GeneratedPasswordBox::Init(
   DCHECK(!password_label_);
   password_label_ = AddChildView(std::make_unique<views::Label>(
       controller_->password(), views::style::CONTEXT_DIALOG_BODY_TEXT,
-      STYLE_SECONDARY_MONOSPACED));
+      views::style::STYLE_SECONDARY_MONOSPACED));
   layout->SetFlexForView(password_label_, 1);
   UpdateAccessibleNameAndDescription();
 }

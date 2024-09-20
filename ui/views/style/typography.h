@@ -47,6 +47,9 @@ enum TextContext {
   // Placeholder text in a text field.
   CONTEXT_TEXTFIELD_PLACEHOLDER,
 
+  // Supporting text for a text field, usually below it.
+  CONTEXT_TEXTFIELD_SUPPORTING_TEXT,
+
   // Text in a menu.
   CONTEXT_MENU,
 
@@ -108,6 +111,18 @@ enum TextStyle {
   STYLE_LINK,
   // Active tab in a tabbed pane.
   STYLE_TAB_ACTIVE,
+
+  // Similar to STYLE_PRIMARY but with a monospaced typeface.
+  // It is currently expected to be overridden by `ChromeTypographyProvider`,
+  // and the default implementation is not actually monospaced.
+  // TODO(crbug.com/367623931): Add proper default implementation.
+  STYLE_PRIMARY_MONOSPACED,
+
+  // Similar to views::style::STYLE_SECONDARY but with a monospaced typeface.
+  // It is currently expected to be overridden by `ChromeTypographyProvider`,
+  // and the default implementation is not actually monospaced.
+  // TODO(crbug.com/367623931): Add proper default implementation.
+  STYLE_SECONDARY_MONOSPACED,
 
   // CR2023 typography tokens.
   // These styles override the style specified by TextContext.

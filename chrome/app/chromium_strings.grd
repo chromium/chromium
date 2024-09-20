@@ -1156,6 +1156,12 @@ Permissions you've already given to websites and apps may apply to this account.
         <message name="IDS_CLOSE_WARNING_FOR_CLEAR_COOKIES_ON_EXIT_TEXT" desc="Body of a notice displayed when closing the last Chrome window, to inform the user about a change in the way the 'Clear cookie on exit' setting works.">
           You’ll be signed out of most sites when you close all Chromium windows, except your Google Account if you’re signed in to Chromium. To let sites remember you, <ph name="SETTINGS_LINK">$1<ex>go to settings</ex></ph>.
         </message>
+        <message name="IDS_SYNC_PASSPHRASE_DIALOG_FOOTER_LINK" desc="">
+          clear the Chromium data in your account
+        </message>
+        <message name="IDS_SYNC_PASSPHRASE_DIALOG_BODY" desc="">
+          Your data is encrypted with your passphrase. Enter it to use and save Chromium data in your Google account.
+        </message>
         <message name="IDS_AVATAR_BUTTON_INTERCEPT_BUBBLE_CHROME_SIGNIN_ACCESSIBILITY_LABEL"
           desc="Accessibility label (read by the accessibility tools) of the avatar button when the Chromium Signin bubble is shown. The text implies that the expanded bubble underneath the button is closable by clicking on the button. The actual text is 'Sign in to Chromium?' with a bubble shown under it.">
           Click to close the Chromium sign-in dialog

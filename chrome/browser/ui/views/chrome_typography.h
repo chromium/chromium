@@ -92,14 +92,8 @@ enum ChromeTextStyle {
   CHROME_TEXT_STYLE_START = views::style::VIEWS_TEXT_STYLE_END,
 #endif
 
-  // Similar to views::style::STYLE_PRIMARY but with a monospaced typeface.
-  STYLE_PRIMARY_MONOSPACED = CHROME_TEXT_STYLE_START,
-
-  // Similar to views::style::STYLE_SECONDARY but with a monospaced typeface.
-  STYLE_SECONDARY_MONOSPACED,
-
   // A solid shade of red.
-  STYLE_RED,
+  STYLE_RED = CHROME_TEXT_STYLE_START,
 
   // A solid shade of green.
   STYLE_GREEN,

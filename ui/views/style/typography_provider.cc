@@ -313,6 +313,7 @@ ui::ColorId TypographyProvider::GetColorIdImpl(int context, int style) const {
     case style::CONTEXT_TEXTFIELD:
       return ui::kColorTextfieldForeground;
     case style::CONTEXT_TEXTFIELD_PLACEHOLDER:
+    case style::CONTEXT_TEXTFIELD_SUPPORTING_TEXT:
       return (style == style::STYLE_INVALID)
                  ? ui::kColorTextfieldForegroundPlaceholderInvalid
                  : ui::kColorTextfieldForegroundPlaceholder;

@@ -5473,6 +5473,8 @@ static_library("ui") {
         "idle_dialog.h",
         "sharing_hub/sharing_hub_bubble_controller_desktop_impl.cc",
         "sharing_hub/sharing_hub_bubble_controller_desktop_impl.h",
+        "sync/sync_passphrase_dialog.cc",
+        "sync/sync_passphrase_dialog.h",
         "views/frame/opaque_browser_frame_view.cc",
         "views/frame/opaque_browser_frame_view.h",
         "views/frame/opaque_browser_frame_view_layout.cc",

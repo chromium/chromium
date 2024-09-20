@@ -136,7 +136,7 @@ std::unique_ptr<views::Label> CreatePasswordLabel(
   std::unique_ptr<views::Label> label = std::make_unique<views::Label>(
       GetDisplayPassword(form), views::style::CONTEXT_DIALOG_BODY_TEXT);
   if (!form.IsFederatedCredential()) {
-    label->SetTextStyle(STYLE_SECONDARY_MONOSPACED);
+    label->SetTextStyle(views::style::STYLE_SECONDARY_MONOSPACED);
     label->SetObscured(true);
     label->SetElideBehavior(gfx::TRUNCATE);
   } else {
@@ -247,8 +247,8 @@ std::unique_ptr<views::EditablePasswordCombobox> CreateEditablePasswordCombobox(
       std::make_unique<ui::SimpleComboboxModel>(
           std::vector<ui::SimpleComboboxModel::Item>(passwords.begin(),
                                                      passwords.end())),
-      views::style::CONTEXT_BUTTON, STYLE_PRIMARY_MONOSPACED, kDisplayArrow,
-      std::move(reveal_password_callback));
+      views::style::CONTEXT_BUTTON, views::style::STYLE_PRIMARY_MONOSPACED,
+      kDisplayArrow, std::move(reveal_password_callback));
   combobox->SetText(form.password_value);
   combobox->SetPasswordIconTooltips(
       l10n_util::GetStringUTF16(IDS_MANAGE_PASSWORDS_SHOW_PASSWORD),

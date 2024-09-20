@@ -90,6 +90,15 @@ EditablePasswordCombobox::EditablePasswordCombobox(
                        text_context,
                        text_style,
                        display_arrow) {
+  // By default, clicking on the eye reveals/hides passwords.
+  if (!eye_callback) {
+    eye_callback = base::BindRepeating(
+        [](views::EditablePasswordCombobox* combobox_ptr) {
+          combobox_ptr->RevealPasswords(!combobox_ptr->ArePasswordsRevealed());
+        },
+        base::Unretained(this));
+  }
+
   // If there is no arrow for a dropdown element, then the eye is too close to
   // the border of the textarea - therefore add additional padding.
   std::unique_ptr<ToggleImageButton> eye = CreateEye(std::move(eye_callback));

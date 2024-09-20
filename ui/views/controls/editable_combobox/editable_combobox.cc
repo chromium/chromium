@@ -422,6 +422,10 @@ void EditableCombobox::SetText(const std::u16string& text) {
   HandleNewContent(text);
 }
 
+void EditableCombobox::SetInvalid(bool invalid) {
+  textfield_->SetInvalid(invalid);
+}
+
 const std::u16string& EditableCombobox::GetPlaceholderText() const {
   return textfield_->GetPlaceholderText();
 }

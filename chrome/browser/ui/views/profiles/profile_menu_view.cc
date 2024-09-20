@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/feature_list.h"
+#include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
@@ -48,6 +49,7 @@
 #include "chrome/browser/ui/profiles/profile_colors_util.h"
 #include "chrome/browser/ui/profiles/profile_picker.h"
 #include "chrome/browser/ui/profiles/profile_view_utils.h"
+#include "chrome/browser/ui/sync/sync_passphrase_dialog.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/accessibility/non_accessible_image_view.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -361,6 +363,19 @@ void ProfileMenuView::OnSyncErrorButtonClicked(AvatarSyncErrorType error) {
           browser(), syncer::TrustedVaultUserActionTriggerForUMA::kProfileMenu);
       break;
     case AvatarSyncErrorType::kPassphraseError:
+#if !BUILDFLAG(IS_CHROMEOS)
+      if (base::FeatureList::IsEnabled(switches::kImprovedSigninUIOnDesktop)) {
+        ShowSyncPassphraseDialog(
+            *browser(), base::BindRepeating(
+                            &SyncPassphraseDialogDecryptData,
+                            base::Unretained(SyncServiceFactory::GetForProfile(
+                                browser()->profile()))));
+      } else {
+        chrome::ShowSettingsSubPage(browser(), chrome::kSyncSetupSubPage);
+      }
+      break;
+#endif
+    // Intentional fallthrough on ChromeOS.
     case AvatarSyncErrorType::kSettingsUnconfirmedError:
       chrome::ShowSettingsSubPage(browser(), chrome::kSyncSetupSubPage);
       break;

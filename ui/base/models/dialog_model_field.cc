@@ -107,12 +107,12 @@ DialogModelField::~DialogModelField() = default;
 
 base::CallbackListSubscription DialogModelField::AddOnFieldChangedCallback(
     base::RepeatingClosure on_field_changed) {
-  return on_field_changed_.Add(on_field_changed);
+  return on_field_changed_.Add(std::move(on_field_changed));
 }
 
 void DialogModelField::SetVisible(bool visible) {
   is_visible_ = visible;
-  on_field_changed_.Notify();
+  NotifyOnFieldChanged();
 }
 
 DialogModelParagraph* DialogModelField::AsParagraph() {
@@ -149,9 +149,18 @@ DialogModelTextfield* DialogModelField::AsTextfield() {
   return static_cast<DialogModelTextfield*>(this);
 }
 
+DialogModelPasswordField* DialogModelField::AsPasswordField() {
+  CHECK_EQ(type_, kPasswordField);
+  return static_cast<DialogModelPasswordField*>(this);
+}
+
 DialogModelCustomField* DialogModelField::AsCustomField() {
   CHECK_EQ(type_, kCustom, base::NotFatalUntil::M123);
   return static_cast<DialogModelCustomField*>(this);
+}
+
+void DialogModelField::NotifyOnFieldChanged() {
+  on_field_changed_.Notify();
 }
 
 DialogModelParagraph::DialogModelParagraph(const DialogModelLabel& label,
@@ -297,7 +306,45 @@ DialogModelTextfield::~DialogModelTextfield() = default;
 
 void DialogModelTextfield::OnTextChanged(base::PassKey<DialogModelFieldHost>,
                                          std::u16string text) {
+  if (text == text_) {
+    return;
+  }
   text_ = std::move(text);
+  NotifyOnFieldChanged();
+}
+
+DialogModelPasswordField::DialogModelPasswordField(
+    ElementIdentifier id,
+    std::u16string label,
+    std::u16string accessible_name,
+    std::u16string incorrect_password_text,
+    const DialogModelField::Params& params)
+    : DialogModelField(kPasswordField, id, /*accelerators=*/{}, params),
+      label_(std::move(label)),
+      accessible_name_(std::move(accessible_name)),
+      incorrect_password_text_(std::move(incorrect_password_text)) {}
+
+DialogModelPasswordField::~DialogModelPasswordField() = default;
+
+void DialogModelPasswordField::Invalidate() {
+  on_invalidate_closures_.Notify();
+}
+
+void DialogModelPasswordField::OnTextChanged(
+    base::PassKey<DialogModelFieldHost>,
+    std::u16string text) {
+  if (text == text_) {
+    return;
+  }
+  text_ = std::move(text);
+  NotifyOnFieldChanged();
+}
+
+base::CallbackListSubscription
+DialogModelPasswordField::AddOnInvalidateCallback(
+    base::PassKey<DialogModelFieldHost>,
+    base::RepeatingClosure closure) {
+  return on_invalidate_closures_.Add(std::move(closure));
 }
 
 DialogModelCustomField::Field::~Field() = default;
@@ -377,6 +424,11 @@ DialogModelTextfield* DialogModelSection::GetTextfieldByUniqueId(
   return GetFieldByUniqueId(id)->AsTextfield();
 }
 
+DialogModelPasswordField* DialogModelSection::GetPasswordFieldByUniqueId(
+    ElementIdentifier id) {
+  return GetFieldByUniqueId(id)->AsPasswordField();
+}
+
 void DialogModelSection::AddParagraph(const DialogModelLabel& label,
                                       std::u16string header,
                                       ElementIdentifier id) {
@@ -424,6 +476,17 @@ void DialogModelSection::AddTextfield(
     const DialogModelTextfield::Params& params) {
   AddField(std::make_unique<DialogModelTextfield>(id, std::move(label),
                                                   std::move(text), params));
+}
+
+void DialogModelSection::AddPasswordField(
+    ElementIdentifier id,
+    std::u16string label,
+    std::u16string accessible_text,
+    std::u16string incorrect_password_text,
+    const DialogModelField::Params& params) {
+  AddField(std::make_unique<DialogModelPasswordField>(
+      id, std::move(label), std::move(accessible_text),
+      std::move(incorrect_password_text), params));
 }
 
 void DialogModelSection::AddCustomField(

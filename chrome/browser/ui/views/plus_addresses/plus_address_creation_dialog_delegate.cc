@@ -343,7 +343,7 @@ PlusAddressCreationDialogDelegate::PlusAddressContainerView::
           .SetText(l10n_util::GetStringUTF16(
               IDS_PLUS_ADDRESS_MODAL_GENERATION_TEMPORARY_LABEL_CONTENT))
           .SetTextContext(views::style::CONTEXT_LABEL)
-          .SetTextStyle(STYLE_SECONDARY_MONOSPACED)
+          .SetTextStyle(views::style::STYLE_SECONDARY_MONOSPACED)
           .CopyAddressTo(&generation_message_)
           .SetProperty(views::kMarginsKey, kMargins)
           .SetProperty(
@@ -374,7 +374,7 @@ std::unique_ptr<views::View> PlusAddressCreationDialogDelegate::
   auto address_label =
       views::Builder<views::Label>()
           .SetTextContext(views::style::CONTEXT_LABEL)
-          .SetTextStyle(STYLE_SECONDARY_MONOSPACED)
+          .SetTextStyle(views::style::STYLE_SECONDARY_MONOSPACED)
           .SetProperty(
               views::kElementIdentifierKey,
               PlusAddressCreationView::kPlusAddressSuggestedEmailElementId)

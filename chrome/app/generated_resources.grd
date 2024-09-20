@@ -13377,6 +13377,13 @@ This can include information about installed software, files, your browser, and 
           go to settings
         </message>
 
+        <message name="IDS_SYNC_PASSPHRASE_DIALOG_FOOTER" desc="">
+          If you forgot your passphrase or want to change this setting, <ph name="SETTINGS_LINK">$1<ex>clear the data in your account</ex></ph>.
+        </message>
+        <message name="IDS_SYNC_PASSPHRASE_DIALOG_TITLE" desc="">
+          Enter your passphrase
+        </message>
+
         <if expr="use_titlecase">
           <message name="IDS_CLOSE_WARNING_FOR_CLEAR_COOKIES_ON_EXIT_CLOSE" desc="Text of the button to confirm browser close after cookie setting change in behavior.">
             Close Window
