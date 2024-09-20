@@ -7790,8 +7790,20 @@ IN_PROC_BROWSER_TEST_F(RenderFrameHostImplBrowserTest,
   EXPECT_NE(dnt_a, dnt_b);
 }
 
+class RenderFrameHostImplNewProcessUsedBrowserTest
+    : public RenderFrameHostImplBrowserTest {
+ public:
+  RenderFrameHostImplNewProcessUsedBrowserTest() {
+    scoped_feature_list_.InitAndDisableFeature(
+        features::kProcessPerSiteUpToMainFrameThreshold);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
 IN_PROC_BROWSER_TEST_F(
-    RenderFrameHostImplBrowserTest,
+    RenderFrameHostImplNewProcessUsedBrowserTest,
     RecordNewProcessUsedForNavigationWhenSameSiteProcessExists_SameSite) {
   base::HistogramTester histogram;
   GURL url = embedded_test_server()->GetURL("a.com", "/title1.html");
@@ -7819,7 +7831,7 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 IN_PROC_BROWSER_TEST_F(
-    RenderFrameHostImplBrowserTest,
+    RenderFrameHostImplNewProcessUsedBrowserTest,
     RecordNewProcessUsedForNavigationWhenSameSiteProcessExists_OtherSiteToSameSite) {
   base::HistogramTester histogram;
   GURL url = embedded_test_server()->GetURL("a.com", "/title1.html");
@@ -7878,7 +7890,7 @@ IN_PROC_BROWSER_TEST_F(
 // There is no plan to analyze the histogram on Android for now.
 #if !BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_F(
-    RenderFrameHostImplBrowserTest,
+    RenderFrameHostImplNewProcessUsedBrowserTest,
     RecordNewProcessUsedForNavigationWhenSameSiteProcessExists_DifferentProfile) {
   base::HistogramTester histogram;
   GURL url = embedded_test_server()->GetURL("a.com", "/title1.html");
@@ -7908,7 +7920,7 @@ IN_PROC_BROWSER_TEST_F(
 #endif
 
 IN_PROC_BROWSER_TEST_F(
-    RenderFrameHostImplBrowserTest,
+    RenderFrameHostImplNewProcessUsedBrowserTest,
     RecordNewProcessUsedForNavigationWhenSameSiteProcessExists_SameSiteNavigateTwice) {
   base::HistogramTester histogram;
   GURL url = embedded_test_server()->GetURL("a.com", "/title1.html");

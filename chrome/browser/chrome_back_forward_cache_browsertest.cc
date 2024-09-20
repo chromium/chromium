@@ -601,10 +601,10 @@ IN_PROC_BROWSER_TEST_F(ChromeBackForwardCacheBrowserTest,
   task_manager::browsertest_util::WaitForTaskManagerRows(
       1, expected_url_a_cached_subframe_c_title);
   EXPECT_THAT(tester->GetWebContentsTaskTitles(),
-              ::testing::ElementsAre(expected_url_b_active_title,
-                                     expected_url_a_cached_title,
-                                     expected_url_a_cached_subframe_b_title,
-                                     expected_url_a_cached_subframe_c_title));
+              ::testing::UnorderedElementsAre(
+                  expected_url_b_active_title, expected_url_a_cached_title,
+                  expected_url_a_cached_subframe_b_title,
+                  expected_url_a_cached_subframe_c_title));
 }
 
 // Ensure that BackForwardCache same-site subframes are not shown in the Task

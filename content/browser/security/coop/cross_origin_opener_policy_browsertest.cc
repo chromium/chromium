@@ -219,7 +219,7 @@ class CrossOriginOpenerPolicyBrowserTest
     feature_list_.InitWithFeatures(
         {network::features::kCrossOriginOpenerPolicy,
          network::features::kCoopNoopenerAllowPopups},
-        {});
+        {features::kProcessPerSiteUpToMainFrameThreshold});
 
     // Enable RenderDocument:
     InitAndEnableRenderDocumentFeature(&feature_list_for_render_document_,

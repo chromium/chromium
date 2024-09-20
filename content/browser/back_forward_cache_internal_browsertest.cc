@@ -2900,10 +2900,6 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
 
   RenderViewHostDeletedObserver delete_observer_rvh_b1(b1->GetRenderViewHost());
 
-  RenderProcessHost* process = b1->GetProcess();
-  RenderProcessHostWatcher destruction_observer(
-      process, RenderProcessHostWatcher::WATCH_FOR_HOST_DESTRUCTION);
-
   // 2) Navigate to URL B.
   EXPECT_TRUE(NavigateToURL(shell(), url_b));
   EXPECT_TRUE(a1->IsInBackForwardCache());
@@ -2913,9 +2909,8 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   // on eviction.
   EXPECT_TRUE(a1->IsInactiveAndDisallowActivation(
       DisallowActivationReasonId::kForTesting));
-  destruction_observer.Wait();
-  ASSERT_TRUE(delete_observer_rvh_b1.deleted());
   delete_observer_rfh_b1.WaitUntilDeleted();
+  ASSERT_TRUE(delete_observer_rvh_b1.deleted());
 }
 
 // Tests that same-process sub-frame's RenderViewHost is deleted on root

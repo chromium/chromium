@@ -18542,6 +18542,29 @@
             ]
         }
     ],
+    "ProcessPerSiteUpToMainFrameThreshold": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "ProcessPerSiteMainFrameThreshold": "15"
+                    },
+                    "enable_features": [
+                        "DevToolsSharedProcessInfobar",
+                        "ProcessPerSiteUpToMainFrameThreshold"
+                    ]
+                }
+            ]
+        }
+    ],
     "ProcessReuseOnPrerenderCOOPSwap": [
         {
             "platforms": [

@@ -51,7 +51,9 @@ class ProcessManagementTest : public ExtensionBrowserTest {
   ProcessManagementTest() {
     // TODO(crbug.com/40142347): Remove this once Extensions are
     // supported with BackForwardCache.
-    disabled_feature_list_.InitWithFeatures({}, {features::kBackForwardCache});
+    disabled_feature_list_.InitWithFeatures(
+        {}, {features::kBackForwardCache,
+             features::kProcessPerSiteUpToMainFrameThreshold});
   }
 
  private:
