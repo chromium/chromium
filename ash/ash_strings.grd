@@ -5254,6 +5254,12 @@ No devices connected.
       <message name="IDS_ASH_LOGIN_POD_PIN_LOCKED_WARNING" desc="Message shown when pin is soft locked due to multiple wrong attempts.">
         Too many PIN attempts. Wait <ph name="TIME_LEFT">$1<ex>15 minutes, 10 seconds</ex></ph> and try PIN again, or enter password to sign in immediately.
       </message>
+      <message name="IDS_ASH_LOGIN_POD_PIN_LOCKED_NO_PASSWORD_WARNING" desc="Message shown when pin is soft locked due to multiple wrong attempts, and the user does not have a password configured.">
+        Too many PIN attempts. Wait <ph name="TIME_LEFT">$1<ex>15 minutes, 10 seconds</ex></ph> and try again.
+      </message>
+      <message name="IDS_ASH_LOGIN_POD_PIN_LOCKED_RECOVERY_PROMPT" desc="Message shown to prompt user to recover the account when the pin is locked.">
+        If you forgot your PIN, try recovering this user.
+      </message>
 
       <!-- Authentication strings -->
 

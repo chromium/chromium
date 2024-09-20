@@ -24,7 +24,7 @@ namespace {
 constexpr int kVerticalBorderDp = 20;
 constexpr int kHorizontalBorderDp = 0;
 constexpr int kWidthDp = 320;
-constexpr int kHeightDp = 100;
+constexpr int kHeightDp = 120;
 constexpr int kDeltaDp = 0;
 // The time interval to refresh the pin delay message.
 constexpr base::TimeDelta kRefreshInterval = base::Milliseconds(200);
@@ -82,18 +82,19 @@ PinStatusMessageView::~PinStatusMessageView() {
   message_ = nullptr;
 }
 
-void PinStatusMessageView::SetPinAvailbleAt(base::Time available_at) {
+void PinStatusMessageView::SetPinInfo(base::Time available_at,
+                                      bool is_pin_only) {
   available_at_ = available_at;
+  is_pin_only_ = is_pin_only;
+  UpdateUI();
   timer_.Start(FROM_HERE, kRefreshInterval, this,
                &PinStatusMessageView::UpdateUI, base::TimeTicks::Now());
-  SetVisible(true);
 }
 
 void PinStatusMessageView::UpdateUI() {
   base::TimeDelta time_left = available_at_ - base::Time::Now();
   if (!time_left.is_positive()) {
     on_pin_unlock_.Run();
-    SetVisible(false);
     message_->SetText(std::u16string());
     timer_.Stop();
     return;
@@ -101,7 +102,15 @@ void PinStatusMessageView::UpdateUI() {
   std::u16string time_left_message;
   if (TimeDurationFormat(time_left, &time_left_message)) {
     std::u16string message_warning = l10n_util::GetStringFUTF16(
-        IDS_ASH_LOGIN_POD_PIN_LOCKED_WARNING, time_left_message);
+        is_pin_only_ ? IDS_ASH_LOGIN_POD_PIN_LOCKED_NO_PASSWORD_WARNING
+                     : IDS_ASH_LOGIN_POD_PIN_LOCKED_WARNING,
+        time_left_message);
+    if (is_pin_only_) {
+      base::StrAppend(
+          &message_warning,
+          {u"\n\n", l10n_util::GetStringUTF16(
+                        IDS_ASH_LOGIN_POD_PIN_LOCKED_RECOVERY_PROMPT)});
+    }
     message_->SetText(message_warning);
   }
 }

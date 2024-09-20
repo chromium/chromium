@@ -37,8 +37,9 @@ class PinStatusMessageView : public views::View {
 
   ~PinStatusMessageView() override;
 
-  // Set remaining time to be shown in the message.
-  void SetPinAvailbleAt(base::Time available_at);
+  // Set the relevant PIN information (pin available time, if pin the only
+  // auth factor) to be shown in the message.
+  void SetPinInfo(base::Time available_at, bool is_pin_only);
 
   // views::View:
   void RequestFocus() override;
@@ -50,6 +51,7 @@ class PinStatusMessageView : public views::View {
   raw_ptr<views::Label> message_;
 
   OnPinUnlock on_pin_unlock_;
+  bool is_pin_only_;
   base::Time available_at_;
   base::MetronomeTimer timer_;
 };
