@@ -34,17 +34,57 @@ namespace web_app {
 
 namespace {
 
+// The WebAppLockManager uses the following breakdown to define its locks with
+// the PartitionedLockManager:
+// - NoopLock:
+//   - No locks.
+// - SharedWebContentsLock:
+//   - Exclusive {kStatic, kBackgroundWebContents}
+// - AllAppsLock:
+//   - Exclusive {kStatic, kAllApps}
+// - AppLock:
+//   - Shared {kStatic, kAllApps}
+//   - Exclusive {kApp, <app_id>}
+//   - <repeat for each app id requested>
+// - SharedWebContentsWithAppLock
+//   - Exclusive {kStatic, kBackgroundWebContents}
+//   - Shared {kStatic, kAllApps}
+//   - Exclusive {kApp, <app_id>}
+//   - <repeat for each app id requested>
+//
+// We use strict lock ordering to ensure no deadlocks occur, and to allow
+// 'upgrading'.  Locks must be in this order to facilitate the upgrade
+// functionality provided by the system and not deadlock
+// - kBackgroundWebContents (static partition)
+// - kAllApps (static partition)
+// - kApp (app partition)
+//
+// For example, the lock used for the SharedWebContentsLock  has to be
+// 'before' the locks used for the AppLock, as this allows the lock upgrade
+// method `UpgradeAndAcquireLock` below where a SharedWebContentsLock can be
+// upgraded to a SharedWebContentsWithAppLock.
+
+// These values are not persisted to disk or logs.
 enum class LockPartition {
   kStatic = 0,
   kApp = 1,
   kMaxValue = kApp,
 };
 
+// These values are not persisted to disk or logs.
 enum KeysOnStaticPartition {
-  kAllApps = 0,
-  kBackgroundWebContents = 1,
-  kMaxValue = kBackgroundWebContents,
+  kBackgroundWebContents = 0,
+  kAllApps = 1,
+  kMaxValue = kAllApps,
 };
+
+static_assert(LockPartition::kStatic < LockPartition::kApp);
+static_assert(KeysOnStaticPartition::kBackgroundWebContents <
+              KeysOnStaticPartition::kAllApps);
+// Since we use `base::NumberToString` for the static partition data below, and
+// the PartitionedLockId uses alphabetical sorting for the data field, the value
+// must stay below 10 until there is a different sorting / encoding scheme.
+static_assert(KeysOnStaticPartition::kMaxValue < 10);
 
 const char* KeysOnStaticPartitionToString(KeysOnStaticPartition key) {
   switch (key) {
@@ -239,17 +279,16 @@ WebAppLockManager::UpgradeAndAcquireLock(
       *provider_->command_manager().EnsureWebContentsCreated(PassKey())));
   base::WeakPtr<PartitionedLockHolder> holder =
       result_lock->holder_->AsWeakPtr();
-
-  PartitionedLockManager::AcquireOptions options;
-  options.ensure_async = true;
+  // Request the extra locks needed for the app lock.
+  std::vector<PartitionedLockManager::PartitionedLockRequest> requests =
+      GetLockRequestsForLock(AppLockDescription(app_ids));
 #if DCHECK_IS_ON()
-  LogLockRequest(*result_lock_description, location,
-                 GetExclusiveAppIdLocks(app_ids), lock_manager_);
+  LogLockRequest(*result_lock_description, location, requests, lock_manager_);
 #endif
   lock_manager_.AcquireLocks(
-      GetExclusiveAppIdLocks(app_ids), holder,
+      std::move(requests), holder,
       base::BindOnce(std::move(on_lock_acquired), std::move(result_lock)),
-      options, location);
+      location);
 
   return result_lock_description;
 }
@@ -267,16 +306,15 @@ std::unique_ptr<AppLockDescription> WebAppLockManager::UpgradeAndAcquireLock(
   base::WeakPtr<PartitionedLockHolder> holder =
       result_lock->holder_->AsWeakPtr();
 
-  PartitionedLockManager::AcquireOptions options;
-  options.ensure_async = true;
+  std::vector<PartitionedLockManager::PartitionedLockRequest> requests =
+      GetLockRequestsForLock(*result_lock_description);
 #if DCHECK_IS_ON()
-  LogLockRequest(*result_lock_description, location,
-                 GetExclusiveAppIdLocks(app_ids), lock_manager_);
+  LogLockRequest(*result_lock_description, location, requests, lock_manager_);
 #endif
   lock_manager_.AcquireLocks(
-      GetExclusiveAppIdLocks(app_ids), holder,
+      std::move(requests), holder,
       base::BindOnce(std::move(on_lock_acquired), std::move(result_lock)),
-      options, location);
+      location);
   return result_lock_description;
 }
 
@@ -323,13 +361,11 @@ void WebAppLockManager::AcquireLock(base::WeakPtr<PartitionedLockHolder> holder,
                                     const base::Location& location) {
   std::vector<PartitionedLockManager::PartitionedLockRequest> requests =
       GetLockRequestsForLock(lock_description);
-  PartitionedLockManager::AcquireOptions options;
-  options.ensure_async = true;
 #if DCHECK_IS_ON()
   LogLockRequest(lock_description, location, requests, lock_manager_);
 #endif
   lock_manager_.AcquireLocks(std::move(requests), holder,
-                             std::move(on_lock_acquired), options, location);
+                             std::move(on_lock_acquired), location);
 }
 
 }  // namespace web_app
