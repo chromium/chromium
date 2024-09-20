@@ -166,6 +166,15 @@ public class BaseActivityTestRule<T extends Activity> extends ExternalResource {
     }
 
     /**
+     * Finishes the Activity, blocking until finished. After calling this, getActivity() returns
+     * null.
+     */
+    public void finishActivity() {
+        ApplicationTestUtils.finishActivity(getActivity());
+        setActivity(null);
+    }
+
+    /**
      * Recreates the Activity, blocking until finished. After calling this, getActivity() returns
      * the new Activity.
      */
