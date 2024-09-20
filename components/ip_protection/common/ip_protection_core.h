@@ -22,6 +22,8 @@ class IpProtectionCore {
  public:
   virtual ~IpProtectionCore() = default;
 
+  virtual bool IsIpProtectionEnabled() = 0;
+
   // Check whether tokens are available in all token caches.
   //
   // This function is called on every URL load, so it should complete quickly.
@@ -34,10 +36,6 @@ class IpProtectionCore {
   // `IsAuthTokenAvailable()` recently returned `true`.
   virtual std::optional<BlindSignedAuthToken> GetAuthToken(
       size_t chain_index) = 0;
-
-  // Invalidate any previous instruction that token requests should not be
-  // made until after a specified time.
-  virtual void InvalidateTryAgainAfterTime() = 0;
 
   // Check whether a proxy chain list is available.
   virtual bool IsProxyListAvailable() = 0;
@@ -59,20 +57,6 @@ class IpProtectionCore {
   // `IpProtectionTokenManager` to signal a possible geo change due to a
   // refreshed proxy list or refill of tokens.
   virtual void GeoObserved(const std::string& geo_id) = 0;
-
-  virtual void SetIpProtectionTokenManagerForTesting(
-      ProxyLayer proxy_layer,
-      std::unique_ptr<IpProtectionTokenManager> ipp_token_manager) = 0;
-
-  virtual IpProtectionTokenManager* GetIpProtectionTokenManagerForTesting(
-      ProxyLayer proxy_layer) = 0;
-
-  virtual void SetIpProtectionProxyConfigManagerForTesting(
-      std::unique_ptr<IpProtectionProxyConfigManager>
-          ipp_proxy_config_manager) = 0;
-
-  virtual IpProtectionProxyConfigManager*
-  GetIpProtectionProxyConfigManagerForTesting() = 0;
 };
 
 }  // namespace ip_protection

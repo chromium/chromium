@@ -953,6 +953,10 @@ interface IpProtectionConfigGetter {
 };
 
 // Access to the IP Protection ProxyDelegate in the network service process.
+//
+// TODO: https://crbug.com/352005196 - fix the naming, as this is not
+// implemented by IpProtectionProxyDelegate anymore. The methods names are using
+// stale terminology as well.
 interface IpProtectionProxyDelegate {
   // Used to facilitate cross-process testing of the IP Protection feature. This
   // method will:

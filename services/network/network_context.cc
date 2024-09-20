@@ -2537,15 +2537,13 @@ URLRequestContextOwner NetworkContext::MakeURLRequestContext(
   // disabled).
   auto* nspal = network_service_->masked_domain_list_manager();
   if (!params_->initial_custom_proxy_config && nspal->IsEnabled()) {
-    auto ipp_core = std::make_unique<ip_protection::IpProtectionCoreImpl>(
-        std::make_unique<ip_protection::IpProtectionConfigGetterMojoImpl>(
-            std::move(params_->ip_protection_config_getter)));
-    std::unique_ptr<IpProtectionProxyDelegate> proxy_delegate =
-        std::make_unique<IpProtectionProxyDelegate>(
-            nspal, std::move(ipp_core), params_->enable_ip_protection);
-    proxy_delegate->SetReceiver(
-        std::move(params_->ip_protection_proxy_delegate));
-    builder.set_proxy_delegate(std::move(proxy_delegate));
+    builder.set_proxy_delegate(std::make_unique<IpProtectionProxyDelegate>(
+        nspal,
+        std::make_unique<ip_protection::IpProtectionCoreImpl>(
+            std::make_unique<ip_protection::IpProtectionConfigGetterMojoImpl>(
+                std::move(params_->ip_protection_config_getter)),
+            std::move(params_->ip_protection_proxy_delegate),
+            params_->enable_ip_protection)));
   } else if (params_->initial_custom_proxy_config ||
              params_->custom_proxy_config_client_receiver) {
     builder.set_proxy_delegate(std::make_unique<NetworkServiceProxyDelegate>(

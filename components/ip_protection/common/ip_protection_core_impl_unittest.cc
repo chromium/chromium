@@ -135,7 +135,10 @@ class IpProtectionCoreImplTest : public testing::Test {
   IpProtectionCoreImplTest()
       : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
     SetTokenCachingByGeoParam(kEnableTokenCacheByGeo);
-    ipp_core_ = std::make_unique<IpProtectionCoreImpl>(nullptr);
+    ipp_core_ = std::make_unique<IpProtectionCoreImpl>(
+        /*config_getter=*/nullptr,
+        mojo::PendingReceiver<network::mojom::IpProtectionProxyDelegate>(),
+        /*is_ip_protection_enabled=*/true);
   }
 
   // Shortcut to create a ProxyChain from hostnames.
@@ -350,7 +353,10 @@ TEST_F(IpProtectionCoreImplTest, GetProxyListFromManagerWithQuic) {
   std::unique_ptr<net::NetworkChangeNotifier> network_change_notifier =
       net::NetworkChangeNotifier::CreateMockIfNeeded();
 
-  ipp_core_ = std::make_unique<IpProtectionCoreImpl>(nullptr);
+  ipp_core_ = std::make_unique<IpProtectionCoreImpl>(
+      /*config_getter=*/nullptr,
+      mojo::PendingReceiver<network::mojom::IpProtectionProxyDelegate>(),
+      /*is_ip_protection_enabled=*/true);
 
   auto ipp_proxy_config_manager =
       std::make_unique<MockIpProtectionProxyConfigManager>();
@@ -417,7 +423,10 @@ TEST_F(IpProtectionCoreImplTest, RefreshProxyListOnNetworkChange) {
   std::unique_ptr<net::NetworkChangeNotifier> network_change_notifier =
       net::NetworkChangeNotifier::CreateMockIfNeeded();
 
-  ipp_core_ = std::make_unique<IpProtectionCoreImpl>(nullptr);
+  ipp_core_ = std::make_unique<IpProtectionCoreImpl>(
+      /*config_getter=*/nullptr,
+      mojo::PendingReceiver<network::mojom::IpProtectionProxyDelegate>(),
+      /*is_ip_protection_enabled=*/true);
 
   auto ipp_proxy_config_manager =
       std::make_unique<MockIpProtectionProxyConfigManager>();
@@ -519,7 +528,10 @@ TEST_F(IpProtectionCoreImplTest, GeoObservedTokenCachingByGeoDisabledNoImpact) {
 
   // Reinitialize the config cache b/c the feature value needs to be set to
   // false.
-  ipp_core_ = std::make_unique<IpProtectionCoreImpl>(nullptr);
+  ipp_core_ = std::make_unique<IpProtectionCoreImpl>(
+      /*config_getter=*/nullptr,
+      mojo::PendingReceiver<network::mojom::IpProtectionProxyDelegate>(),
+      /*is_ip_protection_enabled=*/true);
 
   // Old geo used to set current geo in both the proxy list manager and token
   // cache manager.

@@ -61,12 +61,9 @@ constexpr char kAvailabilityHistogram[] =
 
 class MockIpProtectionCore : public ip_protection::IpProtectionCore {
  public:
+  bool IsIpProtectionEnabled() override { return is_ip_protection_enabled_; }
+
   bool AreAuthTokensAvailable() override { return auth_token_.has_value(); }
-  void InvalidateTryAgainAfterTime() override {
-    if (on_invalidate_try_again_after_time_) {
-      std::move(on_invalidate_try_again_after_time_).Run();
-    }
-  }
   std::optional<ip_protection::BlindSignedAuthToken> GetAuthToken(
       size_t chain_index) override {
     return std::move(auth_token_);
@@ -77,30 +74,6 @@ class MockIpProtectionCore : public ip_protection::IpProtectionCore {
   void SetNextAuthToken(
       std::optional<ip_protection::BlindSignedAuthToken> auth_token) {
     auth_token_ = std::move(auth_token);
-  }
-
-  void SetIpProtectionProxyConfigManagerForTesting(
-      std::unique_ptr<ip_protection::IpProtectionProxyConfigManager>
-          ipp_proxy_config_manager) override {
-    NOTREACHED();
-  }
-
-  ip_protection::IpProtectionTokenManager*
-  GetIpProtectionTokenManagerForTesting(
-      ip_protection::ProxyLayer proxy_layer) override {
-    NOTREACHED();
-  }
-
-  void SetIpProtectionTokenManagerForTesting(
-      ip_protection::ProxyLayer proxy_layer,
-      std::unique_ptr<ip_protection::IpProtectionTokenManager>
-          ipp_token_manager) override {
-    NOTREACHED();
-  }
-
-  ip_protection::IpProtectionProxyConfigManager*
-  GetIpProtectionProxyConfigManagerForTesting() override {
-    NOTREACHED();
   }
 
   std::vector<net::ProxyChain> GetProxyChainList() override {
@@ -123,6 +96,8 @@ class MockIpProtectionCore : public ip_protection::IpProtectionCore {
 
   void GeoObserved(const std::string& geo_id) override {}
 
+  void SetIpProtectionEnabled(bool value) { is_ip_protection_enabled_ = value; }
+
   // Set the proxy list returned from `ProxyList()`.
   void SetProxyList(std::vector<net::ProxyChain> proxy_list) {
     proxy_list_ = std::move(proxy_list);
@@ -137,18 +112,12 @@ class MockIpProtectionCore : public ip_protection::IpProtectionCore {
     on_proxies_failed_ = std::move(on_proxies_failed);
   }
 
-  void SetOnInvalidateTryAgainAfterTime(
-      base::OnceClosure on_invalidate_try_again_after_time) {
-    on_invalidate_try_again_after_time_ =
-        std::move(on_invalidate_try_again_after_time);
-  }
-
  private:
+  bool is_ip_protection_enabled_ = true;
   std::optional<ip_protection::BlindSignedAuthToken> auth_token_;
   std::optional<std::vector<net::ProxyChain>> proxy_list_;
   std::vector<net::ProxyChain> proxy_chain_list_;
   base::OnceClosure on_force_refresh_proxy_list_;
-  base::OnceClosure on_invalidate_try_again_after_time_;
   base::OnceClosure on_proxies_failed_;
 };
 
@@ -217,8 +186,7 @@ class IpProtectionProxyDelegateTest : public testing::Test {
       MaskedDomainListManager* masked_domain_list_manager,
       std::unique_ptr<ip_protection::IpProtectionCore> ipp_core) {
     return std::make_unique<IpProtectionProxyDelegate>(
-        masked_domain_list_manager, std::move(ipp_core),
-        /*is_ip_protection_enabled=*/true);
+        masked_domain_list_manager, std::move(ipp_core));
   }
 
   std::unique_ptr<net::URLRequest> CreateRequest(const GURL& url) {
@@ -599,10 +567,9 @@ TEST_F(IpProtectionProxyDelegateTest, OnResolveProxy_IpProtectionDisabled) {
   auto ipp_core = std::make_unique<MockIpProtectionCore>();
   ipp_core->SetNextAuthToken(MakeAuthToken("Bearer: a-token"));
   ipp_core->SetProxyList({MakeChain({"proxy"})});
+  ipp_core->SetIpProtectionEnabled(false);
   auto delegate =
       CreateDelegate(&masked_domain_list_manager, std::move(ipp_core));
-
-  delegate->SetIpProtectionEnabled(false);
 
   net::ProxyInfo result;
   result.UseDirect();
@@ -851,20 +818,6 @@ TEST_F(IpProtectionProxyDelegateTest, MergeProxyRules) {
       chain3,
   };
   EXPECT_EQ(result.AllChains(), expected);
-}
-
-TEST_F(IpProtectionProxyDelegateTest, InvalidateTryAgainAfterTime) {
-  bool invalidated = false;
-
-  auto masked_domain_list_manager = MaskedDomainListManager::CreateForTesting(
-      /*first_party_map=*/{});
-  auto ipp_core = std::make_unique<MockIpProtectionCore>();
-  ipp_core->SetOnInvalidateTryAgainAfterTime(
-      base::BindLambdaForTesting([&]() { invalidated = true; }));
-  auto delegate =
-      CreateDelegate(&masked_domain_list_manager, std::move(ipp_core));
-  delegate->InvalidateIpProtectionConfigCacheTryAgainAfterTime();
-  EXPECT_TRUE(invalidated);
 }
 
 }  // namespace network

@@ -20,47 +20,63 @@
 #include "components/ip_protection/common/ip_protection_data_types.h"
 #include "components/ip_protection/common/ip_protection_proxy_config_manager.h"
 #include "components/ip_protection/common/ip_protection_token_manager.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "net/base/features.h"
 #include "net/base/network_change_notifier.h"
 #include "net/base/proxy_chain.h"
+#include "services/network/public/mojom/network_context.mojom.h"
 
 namespace ip_protection {
 
 // An implementation of IpProtectionCore that makes IPC calls to the
 // IpProtectionConfigGetter in the browser process.
 class IpProtectionCoreImpl : public IpProtectionCore,
-                             net::NetworkChangeNotifier::NetworkChangeObserver {
+                             net::NetworkChangeNotifier::NetworkChangeObserver,
+                             network::mojom::IpProtectionProxyDelegate {
  public:
   // If `config_getter` is unbound, no tokens will be provided.
   explicit IpProtectionCoreImpl(
-      std::unique_ptr<IpProtectionConfigGetter> config_getter);
+      std::unique_ptr<IpProtectionConfigGetter> config_getter,
+      mojo::PendingReceiver<network::mojom::IpProtectionProxyDelegate>
+          pending_receiver,
+      bool is_ip_protection_enabled);
   ~IpProtectionCoreImpl() override;
 
   // IpProtectionCore implementation.
+  bool IsIpProtectionEnabled() override;
   bool AreAuthTokensAvailable() override;
   std::optional<BlindSignedAuthToken> GetAuthToken(size_t chain_index) override;
-  void InvalidateTryAgainAfterTime() override;
   bool IsProxyListAvailable() override;
   void QuicProxiesFailed() override;
   std::vector<net::ProxyChain> GetProxyChainList() override;
   void RequestRefreshProxyList() override;
   void GeoObserved(const std::string& geo_id) override;
+
   void SetIpProtectionTokenManagerForTesting(
       ProxyLayer proxy_layer,
-      std::unique_ptr<IpProtectionTokenManager> ipp_token_manager) override;
+      std::unique_ptr<IpProtectionTokenManager> ipp_token_manager);
   IpProtectionTokenManager* GetIpProtectionTokenManagerForTesting(
-      ProxyLayer proxy_layer) override;
+      ProxyLayer proxy_layer);
   void SetIpProtectionProxyConfigManagerForTesting(
-      std::unique_ptr<IpProtectionProxyConfigManager> ipp_proxy_config_manager)
-      override;
-  IpProtectionProxyConfigManager* GetIpProtectionProxyConfigManagerForTesting()
-      override;
+      std::unique_ptr<IpProtectionProxyConfigManager> ipp_proxy_config_manager);
+  IpProtectionProxyConfigManager* GetIpProtectionProxyConfigManagerForTesting();
 
   // `NetworkChangeNotifier::NetworkChangeObserver` implementation.
   void OnNetworkChanged(
       net::NetworkChangeNotifier::ConnectionType type) override;
 
+  // `mojom::IpProtectionProxyDelegate` implementation.
+  void VerifyIpProtectionConfigGetterForTesting(
+      VerifyIpProtectionConfigGetterForTestingCallback callback) override;
+  void InvalidateIpProtectionConfigCacheTryAgainAfterTime() override;
+  void SetIpProtectionEnabled(bool enabled) override;
+  void IsIpProtectionEnabledForTesting(
+      IsIpProtectionEnabledForTestingCallback callback) override;
+
  private:
+  void OnIpProtectionConfigAvailableForTesting(
+      VerifyIpProtectionConfigGetterForTestingCallback callback);
+
   // Source of auth tokens and proxy list, when needed.
   std::unique_ptr<IpProtectionConfigGetter> config_getter_;
 
@@ -71,6 +87,8 @@ class IpProtectionCoreImpl : public IpProtectionCore,
   std::map<ProxyLayer, std::unique_ptr<IpProtectionTokenManager>>
       ipp_token_managers_;
 
+  bool is_ip_protection_enabled_;
+
   // If true, this class will try to connect to IP Protection proxies via QUIC.
   // Once this value becomes false, it stays false until a network change or
   // browser restart.
@@ -78,6 +96,8 @@ class IpProtectionCoreImpl : public IpProtectionCore,
 
   // Feature flag to safely introduce token caching by geo.
   const bool enable_token_caching_by_geo_;
+
+  const mojo::Receiver<network::mojom::IpProtectionProxyDelegate> receiver_;
 
   base::WeakPtrFactory<IpProtectionCoreImpl> weak_ptr_factory_{this};
 };

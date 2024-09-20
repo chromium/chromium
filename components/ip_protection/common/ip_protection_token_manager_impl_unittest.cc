@@ -132,25 +132,11 @@ class MockIpProtectionCore : public IpProtectionCore {
   MOCK_METHOD(void, GeoObserved, (const std::string& geo_id), (override));
 
   // Dummy implementations for functions not tested in this file.
+  bool IsIpProtectionEnabled() override { return true; }
   bool AreAuthTokensAvailable() override { return false; }
   std::optional<BlindSignedAuthToken> GetAuthToken(
       size_t chain_index) override {
     return std::nullopt;
-  }
-  void InvalidateTryAgainAfterTime() override {}
-  void SetIpProtectionTokenManagerForTesting(
-      ProxyLayer proxy_layer,
-      std::unique_ptr<IpProtectionTokenManager> ipp_token_manager) override {}
-  IpProtectionTokenManager* GetIpProtectionTokenManagerForTesting(
-      ProxyLayer proxy_layer) override {
-    return nullptr;
-  }
-  void SetIpProtectionProxyConfigManagerForTesting(
-      std::unique_ptr<IpProtectionProxyConfigManager> ipp_proxy_config_manager)
-      override {}
-  IpProtectionProxyConfigManager* GetIpProtectionProxyConfigManagerForTesting()
-      override {
-    return nullptr;
   }
   bool IsProxyListAvailable() override { return false; }
   void QuicProxiesFailed() override {}
