@@ -1912,6 +1912,7 @@ public class StripLayoutHelper
         // Popup menu requires screen coordinates for anchor view. Get absolute position for title.
         RectProvider anchorRectProvider = new RectProvider();
         getAnchorRect(groupTitle, anchorRectProvider);
+        performHapticFeedback();
         mTabGroupContextMenuCoordinator.showMenu(anchorRectProvider, groupTitle.getRootId());
     }
 
@@ -3782,7 +3783,7 @@ public class StripLayoutHelper
                 mAnimationsDisabledForTesting ? null : new ArrayList<>();
         Tab tab = getTabById(mInteractingTab.getTabId());
         updateTabAttachState(mInteractingTab, /* attached= */ false, animationList);
-        performHapticFeedback(tab);
+        performHapticFeedback();
 
         // 6. Kick-off animations and request an update.
         if (animationList != null) {
@@ -5108,10 +5109,9 @@ public class StripLayoutHelper
         stripTab.setAccessibilityDescription(builder.toString(), title, resId);
     }
 
-    private void performHapticFeedback(Tab tab) {
-        View tabView = tab.getView();
-        if (tabView == null) return;
-        tabView.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS);
+    private void performHapticFeedback() {
+        if (mToolbarContainerView == null) return;
+        mToolbarContainerView.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS);
     }
 
     protected void clearTabDragState() {

@@ -1771,9 +1771,10 @@ public class StripLayoutHelperTest {
         mStripLayoutHelper.setTabGroupContextMenuCoordinatorForTesting(
                 mTabGroupContextMenuCoordinator);
 
-        // Long press on group title
+        // Long press on group title.
         mStripLayoutHelper.onLongPress(TIMESTAMP, 10f, 0f);
-
+        // Verify we performed haptic feedback for a long-press.
+        verify(mToolbarContainerView).performHapticFeedback(eq(HapticFeedbackConstants.LONG_PRESS));
         ArgumentCaptor<RectProvider> rectProviderArgumentCaptor =
                 ArgumentCaptor.forClass(RectProvider.class);
         // Verify tab group context menu is showing.
@@ -2092,7 +2093,7 @@ public class StripLayoutHelperTest {
         mStripLayoutHelper.startReorderModeAtIndexForTesting(0);
 
         // Verify we performed haptic feedback for a long-press.
-        verify(mInteractingTabView).performHapticFeedback(eq(HapticFeedbackConstants.LONG_PRESS));
+        verify(mToolbarContainerView).performHapticFeedback(eq(HapticFeedbackConstants.LONG_PRESS));
     }
 
     @Test
