@@ -47,6 +47,7 @@ class SupervisedUserIncognitoBrowserTest
   supervised_user::SupervisionMixin supervision_mixin{
       mixin_host_,
       this,
+      embedded_test_server(),
       {.sign_in_mode =
            supervised_user::SupervisionMixin::SignInMode::kSignedOut}};
 };

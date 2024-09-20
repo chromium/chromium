@@ -34,7 +34,23 @@ namespace supervised_user {
 class ChildAccountService : public KeyedService,
                             public signin::IdentityManager::Observer {
  public:
-  enum class AuthState { AUTHENTICATED, NOT_AUTHENTICATED, PENDING };
+  enum class AuthState {
+    // The user is signed in to Chrome, and has both a valid refresh token and
+    // valid Google account cookies for the primary account.
+    AUTHENTICATED,
+
+    // The user is not signed in to Chrome.
+    NOT_AUTHENTICATED,
+
+    // The user is signed in to Chrome, but at least one of the refresh token
+    // and Google account cookie is not present or invalid.
+    PENDING,
+
+    // The user is in a state where, without user input, they may be about to
+    // transition between the three states above. Code should may choose to
+    // wait for a subsequent update to get the next stable state.
+    TRANSIENT_MOVING_TO_AUTHENTICATED,
+  };
 
   ChildAccountService(const ChildAccountService&) = delete;
   ChildAccountService& operator=(const ChildAccountService&) = delete;
@@ -54,10 +70,9 @@ class ChildAccountService : public KeyedService,
   void AddChildStatusReceivedCallback(base::OnceClosure callback);
 #endif
 
-  // Returns whether or not the user is authenticated on Google web properties
-  // based on the state of the cookie jar. Returns AuthState::PENDING if
-  // authentication state can't be determined at the moment.
-  AuthState GetGoogleAuthState();
+  // Returns the status of the user's Google authentication credentials (see
+  // `AuthState` comments for details).
+  AuthState GetGoogleAuthState() const;
 
   // Subscribes to changes to the Google authentication state (see
   // GetGoogleAuthState()). Can send a notification even if the authentication
@@ -86,11 +101,17 @@ class ChildAccountService : public KeyedService,
   void OnPrimaryAccountChanged(
       const signin::PrimaryAccountChangeEvent& event_details) override;
   void OnExtendedAccountInfoUpdated(const AccountInfo& info) override;
-
-  // IdentityManager::Observer implementation.
+  void OnRefreshTokenUpdatedForAccount(const CoreAccountInfo& account_info) override;
+  void OnErrorStateOfRefreshTokenUpdatedForAccount(
+      const CoreAccountInfo& account_info,
+      const GoogleServiceAuthError& error,
+      signin_metrics::SourceForRefreshTokenOperation token_operation_source)
+      override;
   void OnAccountsInCookieUpdated(
       const signin::AccountsInCookieJarInfo& accounts_in_cookie_jar_info,
       const GoogleServiceAuthError& error) override;
+
+  void OnAuthStateUpdated();
 
   // Subscription to set custodian preferences from successful fetch of
   // ListFamilyMembersService.

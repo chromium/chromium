@@ -32,7 +32,6 @@ constexpr char kGoogleSearchURL[] = "https://www.google.com/search?q=test";
 constexpr char kGoogleHomeURL[] = "https://www.google.com";
 constexpr char kYoutubeDomain[] = "https://www.youtube.com";
 constexpr char kChildTestEmail[] = "child@example.com";
-constexpr char kTestGaiaId[] = "abcedf";
 
 std::unique_ptr<KeyedService> BuildTestSigninClient(
     content::BrowserContext* context) {
@@ -57,6 +56,8 @@ class SupervisedUserGoogleAuthNavigationThrottleTest
   }
 
   void SetUserAsSupervised() {
+    SetPrimaryAccount(identity_manager(), kChildTestEmail,
+                      signin::ConsentLevel::kSignin);
     profile()->SetIsSupervisedProfile();
     ASSERT_TRUE(profile()->IsChild());
   }
@@ -103,8 +104,14 @@ class SupervisedUserGoogleAuthNavigationThrottleTest
 TEST_F(SupervisedUserGoogleAuthNavigationThrottleTest,
        NavigationForValidSignedinSupervisedUsers) {
   SetUserAsSupervised();
+#if !BUILDFLAG(IS_ANDROID)
+  SetRefreshTokenForPrimaryAccount(identity_manager());
+#endif
   signin::SetListAccountsResponseOneAccountWithParams(
-      {kChildTestEmail, kTestGaiaId,
+      {kChildTestEmail,
+       identity_manager()
+           ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
+           .gaia,
        /* valid = */ true,
        /* is_signed_out = */ false,
        /* verified = */ true},
@@ -136,16 +143,24 @@ TEST_F(SupervisedUserGoogleAuthNavigationThrottleTest,
 }
 
 TEST_F(SupervisedUserGoogleAuthNavigationThrottleTest,
-       NavigationForInvalidSignedInSupervisedUsers) {
+       NavigationForPendingSignedInSupervisedUsers) {
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(
       supervised_user::kForceSupervisedUserReauthenticationForYouTube);
 #endif
   SetUserAsSupervised();
+#if !BUILDFLAG(IS_ANDROID)
+  SetInvalidRefreshTokenForPrimaryAccount(
+      identity_manager(),
+      signin_metrics::SourceForRefreshTokenOperation::kUnknown);
+#endif  // !BUILDFLAG(IS_ANDROID)
   // An invalid, signed-in account is not authenticated.
   signin::SetListAccountsResponseOneAccountWithParams(
-      {kChildTestEmail, kTestGaiaId,
+      {kChildTestEmail,
+       identity_manager()
+           ->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
+           .gaia,
        /* valid = */ false,
        /* is_signed_out = */ false,
        /* verified = */ true},
@@ -153,7 +168,7 @@ TEST_F(SupervisedUserGoogleAuthNavigationThrottleTest,
   identity_manager()->GetAccountsCookieMutator()->TriggerCookieJarUpdate();
   content::RunAllTasksUntilIdle();
 
-  // For a supervised account that is not authenticated, navigation to Google
+  // For a supervised account that is in the pending state, navigation to Google
   // and YouTube can be subject to throttling.
   EXPECT_EQ(content::NavigationThrottle::PROCEED,
             CreateNavigationThrottle(GURL(kExampleURL))->WillStartRequest());
@@ -186,8 +201,6 @@ TEST_F(SupervisedUserGoogleAuthNavigationThrottleTest,
             CreateNavigationThrottle(GURL(kYoutubeDomain))->WillStartRequest());
 #elif BUILDFLAG(IS_ANDROID)
   // For Android, navigation to Google and YouTube are deferred.
-  SetPrimaryAccount(identity_manager(), kChildTestEmail,
-                    signin::ConsentLevel::kSignin);
   EXPECT_EQ(content::NavigationThrottle::DEFER,
             CreateNavigationThrottle(GURL(kGoogleSearchURL), true)
                 ->WillStartRequest());

@@ -24,6 +24,12 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if BUILDFLAG(IS_WIN)
+#include "chrome/browser/supervised_user/child_accounts/child_account_service_factory.h"
+#include "chrome/test/supervised_user/google_auth_state_waiter_mixin.h"
+#include "components/supervised_user/core/browser/child_account_service.h"
+#endif
+
 namespace {
 
 class SupervisedUserServiceBrowserTest
@@ -38,6 +44,7 @@ class SupervisedUserServiceBrowserTest
   supervised_user::SupervisionMixin supervision_mixin_{
       mixin_host_,
       this,
+      embedded_test_server(),
       {.sign_in_mode = GetSignInMode()}};
 
  private:
@@ -47,6 +54,13 @@ class SupervisedUserServiceBrowserTest
 IN_PROC_BROWSER_TEST_P(SupervisedUserServiceBrowserTest, LocalPolicies) {
   Profile* profile = browser()->profile();
   PrefService* prefs = profile->GetPrefs();
+
+#if BUILDFLAG(IS_WIN)
+  // TODO(crbug.com/368578425): handle this in SupervisionMixin.
+  supervised_user::GoogleAuthStateWaiterMixin::WaitForGoogleAuthState(
+      ChildAccountServiceFactory::GetForProfile(profile),
+      supervised_user::SupervisionMixin::GetExpectedAuthState(GetSignInMode()));
+#endif
 
   if (GetSignInMode() ==
       supervised_user::SupervisionMixin::SignInMode::kSupervised) {

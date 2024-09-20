@@ -108,6 +108,7 @@ class SupervisedUserPendingStateNavigationTest
   supervised_user::SupervisionMixin supervision_mixin_{
       mixin_host_,
       this,
+      embedded_test_server(),
       {.sign_in_mode =
            supervised_user::SupervisionMixin::SignInMode::kSupervised,
        .embedded_test_server_options = {.resolver_rules_map_host_list =

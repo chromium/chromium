@@ -40,8 +40,9 @@ SupervisedUserGoogleAuthNavigationThrottle::MaybeCreate(
     content::NavigationHandle* navigation_handle) {
   Profile* profile = Profile::FromBrowserContext(
       navigation_handle->GetWebContents()->GetBrowserContext());
-  if (!profile->IsChild())
+  if (!profile->IsChild()) {
     return nullptr;
+  }
 
   return base::WrapUnique(new SupervisedUserGoogleAuthNavigationThrottle(
       profile, navigation_handle));
@@ -139,7 +140,8 @@ SupervisedUserGoogleAuthNavigationThrottle::ShouldProceed() {
       supervised_user::ChildAccountService::AuthState::AUTHENTICATED) {
     return content::NavigationThrottle::PROCEED;
   }
-  if (authStatus == supervised_user::ChildAccountService::AuthState::PENDING) {
+  if (authStatus == supervised_user::ChildAccountService::AuthState::
+                        TRANSIENT_MOVING_TO_AUTHENTICATED) {
     return content::NavigationThrottle::DEFER;
   }
 
@@ -156,7 +158,9 @@ SupervisedUserGoogleAuthNavigationThrottle::ShouldProceed() {
           supervised_user::kForceSupervisedUserReauthenticationForYouTube) ||
       !google_util::IsYoutubeDomainUrl(request_url,
                                        google_util::ALLOW_SUBDOMAIN,
-                                       google_util::ALLOW_NON_STANDARD_PORTS)) {
+                                       google_util::ALLOW_NON_STANDARD_PORTS) ||
+     !SupervisedUserVerificationPage::ShouldShowPage(
+          *child_account_service_)) {
     // This interstitial should only be displayed for YouTube request.
     return content::NavigationThrottle::PROCEED;
   }
