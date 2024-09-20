@@ -19,6 +19,7 @@ interface AIAssistant
     getter topK
     method clone
     method constructor
+    method countPromptTokens
     method destroy
     method prompt
     method promptStreaming

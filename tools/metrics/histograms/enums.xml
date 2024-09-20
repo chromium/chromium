@@ -10981,6 +10981,7 @@ Called by update_use_counter_feature_enum.py.-->
       label="V8PublicKeyCredential_SignalAllAcceptedCredentials_Method"/>
   <int value="5106"
       label="V8PublicKeyCredential_SignalCurrentUserDetails_Method"/>
+  <int value="5107" label="V8AIAssistant_CountPromptTokens_Method"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->

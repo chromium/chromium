@@ -20,6 +20,7 @@ Starting worker: resources/global-interface-listing-worker.js
 [Worker]     getter topK
 [Worker]     method clone
 [Worker]     method constructor
+[Worker]     method countPromptTokens
 [Worker]     method destroy
 [Worker]     method prompt
 [Worker]     method promptStreaming

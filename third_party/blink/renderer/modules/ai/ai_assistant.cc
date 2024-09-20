@@ -8,10 +8,13 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/types/pass_key.h"
 #include "third_party/blink/public/mojom/ai/ai_assistant.mojom-blink.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/modules/ai/ai_metrics.h"
 #include "third_party/blink/renderer/modules/ai/ai_text_session.h"
 #include "third_party/blink/renderer/modules/ai/exception_helpers.h"
 #include "third_party/blink/renderer/modules/ai/model_execution_responder.h"
+#include "third_party/blink/renderer/platform/heap/persistent.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
 
@@ -137,6 +140,37 @@ ScriptPromise<AIAssistant> AIAssistant::clone(ScriptState* script_state,
             }
           },
           WrapPersistent(resolver), WrapPersistent(cloned_assistant)));
+
+  return resolver->Promise();
+}
+
+ScriptPromise<IDLUnsignedLongLong> AIAssistant::countPromptTokens(
+    ScriptState* script_state,
+    const WTF::String& input,
+    ExceptionState& exception_state) {
+  if (!script_state->ContextIsValid()) {
+    ThrowInvalidContextException(exception_state);
+    return ScriptPromise<IDLUnsignedLongLong>();
+  }
+
+  base::UmaHistogramEnumeration(
+      AIMetrics::GetAIAPIUsageMetricName(AIMetrics::AISessionType::kAssistant),
+      AIMetrics::AIAPI::kSessionCountPromptTokens);
+
+  ScriptPromiseResolver<IDLUnsignedLongLong>* resolver =
+      MakeGarbageCollected<ScriptPromiseResolver<IDLUnsignedLongLong>>(
+          script_state);
+
+  if (!text_session_) {
+    ThrowSessionDestroyedException(exception_state);
+    return resolver->Promise();
+  }
+
+  text_session_->GetAIRemote()->CountPromptTokens(
+      input,
+      WTF::BindOnce([](ScriptPromiseResolver<IDLUnsignedLongLong>* resolver,
+                       uint32_t size) { resolver->Resolve(size); },
+                    WrapPersistent(resolver)));
 
   return resolver->Promise();
 }

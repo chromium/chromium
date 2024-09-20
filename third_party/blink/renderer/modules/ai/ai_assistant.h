@@ -34,6 +34,10 @@ class AIAssistant final : public ScriptWrappable,
   ReadableStream* promptStreaming(ScriptState* script_state,
                                   const WTF::String& input,
                                   ExceptionState& exception_state);
+  ScriptPromise<IDLUnsignedLongLong> countPromptTokens(
+      ScriptState* script_state,
+      const WTF::String& input,
+      ExceptionState& exception_state);
   uint64_t maxTokens() const { return max_tokens_; }
   uint64_t tokensSoFar() const { return current_tokens_; }
   uint64_t tokensLeft() const { return max_tokens_ - current_tokens_; }

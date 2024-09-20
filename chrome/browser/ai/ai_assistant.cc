@@ -359,3 +359,13 @@ blink::mojom::AIAssistantInfoPtr AIAssistant::GetAssistantInfo() {
       blink::mojom::AIAssistantSamplingParams::New(
           session_sampling_params.top_k, session_sampling_params.temperature));
 }
+
+void AIAssistant::CountPromptTokens(const std::string& input,
+                                    CountPromptTokensCallback callback) {
+  PromptApiRequest request;
+  *request.add_current_prompts() =
+      MakePrompt(PromptApiRole::PROMPT_API_ROLE_USER, input);
+
+  session_->GetContextSizeInTokens(*context_->MaybeFormatRequest(request),
+                                   std::move(callback));
+}

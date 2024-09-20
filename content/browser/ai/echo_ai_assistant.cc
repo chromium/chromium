@@ -86,4 +86,9 @@ void EchoAIAssistant::Destroy() {
   responder_set_.Clear();
 }
 
+void EchoAIAssistant::CountPromptTokens(const std::string& input,
+                                        CountPromptTokensCallback callback) {
+  std::move(callback).Run(input.size());
+}
+
 }  // namespace content

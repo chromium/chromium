@@ -47,8 +47,9 @@ class AIMetrics {
     kSummarizerSummarizeStreaming = 15,
     kSummarizerCreate = 16,
     kSummarizerDestroy = 17,
+    kSessionCountPromptTokens = 18,
 
-    kMaxValue = kSummarizerDestroy,
+    kMaxValue = kSessionCountPromptTokens,
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/ai/enums.xml:AIAPI)
 

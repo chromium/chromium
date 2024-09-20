@@ -12,17 +12,24 @@ interface AIAssistant {
   [
     Measure,
     CallWith=ScriptState,
-    RaisesException,
-    RuntimeEnabled=AIPromptAPI
+    RaisesException
   ]
   Promise<DOMString> prompt(DOMString input);
   [
     Measure,
     CallWith=ScriptState,
-    RaisesException,
-    RuntimeEnabled=AIPromptAPI
+    RaisesException
   ]
   ReadableStream promptStreaming(DOMString input);
+
+  [
+    Measure,
+    CallWith=ScriptState,
+    RaisesException
+  ]
+  Promise<unsigned long long> countPromptTokens(
+    DOMString input
+  );
 
   [Measure]
   readonly attribute unsigned long long maxTokens;
