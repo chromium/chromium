@@ -62,7 +62,6 @@ class AudioServiceAsh;
 class AutomationAsh;
 class BrowserServiceHostAsh;
 class BrowserVersionServiceAsh;
-class GuestOsSkForwarderFactoryAsh;
 class CecPrivateAsh;
 class CertDatabaseAsh;
 class CertProvisioningAsh;
@@ -704,8 +703,6 @@ class CrosapiAsh : public mojom::Crosapi {
   std::unique_ptr<AutomationAsh> automation_ash_;
   std::unique_ptr<BrowserServiceHostAsh> browser_service_host_ash_;
   std::unique_ptr<BrowserVersionServiceAsh> browser_version_service_ash_;
-  std::unique_ptr<GuestOsSkForwarderFactoryAsh>
-      guest_os_sk_forwarder_factory_ash_;
   std::unique_ptr<CecPrivateAsh> cec_private_ash_;
   std::unique_ptr<CertDatabaseAsh> cert_database_ash_;
   std::unique_ptr<CertProvisioningAsh> cert_provisioning_ash_;
