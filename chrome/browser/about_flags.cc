@@ -862,17 +862,25 @@ const FeatureEntry::Choice kTopChromeTouchUiChoices[] = {
      switches::kTopChromeTouchUiEnabled}};
 
 #if !BUILDFLAG(IS_ANDROID)
+const FeatureEntry::FeatureParam kToastWith6Seconds[] = {
+    {"toast_timeout", "6s"},
+    {"toast_without_action_timeout", "6s"},
+    {"toast_demo_mode", "true"}};
 const FeatureEntry::FeatureParam kToastWith8Seconds[] = {
     {"toast_timeout", "8s"},
+    {"toast_without_action_timeout", "8s"},
     {"toast_demo_mode", "true"}};
 const FeatureEntry::FeatureParam kToastWith10Seconds[] = {
     {"toast_timeout", "10s"},
+    {"toast_without_action_timeout", "10s"},
     {"toast_demo_mode", "true"}};
 const FeatureEntry::FeatureParam kToastWith12Seconds[] = {
     {"toast_timeout", "12s"},
+    {"toast_without_action_timeout", "12s"},
     {"toast_demo_mode", "true"}};
 
 const FeatureEntry::FeatureVariation kToastVariations[] = {
+    {"with 6s", kToastWith6Seconds, std::size(kToastWith6Seconds), nullptr},
     {"with 8s", kToastWith8Seconds, std::size(kToastWith8Seconds), nullptr},
     {"with 10s", kToastWith10Seconds, std::size(kToastWith10Seconds), nullptr},
     {"with 12s", kToastWith12Seconds, std::size(kToastWith12Seconds), nullptr}};
