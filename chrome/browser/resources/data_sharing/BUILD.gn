@@ -49,8 +49,6 @@ build_webui("build") {
     ts_extra_deps = [ ":copy_data_sharing_sdk" ]
     extra_grdp_deps = [ ":build_data_sharing_sdk_grdp" ]
     extra_grdp_files = [ "$target_gen_dir/data_sharing_sdk.grdp" ]
-
-    ts_definitions = [ "$preprocess_folder/data_sharing_sdk.d.ts" ]
   } else {
     static_files += [ "data_sharing_sdk.css" ]
 
@@ -74,7 +72,6 @@ if (is_chrome_branded) {
   copy("copy_data_sharing_sdk") {
     sources = [
       "//third_party/data_sharing_sdk/data_sharing_sdk.css",
-      "//third_party/data_sharing_sdk/data_sharing_sdk.d.ts",
       "//third_party/data_sharing_sdk/data_sharing_sdk.js",
     ]
 

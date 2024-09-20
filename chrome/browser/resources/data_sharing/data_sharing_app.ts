@@ -88,28 +88,39 @@ export class DataSharingApp extends CustomElement {
 
     switch (flow) {
       case FlowValues.SHARE:
-        this.dataSharingSdk_.runInviteFlow({
-          getShareLink: (params: DataSharingSdkGetLinkParams):
-              Promise<string> => {
-                this.makeTabGroupShared(tabGroupId!, params.groupId);
-                return this.getShareLink(params);
-              },
-        });
+        this.dataSharingSdk_
+            .runInviteFlow({
+              getShareLink: (params: DataSharingSdkGetLinkParams):
+                  Promise<string> => {
+                    this.makeTabGroupShared(tabGroupId!, params.groupId);
+                    return this.getShareLink(params);
+                  },
+            })
+            .then((res) => {
+              this.browserProxy_.closeUi(res.status);
+            });
         break;
       case FlowValues.JOIN:
         // group_id and token_secret cannot be null for join flow.
-        this.dataSharingSdk_.runJoinFlow(
-            {groupId: groupId!, tokenSecret: tokenSecret!});
+        this.dataSharingSdk_
+            .runJoinFlow({groupId: groupId!, tokenSecret: tokenSecret!})
+            .then((res) => {
+              this.browserProxy_.closeUi(res.status);
+            });
         break;
       case FlowValues.MANAGE:
         // group_id cannot be null for manage flow.
-        this.dataSharingSdk_.runManageFlow({
-          groupId: groupId!,
-          getShareLink: (params: DataSharingSdkGetLinkParams):
-              Promise<string> => {
-                return this.getShareLink(params);
-              },
-        });
+        this.dataSharingSdk_
+            .runManageFlow({
+              groupId: groupId!,
+              getShareLink: (params: DataSharingSdkGetLinkParams):
+                  Promise<string> => {
+                    return this.getShareLink(params);
+                  },
+            })
+            .then((res) => {
+              this.browserProxy_.closeUi(res.status);
+            });
         break;
       default:
         break;

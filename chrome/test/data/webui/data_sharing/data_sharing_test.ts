@@ -9,6 +9,7 @@ import {BrowserProxyImpl} from 'chrome-untrusted://data-sharing/browser_proxy.js
 import type {PageRemote} from 'chrome-untrusted://data-sharing/data_sharing.mojom-webui.js';
 import {PageCallbackRouter} from 'chrome-untrusted://data-sharing/data_sharing.mojom-webui.js';
 import {DataSharingApp} from 'chrome-untrusted://data-sharing/data_sharing_app.js';
+import {Code} from 'chrome-untrusted://data-sharing/data_sharing_sdk_types.js';
 import {DataSharingSdkImpl} from 'chrome-untrusted://data-sharing/dummy_data_sharing_sdk.js';
 import {assertEquals} from 'chrome-untrusted://webui-test/chai_assert.js';
 import {TestBrowserProxy} from 'chrome-untrusted://webui-test/test_browser_proxy.js';
@@ -23,6 +24,7 @@ class TestDataSharingBrowserProxy extends TestBrowserProxy implements
   constructor() {
     super([
       'showUi',
+      'closeUi',
     ]);
     this.callbackRouter = new PageCallbackRouter();
     this.callbackRouterRemote =
@@ -31,6 +33,10 @@ class TestDataSharingBrowserProxy extends TestBrowserProxy implements
 
   showUi() {
     this.methodCalled('showUi');
+  }
+
+  closeUi(status: Code) {
+    this.methodCalled('closeUi', status);
   }
 }
 
@@ -44,6 +50,12 @@ suite('Start flows', () => {
     testDataSharingSdk = TestMock.fromClass(DataSharingSdkImpl);
     DataSharingSdkImpl.setInstance(testDataSharingSdk);
     BrowserProxyImpl.setInstance(testBrowserProxy);
+    testDataSharingSdk.setResultFor(
+        'runInviteFlow', Promise.resolve({status: Code.OK}));
+    testDataSharingSdk.setResultFor(
+        'runJoinFlow', Promise.resolve({status: Code.OK}));
+    testDataSharingSdk.setResultFor(
+        'runManageFlow', Promise.resolve({status: Code.OK}));
   });
 
   test('Invite flow', async () => {
@@ -55,6 +67,8 @@ suite('Start flows', () => {
     await microtasksFinished();
     assertEquals(1, testBrowserProxy.getCallCount('showUi'));
     assertEquals(1, testDataSharingSdk.getCallCount('runInviteFlow'));
+    assertEquals(1, testBrowserProxy.getCallCount('closeUi'));
+    assertEquals(Code.OK, testBrowserProxy.getArgs('closeUi')[0]);
   });
 
   test('Manage flow', async () => {
@@ -68,6 +82,8 @@ suite('Start flows', () => {
     assertEquals(1, testDataSharingSdk.getCallCount('runManageFlow'));
     assertEquals(
         'fake_id', testDataSharingSdk.getArgs('runManageFlow')[0].groupId);
+    assertEquals(1, testBrowserProxy.getCallCount('closeUi'));
+    assertEquals(Code.OK, testBrowserProxy.getArgs('closeUi')[0]);
   });
 
   test('Join flow', async () => {
@@ -82,5 +98,7 @@ suite('Start flows', () => {
     const arg = testDataSharingSdk.getArgs('runJoinFlow')[0];
     assertEquals('fake_group_id', arg.groupId);
     assertEquals('fake_token', arg.tokenSecret);
+    assertEquals(1, testBrowserProxy.getCallCount('closeUi'));
+    assertEquals(Code.OK, testBrowserProxy.getArgs('closeUi')[0]);
   });
 });

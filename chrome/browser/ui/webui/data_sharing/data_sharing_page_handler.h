@@ -36,6 +36,8 @@ class DataSharingPageHandler : public data_sharing::mojom::PageHandler {
 
   void ShowUI() override;
 
+  void CloseUI(int status_code) override;
+
   void ApiInitComplete() override;
 
   void GetShareLink(const std::string& group_id,

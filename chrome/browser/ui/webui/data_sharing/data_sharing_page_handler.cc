@@ -41,6 +41,15 @@ void DataSharingPageHandler::ShowUI() {
   }
 }
 
+void DataSharingPageHandler::CloseUI(int status_code) {
+  // TODO(crbug.com/368634445): In addition to closing the WebUI bubble some special
+  // codes should trigger follow up native info dialogs.
+  auto embedder = webui_controller_->embedder();
+  if (embedder) {
+    embedder->CloseUI();
+  }
+}
+
 void DataSharingPageHandler::ApiInitComplete() {
   api_initialized_ = true;
   webui_controller_->ApiInitComplete();

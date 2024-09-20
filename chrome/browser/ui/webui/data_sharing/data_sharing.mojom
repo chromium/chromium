@@ -22,6 +22,9 @@ interface PageHandler {
   // show.
   ShowUI();
 
+  // Ask the browser to close the UI and handle some special codes.
+  CloseUI(int32 status_code);
+
   // Called when the api page is fully initialized and authenticated.
   // All other APIs on the Page such as ReadGroups should only be invoked
   // after ApiInitComplete.

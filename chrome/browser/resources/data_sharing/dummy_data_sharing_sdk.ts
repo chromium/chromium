@@ -77,7 +77,7 @@ export class DataSharingSdkImpl implements DataSharingSdk {
       },
       ): Promise<DataSharingSdkResponse> {
     appendTextForTesting('A fake join dialog');
-    return Promise.resolve({});
+    return new Promise(() => {});
   }
   runInviteFlow(_params: {
     parent?: HTMLElement,
@@ -86,7 +86,7 @@ export class DataSharingSdkImpl implements DataSharingSdk {
     learnMoreUrlMap?: {[type in LearnMoreUrlType]?: () => string},
   }): Promise<DataSharingSdkResponse> {
     appendTextForTesting('A fake invite dialog');
-    return Promise.resolve({});
+    return new Promise(() => {});
   }
   runManageFlow(
       _params: DataSharingSdkGroupId&{
@@ -96,7 +96,7 @@ export class DataSharingSdkImpl implements DataSharingSdk {
       },
       ): Promise<DataSharingSdkResponse> {
     appendTextForTesting('A fake manage dialog');
-    return Promise.resolve({});
+    return new Promise(() => {});
   }
 
   // Setup Helpers

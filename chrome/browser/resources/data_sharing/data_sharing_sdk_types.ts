@@ -38,7 +38,8 @@ export const enum ShareAction {
 }
 
 export declare interface DataSharingSdkResponse {
-  readonly finalShareAction?: {action: ShareAction, status: Code};
+  result?: {shareAction?: ShareAction, groupId?: string, tokenSecret?: string};
+  readonly status: Code;
 }
 
 export declare interface DataSharingSdkSitePreview {
