@@ -32,7 +32,6 @@ chromium/try/android_compile_x86_dbg
 chromium/try/chromeos-amd64-generic-asan-rel
 chromium/try/chromeos-amd64-generic-cfi-thin-lto-rel
 chromium/try/chromeos-amd64-generic-dbg
-chromium/try/chromeos-amd64-generic-lacros-dbg
 chromium/try/chromeos-amd64-generic-rel
 chromium/try/chromeos-amd64-generic-rel-gtest
 chromium/try/chromeos-amd64-generic-rel-gtest-and-tast
@@ -81,8 +80,6 @@ chromium/try/ios-simulator
 chromium/try/ios-simulator-exp
 chromium/try/ios-simulator-full-configs
 chromium/try/ios-simulator-noncq
-chromium/try/lacros-amd64-generic-rel
-chromium/try/lacros-arm-generic-rel
 chromium/try/layout_test_leak_detection
 chromium/try/linux-asan-dbg
 chromium/try/linux-asan-media-rel
@@ -106,8 +103,6 @@ chromium/try/linux-dcheck-off-rel
 chromium/try/linux-extended-tracing-rel
 chromium/try/linux-full-remote-rel
 chromium/try/linux-gcc-rel
-chromium/try/linux-lacros-dbg
-chromium/try/linux-lacros-rel
 chromium/try/linux-libfuzzer-asan-rel
 chromium/try/linux-msan-chained-origins-rel
 chromium/try/linux-msan-no-origins-rel

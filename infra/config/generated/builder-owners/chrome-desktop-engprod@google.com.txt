@@ -7,13 +7,6 @@ ci/Win10 Tests x64
 ci/Win10 Tests x64 (dbg)
 ci/Win11 Tests x64
 ci/Windows deterministic
-ci/chromeos-amd64-generic-lacros-dbg
-ci/lacros-amd64-generic-rel
-ci/lacros-arm-archive-rel
-ci/lacros-arm-generic-rel
-ci/lacros64-archive-rel
-ci/linux-lacros-builder-rel
-ci/linux-lacros-dbg
 ci/win-archive-rel
 ci/win-arm64-archive-rel
 ci/win-arm64-dbg

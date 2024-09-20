@@ -502,14 +502,6 @@ targets.variant(
 ) for name, variant in json.decode(io.read_file("./cros-skylab-variants.json")).items()]
 
 targets.variant(
-    name = "LACROS_ASH_TOT",
-    identifier = "Ash ToT",
-    args = [
-        "--deploy-lacros",
-    ],
-)
-
-targets.variant(
     name = "WIN10_INTEL_UHD_630_STABLE",
     identifier = "8086:9bc5",
     mixins = [

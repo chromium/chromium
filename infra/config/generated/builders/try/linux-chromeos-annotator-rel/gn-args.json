@@ -1,6 +1,5 @@
 {
   "gn_args": {
-    "also_build_lacros_chrome": true,
     "dcheck_always_on": true,
     "enable_backup_ref_ptr_feature_flag": true,
     "enable_dangling_raw_ptr_checks": true,

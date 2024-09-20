@@ -333,11 +333,6 @@ targets.compile_target(
 )
 
 targets.compile_target(
-    name = "strip_lacros_files",
-    label = "//chrome:strip_lacros_files",
-)
-
-targets.compile_target(
     name = "symupload",
     label = "//third_party/breakpad:symupload",
 )

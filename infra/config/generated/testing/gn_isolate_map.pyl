@@ -1050,13 +1050,6 @@
     "label": "//ash/keyboard/ui:keyboard_unittests",
     "type": "windowed_test_launcher",
   },
-  "lacros_chrome_browsertests": {
-    "label": "//chrome/test:lacros_chrome_browsertests",
-    "type": "windowed_test_launcher",
-    "args": [
-      "--test-launcher-jobs=1",
-    ],
-  },
   "latency_unittests": {
     "label": "//ui/latency:latency_unittests",
     "type": "console_test_launcher",
@@ -1515,10 +1508,6 @@
   "storage_unittests": {
     "label": "//storage:storage_unittests",
     "type": "console_test_launcher",
-  },
-  "strip_lacros_files": {
-    "label": "//chrome:strip_lacros_files",
-    "type": "additional_compile_target",
   },
   "symupload": {
     "label": "//third_party/breakpad:symupload",

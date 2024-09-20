@@ -4451,22 +4451,6 @@
       },
     },
   },
-  'webgl2_conformance_gles_passthrough_tests Ash ToT': {
-    'modifications': {
-      # Not enough capacity.
-      'Lacros FYI Release (jacuzzi)': {
-        'swarming': {
-          'shards': 1,
-        },
-      },
-      # Not enough capacity.
-      'Lacros FYI Release (octopus)': {
-        'swarming': {
-          'shards': 1,
-        },
-      },
-    },
-  },
   'webgl2_conformance_metal_passthrough_graphite_tests': {
     'remove_from': [
       # crbug.com/1270755
@@ -4552,22 +4536,6 @@
           # Added to debug crbug.com/1293967.
           '--extra-browser-args=--disable-background-media-suspend --disable-renderer-backgrounding --disable-background-timer-throttling',
         ],
-      },
-    },
-  },
-  'webgl_conformance_gles_passthrough_tests Ash ToT': {
-    'modifications': {
-      # Not enough capacity.
-      'Lacros FYI Release (jacuzzi)': {
-        'swarming': {
-          'shards': 1,
-        },
-      },
-      # Not enough capacity.
-      'Lacros FYI Release (octopus)': {
-        'swarming': {
-          'shards': 1,
-        },
       },
     },
   },

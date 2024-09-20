@@ -72,8 +72,6 @@ ci/ios17-sdk-device
 ci/ios17-sdk-simulator
 ci/ios18-beta-simulator
 ci/ios18-sdk-simulator
-ci/lacros-arm64-archive-rel
-ci/lacros-arm64-generic-rel
 ci/linux-annotator-rel
 ci/linux-blink-heap-verification
 ci/linux-blink-web-tests-force-accessibility-rel
@@ -86,7 +84,6 @@ ci/linux-fieldtrial-rel
 ci/linux-fuzz-coverage
 ci/linux-headless-shell-rel
 ci/linux-js-code-coverage
-ci/linux-lacros-archive-rel
 ci/linux-official
 ci/linux-perfetto-rel
 ci/linux-rel-no-external-ip
@@ -149,7 +146,6 @@ codesearch/gen-android-try
 codesearch/gen-chromiumos-try
 codesearch/gen-fuchsia-try
 codesearch/gen-ios-try
-codesearch/gen-lacros-try
 codesearch/gen-linux-try
 codesearch/gen-mac-try
 codesearch/gen-webview-try
@@ -242,7 +238,6 @@ try/builder-config-verifier
 try/chromeos-amd64-generic-asan-rel
 try/chromeos-amd64-generic-cfi-thin-lto-rel
 try/chromeos-amd64-generic-dbg
-try/chromeos-amd64-generic-lacros-dbg
 try/chromeos-arm-generic-dbg
 try/chromeos-arm-generic-rel
 try/chromeos-arm64-generic-rel
@@ -277,9 +272,6 @@ try/ios17-beta-simulator
 try/ios17-sdk-simulator
 try/ios18-beta-simulator
 try/ios18-sdk-simulator
-try/lacros-amd64-generic-rel
-try/lacros-arm-generic-rel
-try/lacros-arm64-generic-rel
 try/layout_test_leak_detection
 try/leak_detection_linux
 try/linux-afl-asan-rel
@@ -314,10 +306,6 @@ try/linux-gcc-rel
 try/linux-headless-shell-rel
 try/linux-js-code-coverage
 try/linux-js-coverage-rel
-try/linux-lacros-clang-tidy-rel
-try/linux-lacros-dbg
-try/linux-lacros-rel
-try/linux-lacros-rel-compilator
 try/linux-layout-tests-edit-ng
 try/linux-libfuzzer-asan-rel
 try/linux-msan-chained-origins-rel

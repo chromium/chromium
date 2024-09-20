@@ -836,27 +836,6 @@ targets.legacy_matrix_compound_suite(
 )
 
 targets.legacy_matrix_compound_suite(
-    name = "gpu_fyi_lacros_device_release_telemetry_tests",
-    basic_suites = {
-        "gpu_pixel_passthrough_telemetry_tests": targets.legacy_matrix_config(
-            variants = [
-                "LACROS_ASH_TOT",
-            ],
-        ),
-        "gpu_webgl_conformance_gles_passthrough_telemetry_tests": targets.legacy_matrix_config(
-            variants = [
-                "LACROS_ASH_TOT",
-            ],
-        ),
-        "gpu_webgl2_conformance_gles_passthrough_telemetry_tests": targets.legacy_matrix_config(
-            variants = [
-                "LACROS_ASH_TOT",
-            ],
-        ),
-    },
-)
-
-targets.legacy_matrix_compound_suite(
     name = "ios17_beta_simulator_tests",
     basic_suites = {
         "ios_common_tests": targets.legacy_matrix_config(

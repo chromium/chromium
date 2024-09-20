@@ -1094,14 +1094,6 @@ targets.binaries.windowed_test_launcher(
     label = "//ash/keyboard/ui:keyboard_unittests",
 )
 
-targets.binaries.windowed_test_launcher(
-    name = "lacros_chrome_browsertests",
-    label = "//chrome/test:lacros_chrome_browsertests",
-    args = [
-        "--test-launcher-jobs=1",
-    ],
-)
-
 targets.binaries.console_test_launcher(
     name = "latency_unittests",
     label = "//ui/latency:latency_unittests",

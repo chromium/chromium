@@ -450,16 +450,6 @@ targets.mixin(
 )
 
 targets.mixin(
-    name = "chromeos-jacuzzi",
-    swarming = targets.swarming(
-        dimensions = {
-            "os": "ChromeOS",
-            "device_type": "jacuzzi",
-        },
-    ),
-)
-
-targets.mixin(
     name = "chromeos-tast-public-builder",
     skylab = targets.skylab(
         args = [
@@ -475,16 +465,6 @@ targets.mixin(
             # execution time among shards in a better way.
             "shard_method=hash",
         ],
-    ),
-)
-
-targets.mixin(
-    name = "chromeos-octopus",
-    swarming = targets.swarming(
-        dimensions = {
-            "os": "ChromeOS",
-            "device_type": "octopus",
-        },
     ),
 )
 

@@ -3399,37 +3399,6 @@
       },
     },
 
-    'gpu_pixel_passthrough_telemetry_tests': {
-      'expected_color_pixel_passthrough_test': {
-        'telemetry_test_name': 'expected_color',
-        'mixins': [
-          'skia_gold_test',
-          'has_native_resultdb_integration',
-          'gpu_integration_test_common_args',
-        ],
-        'args': [
-          '--dont-restore-color-profile-after-test',
-          '--test-machine-name',
-          '${buildername}',
-          '--extra-browser-args=--use-cmd-decoder=passthrough --use-gl=angle',
-        ],
-      },
-      'pixel_skia_gold_passthrough_test': {
-        'telemetry_test_name': 'pixel',
-        'mixins': [
-          'skia_gold_test',
-          'has_native_resultdb_integration',
-          'gpu_integration_test_common_args',
-        ],
-        'args': [
-          '--dont-restore-color-profile-after-test',
-          '--test-machine-name',
-          '${buildername}',
-          '--extra-browser-args=--use-cmd-decoder=passthrough --use-gl=angle',
-        ],
-      },
-    },
-
     'gpu_skia_renderer_vulkan_passthrough_telemetry_tests': {
       'vulkan_pixel_skia_gold_test': {
         'telemetry_test_name': 'pixel',
@@ -4293,24 +4262,6 @@
 
     'linux_flavor_specific_chromium_gtests': {
       'sandbox_linux_unittests': {},
-    },
-
-    'linux_lacros_chrome_gtests': {
-      'browser_tests': {
-        'swarming': {
-          'shards': 33,
-        },
-      },
-      'interactive_ui_tests': {
-        'swarming': {
-          'shards': 6,
-        },
-      },
-      'lacros_chrome_browsertests': {
-        'swarming': {
-          'shards': 6,
-        },
-      },
     },
 
     'linux_specific_chromium_isolated_scripts': {
@@ -7186,24 +7137,6 @@
       'gpu_noop_sleep_telemetry_test': {
         'variants': [
           'CROS_SKYRIM_RELEASE_LKGM',
-        ],
-      },
-    },
-
-    'gpu_fyi_lacros_device_release_telemetry_tests': {
-      'gpu_pixel_passthrough_telemetry_tests': {
-        'variants': [
-          'LACROS_ASH_TOT',
-        ],
-      },
-      'gpu_webgl2_conformance_gles_passthrough_telemetry_tests': {
-        'variants': [
-          'LACROS_ASH_TOT',
-        ],
-      },
-      'gpu_webgl_conformance_gles_passthrough_telemetry_tests': {
-        'variants': [
-          'LACROS_ASH_TOT',
         ],
       },
     },

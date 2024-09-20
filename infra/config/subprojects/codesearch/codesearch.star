@@ -135,28 +135,6 @@ try_.builder(
 )
 
 try_.builder(
-    name = "gen-lacros-try",
-    gn_args = gn_args.config(
-        configs = [
-            "codesearch_builder",
-            "clang",
-            "debug_builder",
-            "minimal_symbols",
-            "remoteexec",
-            "lacros_on_linux",
-            "use_cups",
-            "x64",
-        ],
-    ),
-    properties = {
-        "recipe_properties": {
-            "build_config": "lacros",
-            "platform": "lacros",
-        },
-    },
-)
-
-try_.builder(
     name = "gen-linux-try",
     gn_args = gn_args.config(
         configs = [

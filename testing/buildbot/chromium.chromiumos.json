@@ -16,11 +16,6 @@
       "chromiumos_preflight"
     ]
   },
-  "chromeos-amd64-generic-lacros-dbg": {
-    "additional_compile_targets": [
-      "chrome"
-    ]
-  },
   "chromeos-amd64-generic-rel": {
     "additional_compile_targets": [
       "chromiumos_preflight"
@@ -1456,21 +1451,6 @@
         "use_lkgm": true,
         "variant_id": "PUBLIC_LKGM"
       }
-    ]
-  },
-  "lacros-amd64-generic-rel": {
-    "additional_compile_targets": [
-      "chrome"
-    ]
-  },
-  "lacros-arm-generic-rel": {
-    "additional_compile_targets": [
-      "chrome"
-    ]
-  },
-  "lacros-arm64-generic-rel": {
-    "additional_compile_targets": [
-      "chrome"
     ]
   },
   "linux-cfm-rel": {
@@ -4635,18 +4615,6 @@
         "name": "check_network_annotations",
         "script": "check_network_annotations.py"
       }
-    ]
-  },
-  "linux-lacros-builder-rel": {
-    "additional_compile_targets": [
-      "chrome",
-      "chrome_sandbox",
-      "symupload"
-    ]
-  },
-  "linux-lacros-dbg": {
-    "additional_compile_targets": [
-      "all"
     ]
   }
 }

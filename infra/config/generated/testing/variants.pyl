@@ -94,12 +94,6 @@
       },
     },
   },
-  'LACROS_ASH_TOT': {
-    'identifier': 'Ash ToT',
-    'args': [
-      '--deploy-lacros',
-    ],
-  },
   'LINUX_INTEL_UHD_630_STABLE': {
     'identifier': 'UHD 630',
     'mixins': [

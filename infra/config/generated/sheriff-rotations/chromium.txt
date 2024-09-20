@@ -75,7 +75,6 @@ ci/android-official
 ci/chromeos-amd64-generic-asan-rel
 ci/chromeos-amd64-generic-cfi-thin-lto-rel
 ci/chromeos-amd64-generic-dbg
-ci/chromeos-amd64-generic-lacros-dbg
 ci/chromeos-amd64-generic-rel
 ci/chromeos-amd64-generic-rel-gtest
 ci/chromeos-arm-generic-dbg
@@ -89,10 +88,6 @@ ci/ios-device
 ci/ios-simulator
 ci/ios-simulator-full-configs
 ci/ios-simulator-noncq
-ci/lacros-amd64-generic-rel
-ci/lacros-arm-archive-rel
-ci/lacros-arm-generic-rel
-ci/lacros64-archive-rel
 ci/linux-archive-rel
 ci/linux-bfcache-rel
 ci/linux-blink-web-tests-force-accessibility-rel
@@ -102,8 +97,6 @@ ci/linux-chromeos-dbg
 ci/linux-chromeos-rel
 ci/linux-extended-tracing-rel
 ci/linux-gcc-rel
-ci/linux-lacros-builder-rel
-ci/linux-lacros-dbg
 ci/linux-presubmit
 ci/linux-ubsan-vptr
 ci/linux-v4l2-codec-rel

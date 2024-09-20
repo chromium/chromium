@@ -3084,34 +3084,6 @@ targets.legacy_basic_suite(
 )
 
 targets.legacy_basic_suite(
-    name = "gpu_pixel_passthrough_telemetry_tests",
-    tests = {
-        "expected_color_pixel_passthrough_test": targets.legacy_test_config(
-            mixins = [
-                "gpu_integration_test_common_args",
-            ],
-            args = [
-                "--dont-restore-color-profile-after-test",
-                "--test-machine-name",
-                "${buildername}",
-                "--extra-browser-args=--use-cmd-decoder=passthrough --use-gl=angle",
-            ],
-        ),
-        "pixel_skia_gold_passthrough_test": targets.legacy_test_config(
-            mixins = [
-                "gpu_integration_test_common_args",
-            ],
-            args = [
-                "--dont-restore-color-profile-after-test",
-                "--test-machine-name",
-                "${buildername}",
-                "--extra-browser-args=--use-cmd-decoder=passthrough --use-gl=angle",
-            ],
-        ),
-    },
-)
-
-targets.legacy_basic_suite(
     name = "gpu_skia_renderer_vulkan_passthrough_telemetry_tests",
     tests = {
         "vulkan_pixel_skia_gold_test": targets.legacy_test_config(
@@ -3971,27 +3943,6 @@ targets.legacy_basic_suite(
     tests = {
         # Android, Chrome OS and Linux
         "sandbox_linux_unittests": targets.legacy_test_config(),
-    },
-)
-
-targets.legacy_basic_suite(
-    name = "linux_lacros_chrome_gtests",
-    tests = {
-        "browser_tests": targets.legacy_test_config(
-            swarming = targets.swarming(
-                shards = 33,
-            ),
-        ),
-        "lacros_chrome_browsertests": targets.legacy_test_config(
-            swarming = targets.swarming(
-                shards = 6,
-            ),
-        ),
-        "interactive_ui_tests": targets.legacy_test_config(
-            swarming = targets.swarming(
-                shards = 6,
-            ),
-        ),
     },
 )
 
