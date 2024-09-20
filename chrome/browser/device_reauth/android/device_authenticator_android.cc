@@ -52,6 +52,7 @@ DeviceAuthFinalResult MapUIResultToFinal(DeviceAuthUIResult result) {
     case DeviceAuthUIResult::kCanceledByUser:
       return DeviceAuthFinalResult::kCanceledByUser;
     case DeviceAuthUIResult::kFailed:
+    case DeviceAuthUIResult::kLockout:
       return DeviceAuthFinalResult::kFailed;
   }
 }

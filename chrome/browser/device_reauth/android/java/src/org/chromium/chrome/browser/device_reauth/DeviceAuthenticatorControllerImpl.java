@@ -14,6 +14,7 @@ import android.app.KeyguardManager;
 import android.content.Context;
 import android.hardware.biometrics.BiometricManager;
 import android.hardware.biometrics.BiometricPrompt;
+import android.hardware.biometrics.BiometricPrompt.AuthenticationCallback;
 import android.os.Build;
 import android.os.CancellationSignal;
 
@@ -29,7 +30,7 @@ class DeviceAuthenticatorControllerImpl implements DeviceAuthenticatorController
     private final Context mContext;
     private final Delegate mDelegate;
     private BiometricPrompt mBiometricPrompt;
-    private CancellationSignal mCancellationSignal;
+    protected CancellationSignal mCancellationSignal;
 
     public DeviceAuthenticatorControllerImpl(Context context, Delegate delegate) {
         mContext = context;
@@ -98,36 +99,43 @@ class DeviceAuthenticatorControllerImpl implements DeviceAuthenticatorController
         mBiometricPrompt.authenticate(
                 mCancellationSignal,
                 callbackExecutor,
-                new BiometricPrompt.AuthenticationCallback() {
+                new AuthenticationCallback() {
                     @Override
                     public void onAuthenticationError(
                             int errorCode, @NonNull CharSequence errString) {
                         super.onAuthenticationError(errorCode, errString);
-                        if (errorCode == BiometricPrompt.BIOMETRIC_ERROR_USER_CANCELED) {
-                            onAuthenticationCompleted(DeviceAuthUIResult.CANCELED_BY_USER);
-                            return;
-                        }
-                        onAuthenticationCompleted(DeviceAuthUIResult.FAILED);
+                        DeviceAuthenticatorControllerImpl.this.onAuthenticationError(errorCode);
                     }
 
                     @Override
                     public void onAuthenticationSucceeded(
                             @NonNull BiometricPrompt.AuthenticationResult result) {
                         super.onAuthenticationSucceeded(result);
-                        if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.R) {
-                            onAuthenticationCompleted(
-                                    DeviceAuthUIResult.SUCCESS_WITH_UNKNOWN_METHOD);
-                            return;
-                        }
-
-                        if (result.getAuthenticationType()
-                                == BiometricPrompt.AUTHENTICATION_RESULT_TYPE_BIOMETRIC) {
-                            onAuthenticationCompleted(DeviceAuthUIResult.SUCCESS_WITH_BIOMETRICS);
-                            return;
-                        }
-                        onAuthenticationCompleted(DeviceAuthUIResult.SUCCESS_WITH_DEVICE_LOCK);
+                        DeviceAuthenticatorControllerImpl.this.onAuthenticationSucceeded(result);
                     }
                 });
+    }
+
+    protected void onAuthenticationError(int errorCode) {
+        if (errorCode == BiometricPrompt.BIOMETRIC_ERROR_USER_CANCELED) {
+            onAuthenticationCompleted(DeviceAuthUIResult.CANCELED_BY_USER);
+            return;
+        }
+        onAuthenticationCompleted(DeviceAuthUIResult.FAILED);
+    }
+
+    protected void onAuthenticationSucceeded(@NonNull BiometricPrompt.AuthenticationResult result) {
+        if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.R) {
+            onAuthenticationCompleted(DeviceAuthUIResult.SUCCESS_WITH_UNKNOWN_METHOD);
+            return;
+        }
+
+        if (result.getAuthenticationType()
+                == BiometricPrompt.AUTHENTICATION_RESULT_TYPE_BIOMETRIC) {
+            onAuthenticationCompleted(DeviceAuthUIResult.SUCCESS_WITH_BIOMETRICS);
+            return;
+        }
+        onAuthenticationCompleted(DeviceAuthUIResult.SUCCESS_WITH_DEVICE_LOCK);
     }
 
     void onAuthenticationCompleted(@DeviceAuthUIResult int result) {

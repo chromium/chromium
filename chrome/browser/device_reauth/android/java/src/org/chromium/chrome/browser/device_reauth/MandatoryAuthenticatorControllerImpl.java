@@ -9,10 +9,18 @@ import static android.hardware.biometrics.BiometricManager.BIOMETRIC_SUCCESS;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.hardware.biometrics.BiometricManager;
+import android.hardware.biometrics.BiometricPrompt;
 import android.os.Build;
 import android.os.Build.VERSION_CODES;
+import android.os.CancellationSignal;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
+
+import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
+
+import java.util.concurrent.Executor;
 
 /**
  * The controller used for user authentication (either with screen lock or biometrics) for devices
@@ -29,9 +37,17 @@ class MandatoryAuthenticatorControllerImpl extends DeviceAuthenticatorController
     public static final int BIOMETRIC_ERROR_NOT_ENABLED_FOR_APPS = 21;
 
     /** The operation was canceled because the API is locked out due to too many attempts. */
-    public static final int BIOMETRIC_LOCKOUT = 7;
+    public static final int BIOMETRIC_ERROR_LOCKOUT = 7;
+
+    /**
+     * The operation was canceled because {@link #BIOMETRIC_ERROR_LOCKOUT} occurred too many times.
+     * Biometric authentication is disabled until the user unlocks with strong authentication
+     * (PIN/Pattern/Password)
+     */
+    public static final int BIOMETRIC_ERROR_LOCKOUT_PERMANENT = 9;
 
     private Context mContext;
+    private BiometricPrompt mBiometricPrompt;
 
     public MandatoryAuthenticatorControllerImpl(Context context, Delegate delegate) {
         super(context, delegate);
@@ -50,7 +66,7 @@ class MandatoryAuthenticatorControllerImpl extends DeviceAuthenticatorController
         try {
             switch (manager.canAuthenticate(AUTHENTICATOR_MANDATORY_BIOMETRICS)) {
                 case BIOMETRIC_SUCCESS:
-                case BIOMETRIC_LOCKOUT:
+                case BIOMETRIC_ERROR_LOCKOUT:
                     return BiometricsAvailability.REQUIRED;
                 case BIOMETRIC_ERROR_MANDATORY_NOT_ACTIVE:
                 case BIOMETRIC_ERROR_NOT_ENABLED_FOR_APPS:
@@ -83,9 +99,65 @@ class MandatoryAuthenticatorControllerImpl extends DeviceAuthenticatorController
         return super.canAuthenticateWithBiometricOrScreenLock();
     }
 
-    @RequiresApi(Build.VERSION_CODES.P)
+    @RequiresApi(Build.VERSION_CODES.VANILLA_ICE_CREAM)
     @Override
     public void authenticate() {
-        // TODO(crbug.com/367683792): Implement.
+        int availability = canAuthenticateWithBiometric();
+        if (availability == BiometricsAvailability.REQUIRED_BUT_HAS_ERROR) {
+            // TODO (crbug.com/367683407): trigger error UI offering to disable the mandatory auth.
+            onAuthenticationCompleted(DeviceAuthUIResult.FAILED);
+            return;
+        }
+        mBiometricPrompt = getBiometricPrompt(availability);
+        mCancellationSignal = new CancellationSignal();
+        Executor callbackExecutor = (r) -> PostTask.postTask(TaskTraits.UI_DEFAULT, r);
+
+        try {
+            mBiometricPrompt.authenticate(
+                    mCancellationSignal,
+                    callbackExecutor,
+                    new BiometricPrompt.AuthenticationCallback() {
+                        @Override
+                        public void onAuthenticationError(
+                                int errorCode, @NonNull CharSequence errString) {
+                            super.onAuthenticationError(errorCode, errString);
+                            if (errorCode == BIOMETRIC_ERROR_LOCKOUT_PERMANENT) {
+                                // TODO (crbug.com/367683201): trigger lockout dialog.
+                                onAuthenticationCompleted(DeviceAuthUIResult.LOCKOUT);
+                                return;
+                            }
+                            MandatoryAuthenticatorControllerImpl.this.onAuthenticationError(
+                                    errorCode);
+                        }
+
+                        @Override
+                        public void onAuthenticationSucceeded(
+                                @NonNull BiometricPrompt.AuthenticationResult result) {
+                            super.onAuthenticationSucceeded(result);
+                            MandatoryAuthenticatorControllerImpl.this.onAuthenticationSucceeded(
+                                    result);
+                        }
+                    });
+        } catch (SecurityException e) {
+            // The build is not V-QPR1+, so Identity Check is not in effect.
+            super.authenticate();
+        }
+    }
+
+    @RequiresApi(VERSION_CODES.VANILLA_ICE_CREAM)
+    @SuppressLint("WrongConstant") // AUTHENTICATOR_MANDATORY_BIOMETRICS is not publicly available
+    private BiometricPrompt getBiometricPrompt(@BiometricsAvailability int availability) {
+        BiometricPrompt.Builder promptBuilder =
+                new BiometricPrompt.Builder(mContext)
+                        .setTitle(
+                                mContext.getResources()
+                                        .getString(R.string.password_filling_reauth_prompt_title));
+        if (availability == BiometricsAvailability.REQUIRED) {
+            promptBuilder.setAllowedAuthenticators(AUTHENTICATOR_MANDATORY_BIOMETRICS);
+        }
+        promptBuilder.setDeviceCredentialAllowed(true);
+        promptBuilder.setConfirmationRequired(false);
+        // TODO(crbug.com/368545705): Customize authentication prompt UI.
+        return promptBuilder.build();
     }
 }
