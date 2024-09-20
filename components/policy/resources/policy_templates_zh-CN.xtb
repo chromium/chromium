@@ -1884,7 +1884,7 @@ IPv4 地址的前缀为 0010；IPv6 地址的前缀为 0020。对于双栈网络
       如果此政策未设置，系统会开启第三方 Cookie，但用户可以更改此设置。</translation>
 <translation id="2386362615870139244">允许使用屏幕唤醒锁定</translation>
 <translation id="2387469539700985783">此政策对 Android 完成的报告没有任何影响。</translation>
-<translation id="2388701318721126001">如果此政策处于停用状态，用户将无法从 Google 相册中的影集选择<ph name="PRODUCT_OS_NAME" />壁纸图片。
+<translation id="2388701318721126001">如果此政策处于停用状态，用户将无法从 Google 相册中的相册选择<ph name="PRODUCT_OS_NAME" />壁纸图片。
 
 如果此政策处于启用状态或未设置，用户可以选择 Google 相册中的图片作为壁纸。</translation>
 <translation id="2393862222659066027">打开一系列网址并恢复上次的会话</translation>
