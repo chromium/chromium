@@ -129,8 +129,11 @@ const char kRendererProcessCreatedBeforeNavHistogramName[] =
 const char kRendererProcessInitHistogramName[] =
     "NavigationStartToRendererProcessInit";
 
-// TODO(https://crbug.com/347706997): Record more milestones related to loading
-// and process creation timing.
+const char kNavigationTypeHistoryNav[] = "HistoryNav";
+const char kNavigationTypeReloadNav[] = "ReloadNav";
+const char kNavigationTypeRestoreNav[] = "RestoreNav";
+const char kNavigationTypeBrowserNav[] = "BrowserNav";
+const char kNavigationTypeRendererNav[] = "RendererNav";
 
 }  // namespace internal
 
@@ -303,11 +306,11 @@ std::string AbandonedPageLoadMetricsObserver::
     GetMilestoneToAbandonHistogramNameWithoutPrefixSuffix(
         NavigationMilestone milestone,
         std::optional<AbandonReason> abandon_reason) {
-  const std::string milestone_to_abandon =
-      NavigationMilestoneToString(milestone) + internal::kMilestoneToAbandon;
+  const std::string milestone_to_abandon = base::StrCat(
+      {NavigationMilestoneToString(milestone), internal::kMilestoneToAbandon});
   if (abandon_reason.has_value()) {
-    return milestone_to_abandon + "." +
-           AbandonReasonToString(abandon_reason.value());
+    return base::StrCat({milestone_to_abandon, ".",
+                         AbandonReasonToString(abandon_reason.value())});
   }
   return milestone_to_abandon;
 }
@@ -315,16 +318,17 @@ std::string AbandonedPageLoadMetricsObserver::
 std::string AbandonedPageLoadMetricsObserver::
     GetAbandonReasonAtMilestoneHistogramNameWithoutPrefixSuffix(
         NavigationMilestone milestone) {
-  return std::string("AbandonReasonAt.") +
-         NavigationMilestoneToString(milestone);
+  return base::StrCat(
+      {"AbandonReasonAt.", NavigationMilestoneToString(milestone)});
 }
 
 std::string AbandonedPageLoadMetricsObserver::
     GetLastMilestoneBeforeAbandonHistogramNameWithoutPrefixSuffix(
         std::optional<AbandonReason> abandon_reason) {
   if (abandon_reason.has_value()) {
-    return std::string(internal::kLastMilestoneBeforeAbandon) + "." +
-           AbandonReasonToString(abandon_reason.value());
+    return base::StrCat(
+        {std::string_view(internal::kLastMilestoneBeforeAbandon), ".",
+         AbandonReasonToString(abandon_reason.value())});
   }
   return internal::kLastMilestoneBeforeAbandon;
 }
@@ -335,15 +339,25 @@ AbandonedPageLoadMetricsObserver::GetMilestoneHistogramNameWithoutPrefixSuffix(
   if (milestone == NavigationMilestone::kNavigationStart) {
     return std::string(internal::kMilestoneNavigationStart);
   }
-  return std::string(internal::kMilestoneNavigationStart) + "To" +
-         NavigationMilestoneToString(milestone);
+  return base::StrCat({std::string_view(internal::kMilestoneNavigationStart),
+                       "To", NavigationMilestoneToString(milestone)});
 }
 
 std::string AbandonedPageLoadMetricsObserver::
     GetTimeToAbandonFromNavigationStartWithoutPrefixSuffix(
         NavigationMilestone milestone) {
-  return internal::kTimeToAbandonFromNavigationStart +
-         NavigationMilestoneToString(milestone);
+  return base::StrCat({internal::kTimeToAbandonFromNavigationStart,
+                       NavigationMilestoneToString(milestone)});
+}
+
+std::string
+AbandonedPageLoadMetricsObserver::GetNavigationTypeToAbandonWithoutPrefixSuffix(
+    const std::string_view& tracked_navigation_type,
+    std::optional<AbandonReason> abandon_reason) {
+  return base::StrCat({tracked_navigation_type, "To",
+                       (abandon_reason.has_value()
+                            ? AbandonReasonToString(abandon_reason.value())
+                            : "")});
 }
 
 void AbandonedPageLoadMetricsObserver::LogMilestoneHistogram(
@@ -374,41 +388,51 @@ void AbandonedPageLoadMetricsObserver::LogAbandonHistograms(
     base::TimeTicks relative_start_time) {
   std::string base_suffix = GetHistogramSuffix(milestone, event_time);
   for (std::string additional_suffix : GetAdditionalSuffixes()) {
-    std::string suffix = base_suffix + additional_suffix;
+    std::string suffix = base::StrCat({base_suffix, additional_suffix});
     PAGE_LOAD_HISTOGRAM(
-        GetHistogramPrefix() +
-            GetMilestoneToAbandonHistogramNameWithoutPrefixSuffix(
-                milestone, abandon_reason) +
-            suffix,
+        base::StrCat({GetHistogramPrefix(),
+                      GetMilestoneToAbandonHistogramNameWithoutPrefixSuffix(
+                          milestone, abandon_reason),
+                      suffix}),
         event_time - relative_start_time);
     PAGE_LOAD_HISTOGRAM(
-        GetHistogramPrefix() +
-            GetMilestoneToAbandonHistogramNameWithoutPrefixSuffix(
-                milestone, std::nullopt) +
-            suffix,
+        base::StrCat({GetHistogramPrefix(),
+                      GetMilestoneToAbandonHistogramNameWithoutPrefixSuffix(
+                          milestone, std::nullopt),
+                      suffix}),
         event_time - relative_start_time);
     PAGE_LOAD_HISTOGRAM(
-        GetHistogramPrefix() +
-            GetTimeToAbandonFromNavigationStartWithoutPrefixSuffix(milestone) +
-            suffix,
+        base::StrCat(
+            {GetHistogramPrefix(),
+             GetTimeToAbandonFromNavigationStartWithoutPrefixSuffix(milestone),
+             suffix}),
+        event_time - navigation_start_time_);
+    PAGE_LOAD_HISTOGRAM(
+        base::StrCat({GetHistogramPrefix(),
+                      GetNavigationTypeToAbandonWithoutPrefixSuffix(
+                          navigation_type_, abandon_reason),
+                      suffix}),
         event_time - navigation_start_time_);
     base::UmaHistogramEnumeration(
-        GetHistogramPrefix() +
-            GetAbandonReasonAtMilestoneHistogramNameWithoutPrefixSuffix(
-                milestone) +
-            suffix,
+        base::StrCat(
+            {GetHistogramPrefix(),
+             GetAbandonReasonAtMilestoneHistogramNameWithoutPrefixSuffix(
+                 milestone),
+             suffix}),
         abandon_reason);
     base::UmaHistogramEnumeration(
-        GetHistogramPrefix() +
-            GetLastMilestoneBeforeAbandonHistogramNameWithoutPrefixSuffix(
-                abandon_reason) +
-            suffix,
+        base::StrCat(
+            {GetHistogramPrefix(),
+             GetLastMilestoneBeforeAbandonHistogramNameWithoutPrefixSuffix(
+                 abandon_reason),
+             suffix}),
         milestone);
     base::UmaHistogramEnumeration(
-        GetHistogramPrefix() +
-            GetLastMilestoneBeforeAbandonHistogramNameWithoutPrefixSuffix(
-                std::nullopt) +
-            suffix,
+        base::StrCat(
+            {GetHistogramPrefix(),
+             GetLastMilestoneBeforeAbandonHistogramNameWithoutPrefixSuffix(
+                 std::nullopt),
+             suffix}),
         milestone);
   }
 
@@ -584,6 +608,18 @@ AbandonedPageLoadMetricsObserver::OnStart(
   navigation_id_ = navigation_handle->GetNavigationId();
   navigation_start_time_ = GetDelegate().GetNavigationStart();
   started_in_foreground_ = started_in_foreground;
+  if (navigation_handle->IsHistory()) {
+    navigation_type_ = internal::kNavigationTypeHistoryNav;
+  } else if (navigation_handle->GetReloadType() != content::ReloadType::NONE) {
+    navigation_type_ = internal::kNavigationTypeReloadNav;
+  } else if (navigation_handle->GetRestoreType() !=
+             content::RestoreType::kNotRestored) {
+    navigation_type_ = internal::kNavigationTypeRestoreNav;
+  } else if (navigation_handle->IsRendererInitiated()) {
+    navigation_type_ = internal::kNavigationTypeRendererNav;
+  } else {
+    navigation_type_ = internal::kNavigationTypeBrowserNav;
+  }
 
   page_load_metrics::PageLoadMetricsObserver::ObservePolicy
       navigation_handling_result = OnNavigationEvent(navigation_handle);
