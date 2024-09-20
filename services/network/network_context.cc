@@ -2546,7 +2546,7 @@ URLRequestContextOwner NetworkContext::MakeURLRequestContext(
         params_->enable_ip_protection);
     ip_protection_control_mojo =
         std::make_unique<ip_protection::IpProtectionControlMojo>(
-            std::move(params_->ip_protection_proxy_delegate), ipp_core.get());
+            std::move(params_->ip_protection_control), ipp_core.get());
     builder.set_proxy_delegate(std::make_unique<IpProtectionProxyDelegate>(
         nspal, std::move(ipp_core)));
   } else if (params_->initial_custom_proxy_config ||

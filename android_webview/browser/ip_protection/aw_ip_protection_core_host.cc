@@ -320,8 +320,7 @@ AwIpProtectionCoreHost* AwIpProtectionCoreHost::Get(
 void AwIpProtectionCoreHost::AddNetworkService(
     mojo::PendingReceiver<network::mojom::IpProtectionConfigGetter>
         pending_receiver,
-    mojo::PendingRemote<network::mojom::IpProtectionProxyDelegate>
-        pending_remote) {
+    mojo::PendingRemote<network::mojom::IpProtectionControl> pending_remote) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   CHECK(!is_shutting_down_);
   receivers_.Add(this, std::move(pending_receiver));

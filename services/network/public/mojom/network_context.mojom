@@ -438,14 +438,13 @@ struct NetworkContextParams {
   pending_remote<IpProtectionConfigGetter>? ip_protection_config_getter;
 
   // A receiver for sending notifications from the browser process to the IP
-  // Protection ProxyDelegate in the network service. This is set in the same
+  // Protection business logic in the network service. This is set in the same
   // cases as `ip_protection_config_getter`.
-  pending_receiver<IpProtectionProxyDelegate>? ip_protection_proxy_delegate;
+  pending_receiver<IpProtectionControl>? ip_protection_control;
 
   // Whether the IP Protection feature is enabled at the time the NetworkContext
   // is created. This setting can change via the
-  // `SetIpProtectionEnabled` method of the `IpProtectionProxyDelegate`
-  // interface.
+  // `SetIpProtectionEnabled` method of the `IpProtectionControl` interface.
   bool enable_ip_protection = false;
 
   // When PAC quick checking is enabled, DNS lookups for PAC script's host are
@@ -957,10 +956,9 @@ interface IpProtectionConfigGetter {
 // For more information on this interface, see
 // `ip_protection::IpProtectionControl`.
 //
-// TODO: https://crbug.com/352005196 - fix the naming, as this is not
-// implemented by IpProtectionProxyDelegate anymore. The methods names are using
-// stale terminology as well.
-interface IpProtectionProxyDelegate {
+// TODO: https://crbug.com/352005196 - fix the method names, which are using
+// stale terminology.
+interface IpProtectionControl {
   VerifyIpProtectionConfigGetterForTesting()
       => (BlindSignedAuthToken? bsa_token,
           mojo_base.mojom.Time? try_again_after);

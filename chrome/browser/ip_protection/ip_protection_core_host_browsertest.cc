@@ -159,17 +159,16 @@ class IpProtectionCoreHostBrowserTest : public PlatformBrowserTest {
 
     network::mojom::NetworkContext* main_profile_network_context =
         GetProfile()->GetDefaultStoragePartition()->GetNetworkContext();
-    main_profile_ipp_proxy_delegate_ = provider->last_remote_for_testing();
+    main_profile_ipp_control_ = provider->last_remote_for_testing();
 
     incognito_profile_ =
         GetProfile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
     ASSERT_EQ(provider->receivers_for_testing().size(), 2U);
     network::mojom::NetworkContext* incognito_profile_network_context =
         incognito_profile_->GetDefaultStoragePartition()->GetNetworkContext();
-    incognito_profile_ipp_proxy_delegate_ = provider->last_remote_for_testing();
+    incognito_profile_ipp_control_ = provider->last_remote_for_testing();
     ASSERT_NE(main_profile_network_context, incognito_profile_network_context);
-    ASSERT_NE(main_profile_ipp_proxy_delegate_,
-              incognito_profile_ipp_proxy_delegate_);
+    ASSERT_NE(main_profile_ipp_control_, incognito_profile_ipp_control_);
 
     incognito_profile_auth_token_getter_interceptor_ =
         std::make_unique<IpProtectionConfigGetterInterceptor>(
@@ -188,8 +187,8 @@ class IpProtectionCoreHostBrowserTest : public PlatformBrowserTest {
     incognito_profile_auth_token_getter_interceptor_ = nullptr;
     main_profile_auth_token_getter_interceptor_ = nullptr;
 
-    main_profile_ipp_proxy_delegate_ = nullptr;
-    incognito_profile_ipp_proxy_delegate_ = nullptr;
+    main_profile_ipp_control_ = nullptr;
+    incognito_profile_ipp_control_ = nullptr;
 
     Profile* incognito_profile = incognito_profile_;
     incognito_profile_ = nullptr;
@@ -199,14 +198,14 @@ class IpProtectionCoreHostBrowserTest : public PlatformBrowserTest {
   Profile* GetProfile() { return chrome_test_utils::GetProfile(this); }
 
  protected:
-  raw_ptr<network::mojom::IpProtectionProxyDelegate>
-      main_profile_ipp_proxy_delegate_ = nullptr;
+  raw_ptr<network::mojom::IpProtectionControl> main_profile_ipp_control_ =
+      nullptr;
   std::unique_ptr<IpProtectionConfigGetterInterceptor>
       main_profile_auth_token_getter_interceptor_;
 
   raw_ptr<Profile> incognito_profile_ = nullptr;
-  raw_ptr<network::mojom::IpProtectionProxyDelegate>
-      incognito_profile_ipp_proxy_delegate_ = nullptr;
+  raw_ptr<network::mojom::IpProtectionControl> incognito_profile_ipp_control_ =
+      nullptr;
   std::unique_ptr<IpProtectionConfigGetterInterceptor>
       incognito_profile_auth_token_getter_interceptor_;
 
@@ -239,9 +238,8 @@ IN_PROC_BROWSER_TEST_F(IpProtectionCoreHostBrowserTest,
   base::test::TestFuture<const std::optional<BlindSignedAuthToken>&,
                          std::optional<base::Time>>
       future;
-  auto* ipp_proxy_delegate = getter->last_remote_for_testing();
-  ipp_proxy_delegate->VerifyIpProtectionConfigGetterForTesting(
-      future.GetCallback());
+  auto* ipp_control = getter->last_remote_for_testing();
+  ipp_control->VerifyIpProtectionConfigGetterForTesting(future.GetCallback());
   const std::optional<BlindSignedAuthToken>& result =
       future.Get<std::optional<BlindSignedAuthToken>>();
   ASSERT_TRUE(result);
@@ -262,9 +260,9 @@ IN_PROC_BROWSER_TEST_F(IpProtectionCoreHostBrowserTest,
 
   // Verify that we can get tokens from the incognito mode profile.
   future.Clear();
-  auto* incognito_ipp_proxy_delegate = getter->last_remote_for_testing();
-  ASSERT_NE(incognito_ipp_proxy_delegate, ipp_proxy_delegate);
-  incognito_ipp_proxy_delegate->VerifyIpProtectionConfigGetterForTesting(
+  auto* incognito_ipp_control = getter->last_remote_for_testing();
+  ASSERT_NE(incognito_ipp_control, ipp_control);
+  incognito_ipp_control->VerifyIpProtectionConfigGetterForTesting(
       future.GetCallback());
   const std::optional<BlindSignedAuthToken>& incognito_result =
       future.Get<std::optional<BlindSignedAuthToken>>();
@@ -274,8 +272,7 @@ IN_PROC_BROWSER_TEST_F(IpProtectionCoreHostBrowserTest,
 
   // Ensure that we can still get tokens from the main profile.
   future.Clear();
-  ipp_proxy_delegate->VerifyIpProtectionConfigGetterForTesting(
-      future.GetCallback());
+  ipp_control->VerifyIpProtectionConfigGetterForTesting(future.GetCallback());
   const std::optional<BlindSignedAuthToken>& second_attempt_result =
       future.Get<std::optional<BlindSignedAuthToken>>();
   ASSERT_TRUE(second_attempt_result);
@@ -398,15 +395,15 @@ IN_PROC_BROWSER_TEST_F(IpProtectionCoreHostIdentityBrowserTest,
   base::test::TestFuture<const std::optional<BlindSignedAuthToken>&,
                          std::optional<base::Time>>
       future;
-  main_profile_ipp_proxy_delegate_->VerifyIpProtectionConfigGetterForTesting(
+  main_profile_ipp_control_->VerifyIpProtectionConfigGetterForTesting(
       future.GetCallback());
   const std::optional<base::Time>& main_profile_first_attempt_result =
       future.Get<std::optional<base::Time>>();
   EXPECT_EQ(main_profile_first_attempt_result.value(), kDontRetry);
 
   future.Clear();
-  incognito_profile_ipp_proxy_delegate_
-      ->VerifyIpProtectionConfigGetterForTesting(future.GetCallback());
+  incognito_profile_ipp_control_->VerifyIpProtectionConfigGetterForTesting(
+      future.GetCallback());
   const std::optional<base::Time>& incognito_profile_first_attempt_result =
       future.Get<std::optional<base::Time>>();
   EXPECT_EQ(incognito_profile_first_attempt_result.value(), kDontRetry);
@@ -419,15 +416,15 @@ IN_PROC_BROWSER_TEST_F(IpProtectionCoreHostIdentityBrowserTest,
   // Run the test again and check that the network service is still in a
   // cooldown phase.
   future.Clear();
-  main_profile_ipp_proxy_delegate_->VerifyIpProtectionConfigGetterForTesting(
+  main_profile_ipp_control_->VerifyIpProtectionConfigGetterForTesting(
       future.GetCallback());
   const std::optional<base::Time>& main_profile_second_attempt_result =
       future.Get<std::optional<base::Time>>();
   EXPECT_EQ(main_profile_second_attempt_result.value(), kDontRetry);
 
   future.Clear();
-  incognito_profile_ipp_proxy_delegate_
-      ->VerifyIpProtectionConfigGetterForTesting(future.GetCallback());
+  incognito_profile_ipp_control_->VerifyIpProtectionConfigGetterForTesting(
+      future.GetCallback());
   const std::optional<base::Time>& incognito_profile_second_attempt_result =
       future.Get<std::optional<base::Time>>();
   EXPECT_EQ(incognito_profile_second_attempt_result.value(), kDontRetry);
@@ -451,7 +448,7 @@ IN_PROC_BROWSER_TEST_F(IpProtectionCoreHostIdentityBrowserTest,
   // Verify that cooldown timers in the network context have been reset and
   // that we can now request tokens successfully.
   future.Clear();
-  main_profile_ipp_proxy_delegate_->VerifyIpProtectionConfigGetterForTesting(
+  main_profile_ipp_control_->VerifyIpProtectionConfigGetterForTesting(
       future.GetCallback());
   const std::optional<BlindSignedAuthToken>& main_profile_third_attempt_result =
       future.Get<std::optional<BlindSignedAuthToken>>();
@@ -462,8 +459,8 @@ IN_PROC_BROWSER_TEST_F(IpProtectionCoreHostIdentityBrowserTest,
             main_profile_auth_token_getter_interceptor_->expiration());
 
   future.Clear();
-  incognito_profile_ipp_proxy_delegate_
-      ->VerifyIpProtectionConfigGetterForTesting(future.GetCallback());
+  incognito_profile_ipp_control_->VerifyIpProtectionConfigGetterForTesting(
+      future.GetCallback());
   const std::optional<BlindSignedAuthToken>&
       incognito_profile_third_attempt_result =
           future.Get<std::optional<BlindSignedAuthToken>>();
@@ -504,9 +501,9 @@ IN_PROC_BROWSER_TEST_F(IpProtectionCoreHostUserSettingBrowserTest,
   base::test::TestFuture<bool> main_profile_is_enabled_future;
   base::test::TestFuture<bool> incognito_profile_is_enabled_future;
 
-  main_profile_ipp_proxy_delegate_->IsIpProtectionEnabledForTesting(
+  main_profile_ipp_control_->IsIpProtectionEnabledForTesting(
       main_profile_is_enabled_future.GetCallback());
-  incognito_profile_ipp_proxy_delegate_->IsIpProtectionEnabledForTesting(
+  incognito_profile_ipp_control_->IsIpProtectionEnabledForTesting(
       incognito_profile_is_enabled_future.GetCallback());
 
   EXPECT_FALSE(main_profile_is_enabled_future.Get());
@@ -521,11 +518,10 @@ IN_PROC_BROWSER_TEST_F(IpProtectionCoreHostUserSettingBrowserTest,
                          std::optional<base::Time>>
       incognito_profile_verification_future;
 
-  main_profile_ipp_proxy_delegate_->VerifyIpProtectionConfigGetterForTesting(
+  main_profile_ipp_control_->VerifyIpProtectionConfigGetterForTesting(
       main_profile_verification_future.GetCallback());
-  incognito_profile_ipp_proxy_delegate_
-      ->VerifyIpProtectionConfigGetterForTesting(
-          incognito_profile_verification_future.GetCallback());
+  incognito_profile_ipp_control_->VerifyIpProtectionConfigGetterForTesting(
+      incognito_profile_verification_future.GetCallback());
 
   const std::optional<base::Time>& main_profile_first_attempt_result =
       main_profile_verification_future.Get<std::optional<base::Time>>();
@@ -543,9 +539,9 @@ IN_PROC_BROWSER_TEST_F(IpProtectionCoreHostUserSettingBrowserTest,
   main_profile_is_enabled_future.Clear();
   incognito_profile_is_enabled_future.Clear();
 
-  main_profile_ipp_proxy_delegate_->IsIpProtectionEnabledForTesting(
+  main_profile_ipp_control_->IsIpProtectionEnabledForTesting(
       main_profile_is_enabled_future.GetCallback());
-  incognito_profile_ipp_proxy_delegate_->IsIpProtectionEnabledForTesting(
+  incognito_profile_ipp_control_->IsIpProtectionEnabledForTesting(
       incognito_profile_is_enabled_future.GetCallback());
 
   EXPECT_TRUE(main_profile_is_enabled_future.Get());
@@ -560,11 +556,10 @@ IN_PROC_BROWSER_TEST_F(IpProtectionCoreHostUserSettingBrowserTest,
 
   // Verify that cooldown timers in the network context have been reset and
   // that we can now request tokens successfully.
-  main_profile_ipp_proxy_delegate_->VerifyIpProtectionConfigGetterForTesting(
+  main_profile_ipp_control_->VerifyIpProtectionConfigGetterForTesting(
       main_profile_verification_future.GetCallback());
-  incognito_profile_ipp_proxy_delegate_
-      ->VerifyIpProtectionConfigGetterForTesting(
-          incognito_profile_verification_future.GetCallback());
+  incognito_profile_ipp_control_->VerifyIpProtectionConfigGetterForTesting(
+      incognito_profile_verification_future.GetCallback());
 
   const std::optional<BlindSignedAuthToken>&
       main_profile_second_attempt_result =

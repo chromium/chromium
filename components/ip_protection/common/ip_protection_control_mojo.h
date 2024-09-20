@@ -11,28 +11,28 @@
 
 namespace ip_protection {
 
-// Bridges calls from `network::mojom::IpProtectionProxyDelegate` to
-// `IpProtectionControl`.
+// Bridges calls from `network::mojom::IpProtectionControl` to
+// `ip_protection::IpProtectionControl`.
 class IpProtectionControlMojo final
-    : public network::mojom::IpProtectionProxyDelegate {
+    : public network::mojom::IpProtectionControl {
  public:
   IpProtectionControlMojo(
-      mojo::PendingReceiver<network::mojom::IpProtectionProxyDelegate>,
-      IpProtectionControl* ip_protection_control);
+      mojo::PendingReceiver<network::mojom::IpProtectionControl>,
+      ip_protection::IpProtectionControl* ip_protection_control);
   ~IpProtectionControlMojo() override;
 
   void VerifyIpProtectionConfigGetterForTesting(
-      network::mojom::IpProtectionProxyDelegate::
+      network::mojom::IpProtectionControl::
           VerifyIpProtectionConfigGetterForTestingCallback callback) override;
   void InvalidateIpProtectionConfigCacheTryAgainAfterTime() override;
   void SetIpProtectionEnabled(bool enabled) override;
   void IsIpProtectionEnabledForTesting(
-      network::mojom::IpProtectionProxyDelegate::
+      network::mojom::IpProtectionControl::
           IsIpProtectionEnabledForTestingCallback callback) override;
 
  private:
-  const mojo::Receiver<network::mojom::IpProtectionProxyDelegate> receiver_;
-  const raw_ptr<IpProtectionControl> ip_protection_control_;
+  const mojo::Receiver<network::mojom::IpProtectionControl> receiver_;
+  const raw_ptr<ip_protection::IpProtectionControl> ip_protection_control_;
 };
 
 }  // namespace ip_protection

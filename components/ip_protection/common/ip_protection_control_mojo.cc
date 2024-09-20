@@ -7,16 +7,15 @@
 namespace ip_protection {
 
 IpProtectionControlMojo::IpProtectionControlMojo(
-    mojo::PendingReceiver<network::mojom::IpProtectionProxyDelegate>
-        pending_receiver,
-    IpProtectionControl* ip_protection_control)
+    mojo::PendingReceiver<network::mojom::IpProtectionControl> pending_receiver,
+    ip_protection::IpProtectionControl* ip_protection_control)
     : receiver_(this, std::move(pending_receiver)),
       ip_protection_control_(ip_protection_control) {}
 
 IpProtectionControlMojo::~IpProtectionControlMojo() = default;
 
 void IpProtectionControlMojo::VerifyIpProtectionConfigGetterForTesting(
-    network::mojom::IpProtectionProxyDelegate::
+    network::mojom::IpProtectionControl::
         VerifyIpProtectionConfigGetterForTestingCallback callback) {
   return ip_protection_control_
       ->VerifyIpProtectionConfigGetterForTesting(  // IN-TEST
@@ -34,8 +33,8 @@ void IpProtectionControlMojo::SetIpProtectionEnabled(bool enabled) {
 }
 
 void IpProtectionControlMojo::IsIpProtectionEnabledForTesting(
-    network::mojom::IpProtectionProxyDelegate::
-        IsIpProtectionEnabledForTestingCallback callback) {
+    network::mojom::IpProtectionControl::IsIpProtectionEnabledForTestingCallback
+        callback) {
   return ip_protection_control_->IsIpProtectionEnabledForTesting(  // IN-TEST
       std::move(callback));
 }

@@ -428,8 +428,8 @@ void IpProtectionCoreHost::InvalidateNetworkContextTryAgainAfterTime() {
     return;
   }
 
-  for (auto& ipp_proxy_delegate : remotes_) {
-    ipp_proxy_delegate->InvalidateIpProtectionConfigCacheTryAgainAfterTime();
+  for (auto& ipp_control : remotes_) {
+    ipp_control->InvalidateIpProtectionConfigCacheTryAgainAfterTime();
   }
 }
 
@@ -541,8 +541,7 @@ IpProtectionCoreHost* IpProtectionCoreHost::Get(Profile* profile) {
 void IpProtectionCoreHost::AddNetworkService(
     mojo::PendingReceiver<network::mojom::IpProtectionConfigGetter>
         pending_receiver,
-    mojo::PendingRemote<network::mojom::IpProtectionProxyDelegate>
-        pending_remote) {
+    mojo::PendingRemote<network::mojom::IpProtectionControl> pending_remote) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (is_shutting_down_) {
     return;
@@ -656,7 +655,7 @@ void IpProtectionCoreHost::OnIpProtectionEnabledChanged() {
 
   ClearOAuthTokenProblemBackoff();
 
-  for (auto& ipp_proxy_delegate : remotes_) {
-    ipp_proxy_delegate->SetIpProtectionEnabled(IsIpProtectionEnabled());
+  for (auto& ipp_control : remotes_) {
+    ipp_control->SetIpProtectionEnabled(IsIpProtectionEnabled());
   }
 }

@@ -65,17 +65,17 @@ class IpProtectionCoreImpl : public IpProtectionCore,
 
   // `IpProtectionControl` implementation.
   void VerifyIpProtectionConfigGetterForTesting(
-      network::mojom::IpProtectionProxyDelegate::
+      network::mojom::IpProtectionControl::
           VerifyIpProtectionConfigGetterForTestingCallback callback) override;
   void InvalidateIpProtectionConfigCacheTryAgainAfterTime() override;
   void SetIpProtectionEnabled(bool enabled) override;
   void IsIpProtectionEnabledForTesting(
-      network::mojom::IpProtectionProxyDelegate::
+      network::mojom::IpProtectionControl::
           IsIpProtectionEnabledForTestingCallback callback) override;
 
  private:
   void OnIpProtectionConfigAvailableForTesting(
-      network::mojom::IpProtectionProxyDelegate::
+      network::mojom::IpProtectionControl::
           VerifyIpProtectionConfigGetterForTestingCallback callback);
 
   // Source of auth tokens and proxy list, when needed.

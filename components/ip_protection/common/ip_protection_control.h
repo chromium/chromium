@@ -24,7 +24,7 @@ class IpProtectionControl {
   //  - Initiate an IP Protection token request to the browser process and
   //    return either a returned token or the returned cooldown time
   virtual void VerifyIpProtectionConfigGetterForTesting(
-      network::mojom::IpProtectionProxyDelegate::
+      network::mojom::IpProtectionControl::
           VerifyIpProtectionConfigGetterForTestingCallback callback) = 0;
 
   // Indicates that the IP Protection config cache in the Network Service should
@@ -41,7 +41,7 @@ class IpProtectionControl {
   // Returns the Network Service's state regarding whether IP Protection is
   // enabled, for testing.
   virtual void IsIpProtectionEnabledForTesting(
-      network::mojom::IpProtectionProxyDelegate::
+      network::mojom::IpProtectionControl::
           IsIpProtectionEnabledForTestingCallback callback) = 0;
 
  protected:

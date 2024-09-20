@@ -1350,7 +1350,7 @@ void ProfileNetworkContextService::ConfigureNetworkContextParamsInternal(
     ipp_core_host->AddNetworkService(
         network_context_params->ip_protection_config_getter
             .InitWithNewPipeAndPassReceiver(),
-        network_context_params->ip_protection_proxy_delegate
+        network_context_params->ip_protection_control
             .InitWithNewPipeAndPassRemote());
     network_context_params->enable_ip_protection =
         ipp_core_host->IsIpProtectionEnabled();

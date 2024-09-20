@@ -89,8 +89,7 @@ class AwIpProtectionCoreHost
   void AddNetworkService(
       mojo::PendingReceiver<network::mojom::IpProtectionConfigGetter>
           pending_receiver,
-      mojo::PendingRemote<network::mojom::IpProtectionProxyDelegate>
-          pending_remote);
+      mojo::PendingRemote<network::mojom::IpProtectionControl> pending_remote);
 
   // Like `SetUp()`, but providing values for each of the member variables. Note
   // `bsa` is moved onto a separate sequence when initializing
@@ -171,7 +170,7 @@ class AwIpProtectionCoreHost
 
   // Similar to `receivers_`, but containing remotes for all existing
   // IpProtectionProxyDelegates.
-  mojo::RemoteSet<network::mojom::IpProtectionProxyDelegate> remotes_;
+  mojo::RemoteSet<network::mojom::IpProtectionControl> remotes_;
 
   // True if this class is being tested.
   bool for_testing_ = false;

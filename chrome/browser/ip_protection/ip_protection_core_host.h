@@ -81,8 +81,7 @@ class IpProtectionCoreHost
   void AddNetworkService(
       mojo::PendingReceiver<network::mojom::IpProtectionConfigGetter>
           pending_receiver,
-      mojo::PendingRemote<network::mojom::IpProtectionProxyDelegate>
-          pending_remote);
+      mojo::PendingRemote<network::mojom::IpProtectionControl> pending_remote);
 
   // KeyedService:
   void Shutdown() override;
@@ -96,7 +95,7 @@ class IpProtectionCoreHost
   mojo::ReceiverId receiver_id_for_testing() {
     return receiver_id_for_testing_;
   }
-  network::mojom::IpProtectionProxyDelegate* last_remote_for_testing() {
+  network::mojom::IpProtectionControl* last_remote_for_testing() {
     return remotes_.Get(remote_id_for_testing_);
   }
 
@@ -264,7 +263,7 @@ class IpProtectionCoreHost
 
   // Similar to `receivers_`, but containing remotes for all existing
   // IpProtectionProxyDelegates.
-  mojo::RemoteSet<network::mojom::IpProtectionProxyDelegate> remotes_;
+  mojo::RemoteSet<network::mojom::IpProtectionControl> remotes_;
 
   // The `mojo::ReceiverId` of the most recently added `mojo::Receiver`, for
   // testing.
