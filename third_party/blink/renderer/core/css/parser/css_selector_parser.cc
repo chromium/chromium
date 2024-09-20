@@ -1200,6 +1200,8 @@ bool IsPseudoClassValidAfterPseudoElement(
     case CSSSelector::kPseudoSearchText:
       return pseudo_class == CSSSelector::kPseudoCurrent;
     case CSSSelector::kPseudoScrollMarker:
+    case CSSSelector::kPseudoScrollNextButton:
+    case CSSSelector::kPseudoScrollPrevButton:
       // TODO(crbug.com/40824273): User action pseudos should be allowed more
       // generally after pseudo elements.
       return pseudo_class == CSSSelector::kPseudoFocus ||

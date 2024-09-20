@@ -397,11 +397,7 @@ SelectorChecker::MatchStatus SelectorChecker::MatchForSubSelector(
     return kSelectorMatches;
   }
 
-  next_context.has_selection_pseudo = dynamic_pseudo == kPseudoIdSelection;
-  next_context.has_search_text_pseudo = dynamic_pseudo == kPseudoIdSearchText;
-  next_context.has_scroll_marker_pseudo =
-      dynamic_pseudo == kPseudoIdScrollMarker;
-  next_context.has_column_pseudo = dynamic_pseudo == kPseudoIdColumn;
+  next_context.previously_matched_pseudo_element = dynamic_pseudo;
   next_context.is_sub_selector = true;
   return MatchSelector(next_context, result);
 }
@@ -1653,7 +1649,8 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
           }
         }
       }
-      return MatchesFocusPseudoClass(element, context.has_scroll_marker_pseudo);
+      return MatchesFocusPseudoClass(element,
+                                     context.previously_matched_pseudo_element);
     case CSSSelector::kPseudoFocusVisible:
       if (mode_ == kResolvingStyle) {
         if (context.is_inside_has_pseudo_class) [[unlikely]] {
@@ -2072,7 +2069,7 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
       }
       return false;
     case CSSSelector::kPseudoWindowInactive:
-      if (!context.has_selection_pseudo) {
+      if (context.previously_matched_pseudo_element != kPseudoIdSelection) {
         return false;
       }
       return !element.GetDocument().GetPage()->GetFocusController().IsActive();
@@ -2172,7 +2169,7 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
     case CSSSelector::kPseudoTrue:
       return true;
     case CSSSelector::kPseudoCurrent:
-      if (!context.has_search_text_pseudo) {
+      if (context.previously_matched_pseudo_element == kPseudoIdSearchText) {
         return false;
       }
       return context.search_text_request_is_current;
@@ -2377,9 +2374,10 @@ bool SelectorChecker::CheckPseudoElement(const SelectorCheckingContext& context,
     case CSSSelector::kPseudoScrollMarker: {
       // The style for ::column::scroll-marker is stored on the originating
       // element's style.
-      result.dynamic_pseudo = context.has_column_pseudo
-                                  ? kPseudoIdColumnScrollMarker
-                                  : kPseudoIdScrollMarker;
+      result.dynamic_pseudo =
+          context.previously_matched_pseudo_element == kPseudoIdColumn
+              ? kPseudoIdColumnScrollMarker
+              : kPseudoIdScrollMarker;
       return true;
     }
     case CSSSelector::kPseudoTargetText:
@@ -2568,11 +2566,12 @@ bool SelectorChecker::MatchesSelectorFragmentAnchorPseudoClass(
              ->IsSelectorFragmentAnchor();
 }
 
-bool SelectorChecker::MatchesFocusPseudoClass(const Element& element,
-                                              bool has_scroll_marker_pseudo) {
+bool SelectorChecker::MatchesFocusPseudoClass(
+    const Element& element,
+    PseudoId matching_for_pseudo_element) {
   const Element* matching_element = &element;
-  if (has_scroll_marker_pseudo) {
-    matching_element = element.GetPseudoElement(kPseudoIdScrollMarker);
+  if (matching_for_pseudo_element != kPseudoIdNone) {
+    matching_element = element.GetPseudoElement(matching_for_pseudo_element);
     if (!matching_element) {
       return false;
     }

@@ -283,14 +283,13 @@ static void ExtractSelectorValues(const CSSSelector* selector,
     case CSSSelector::kPagePseudoClass:
       // Must match the cases in RuleSet::FindBestRuleSetAndAdd.
       switch (selector->GetPseudoType()) {
-        case CSSSelector::kPseudoScrollMarker:
-          pseudo_type = CSSSelector::kPseudoScrollMarker;
-          break;
         case CSSSelector::kPseudoFocus:
-          if (pseudo_type != CSSSelector::kPseudoScrollMarker) {
-            pseudo_type = selector->GetPseudoType();
+          if (pseudo_type == CSSSelector::kPseudoScrollMarker ||
+              pseudo_type == CSSSelector::kPseudoScrollNextButton ||
+              pseudo_type == CSSSelector::kPseudoScrollPrevButton) {
+            break;
           }
-          break;
+          [[fallthrough]];
         case CSSSelector::kPseudoCue:
         case CSSSelector::kPseudoLink:
         case CSSSelector::kPseudoVisited:
@@ -304,6 +303,9 @@ static void ExtractSelectorValues(const CSSSelector* selector,
         case CSSSelector::kPseudoSlotted:
         case CSSSelector::kPseudoSelectorFragmentAnchor:
         case CSSSelector::kPseudoRoot:
+        case CSSSelector::kPseudoScrollMarker:
+        case CSSSelector::kPseudoScrollNextButton:
+        case CSSSelector::kPseudoScrollPrevButton:
           pseudo_type = selector->GetPseudoType();
           break;
         case CSSSelector::kPseudoWebKitCustomElement:
