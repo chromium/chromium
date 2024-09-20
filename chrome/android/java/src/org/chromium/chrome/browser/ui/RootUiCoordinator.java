@@ -1768,7 +1768,8 @@ public class RootUiCoordinator
                                     .getWindow()
                                     .getDecorView()
                                     .findViewById(R.id.menu_anchor_stub),
-                            this::getAppRectOnScreen);
+                            this::getAppRectOnScreen,
+                            mWindowAndroid);
             AppMenuCoordinatorFactory.setExceptionReporter(
                     ChromePureJavaExceptionReporter::reportJavaException);
 

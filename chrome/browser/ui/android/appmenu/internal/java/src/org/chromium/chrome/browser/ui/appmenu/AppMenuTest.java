@@ -4,7 +4,12 @@
 
 package org.chromium.chrome.browser.ui.appmenu;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.timeout;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import android.graphics.Canvas;
 import android.graphics.Rect;
@@ -25,8 +30,11 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
@@ -43,6 +51,8 @@ import org.chromium.chrome.browser.ui.appmenu.test.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.browser_ui.widget.chips.ChipView;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighterTestUtils;
+import org.chromium.ui.KeyboardVisibilityDelegate;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.test.util.BlankUiTestActivity;
@@ -71,8 +81,14 @@ public class AppMenuTest extends BlankUiTestActivityTestCase {
     private TestMenuButtonDelegate mTestMenuButtonDelegate;
 
     @Mock private Canvas mCanvas;
+    @Mock private WindowAndroid mWindowAndroid;
+    @Mock private KeyboardVisibilityDelegate mKeyboardDelegate;
     // Tell R8 not to break the ability to mock the class.
     @Mock private AppMenu mUnused;
+
+    @Captor
+    private ArgumentCaptor<KeyboardVisibilityDelegate.KeyboardVisibilityListener>
+            mKeyboardListenerCaptor;
 
     @BeforeClass
     public static void setUpBeforeActivityLaunched() {
@@ -81,8 +97,10 @@ public class AppMenuTest extends BlankUiTestActivityTestCase {
 
     @Override
     public void setUpTest() throws Exception {
+        MockitoAnnotations.openMocks(this);
         super.setUpTest();
-        mCanvas = Mockito.mock(Canvas.class);
+        when(mWindowAndroid.getKeyboardDelegate()).thenReturn(mKeyboardDelegate);
+        when(mKeyboardDelegate.isKeyboardShowing(any(), any())).thenReturn(false);
         ThreadUtils.runOnUiThreadBlocking(this::setUpTestOnUiThread);
         mLifecycleDispatcher.observerRegisteredCallbackHelper.waitForCallback(0);
     }
@@ -94,6 +112,7 @@ public class AppMenuTest extends BlankUiTestActivityTestCase {
         mLifecycleDispatcher = new TestActivityLifecycleDispatcher();
         mDelegate = new TestAppMenuDelegate();
         mTestMenuButtonDelegate = new TestMenuButtonDelegate();
+
         mAppMenuCoordinator =
                 new AppMenuCoordinatorImpl(
                         getActivity(),
@@ -102,7 +121,8 @@ public class AppMenuTest extends BlankUiTestActivityTestCase {
                         mDelegate,
                         getActivity().getWindow().getDecorView(),
                         getActivity().findViewById(R.id.menu_anchor_stub),
-                        this::getAppRect);
+                        this::getAppRect,
+                        mWindowAndroid);
         mAppMenuHandler = mAppMenuCoordinator.getAppMenuHandlerImplForTesting();
         mMenuObserver = new TestAppMenuObserver();
         mAppMenuCoordinator.getAppMenuHandler().addObserver(mMenuObserver);
@@ -1129,6 +1149,24 @@ public class AppMenuTest extends BlankUiTestActivityTestCase {
                                 /* availableScreenSpace= */ -1);
         // Make sure there are no crashes.
         Assert.assertEquals(0, height);
+    }
+
+    @Test
+    @MediumTest
+    public void testAppMenu_keyboardVisible() throws Exception {
+        doReturn(true).when(mKeyboardDelegate).isKeyboardShowing(any(), any());
+        ThreadUtils.runOnUiThreadBlocking(() -> mAppMenuCoordinator.showAppMenuForKeyboardEvent());
+
+        verify(mKeyboardDelegate, timeout(500))
+                .addKeyboardVisibilityListener(mKeyboardListenerCaptor.capture());
+
+        verify(mKeyboardDelegate).hideKeyboard(any());
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mKeyboardListenerCaptor.getValue().keyboardVisibilityChanged(false);
+                });
+
+        waitForMenuToShow(0);
     }
 
     private void createMenuItem(

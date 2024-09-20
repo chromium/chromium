@@ -36,6 +36,7 @@ android_library_factory("factory_java") {
     ":java",
     "//base:base_java",
     "//chrome/browser/android/lifecycle:java",
+    "//ui/android:ui_no_recycler_view_java",
   ]
 
   # This internal file will be replaced by a generated file so the resulting

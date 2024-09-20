@@ -15,6 +15,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
+import org.chromium.ui.base.WindowAndroid;
 
 /** A UI coordinator the app menu. */
 class AppMenuCoordinatorImpl implements AppMenuCoordinator {
@@ -53,14 +54,15 @@ class AppMenuCoordinatorImpl implements AppMenuCoordinator {
      * Construct a new AppMenuCoordinatorImpl.
      * @param context The activity context.
      * @param activityLifecycleDispatcher The {@link ActivityLifecycleDispatcher} for the containing
-     *         activity.
+     *     activity.
      * @param buttonDelegate The {@link MenuButtonDelegate} for the containing activity.
      * @param appMenuDelegate The {@link AppMenuDelegate} for the containing activity.
      * @param decorView The decor {@link View}, e.g. from Window#getDecorView(), for the containing
-     *         activity.
+     *     activity.
      * @param hardwareButtonAnchorView The {@link View} used as an anchor for the menu when it is
-     *            displayed using a hardware button.
+     *     displayed using a hardware button.
      * @param appRect Supplier of the app area in Window that the menu should fit in.
+     * @param windowAndroid The window that will be used to fetch KeyboardVisibilityDelegate
      */
     public AppMenuCoordinatorImpl(
             Context context,
@@ -69,7 +71,8 @@ class AppMenuCoordinatorImpl implements AppMenuCoordinator {
             AppMenuDelegate appMenuDelegate,
             View decorView,
             View hardwareButtonAnchorView,
-            Supplier<Rect> appRect) {
+            Supplier<Rect> appRect,
+            WindowAndroid windowAndroid) {
         mContext = context;
         mButtonDelegate = buttonDelegate;
         mAppMenuDelegate = appMenuDelegate;
@@ -83,7 +86,8 @@ class AppMenuCoordinatorImpl implements AppMenuCoordinator {
                         decorView,
                         activityLifecycleDispatcher,
                         hardwareButtonAnchorView,
-                        appRect);
+                        appRect,
+                        windowAndroid);
     }
 
     @Override

@@ -25,6 +25,8 @@ import org.chromium.chrome.browser.lifecycle.ConfigurationChangedObserver;
 import org.chromium.chrome.browser.lifecycle.StartStopWithNativeObserver;
 import org.chromium.chrome.browser.ui.appmenu.internal.R;
 import org.chromium.components.browser_ui.widget.textbubble.TextBubble;
+import org.chromium.ui.KeyboardVisibilityDelegate;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.display.DisplayAndroidManager;
 import org.chromium.ui.modelutil.LayoutViewBuilder;
 import org.chromium.ui.modelutil.ListObservable;
@@ -56,9 +58,11 @@ class AppMenuHandlerImpl
     private final View mDecorView;
     private final ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     private final Supplier<Rect> mAppRect;
+    private final WindowAndroid mWindowAndroid;
     private ModelList mModelList;
     private ListObserver<Void> mListObserver;
     private Callback<Integer> mTestOptionsItemSelectedListener;
+    private KeyboardVisibilityDelegate.KeyboardVisibilityListener mKeyboardVisibilityListener;
 
     /**
      * The resource id of the menu item to highlight when the menu next opens. A value of {@code
@@ -71,15 +75,16 @@ class AppMenuHandlerImpl
      * @param context The activity context.
      * @param delegate Delegate used to check the desired AppMenu properties on show.
      * @param appMenuDelegate The AppMenuDelegate to handle menu item selection.
-     * @param menuResourceId Resource Id that should be used as the source for the menu items.
-     *            It is assumed to have back_menu_id, forward_menu_id, bookmark_this_page_id.
+     * @param menuResourceId Resource Id that should be used as the source for the menu items. It is
+     *     assumed to have back_menu_id, forward_menu_id, bookmark_this_page_id.
      * @param decorView The decor {@link View}, e.g. from Window#getDecorView(), for the containing
-     *            activity.
+     *     activity.
      * @param activityLifecycleDispatcher The {@link ActivityLifecycleDispatcher} for the containing
-     *            activity.
+     *     activity.
      * @param hardwareButtonAnchorView The {@link View} used as an anchor for the menu when it is
-     *            displayed using a hardware button.
+     *     displayed using a hardware button.
      * @param appRect Supplier of the app area in Window that the menu should fit in.
+     * @param windowAndroid The window that will be used to fetch {@link KeyboardVisibilityDelegate}
      */
     public AppMenuHandlerImpl(
             Context context,
@@ -88,7 +93,8 @@ class AppMenuHandlerImpl
             View decorView,
             ActivityLifecycleDispatcher activityLifecycleDispatcher,
             View hardwareButtonAnchorView,
-            Supplier<Rect> appRect) {
+            Supplier<Rect> appRect,
+            WindowAndroid windowAndroid) {
         mContext = context;
         mAppMenuDelegate = appMenuDelegate;
         mDelegate = delegate;
@@ -97,6 +103,7 @@ class AppMenuHandlerImpl
         mObservers = new ArrayList<>();
         mHardwareButtonMenuAnchor = hardwareButtonAnchorView;
         mAppRect = appRect;
+        mWindowAndroid = windowAndroid;
 
         mActivityLifecycleDispatcher = activityLifecycleDispatcher;
         mActivityLifecycleDispatcher.register(this);
@@ -132,6 +139,9 @@ class AppMenuHandlerImpl
     /** Called when the containing activity is being destroyed. */
     void destroy() {
         // Prevent the menu window from leaking.
+        mWindowAndroid
+                .getKeyboardDelegate()
+                .removeKeyboardVisibilityListener(mKeyboardVisibilityListener);
         hideAppMenu();
 
         mActivityLifecycleDispatcher.unregister(this);
@@ -241,42 +251,43 @@ class AppMenuHandlerImpl
                 adapter,
                 mDelegate.shouldShowIconBeforeItem());
 
-        Rect appRect = mAppRect.get();
-
-        // Use full size of window for abnormal appRect.
-        if (appRect.left < 0 && appRect.top < 0) {
-            appRect.left = 0;
-            appRect.top = 0;
-            appRect.right = mDecorView.getWidth();
-            appRect.bottom = mDecorView.getHeight();
-        }
         Point pt = new Point();
         display.getSize(pt);
 
-        int footerResourceId = 0;
-        if (mDelegate.shouldShowFooter(appRect.height())) {
-            footerResourceId = mDelegate.getFooterResourceId();
+        KeyboardVisibilityDelegate keyboardVisibilityDelegate =
+                mWindowAndroid.getKeyboardDelegate();
+
+        // If keyboard is showing, wait until keyboard disappears to set appRect
+        if (keyboardVisibilityDelegate.isKeyboardShowing(mContext, anchorView)) {
+            View finalAnchorView = anchorView;
+            boolean finalIsByPermanentButton = isByPermanentButton;
+            mKeyboardVisibilityListener =
+                    isShowing -> {
+                        if (!isShowing) {
+                            setDisplayAndShowAppMenu(
+                                    wrapper,
+                                    finalAnchorView,
+                                    finalIsByPermanentButton,
+                                    rotation,
+                                    mAppRect.get(),
+                                    customViewBinders,
+                                    startDragging);
+                            keyboardVisibilityDelegate
+                                    .removeKeyboardVisibilityListener(mKeyboardVisibilityListener);
+                        }
+                    };
+            keyboardVisibilityDelegate.addKeyboardVisibilityListener(mKeyboardVisibilityListener);
+            keyboardVisibilityDelegate.hideKeyboard(anchorView);
+        } else {
+            setDisplayAndShowAppMenu(
+                    wrapper,
+                    anchorView,
+                    isByPermanentButton,
+                    rotation,
+                    mAppRect.get(),
+                    customViewBinders,
+                    startDragging);
         }
-        int headerResourceId = 0;
-        if (mDelegate.shouldShowHeader(appRect.height())) {
-            headerResourceId = mDelegate.getHeaderResourceId();
-        }
-        mAppMenu.show(
-                wrapper,
-                anchorView,
-                isByPermanentButton,
-                rotation,
-                appRect,
-                footerResourceId,
-                headerResourceId,
-                mDelegate.getGroupDividerId(),
-                mHighlightMenuId,
-                customViewBinders,
-                mDelegate.isMenuIconAtStart());
-        mAppMenuDragHelper.onShow(startDragging);
-        clearMenuHighlight();
-        RecordUserAction.record("MobileMenuShow");
-        mDelegate.onMenuShown();
         return true;
     }
 
@@ -548,5 +559,51 @@ class AppMenuHandlerImpl
     @Nullable
     ModelList getModelListForTesting() {
         return mModelList;
+    }
+
+    public View getKeyboardDelegate() {
+        return mDecorView;
+    }
+
+    private void setDisplayAndShowAppMenu(
+            ContextThemeWrapper wrapper,
+            View anchorView,
+            boolean isByPermanentButton,
+            Integer rotation,
+            Rect appRect,
+            List<CustomViewBinder> customViewBinders,
+            boolean startDragging) {
+        // Use full size of window for abnormal appRect.
+        if (appRect.left < 0 && appRect.top < 0) {
+            appRect.left = 0;
+            appRect.top = 0;
+            appRect.right = mDecorView.getWidth();
+            appRect.bottom = mDecorView.getHeight();
+        }
+
+        int footerResourceId = 0;
+        if (mDelegate.shouldShowFooter(appRect.height())) {
+            footerResourceId = mDelegate.getFooterResourceId();
+        }
+        int headerResourceId = 0;
+        if (mDelegate.shouldShowHeader(appRect.height())) {
+            headerResourceId = mDelegate.getHeaderResourceId();
+        }
+        mAppMenu.show(
+                wrapper,
+                anchorView,
+                isByPermanentButton,
+                rotation,
+                appRect,
+                footerResourceId,
+                headerResourceId,
+                mDelegate.getGroupDividerId(),
+                mHighlightMenuId,
+                customViewBinders,
+                mDelegate.isMenuIconAtStart());
+        mAppMenuDragHelper.onShow(startDragging);
+        clearMenuHighlight();
+        RecordUserAction.record("MobileMenuShow");
+        mDelegate.onMenuShown();
     }
 }
