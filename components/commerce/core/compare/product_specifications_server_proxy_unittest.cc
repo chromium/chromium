@@ -96,8 +96,6 @@ const std::string kSimpleResponse = R"(
       }
     })";
 
-}  // namespace
-
 class MockProductSpecificationsServerProxy
     : public ProductSpecificationsServerProxy {
  public:
@@ -115,6 +113,8 @@ class MockProductSpecificationsServerProxy
                const std::string& post_data),
               (override));
 };
+
+}  // namespace
 
 class ProductSpecificationsServerProxyTest : public testing::Test {
  public:

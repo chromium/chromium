@@ -764,9 +764,33 @@ void ShoppingService::GetProductSpecificationsForUrls(
                   std::move(callback).Run(std::move(cluster_ids), std::nullopt);
                   return;
                 }
+
+                const ProductSpecifications* cached_specs =
+                    service->product_specifications_cache_.GetEntry(
+                        cluster_ids);
+                if (cached_specs) {
+                  std::move(callback).Run(std::move(cluster_ids),
+                                          *cached_specs);
+                  return;
+                }
+
                 service->product_specs_server_proxy_
                     ->GetProductSpecificationsForClusterIds(
-                        cluster_ids, std::move(callback));
+                        cluster_ids,
+                        base::BindOnce(
+                            [](ProductSpecificationsCallback callback,
+                               base::WeakPtr<ShoppingService> service,
+                               std::vector<uint64_t> cluster_ids,
+                               std::optional<ProductSpecifications> specs) {
+                              if (specs.has_value()) {
+                                service->product_specifications_cache_.SetEntry(
+                                    cluster_ids, specs.value());
+                              }
+
+                              std::move(callback).Run(std::move(cluster_ids),
+                                                      std::move(specs));
+                            },
+                            std::move(callback), service));
               },
               std::move(callback), weak_ptr_factory_.GetWeakPtr()));
 
