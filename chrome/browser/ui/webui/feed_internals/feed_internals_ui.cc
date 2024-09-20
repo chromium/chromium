@@ -25,6 +25,12 @@
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "chrome/browser/ui/webui/feed_internals/feedv2_internals_page_handler.h"
 
+bool FeedInternalsUIConfig::IsWebUIEnabled(
+    content::BrowserContext* browser_context) {
+  Profile* profile = Profile::FromBrowserContext(browser_context);
+  return !profile->IsOffTheRecord();
+}
+
 FeedInternalsUI::FeedInternalsUI(content::WebUI* web_ui)
     : ui::MojoWebUIController(web_ui), profile_(Profile::FromWebUI(web_ui)) {
   content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(

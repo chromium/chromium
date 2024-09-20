@@ -62,6 +62,10 @@
 #include "chrome/browser/ui/webui/support_tool/support_tool_ui.h"
 #include "chrome/browser/ui/webui/tab_search/tab_search_ui.h"
 #include "chrome/browser/ui/webui/webui_gallery/webui_gallery_ui.h"
+#else  // !BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/ui/webui/feed_internals/feed_internals_ui.h"
+#include "chrome/browser/ui/webui/offline/offline_internals_ui.h"
+#include "chrome/browser/ui/webui/webapks/webapks_ui.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -84,6 +88,14 @@
 #if BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
 #include "chrome/browser/ui/webui/certificate_manager/certificate_manager_ui.h"
 #endif  // BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
+
+#if BUILDFLAG(IS_WIN)
+#include "chrome/browser/ui/webui/conflicts/conflicts_ui.h"
+#endif  // BUILDFLAG(IS_WIN)
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/ui/webui/webui_js_error/webui_js_error_ui.h"
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 #include "chrome/browser/ui/webui/whats_new/whats_new_ui.h"
@@ -134,7 +146,11 @@ void RegisterChromeWebUIConfigs() {
   map.AddWebUIConfig(std::make_unique<CrashesUIConfig>());
 #endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
-#if !BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
+  map.AddWebUIConfig(std::make_unique<FeedInternalsUIConfig>());
+  map.AddWebUIConfig(std::make_unique<OfflineInternalsUIConfig>());
+  map.AddWebUIConfig(std::make_unique<WebApksUIConfig>());
+#else  // BUILDFLAG(IS_ANDROID)
 #if !BUILDFLAG(IS_CHROMEOS)
   map.AddWebUIConfig(std::make_unique<AppHomeUIConfig>());
 #endif  // !BUILDFLAG(IS_CHROMEOS)
@@ -162,7 +178,11 @@ void RegisterChromeWebUIConfigs() {
   map.AddWebUIConfig(std::make_unique<TabSearchUIConfig>());
   map.AddWebUIConfig(std::make_unique<TermsUIConfig>());
   map.AddWebUIConfig(std::make_unique<WebuiGalleryUIConfig>());
-#endif  // !BUILDFLAG(IS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+  map.AddWebUIConfig(std::make_unique<WebUIJsErrorUIConfig>());
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_OPENBSD)
   map.AddWebUIConfig(std::make_unique<LinuxProxyConfigUI>());
@@ -180,6 +200,10 @@ void RegisterChromeWebUIConfigs() {
 #if BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
   map.AddWebUIConfig(std::make_unique<CertificateManagerUIConfig>());
 #endif  // BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)
+
+#if BUILDFLAG(IS_WIN)
+  map.AddWebUIConfig(std::make_unique<ConflictsUIConfig>());
+#endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   map.AddWebUIConfig(std::make_unique<WhatsNewUIConfig>());
