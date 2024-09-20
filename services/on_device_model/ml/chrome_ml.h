@@ -16,6 +16,10 @@
 
 namespace ml {
 
+COMPONENT_EXPORT(ON_DEVICE_MODEL_ML)
+base::FilePath GetChromeMLPath(
+    const std::optional<std::string>& library_name = std::nullopt);
+
 // A ChromeMLHolder object encapsulates a reference to the ChromeML shared
 // library, exposing the library's API functions to callers and ensuring that
 // the library remains loaded and usable throughout the object's lifetime.

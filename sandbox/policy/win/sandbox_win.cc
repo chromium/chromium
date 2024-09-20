@@ -574,11 +574,7 @@ ResultCode GenerateConfigForSandboxedProcess(const base::CommandLine& cmd_line,
   if (!delegate->CetCompatible())
     mitigations |= MITIGATION_CET_DISABLED;
 
-  Sandbox sandbox_type = delegate->GetSandboxType();
-
-  // TODO(crbug.com/361128453): Implement this.
-  CHECK(sandbox_type != Sandbox::kVideoEffects)
-      << "kVideoEffects sandbox not implemented";
+  const Sandbox sandbox_type = delegate->GetSandboxType();
 
   if (sandbox_type == Sandbox::kRenderer &&
       base::FeatureList::IsEnabled(
@@ -1088,8 +1084,6 @@ std::string SandboxWin::GetSandboxTypeInEnglish(Sandbox sandbox_type) {
     case Sandbox::kScreenAI:
       return "Screen AI";
 #endif
-    case Sandbox::kVideoEffects:
-      return "Video Effects";
     case Sandbox::kSpeechRecognition:
       return "Speech Recognition";
     case Sandbox::kPdfConversion:

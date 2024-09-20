@@ -80,6 +80,7 @@
 #include "net/test/cert_test_util.h"
 #include "net/test/test_data_directory.h"
 #include "services/network/test/test_network_context.h"
+#include "services/video_effects/public/cpp/video_effects_service_host.h"
 #include "services/video_effects/public/mojom/video_effects_processor.mojom.h"
 #include "services/video_effects/public/mojom/video_effects_service.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -720,7 +721,8 @@ TEST_F(ChromeContentBrowserClientTest, BindVideoEffectsProcessor) {
   mojo::Remote<video_effects::mojom::VideoEffectsService> service;
   video_effects::FakeVideoEffectsService fake_effects_service(
       service.BindNewPipeAndPassReceiver());
-  auto service_reset = SetVideoEffectsServiceRemoteForTesting(&service);
+  auto service_reset =
+      video_effects::SetVideoEffectsServiceRemoteForTesting(&service);
 
   std::unique_ptr<base::test::TestFuture<void>> effects_processor_future =
       fake_effects_service.GetEffectsProcessorCreationFuture();

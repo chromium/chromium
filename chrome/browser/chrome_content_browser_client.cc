@@ -5034,7 +5034,9 @@ std::wstring ChromeContentBrowserClient::GetAppContainerSidForSandboxType(
     case sandbox::mojom::Sandbox::kPrintCompositor:
     case sandbox::mojom::Sandbox::kAudio:
     case sandbox::mojom::Sandbox::kScreenAI:
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
     case sandbox::mojom::Sandbox::kVideoEffects:
+#endif
     case sandbox::mojom::Sandbox::kSpeechRecognition:
     case sandbox::mojom::Sandbox::kPdfConversion:
     case sandbox::mojom::Sandbox::kService:
@@ -5137,7 +5139,9 @@ bool ChromeContentBrowserClient::PreSpawnChild(
 #if !BUILDFLAG(IS_ANDROID)
     case sandbox::mojom::Sandbox::kScreenAI:
 #endif
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
     case sandbox::mojom::Sandbox::kVideoEffects:
+#endif
     case sandbox::mojom::Sandbox::kAudio:
     case sandbox::mojom::Sandbox::kOnDeviceModelExecution:
     case sandbox::mojom::Sandbox::kSpeechRecognition:

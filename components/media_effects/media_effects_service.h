@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/auto_reset.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -18,11 +17,6 @@
 #include "media/capture/mojom/video_effects_manager.mojom-forward.h"
 #include "services/video_effects/public/mojom/video_effects_processor.mojom.h"
 #include "services/video_effects/public/mojom/video_effects_service.mojom-forward.h"
-
-[[nodiscard]] base::AutoReset<
-    mojo::Remote<video_effects::mojom::VideoEffectsService>*>
-SetVideoEffectsServiceRemoteForTesting(
-    mojo::Remote<video_effects::mojom::VideoEffectsService>* service_override);
 
 class MediaEffectsService : public KeyedService,
                             public MediaEffectsModelProvider::Observer {

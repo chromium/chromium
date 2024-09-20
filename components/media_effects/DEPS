@@ -13,6 +13,7 @@ include_rules = [
   "+services/audio/public/mojom",
   "+services/video_capture/public/cpp",
   "+services/video_capture/public/mojom",
+  "+services/video_effects/public/cpp",
   "+services/video_effects/public/mojom",
   "+services/video_effects/test",
   "+services/viz/public/mojom",

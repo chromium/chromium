@@ -93,7 +93,9 @@ UtilitySandboxedProcessLauncherDelegate::
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
       sandbox_type_ == sandbox::mojom::Sandbox::kScreenAI ||
 #endif
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
       sandbox_type_ == sandbox::mojom::Sandbox::kVideoEffects ||
+#endif
       sandbox_type_ == sandbox::mojom::Sandbox::kAudio ||
       sandbox_type_ == sandbox::mojom::Sandbox::kSpeechRecognition;
   DCHECK(supported_sandbox_type);

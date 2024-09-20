@@ -7015,6 +7015,7 @@ test("unit_tests") {
     "//services/preferences/public/mojom",
     "//services/resource_coordinator/public/cpp/memory_instrumentation:browser",
     "//services/service_manager/public/cpp/test:test_support",
+    "//services/video_effects/public/cpp:video_effects_service_host",
     "//services/video_effects/test:test_support",
     "//skia",
     "//storage/browser:test_support",

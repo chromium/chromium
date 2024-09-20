@@ -6,7 +6,6 @@
 
 #include <optional>
 
-#include "base/auto_reset.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -17,47 +16,12 @@
 #include "components/media_effects/media_effects_model_provider.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/gpu_client.h"
-#include "content/public/browser/service_process_host.h"
 #include "media/capture/mojom/video_effects_manager.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "services/video_effects/public/cpp/video_effects_service_host.h"
 #include "services/video_effects/public/mojom/video_effects_processor.mojom.h"
 #include "services/video_effects/public/mojom/video_effects_service.mojom.h"
 #include "services/viz/public/mojom/gpu.mojom.h"
-
-namespace {
-
-static mojo::Remote<video_effects::mojom::VideoEffectsService>*
-    g_service_remote = nullptr;
-
-video_effects::mojom::VideoEffectsService* GetVideoEffectsService() {
-  if (!g_service_remote) {
-    g_service_remote =
-        new mojo::Remote<video_effects::mojom::VideoEffectsService>();
-  }
-
-  if (!g_service_remote->is_bound()) {
-    content::ServiceProcessHost::Launch(
-        g_service_remote->BindNewPipeAndPassReceiver(),
-        content::ServiceProcessHost::Options()
-            .WithDisplayName("Video Effects Service")
-            .Pass());
-
-    g_service_remote->reset_on_disconnect();
-    g_service_remote->reset_on_idle_timeout(base::Seconds(5));
-  }
-
-  return g_service_remote->get();
-}
-
-}  // namespace
-
-base::AutoReset<mojo::Remote<video_effects::mojom::VideoEffectsService>*>
-SetVideoEffectsServiceRemoteForTesting(
-    mojo::Remote<video_effects::mojom::VideoEffectsService>* service_override) {
-  return base::AutoReset<
-      mojo::Remote<video_effects::mojom::VideoEffectsService>*>(
-      &g_service_remote, service_override);
-}
 
 MediaEffectsService::MediaEffectsService(
     PrefService* prefs,
@@ -104,7 +68,7 @@ void MediaEffectsService::BindVideoEffectsProcessor(
   BindVideoEffectsManager(
       device_id, video_effects_manager.InitWithNewPipeAndPassReceiver());
 
-  auto* video_effects_service = GetVideoEffectsService();
+  auto* video_effects_service = video_effects::GetVideoEffectsService();
   CHECK(video_effects_service);
 
   mojo::PendingRemote<viz::mojom::Gpu> gpu_remote;
@@ -169,7 +133,7 @@ void MediaEffectsService::OnBackgroundSegmentationModelOpened(
     return;
   }
 
-  GetVideoEffectsService()->SetBackgroundSegmentationModel(
+  video_effects::GetVideoEffectsService()->SetBackgroundSegmentationModel(
       latest_segmentation_model_file_.Duplicate());
 }
 

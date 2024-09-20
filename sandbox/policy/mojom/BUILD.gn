@@ -31,6 +31,9 @@ mojom("mojom") {
   if (enable_ppapi) {
     enabled_features += [ "enable_ppapi" ]
   }
+  if (is_linux || is_mac) {
+    enabled_features += [ "is_linux_or_mac" ]
+  }
   if (is_linux || is_chromeos) {
     enabled_features += [
       "has_zygote",
