@@ -231,8 +231,7 @@ void IpProtectionCoreImpl::OnNetworkChanged(
 }
 
 void IpProtectionCoreImpl::VerifyIpProtectionConfigGetterForTesting(
-    network::mojom::IpProtectionControl::
-        VerifyIpProtectionConfigGetterForTestingCallback callback) {
+    VerifyIpProtectionConfigGetterForTestingCallback callback) {
   auto* ipp_token_manager_impl =
       static_cast<ip_protection::IpProtectionTokenManagerImpl*>(
           GetIpProtectionTokenManagerForTesting(  // IN-TEST
@@ -248,8 +247,7 @@ void IpProtectionCoreImpl::VerifyIpProtectionConfigGetterForTesting(
     ipp_token_manager_impl->DisableCacheManagementForTesting(  // IN-TEST
         base::BindOnce(
             [](base::WeakPtr<IpProtectionCoreImpl> ipp_core,
-               network::mojom::IpProtectionControl::
-                   VerifyIpProtectionConfigGetterForTestingCallback callback) {
+               VerifyIpProtectionConfigGetterForTestingCallback callback) {
               DCHECK(ipp_core);
               // Drain auth tokens.
               ipp_core->InvalidateIpProtectionConfigCacheTryAgainAfterTime();
@@ -305,15 +303,12 @@ void IpProtectionCoreImpl::SetIpProtectionEnabled(bool enabled) {
   // the feature is re-enabled.
 }
 
-void IpProtectionCoreImpl::IsIpProtectionEnabledForTesting(
-    network::mojom::IpProtectionControl::IsIpProtectionEnabledForTestingCallback
-        callback) {
-  std::move(callback).Run(is_ip_protection_enabled_);
+bool IpProtectionCoreImpl::IsIpProtectionEnabledForTesting() {
+  return is_ip_protection_enabled_;
 }
 
 void IpProtectionCoreImpl::OnIpProtectionConfigAvailableForTesting(
-    network::mojom::IpProtectionControl::
-        VerifyIpProtectionConfigGetterForTestingCallback callback) {
+    VerifyIpProtectionConfigGetterForTestingCallback callback) {
   auto* ipp_token_manager_impl =
       static_cast<ip_protection::IpProtectionTokenManagerImpl*>(
           GetIpProtectionTokenManagerForTesting(  // IN-TEST

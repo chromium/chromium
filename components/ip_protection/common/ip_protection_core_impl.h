@@ -24,7 +24,6 @@
 #include "net/base/features.h"
 #include "net/base/network_change_notifier.h"
 #include "net/base/proxy_chain.h"
-#include "services/network/public/mojom/network_context.mojom.h"
 
 namespace ip_protection {
 
@@ -65,18 +64,14 @@ class IpProtectionCoreImpl : public IpProtectionCore,
 
   // `IpProtectionControl` implementation.
   void VerifyIpProtectionConfigGetterForTesting(
-      network::mojom::IpProtectionControl::
-          VerifyIpProtectionConfigGetterForTestingCallback callback) override;
+      VerifyIpProtectionConfigGetterForTestingCallback callback) override;
   void InvalidateIpProtectionConfigCacheTryAgainAfterTime() override;
   void SetIpProtectionEnabled(bool enabled) override;
-  void IsIpProtectionEnabledForTesting(
-      network::mojom::IpProtectionControl::
-          IsIpProtectionEnabledForTestingCallback callback) override;
+  bool IsIpProtectionEnabledForTesting() override;
 
  private:
   void OnIpProtectionConfigAvailableForTesting(
-      network::mojom::IpProtectionControl::
-          VerifyIpProtectionConfigGetterForTestingCallback callback);
+      VerifyIpProtectionConfigGetterForTestingCallback callback);
 
   // Source of auth tokens and proxy list, when needed.
   std::unique_ptr<IpProtectionConfigGetter> config_getter_;

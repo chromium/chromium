@@ -5,17 +5,19 @@
 #ifndef COMPONENTS_IP_PROTECTION_COMMON_IP_PROTECTION_CONTROL_H_
 #define COMPONENTS_IP_PROTECTION_COMMON_IP_PROTECTION_CONTROL_H_
 
-#include "services/network/public/mojom/network_context.mojom.h"
+#include "base/functional/callback.h"
+#include "base/time/time.h"
+#include "components/ip_protection/common/ip_protection_data_types.h"
 
 namespace ip_protection {
 
 // Interface for controlling IP Protection behavior.
-//
-// TODO: https://crbug.com/352005196 - rip out the remaining Mojo dependencies
-// from this interface so that it can be used in environments that can't depend
-// on Mojo (e.g. Cronet).
 class IpProtectionControl {
  public:
+  using VerifyIpProtectionConfigGetterForTestingCallback =
+      base::OnceCallback<void(const std::optional<BlindSignedAuthToken>&,
+                              std::optional<base::Time>)>;
+
   // Used to facilitate cross-process testing of the IP Protection feature. This
   // method will:
   //  - Disable active cache management and reset the IP Protection cache to a
@@ -24,8 +26,7 @@ class IpProtectionControl {
   //  - Initiate an IP Protection token request to the browser process and
   //    return either a returned token or the returned cooldown time
   virtual void VerifyIpProtectionConfigGetterForTesting(
-      network::mojom::IpProtectionControl::
-          VerifyIpProtectionConfigGetterForTestingCallback callback) = 0;
+      VerifyIpProtectionConfigGetterForTestingCallback callback) = 0;
 
   // Indicates that the IP Protection config cache in the Network Service should
   // no longer wait before requesting tokens from the browser process (called in
@@ -40,9 +41,7 @@ class IpProtectionControl {
 
   // Returns the Network Service's state regarding whether IP Protection is
   // enabled, for testing.
-  virtual void IsIpProtectionEnabledForTesting(
-      network::mojom::IpProtectionControl::
-          IsIpProtectionEnabledForTestingCallback callback) = 0;
+  virtual bool IsIpProtectionEnabledForTesting() = 0;
 
  protected:
   ~IpProtectionControl() = default;

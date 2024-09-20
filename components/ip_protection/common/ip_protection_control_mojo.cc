@@ -35,8 +35,8 @@ void IpProtectionControlMojo::SetIpProtectionEnabled(bool enabled) {
 void IpProtectionControlMojo::IsIpProtectionEnabledForTesting(
     network::mojom::IpProtectionControl::IsIpProtectionEnabledForTestingCallback
         callback) {
-  return ip_protection_control_->IsIpProtectionEnabledForTesting(  // IN-TEST
-      std::move(callback));
+  std::move(callback).Run(
+      ip_protection_control_->IsIpProtectionEnabledForTesting());  // IN-TEST
 }
 
 }  // namespace ip_protection
