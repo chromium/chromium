@@ -81,6 +81,10 @@ class MockSessionManager : public BocaSessionManager {
               NotifyLocalCaptionEvents,
               (::boca::CaptionsConfig config),
               (override));
+  MOCK_METHOD(void,
+              UpdateCurrentSession,
+              (std::unique_ptr<::boca::Session>),
+              (override));
   ~MockSessionManager() override = default;
 };
 
@@ -156,7 +160,8 @@ TEST_F(BocaAppPageHandlerTest, CreateSessionWithFullInput) {
       mojom::Config::New(session_duration, nullptr, std::move(students),
                          on_task_config->Clone(), caption_config->Clone());
   // Page handler callback.
-  base::test::TestFuture<base::expected<bool, google_apis::ApiErrorCode>>
+  base::test::TestFuture<base::expected<std::unique_ptr<::boca::Session>,
+                                        google_apis::ApiErrorCode>>
       future;
   // API callback.
   base::test::TestFuture<bool> future_1;
@@ -255,13 +260,15 @@ TEST_F(BocaAppPageHandlerTest, CreateSessionWithFullInput) {
             ASSERT_TRUE(request->captions_config());
             EXPECT_TRUE(request->captions_config()->captions_enabled());
             EXPECT_TRUE(request->captions_config()->translations_enabled());
-            request->callback().Run("success");
+            request->callback().Run(std::make_unique<::boca::Session>());
           })));
 
   // Verify local events dispatched
   EXPECT_CALL(*boca_app_client(), GetSessionManager())
-      .WillOnce(Return(session_manager()));
+      .Times(2)
+      .WillRepeatedly(Return(session_manager()));
   EXPECT_CALL(*session_manager(), NotifyLocalCaptionEvents(_)).Times(1);
+  EXPECT_CALL(*session_manager(), UpdateCurrentSession(_)).Times(1);
 
   boca_app_handler_->CreateSession(config->Clone(), future_1.GetCallback());
   ASSERT_TRUE(future_1.Wait());
@@ -272,7 +279,8 @@ TEST_F(BocaAppPageHandlerTest, CreateSessionWithCritialInputOnly) {
   auto session_duration = base::Minutes(2);
 
   // Page handler callback.
-  base::test::TestFuture<base::expected<bool, google_apis::ApiErrorCode>>
+  base::test::TestFuture<base::expected<std::unique_ptr<::boca::Session>,
+                                        google_apis::ApiErrorCode>>
       future;
   // API callback.
   base::test::TestFuture<bool> future_1;
@@ -301,12 +309,14 @@ TEST_F(BocaAppPageHandlerTest, CreateSessionWithCritialInputOnly) {
             ASSERT_FALSE(request->captions_config());
             ASSERT_FALSE(request->on_task_config());
             ASSERT_FALSE(request->roster());
-
-            request->callback().Run("success");
+            request->callback().Run(std::make_unique<::boca::Session>());
           })));
 
+  EXPECT_CALL(*boca_app_client(), GetSessionManager())
+      .WillOnce(Return(session_manager()));
+  EXPECT_CALL(*session_manager(), UpdateCurrentSession(_)).Times(1);
+
   // Verify local events not dispatched
-  EXPECT_CALL(*boca_app_client(), GetSessionManager()).Times(0);
   EXPECT_CALL(*session_manager(), NotifyLocalCaptionEvents(_)).Times(0);
 
   boca_app_handler_->CreateSession(config.Clone(), future_1.GetCallback());

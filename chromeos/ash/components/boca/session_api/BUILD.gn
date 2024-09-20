@@ -40,7 +40,7 @@ source_set("unit_tests") {
     "create_session_request_unittest.cc",
     "get_session_request_unittest.cc",
     "session_parser_unittest.cc",
-    "update_session_unittest.cc",
+    "update_session_request_unittest.cc",
     "upload_token_request_unittest.cc",
   ]
 

@@ -6,6 +6,7 @@
 
 #include "chromeos/ash/components/boca/boca_role_util.h"
 #include "chromeos/ash/components/boca/session_api/constants.h"
+#include "google_apis/common/base_requests.h"
 
 namespace ash::boca {
 ::boca::StudentStatus::StudentState StudentStatusJsonToProto(
@@ -222,6 +223,56 @@ void ParseStudentStatusProtoFromJson(
       }
     }
   }
+}
+
+std::unique_ptr<::boca::Session> GetSessionProtoFromJson(std::string json) {
+  std::unique_ptr<base::Value> raw_value = google_apis::ParseJson(json);
+
+  if (!raw_value) {
+    return nullptr;
+  }
+
+  auto session_dict = std::move(raw_value->GetIfDict());
+  if (!session_dict) {
+    return nullptr;
+  }
+
+  std::unique_ptr<::boca::Session> session =
+      std::make_unique<::boca::Session>();
+
+  if (auto* ptr = session_dict->FindString(kSessionId)) {
+    session->set_session_id(*ptr);
+  }
+
+  if (session_dict->FindDict(kDuration)) {
+    auto* duration = session->mutable_duration();
+    duration->set_seconds(
+        session_dict->FindDict(kDuration)->FindInt(kSeconds).value_or(0));
+    duration->set_nanos(
+        session_dict->FindDict(kDuration)->FindInt(kNanos).value_or(0));
+  }
+
+  if (session_dict->FindDict(kStartTime)) {
+    auto* start_time = session->mutable_start_time();
+    start_time->set_seconds(
+        session_dict->FindDict(kStartTime)->FindInt(kSeconds).value_or(0));
+    start_time->set_nanos(
+        session_dict->FindDict(kStartTime)->FindInt(kNanos).value_or(0));
+  }
+
+  if (auto* ptr = session_dict->FindString(kSessionState)) {
+    session->set_session_state(SessionStateJsonToProto(*ptr));
+  }
+
+  ParseTeacherProtoFromJson(session_dict, session.get());
+
+  ParseRosterProtoFromJson(session_dict, session.get());
+
+  ParseSessionConfigProtoFromJson(session_dict, session.get());
+
+  ParseStudentStatusProtoFromJson(session_dict, session.get());
+
+  return session;
 }
 
 void ParseRosterJsonFromProto(::boca::Roster* roster,

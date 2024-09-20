@@ -17,15 +17,6 @@
 #include "google_apis/common/base_requests.h"
 #include "third_party/protobuf/src/google/protobuf/map_field_lite.h"
 
-namespace {
-
-bool ParseResponse(std::string json) {
-  // TODO(b/358476060): Always notify success if http code is success. Align
-  // with server if there is additional data needs to be handled.
-  return true;
-}
-}  // namespace
-
 namespace ash::boca {
 
 //=================CreateSessionRequest================
@@ -128,7 +119,8 @@ void CreateSessionRequest::ProcessURLFetchResults(
   switch (error) {
     case google_apis::HTTP_SUCCESS:
       blocking_task_runner()->PostTaskAndReplyWithResult(
-          FROM_HERE, base::BindOnce(&ParseResponse, std::move(response_body)),
+          FROM_HERE,
+          base::BindOnce(&GetSessionProtoFromJson, std::move(response_body)),
           base::BindOnce(&CreateSessionRequest::OnDataParsed,
                          weak_ptr_factory_.GetWeakPtr()));
       break;
@@ -148,9 +140,13 @@ void CreateSessionRequest::OverrideURLForTesting(std::string url) {
   url_base_ = std::move(url);
 }
 
-void CreateSessionRequest::OnDataParsed(bool success) {
-  // Notify success immediately for now.
-  std::move(callback_).Run(true);
+void CreateSessionRequest::OnDataParsed(
+    std::unique_ptr<::boca::Session> session) {
+  if (!session) {
+    std::move(callback_).Run(base::unexpected(google_apis::PARSE_ERROR));
+  } else {
+    std::move(callback_).Run(std::move(session));
+  }
   OnProcessURLFetchResultsComplete();
 }
 }  // namespace ash::boca

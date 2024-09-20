@@ -22,8 +22,9 @@ enum ApiErrorCode;
 
 namespace ash::boca {
 
-using UpdateSessionCallback = base::OnceCallback<void(
-    base::expected<bool, google_apis::ApiErrorCode> result)>;
+using UpdateSessionCallback =
+    base::OnceCallback<void(base::expected<std::unique_ptr<::boca::Session>,
+                                           google_apis::ApiErrorCode> result)>;
 // This class performs the request for creating a session
 class UpdateSessionRequest : public google_apis::UrlFetchRequestBase {
  public:
@@ -83,7 +84,7 @@ class UpdateSessionRequest : public google_apis::UrlFetchRequestBase {
   void RunCallbackOnPrematureFailure(google_apis::ApiErrorCode code) override;
 
  private:
-  void OnDataParsed(bool success);
+  void OnDataParsed(std::unique_ptr<::boca::Session> session);
 
   ::boca::UserIdentity teacher_;
   std::string session_id_;

@@ -79,11 +79,16 @@ void BocaAppHandler::CreateSession(mojom::ConfigPtr config,
           ::boca::Session::SessionState::Session_SessionState_ACTIVE,
           base::BindOnce(
               [](CreateSessionCallback callback,
-                 base::expected<bool, google_apis::ApiErrorCode> result) {
+                 base::expected<std::unique_ptr<::boca::Session>,
+                                google_apis::ApiErrorCode> result) {
                 // TODO(b/358476060):Potentially parse error code to UI;
                 if (!result.has_value()) {
                   std::move(callback).Run(false);
                 } else {
+                  // Load current session into memory;
+                  BocaAppClient::Get()
+                      ->GetSessionManager()
+                      ->UpdateCurrentSession(std::move(result.value()));
                   std::move(callback).Run(true);
                 }
               },

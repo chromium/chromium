@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chromeos/ash/components/boca/session_api/update_session_request.h"
+
 #include <memory>
 
 #include "base/functional/bind.h"
@@ -13,7 +15,6 @@
 #include "chromeos/ash/components/boca/proto/roster.pb.h"
 #include "chromeos/ash/components/boca/proto/session.pb.h"
 #include "chromeos/ash/components/boca/session_api/constants.h"
-#include "chromeos/ash/components/boca/session_api/update_session_request.h"
 #include "google_apis/common/api_error_codes.h"
 #include "google_apis/common/dummy_auth_service.h"
 #include "google_apis/common/request_sender.h"
@@ -50,6 +51,32 @@ class MockRequestHandler {
   static std::unique_ptr<HttpResponse> CreateSuccessfulResponse() {
     auto response = std::make_unique<BasicHttpResponse>();
     response->set_code(net::HTTP_OK);
+    response->set_content(R"(
+     {
+    "sessionId": "111",
+    "duration": {
+        "seconds": 120
+    },
+    "studentStatuses": {},
+    "roster": {
+        "studentGroups": []
+    },
+    "sessionState": "ACTIVE",
+    "studentGroupConfigs": {
+        "main": {
+            "captionsConfig": {},
+            "onTaskConfig": {
+                "activeBundle": {
+                    "contentConfigs": []
+                }
+            }
+        }
+    },
+    "teacher": {
+        "gaiaId": "1"
+    }
+}
+       )");
     return response;
   }
 
@@ -114,7 +141,8 @@ TEST_F(UpdateSessionTest, UpdateSessionWithEndSessionInputAndSucceed) {
   ::boca::UserIdentity teacher;
   teacher.set_gaia_id("1");
   const char session_id[] = "sessionId";
-  base::test::TestFuture<base::expected<bool, google_apis::ApiErrorCode>>
+  base::test::TestFuture<base::expected<std::unique_ptr<::boca::Session>,
+                                        google_apis::ApiErrorCode>>
       future;
 
   std::unique_ptr<UpdateSessionRequest> request =
@@ -126,7 +154,7 @@ TEST_F(UpdateSessionTest, UpdateSessionWithEndSessionInputAndSucceed) {
   request_sender()->StartRequestWithAuthRetry(std::move(request));
 
   ASSERT_TRUE(future.Wait());
-  auto result = future.Get();
+  auto result = future.Take();
   EXPECT_EQ(net::test_server::METHOD_PATCH, http_request.method);
 
   EXPECT_EQ("/v1/teachers/1/sessions/sessionId?updateMask=sessionState",
@@ -135,7 +163,7 @@ TEST_F(UpdateSessionTest, UpdateSessionWithEndSessionInputAndSucceed) {
   auto* contentData = "{\"sessionState\":3}";
   ASSERT_TRUE(http_request.has_content);
   EXPECT_EQ(contentData, http_request.content);
-  EXPECT_EQ(true, result.value());
+  EXPECT_TRUE(result.has_value());
 }
 
 TEST_F(UpdateSessionTest, UpdateSessionWithExendSessionInputAndSucceed) {
@@ -146,7 +174,8 @@ TEST_F(UpdateSessionTest, UpdateSessionWithExendSessionInputAndSucceed) {
   ::boca::UserIdentity teacher;
   teacher.set_gaia_id("1");
   const char session_id[] = "sessionId";
-  base::test::TestFuture<base::expected<bool, google_apis::ApiErrorCode>>
+  base::test::TestFuture<base::expected<std::unique_ptr<::boca::Session>,
+                                        google_apis::ApiErrorCode>>
       future;
 
   std::unique_ptr<UpdateSessionRequest> request =
@@ -157,7 +186,7 @@ TEST_F(UpdateSessionTest, UpdateSessionWithExendSessionInputAndSucceed) {
   request_sender()->StartRequestWithAuthRetry(std::move(request));
 
   ASSERT_TRUE(future.Wait());
-  auto result = future.Get();
+  auto result = future.Take();
   EXPECT_EQ(net::test_server::METHOD_PATCH, http_request.method);
 
   EXPECT_EQ("/v1/teachers/1/sessions/sessionId?updateMask=duration",
@@ -166,7 +195,7 @@ TEST_F(UpdateSessionTest, UpdateSessionWithExendSessionInputAndSucceed) {
   auto* contentData = "{\"duration\":{\"seconds\":120}}";
   ASSERT_TRUE(http_request.has_content);
   EXPECT_EQ(contentData, http_request.content);
-  EXPECT_EQ(true, result.value());
+  EXPECT_TRUE(result.has_value());
 }
 
 TEST_F(UpdateSessionTest,
@@ -178,7 +207,8 @@ TEST_F(UpdateSessionTest,
   ::boca::UserIdentity teacher;
   teacher.set_gaia_id("1");
   const char session_id[] = "sessionId";
-  base::test::TestFuture<base::expected<bool, google_apis::ApiErrorCode>>
+  base::test::TestFuture<base::expected<std::unique_ptr<::boca::Session>,
+                                        google_apis::ApiErrorCode>>
       future;
 
   std::unique_ptr<UpdateSessionRequest> request =
@@ -191,7 +221,7 @@ TEST_F(UpdateSessionTest,
   request_sender()->StartRequestWithAuthRetry(std::move(request));
 
   ASSERT_TRUE(future.Wait());
-  auto result = future.Get();
+  auto result = future.Take();
   EXPECT_EQ(net::test_server::METHOD_PATCH, http_request.method);
 
   EXPECT_EQ(
@@ -201,7 +231,7 @@ TEST_F(UpdateSessionTest,
   auto* contentData = "{\"duration\":{\"seconds\":60},\"sessionState\":3}";
   ASSERT_TRUE(http_request.has_content);
   EXPECT_EQ(contentData, http_request.content);
-  EXPECT_EQ(true, result.value());
+  EXPECT_TRUE(result.has_value());
 }
 
 TEST_F(UpdateSessionTest, UpdateSessionWithUpdateSessionConfigAndSucceed) {
@@ -212,7 +242,8 @@ TEST_F(UpdateSessionTest, UpdateSessionWithUpdateSessionConfigAndSucceed) {
   ::boca::UserIdentity teacher;
   teacher.set_gaia_id("1");
   const char session_id[] = "sessionId";
-  base::test::TestFuture<base::expected<bool, google_apis::ApiErrorCode>>
+  base::test::TestFuture<base::expected<std::unique_ptr<::boca::Session>,
+                                        google_apis::ApiErrorCode>>
       future;
 
   std::unique_ptr<UpdateSessionRequest> request =
@@ -253,7 +284,7 @@ TEST_F(UpdateSessionTest, UpdateSessionWithUpdateSessionConfigAndSucceed) {
   request_sender()->StartRequestWithAuthRetry(std::move(request));
 
   ASSERT_TRUE(future.Wait());
-  auto result = future.Get();
+  auto result = future.Take();
   EXPECT_EQ(net::test_server::METHOD_PATCH, http_request.method);
 
   EXPECT_EQ("/v1/teachers/1/sessions/sessionId?updateMask=studentGroupConfigs",
@@ -271,7 +302,7 @@ TEST_F(UpdateSessionTest, UpdateSessionWithUpdateSessionConfigAndSucceed) {
       "youtube.com\"}],\"locked\":true}}}}}";
   ASSERT_TRUE(http_request.has_content);
   EXPECT_EQ(contentData, http_request.content);
-  EXPECT_EQ(true, result.value());
+  EXPECT_TRUE(result.value());
 }
 
 TEST_F(UpdateSessionTest, UpdateSessionWithDurationAndFail) {
@@ -282,7 +313,8 @@ TEST_F(UpdateSessionTest, UpdateSessionWithDurationAndFail) {
   ::boca::UserIdentity teacher;
   teacher.set_gaia_id("1");
   const char session_id[] = "sessionId";
-  base::test::TestFuture<base::expected<bool, google_apis::ApiErrorCode>>
+  base::test::TestFuture<base::expected<std::unique_ptr<::boca::Session>,
+                                        google_apis::ApiErrorCode>>
       future;
 
   std::unique_ptr<UpdateSessionRequest> request =
@@ -293,7 +325,7 @@ TEST_F(UpdateSessionTest, UpdateSessionWithDurationAndFail) {
   request_sender()->StartRequestWithAuthRetry(std::move(request));
 
   ASSERT_TRUE(future.Wait());
-  auto result = future.Get();
+  auto result = future.Take();
   EXPECT_EQ(net::test_server::METHOD_PATCH, http_request.method);
 
   EXPECT_EQ("/v1/teachers/1/sessions/sessionId?updateMask=duration",

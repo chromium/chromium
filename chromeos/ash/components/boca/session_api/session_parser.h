@@ -30,7 +30,8 @@ void ParseSessionConfigProtoFromJson(base::Value::Dict* session_dict,
                                      ::boca::Session* session);
 void ParseStudentStatusProtoFromJson(base::Value::Dict* session_dict,
                                      ::boca::Session* session);
-
+// This helper returns unique_ptr for easier lifecycle management.
+std::unique_ptr<::boca::Session> GetSessionProtoFromJson(std::string json);
 // Json to Proto
 void ParseRosterJsonFromProto(::boca::Roster* roster,
                               base::Value::Dict* roster_dict);

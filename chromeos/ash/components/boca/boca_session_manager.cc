@@ -105,8 +105,13 @@ void BocaSessionManager::ParseSessionResponse(
   if (!result.has_value()) {
     return;
   }
+  UpdateCurrentSession(std::move(result.value()));
+}
+
+void BocaSessionManager::UpdateCurrentSession(
+    std::unique_ptr<::boca::Session> session) {
   previous_session_ = std::move(current_session_);
-  current_session_ = std::move(result.value());
+  current_session_ = std::move(session);
   NotifySessionUpdate();
   NotifyOnTaskUpdate();
   NotifyCaptionConfigUpdate();
