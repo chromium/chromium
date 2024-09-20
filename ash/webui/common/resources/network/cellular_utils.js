@@ -5,9 +5,10 @@
 import '//resources/ash/common/network/onc_mojo.js';
 
 import {MojoInterfaceProviderImpl} from '//resources/ash/common/network/mojo_interface_provider.js';
-import {OncMojo} from '//resources/ash/common/network/onc_mojo.js';
 import {ApnProperties, ApnType, DeviceStateProperties, FilterType, ManagedProperties, NetworkStateProperties, NO_LIMIT} from '//resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {ConnectionStateType, NetworkType} from '//resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
+
+import {OncMojo} from './onc_mojo.js';
 
 /**
  * TODO(b/162365553): Implement Edit mode.

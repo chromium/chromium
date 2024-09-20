@@ -5,24 +5,30 @@
 import 'chrome://os-settings/strings.m.js';
 import 'chrome://resources/ash/common/network/network_siminfo.js';
 
+import type {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
+import type {CrToggleElement} from 'chrome://resources/ash/common/cr_elements/cr_toggle/cr_toggle.js';
+import type {NetworkSiminfoElement} from 'chrome://resources/ash/common/network/network_siminfo.js';
 import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
+import type {SimLockDialogsElement} from 'chrome://resources/ash/common/network/sim_lock_dialogs.js';
 import {getDeepActiveElement} from 'chrome://resources/ash/common/util.js';
-import {NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
+import type {GlobalPolicy} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import {InhibitReason, SuppressionType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import {DeviceStateType, NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 suite('NetworkSiminfoTest', function() {
-  /** @type {!NetworkSiminfo|undefined} */
-  let simInfo;
+  let simInfo: NetworkSiminfoElement;
 
-  const TEST_ICCID = '11111111111111111';
+  const TEST_ICCID: string = '11111111111111111';
 
   setup(async function() {
-    simInfo = document.createElement('network-simInfo');
+    simInfo =
+        document.createElement('network-simInfo') as NetworkSiminfoElement;
 
     const cellularNetwork =
         OncMojo.getDefaultNetworkState(NetworkType.kCellular, 'cellular');
-    cellularNetwork.typeState.cellular.iccid = TEST_ICCID;
+    cellularNetwork.typeState.cellular!.iccid = TEST_ICCID;
 
     simInfo.networkState = cellularNetwork;
     document.body.appendChild(simInfo);
@@ -35,23 +41,52 @@ suite('NetworkSiminfoTest', function() {
     return new Promise(resolve => setTimeout(resolve));
   }
 
-  /**
-   *
-   * @param {boolean} isPrimary
-   * @param {boolean} lockEnabled
-   * @param {boolean} isLocked
-   */
-  async function updateDeviceState(isPrimary, lockEnabled, isLocked) {
+  function getGlobalPolicy(allowCellularSimLock: boolean): GlobalPolicy {
+    return {
+      allowApnModification: false,
+      allowOnlyPolicyWifiNetworksToConnect: false,
+      allowCellularSimLock: allowCellularSimLock,
+      allowCellularHotspot: false,
+      allowOnlyPolicyCellularNetworks: false,
+      allowOnlyPolicyNetworksToAutoconnect: false,
+      allowOnlyPolicyWifiNetworksToConnectIfAvailable: false,
+      dnsQueriesMonitored: false,
+      reportXdrEventsEnabled: false,
+      blockedHexSsids: [],
+      recommendedValuesAreEphemeral: false,
+      userCreatedNetworkConfigurationsAreEphemeral: false,
+      allowTextMessages: SuppressionType.kUnset,
+    };
+  }
+
+  async function updateDeviceState(
+      isPrimary: boolean, lockEnabled: boolean,
+      isLocked: boolean): Promise<void> {
     simInfo.deviceState = {
-      simInfos: [{
-        iccid: TEST_ICCID,
-        isPrimary: isPrimary,
-      }],
+      type: NetworkType.kCellular,
+      deviceState: DeviceStateType.kEnabled,
+      inhibitReason: InhibitReason.kNotInhibited,
+      ipv4Address: undefined,
+      ipv6Address: undefined,
+      imei: '',
+      macAddress: '',
+      scanning: false,
       simLockStatus: {
         lockEnabled: lockEnabled,
         lockType: isLocked ? 'sim-pin' : '',
         retriesLeft: 3,
       },
+      simInfos: [{
+        iccid: TEST_ICCID,
+        isPrimary: isPrimary,
+        slotId: 0,
+        eid: '',
+      }],
+      simAbsent: false,
+      managedNetworkAvailable: false,
+      serial: '',
+      isCarrierLocked: false,
+      isFlashing: false,
     };
     await flushAsync();
   }
@@ -60,13 +95,16 @@ suite('NetworkSiminfoTest', function() {
    * Verifies that the element with the provided ID exists and that clicking it
    * opens the SIM dialog. Also verifies that if the <network-siminfo> element
    * is disabled, this element is also disabled.
-   * @param {string} elementId
    */
-  async function verifyExistsAndClickOpensDialog(elementId) {
-    const getSimLockDialogElement = () => simInfo.$$('sim-lock-dialogs');
+  async function verifyExistsAndClickOpensDialog(elementId: string):
+      Promise<void> {
+    const getSimLockDialogElement = () =>
+        simInfo.shadowRoot!.querySelector<SimLockDialogsElement>(
+            'sim-lock-dialogs');
 
     // Element should exist.
-    const element = simInfo.$$(`#${elementId}`);
+    const element: CrButtonElement|CrToggleElement|null =
+        simInfo.shadowRoot!.querySelector(`#${elementId}`);
     assertTrue(!!element);
 
     // If the <network-siminfo> element is disabled, this element should also be
@@ -88,23 +126,30 @@ suite('NetworkSiminfoTest', function() {
   }
 
   test('Set focus after dialog close', async function() {
-    const getSimLockDialogs = () => simInfo.$$('sim-lock-dialogs');
-    const getSimLockButton = () => simInfo.$$('#simLockButton');
-    const getUnlockPinButton = () => simInfo.$$('#unlockPinButton');
+    const getSimLockDialogs = () =>
+        simInfo.shadowRoot!.querySelector<SimLockDialogsElement>(
+            'sim-lock-dialogs');
+    const getSimLockButton = () =>
+        simInfo.shadowRoot!.querySelector<CrToggleElement>('#simLockButton');
+    const getUnlockPinButton = () =>
+        simInfo.shadowRoot!.querySelector<CrButtonElement>('#unlockPinButton');
 
     // SIM lock dialog toggle.
     updateDeviceState(
         /*isPrimary=*/ true, /*lockEnabled=*/ false, /*isLocked=*/ false);
-    assertTrue(!!getSimLockButton());
     assertFalse(!!getSimLockDialogs());
-    getSimLockButton().click();
+    const simLockButton = getSimLockButton();
+    assertTrue(!!simLockButton);
+    simLockButton.click();
     await flushAsync();
 
     assertTrue(!!getSimLockDialogs());
-
     // Simulate dialog close.
-    getSimLockDialogs().closeDialogsForTest();
+    let simLockDialogs = getSimLockDialogs();
+    assertTrue(!!simLockDialogs);
+    simLockDialogs.closeDialogsForTest();
     await flushAsync();
+
     assertFalse(!!getSimLockDialogs());
     assertEquals(getSimLockButton(), getDeepActiveElement());
 
@@ -112,15 +157,20 @@ suite('NetworkSiminfoTest', function() {
     updateDeviceState(
         /*isPrimary=*/ true, /*lockEnabled=*/ true, /*isLocked=*/ true);
     await flushAsync();
-    assertTrue(!!getUnlockPinButton());
-    assertFalse(!!getSimLockDialogs());
-    getUnlockPinButton().click();
-    await flushAsync();
-    assertTrue(!!getSimLockDialogs());
 
-    // Simulate dialog close.
-    getSimLockDialogs().closeDialogsForTest();
+    assertFalse(!!getSimLockDialogs());
+    const unlockPinButton = getUnlockPinButton();
+    assertTrue(!!unlockPinButton);
+    unlockPinButton.click();
     await flushAsync();
+
+    assertTrue(!!getSimLockDialogs());
+    // Simulate dialog close.
+    simLockDialogs = getSimLockDialogs();
+    assertTrue(!!simLockDialogs);
+    simLockDialogs.closeDialogsForTest();
+    await flushAsync();
+
     assertFalse(!!getSimLockDialogs());
     assertEquals(getUnlockPinButton(), getDeepActiveElement());
   });
@@ -144,17 +194,19 @@ suite('NetworkSiminfoTest', function() {
   });
 
   test('Policy controlled SIM lock setting', async () => {
-    const getChangePinButton = () => simInfo.$$('#changePinButton');
-    const getSimLockButton = () => simInfo.$$('#simLockButton');
-    const getSimLockButtonTooltip = () => simInfo.$$('#inActiveSimLockTooltip');
-    const getSimLockPolicyIcon = () => simInfo.$$('#simLockPolicyIcon');
+    const getChangePinButton = () =>
+        simInfo.shadowRoot!.querySelector<CrButtonElement>('#changePinButton');
+    const getSimLockButton = () =>
+        simInfo.shadowRoot!.querySelector<CrToggleElement>('#simLockButton');
+    const getSimLockButtonTooltip = () =>
+        simInfo.shadowRoot!.querySelector('#inActiveSimLockTooltip');
+    const getSimLockPolicyIcon = () =>
+        simInfo.shadowRoot!.querySelector('#simLockPolicyIcon');
 
     // No icon if policy does not disable SIM PIN locking.
     assertFalse(!!getSimLockPolicyIcon());
 
-    simInfo.globalPolicy = {
-      allowCellularSimLock: false,
-    };
+    simInfo.globalPolicy = getGlobalPolicy(false);
     await flushAsync();
 
     // Unlocked primary SIM with lock setting enabled. Change button should not
@@ -162,23 +214,26 @@ suite('NetworkSiminfoTest', function() {
     // to turn off the SIM Lock setting.
     updateDeviceState(
         /*isPrimary=*/ true, /*lockEnabled=*/ true, /*isLocked=*/ false);
-    assertTrue(getChangePinButton().hidden);
-    assertFalse(getSimLockButton().disabled);
-    assertTrue(getSimLockButton().checked);
+
+    const changePinButton = getChangePinButton();
+    assertTrue(!!changePinButton);
+    assertTrue(changePinButton.hidden);
+
+    const simLockButton = getSimLockButton();
+    assertTrue(!!simLockButton);
+    assertFalse(simLockButton.disabled);
+    assertTrue(simLockButton.checked);
+
     assertFalse(!!getSimLockButtonTooltip());
     assertTrue(!!getSimLockPolicyIcon());
 
     // Policy controlled icon should not show if SIM PIN locking is not
     // restricted.
-    simInfo.globalPolicy = {
-      allowCellularSimLock: true,
-    };
+    simInfo.globalPolicy = getGlobalPolicy(true);
     await flushAsync();
     assertFalse(!!getSimLockPolicyIcon());
 
-    simInfo.globalPolicy = {
-      allowCellularSimLock: false,
-    };
+    simInfo.globalPolicy = getGlobalPolicy(false);
     await flushAsync();
 
     // Unlocked primary SIM with lock setting disabled. Change button should not
@@ -186,9 +241,10 @@ suite('NetworkSiminfoTest', function() {
     // users to turn on the SIM Lock setting.
     updateDeviceState(
         /*isPrimary=*/ true, /*lockEnabled=*/ false, /*isLocked=*/ false);
-    assertTrue(getChangePinButton().hidden);
-    assertTrue(getSimLockButton().disabled);
-    assertFalse(getSimLockButton().checked);
+
+    assertTrue(changePinButton.hidden);
+    assertTrue(simLockButton.disabled);
+    assertFalse(simLockButton.checked);
     assertFalse(!!getSimLockButtonTooltip());
     assertTrue(!!getSimLockPolicyIcon());
 
@@ -196,9 +252,9 @@ suite('NetworkSiminfoTest', function() {
     // be hidden, and toggle should be visible, off, and disabled.
     updateDeviceState(
         /*isPrimary=*/ false, /*lockEnabled=*/ true, /*isLocked=*/ false);
-    assertTrue(getChangePinButton().hidden);
-    assertTrue(getSimLockButton().disabled);
-    assertFalse(getSimLockButton().checked);
+    assertTrue(changePinButton.hidden);
+    assertTrue(simLockButton.disabled);
+    assertFalse(simLockButton.checked);
     assertTrue(!!getSimLockButtonTooltip());
     assertFalse(!!getSimLockPolicyIcon());
 
@@ -206,25 +262,30 @@ suite('NetworkSiminfoTest', function() {
     // be hidden, and toggle should be visible, off, and disabled.
     updateDeviceState(
         /*isPrimary=*/ false, /*lockEnabled=*/ false, /*isLocked=*/ false);
-    assertTrue(getChangePinButton().hidden);
-    assertTrue(getSimLockButton().disabled);
-    assertFalse(getSimLockButton().checked);
+    assertTrue(changePinButton.hidden);
+    assertTrue(simLockButton.disabled);
+    assertFalse(simLockButton.checked);
     assertTrue(!!getSimLockButtonTooltip());
     assertFalse(!!getSimLockPolicyIcon());
   });
 
   test('Primary vs. non-primary SIM', function() {
-    const getChangePinButton = () => simInfo.$$('#changePinButton');
-    const getSimLockButton = () => simInfo.$$('#simLockButton');
-    const getSimLockButtonTooltip = () => simInfo.$$('#inActiveSimLockTooltip');
+    const getChangePinButton = () =>
+        simInfo.shadowRoot!.querySelector<CrButtonElement>('#changePinButton');
+    const getSimLockButton = () =>
+        simInfo.shadowRoot!.querySelector<CrToggleElement>('#simLockButton');
+    const getSimLockButtonTooltip = () =>
+        simInfo.shadowRoot!.querySelector('#inActiveSimLockTooltip');
 
     // Lock enabled and primary slot; change button should be visible,
     // enabled, and checked.
     updateDeviceState(
         /*isPrimary=*/ true, /*lockEnabled=*/ true, /*isLocked=*/ false);
     assertTrue(!!getChangePinButton());
-    assertFalse(getSimLockButton().disabled);
-    assertTrue(getSimLockButton().checked);
+    const simLockButton = getSimLockButton();
+    assertTrue(!!simLockButton);
+    assertFalse(simLockButton.disabled);
+    assertTrue(simLockButton.checked);
     assertFalse(!!getSimLockButtonTooltip());
 
     // Lock enabled and non-primary slot; change button should be visible,
@@ -232,8 +293,8 @@ suite('NetworkSiminfoTest', function() {
     updateDeviceState(
         /*isPrimary=*/ false, /*lockEnabled=*/ true, /*isLocked=*/ false);
     assertTrue(!!getChangePinButton());
-    assertTrue(getSimLockButton().disabled);
-    assertFalse(getSimLockButton().checked);
+    assertTrue(simLockButton.disabled);
+    assertFalse(simLockButton.checked);
     assertTrue(!!getSimLockButtonTooltip());
 
     // SIM locked and non-primary slot; change button should be visible,
@@ -241,8 +302,8 @@ suite('NetworkSiminfoTest', function() {
     updateDeviceState(
         /*isPrimary=*/ false, /*lockEnabled=*/ true, /*isLocked=*/ true);
     assertTrue(!!getChangePinButton());
-    assertTrue(getSimLockButton().disabled);
-    assertFalse(getSimLockButton().checked);
+    assertTrue(simLockButton.disabled);
+    assertFalse(simLockButton.checked);
     assertTrue(!!getSimLockButtonTooltip());
   });
 });

@@ -16,12 +16,14 @@ import './network_password_input.js';
 import './network_shared.css.js';
 import './sim_lock_dialogs.js';
 
-import {I18nBehavior} from '//resources/ash/common/i18n_behavior.js';
-import {loadTimeData} from '//resources/ash/common/load_time_data.m.js';
-import {isActiveSim} from '//resources/ash/common/network/cellular_utils.js';
+import {assert} from '//resources/js/assert.js';
 import {GlobalPolicy} from '//resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
-import {Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
+import {CrToggleElement} from 'chrome://resources/ash/common/cr_elements/cr_toggle/cr_toggle.js';
+import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 
+import {isActiveSim} from './cellular_utils.js';
 import {getTemplate} from './network_siminfo.html.js';
 import {OncMojo} from './onc_mojo.js';
 
@@ -33,150 +35,157 @@ const TOGGLE_DEBOUNCE_MS = 500;
  *       button which allows the user to unlock the SIM.
  *   SIM_UNLOCKED: Provides an option to lock the SIM if desired. If SIM-lock is
  *       on, this UI also allows the user to update the PIN used.
- * @enum {number}
  */
-const State = {
-  SIM_LOCKED: 0,
-  SIM_UNLOCKED: 1,
-};
+enum State {
+  SIM_LOCKED = 0,
+  SIM_UNLOCKED = 1,
+}
 
-Polymer({
-  _template: getTemplate(),
-  is: 'network-siminfo',
+const NetworkSiminfoElementBase = I18nMixin(PolymerElement);
 
-  behaviors: [I18nBehavior],
+export class NetworkSiminfoElement extends NetworkSiminfoElementBase {
+  static get is() {
+    return 'network-siminfo' as const;
+  }
 
-  properties: {
-    /** @type {?OncMojo.DeviceStateProperties} */
-    deviceState: {
-      type: Object,
-      value: null,
-      observer: 'deviceStateChanged_',
-    },
+  static get template() {
+    return getTemplate();
+  }
 
-    /** @type {?OncMojo.NetworkStateProperties} */
-    networkState: {
-      type: Object,
-      value: null,
-    },
+  static get properties() {
+    return {
+      deviceState: {
+        type: Object,
+        value: null,
+        observer: 'deviceStateChanged_',
+      },
 
-    /** @type {!GlobalPolicy|undefined} */
-    globalPolicy: Object,
+      networkState: {
+        type: Object,
+        value: null,
+      },
 
-    disabled: {
-      type: Boolean,
-      value: false,
-    },
+      globalPolicy: Object,
 
-    /** Used to reference the State enum in HTML. */
-    State: {
-      type: Object,
-      value: State,
-    },
+      disabled: {
+        type: Boolean,
+        value: false,
+      },
 
-    /**
-     * Reflects deviceState.simLockStatus.lockEnabled for the
-     * toggle button.
-     * @private
-     */
-    lockEnabled_: {
-      type: Boolean,
-      value: false,
-    },
+      /** Used to reference the State enum in HTML. */
+      State: {
+        type: Object,
+        value: State,
+      },
 
-    /** @private {boolean} */
-    isDialogOpen_: {
-      type: Boolean,
-      value: false,
-      observer: 'onDialogOpenChanged_',
-    },
+      /**
+       * Reflects deviceState.simLockStatus.lockEnabled for the
+       * toggle button.
+       */
+      lockEnabled_: {
+        type: Boolean,
+        value: false,
+      },
 
-    /**
-     * If set to true, shows the Change PIN dialog if the device is unlocked.
-     * @private {boolean}
-     */
-    showChangePin_: {
-      type: Boolean,
-      value: false,
-    },
+      isDialogOpen_: {
+        type: Boolean,
+        value: false,
+        observer: 'onDialogOpenChanged_',
+      },
 
-    /**
-     * Indicates that the current network is on the active sim slot.
-     * @private {boolean}
-     */
-    isActiveSim_: {
-      type: Boolean,
-      value: false,
-      computed: 'computeIsActiveSim_(networkState, deviceState)',
-    },
+      /**
+       * If set to true, shows the Change PIN dialog if the device is unlocked.
+       */
+      showChangePin_: {
+        type: Boolean,
+        value: false,
+      },
 
-    /** @private {!State} */
-    state_: {
-      type: Number,
-      value: State.SIM_UNLOCKED,
-      computed: 'computeState_(networkState, deviceState, deviceState.*,' +
-          'isActiveSim_)',
-    },
+      /**
+       * Indicates that the current network is on the active sim slot.
+       */
+      isActiveSim_: {
+        type: Boolean,
+        value: false,
+        computed: 'computeIsActiveSim_(networkState, deviceState)',
+      },
 
-    /** @private {boolean} */
-    isSimPinLockRestricted_: {
-      type: Boolean,
-      value: false,
-      computed: 'computeIsSimPinLockRestricted_(globalPolicy,' +
-          'globalPolicy.*, lockEnabled_)',
-    },
-  },
+      state_: {
+        type: Number,
+        value: State.SIM_UNLOCKED,
+        computed: 'computeState_(networkState, deviceState, deviceState.*,' +
+            'isActiveSim_)',
+      },
 
-  /** @private {boolean|undefined} */
-  setLockEnabled_: undefined,
+      isSimPinLockRestricted_: {
+        type: Boolean,
+        value: false,
+        computed: 'computeIsSimPinLockRestricted_(globalPolicy,' +
+            'globalPolicy.*, lockEnabled_)',
+      },
 
-  /*
-   * Returns the sim lock CrToggleElement.
-   * @return {?CrToggleElement}
-   */
-  getSimLockToggle() {
-    return /** @type {?CrToggleElement} */ (this.$$('#simLockButton'));
-  },
+    };
+  }
 
-  /**
-   * @return {?CrButtonElement}
-   */
-  getUnlockButton() {
-    return /** @type {?CrButtonElement} */ (this.$$('#unlockPinButton'));
-  },
+  deviceState: OncMojo.DeviceStateProperties;
+  networkState: OncMojo.NetworkStateProperties;
+  globalPolicy: GlobalPolicy|undefined;
+  disabled: boolean;
+  private lockEnabled_: boolean;
+  private isDialogOpen_: boolean;
+  private showChangePin_: boolean;
+  private isActiveSim_: boolean;
+  private state_: State;
+  private isSimPinLockRestricted_: boolean;
+  private setLockEnabled_: boolean|undefined;
 
-  /** @private */
-  onDialogOpenChanged_() {
+  getSimLockToggle(): CrToggleElement {
+    const el =
+        this.shadowRoot!.querySelector<CrToggleElement>('#simLockButton');
+    assert(!!el);
+    return el;
+  }
+
+  getUnlockButton(): CrButtonElement {
+    const el =
+        this.shadowRoot!.querySelector<CrButtonElement>('#unlockPinButton');
+    assert(!!el);
+    return el;
+  }
+
+  private onDialogOpenChanged_(): void {
     if (this.isDialogOpen_) {
       return;
     }
 
     this.delayUpdateLockEnabled_();
     this.updateFocus_();
-  },
+  }
 
   /**
    * Sets default focus when dialog is closed.
-   * @private
    */
-  updateFocus_() {
+  private updateFocus_(): void {
     const state = this.computeState_();
     switch (state) {
       case State.SIM_LOCKED:
-        if (this.$$('#unlockPinButton')) {
-          this.$$('#unlockPinButton').focus();
+        const unlockPinButton =
+            this.shadowRoot!.querySelector<CrButtonElement>('#unlockPinButton');
+        if (unlockPinButton) {
+          unlockPinButton.focus();
         }
         break;
       case State.SIM_UNLOCKED:
-        if (this.$$('#simLockButton')) {
-          this.$$('#simLockButton').focus();
+        const simLockButton =
+            this.shadowRoot!.querySelector<CrToggleElement>('#simLockButton');
+        if (simLockButton) {
+          simLockButton.focus();
         }
         break;
     }
-  },
+  }
 
-  /** @private */
-  deviceStateChanged_() {
+  private deviceStateChanged_(): void {
     if (!this.deviceState) {
       return;
     }
@@ -192,36 +201,32 @@ Polymer({
     } else {
       this.setLockEnabled_ = undefined;
     }
-  },
+  }
 
   /**
    * Wrapper method to prevent changing |lockEnabled_| while a dialog is open
    * to avoid confusion while a SIM operation is in progress. This must be
    * called after closing any dialog (and not opening another) to set the
    * correct state.
-   * @private
    */
-  updateLockEnabled_() {
+  private updateLockEnabled_(): void {
     if (this.setLockEnabled_ === undefined || this.isDialogOpen_) {
       return;
     }
     this.lockEnabled_ = this.setLockEnabled_;
     this.setLockEnabled_ = undefined;
-  },
+  }
 
-  /** @private */
-  delayUpdateLockEnabled_() {
+  private delayUpdateLockEnabled_(): void {
     setTimeout(() => {
       this.updateLockEnabled_();
     }, TOGGLE_DEBOUNCE_MS);
-  },
+  }
 
   /**
    * Opens the pin dialog when the sim lock enabled state changes.
-   * @param {!Event} event
-   * @private
    */
-  onSimLockEnabledChange_(event) {
+  private onSimLockEnabledChange_(_event: Event): void {
     if (!this.deviceState) {
       return;
     }
@@ -232,53 +237,37 @@ Polymer({
     // successful.
     this.lockEnabled_ = !this.lockEnabled_;
     this.showSimLockDialog_(/*showChangePin=*/ false);
-  },
+  }
 
   /**
    * Opens the Change PIN dialog.
-   * @param {!Event} event
-   * @private
    */
-  onChangePinTap_(event) {
+  private onChangePinPressed_(event: Event) {
     event.stopPropagation();
     if (!this.deviceState) {
       return;
     }
     this.showSimLockDialog_(true);
-  },
+  }
 
   /**
    * Opens the Unlock PIN / PUK dialog.
-   * @param {!Event} event
-   * @private
    */
-  onUnlockPinTap_(event) {
+  private onUnlockPinPressed_(event: Event) {
     event.stopPropagation();
     this.showSimLockDialog_(true);
-  },
+  }
 
-  /**
-   * @param {boolean} showChangePin
-   * @private
-   */
-  showSimLockDialog_(showChangePin) {
+  private showSimLockDialog_(showChangePin: boolean) {
     this.showChangePin_ = showChangePin;
     this.isDialogOpen_ = true;
-  },
+  }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  computeIsActiveSim_() {
+  private computeIsActiveSim_(): boolean {
     return isActiveSim(this.networkState, this.deviceState);
-  },
+  }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  showChangePinButton_() {
+  private showChangePinButton_(): boolean {
     if (this.isSimPinLockRestricted_) {
       return false;
     }
@@ -288,13 +277,9 @@ Polymer({
     }
 
     return this.deviceState.simLockStatus.lockEnabled && this.isActiveSim_;
-  },
+  }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  isSimLockButtonDisabled_() {
+  private isSimLockButtonDisabled_(): boolean {
     // If SIM PIN locking is restricted by admin, and the SIM does not have SIM
     // PIN lock enabled, users should not be able to enable PIN locking.
     if (this.isSimPinLockRestricted_ && !this.lockEnabled_) {
@@ -302,13 +287,9 @@ Polymer({
     }
 
     return this.disabled || !this.isActiveSim_;
-  },
+  }
 
-  /**
-   * @return {!State}
-   * @private
-   */
-  computeState_() {
+  private computeState_(): State {
     const simLockStatus = this.deviceState && this.deviceState.simLockStatus;
 
     // If a lock is set and the network in question is the active SIM, show the
@@ -322,13 +303,9 @@ Polymer({
     // Note that if this is not the active SIM, we cannot read to lock state, so
     // we default to showing the "unlocked" UI unless we know otherwise.
     return State.SIM_UNLOCKED;
-  },
+  }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  isSimCarrierLocked_() {
+  private isSimCarrierLocked_(): boolean {
     const simLockStatus = this.deviceState && this.deviceState.simLockStatus;
 
     if (this.isActiveSim_ && simLockStatus &&
@@ -337,30 +314,25 @@ Polymer({
     }
 
     return false;
-  },
+  }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  shouldShowPolicyIndicator_() {
+  private shouldShowPolicyIndicator_(): boolean {
     return this.isSimPinLockRestricted_ && this.isActiveSim_;
-  },
+  }
 
-  /**
-   * @return {boolean}
-   * @private
-   */
-  computeIsSimPinLockRestricted_() {
+  private computeIsSimPinLockRestricted_(): boolean {
     return !!this.globalPolicy && !this.globalPolicy.allowCellularSimLock;
-  },
+  }
 
-  /**
-   * @param {!State} state1
-   * @param {!State} state2
-   * @return {boolean} Whether state1 is the same as state2.
-   */
-  eq_(state1, state2) {
+  private eq_(state1: State, state2: State): boolean {
     return state1 === state2;
-  },
-});
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    [NetworkSiminfoElement.is]: NetworkSiminfoElement;
+  }
+}
+
+customElements.define(NetworkSiminfoElement.is, NetworkSiminfoElement);
