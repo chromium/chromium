@@ -55,7 +55,8 @@ class Browser;
 // sync.
 // It is safe to destroy this authentication flow when `completion` is called.
 // `completion` must not be nil.
-- (void)startSignInWithCompletion:(signin_ui::CompletionCallback)completion;
+- (void)startSignInWithCompletion:
+    (signin_ui::SigninCompletionCallback)completion;
 
 // * Interrupts the current sign-in operation (if any).
 // * Dismiss any UI presented accordingly to `action`.

@@ -132,15 +132,17 @@ class ConsistencyPromoSigninMediatorTest : public PlatformTest {
     AuthenticationService* auth_service =
         AuthenticationServiceFactory::GetForBrowserState(browser_state_.get());
     OCMExpect([authentication_flow_
-        startSignInWithCompletion:[OCMArg checkWithBlock:^BOOL(
-                                              signin_ui::CompletionCallback
-                                                  callback) {
-          if (success) {
-            auth_service->SignIn(identity, access_point);
-          }
-          callback(success);
-          return YES;
-        }]]);
+        startSignInWithCompletion:[OCMArg
+                                      checkWithBlock:^BOOL(
+                                          signin_ui::SigninCompletionCallback
+                                              callback) {
+                                        if (success) {
+                                          auth_service->SignIn(identity,
+                                                               access_point);
+                                        }
+                                        callback(success);
+                                        return YES;
+                                      }]]);
   }
 
  protected:

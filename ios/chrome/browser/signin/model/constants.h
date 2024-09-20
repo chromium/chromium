@@ -59,7 +59,11 @@ namespace signin_ui {
 
 // Completion callback for a sign-in operation.
 // `success` is YES if the operation was successful.
-typedef void (^CompletionCallback)(BOOL success);
+using SigninCompletionCallback = void (^)(BOOL success);
+
+// Completion callback for a sign-out operation.
+// `success` is YES if the operation was successful.
+using SignoutCompletionCallback = void (^)(BOOL success);
 
 }  // namespace signin_ui
 

@@ -682,7 +682,7 @@ constexpr CGFloat kErrorSymbolSize = 22.;
                       withSource:signin_metrics::ProfileSignout::
                                      kUserClickedSignoutSettings];
   __weak LegacyAccountsTableViewController* weakSelf = self;
-  self.signoutCoordinator.completion = ^(BOOL success) {
+  self.signoutCoordinator.signoutCompletion = ^(BOOL success) {
     [weakSelf.signoutCoordinator stop];
     weakSelf.signoutCoordinator = nil;
     if (success) {

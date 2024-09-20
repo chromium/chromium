@@ -65,7 +65,8 @@ class Browser;
 @property(nonatomic, strong, readonly) NSString* message;
 
 // Required callback to be used after sign-out is completed.
-@property(nonatomic, copy) signin_ui::CompletionCallback completion;
+@property(nonatomic, copy)
+    signin_ui::SignoutCompletionCallback signoutCompletion;
 
 // Whether to warns feature won’t be available anymore when user is not
 // synced.

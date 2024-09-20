@@ -98,7 +98,7 @@ class SignoutActionSheetCoordinatorTest : public PlatformTest {
                               view:view_controller_.view
                         withSource:signin_metrics::ProfileSignout::
                                        kUserClickedSignoutSettings];
-    signout_coordinator_.completion = ^(BOOL success) {
+    signout_coordinator_.signoutCompletion = ^(BOOL success) {
       completion_callback_.Run(success);
     };
     return signout_coordinator_;

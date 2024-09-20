@@ -420,7 +420,7 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
                                      kUserClickedSignoutSettings];
   self.signoutActionSheetCoordinator.delegate = self;
   __weak ManageSyncSettingsCoordinator* weakSelf = self;
-  self.signoutActionSheetCoordinator.completion = ^(BOOL success) {
+  self.signoutActionSheetCoordinator.signoutCompletion = ^(BOOL success) {
     [weakSelf.signoutActionSheetCoordinator stop];
     weakSelf.signoutActionSheetCoordinator = nil;
     if (success) {

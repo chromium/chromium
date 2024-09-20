@@ -233,7 +233,7 @@ class AuthenticationFlowTest : public PlatformTest {
   id<SystemIdentity> managed_identity1_ = nil;
   id<SystemIdentity> managed_identity2_ = nil;
   OCMockObject* performer_ = nil;
-  signin_ui::CompletionCallback sign_in_completion_;
+  signin_ui::SigninCompletionCallback sign_in_completion_;
   UIViewController* view_controller_;
   // Used to verify histogram logging.
   base::HistogramTester histogram_tester_;

@@ -148,7 +148,8 @@ using signin_metrics::PromoAction;
 #pragma mark - GoogleServicesSettingsCommandHandler
 
 - (void)showSignOutFromTargetRect:(CGRect)targetRect
-                       completion:(signin_ui::CompletionCallback)completion {
+                       completion:
+                           (signin_ui::SignoutCompletionCallback)completion {
   DCHECK(completion);
   syncer::SyncService* syncService =
       SyncServiceFactory::GetForBrowserState(self.browser->GetBrowserState());
@@ -234,8 +235,9 @@ using signin_metrics::PromoAction;
 
 // Displays the option to keep or clear data for a syncing user.
 - (void)showDataRetentionOptionsWithTargetRect:(CGRect)targetRect
-                                    completion:(signin_ui::CompletionCallback)
-                                                   completion {
+                                    completion:
+                                        (signin_ui::SignoutCompletionCallback)
+                                            completion {
   DCHECK(completion);
   self.signoutActionSheetCoordinator = [[SignoutActionSheetCoordinator alloc]
       initWithBaseViewController:self.viewController
@@ -246,7 +248,7 @@ using signin_metrics::PromoAction;
                                      kUserClickedSignoutSettings];
   __weak GoogleServicesSettingsCoordinator* weakSelf = self;
   self.signoutActionSheetCoordinator.delegate = self;
-  self.signoutActionSheetCoordinator.completion = ^(BOOL success) {
+  self.signoutActionSheetCoordinator.signoutCompletion = ^(BOOL success) {
     if (completion)
       completion(success);
     [weakSelf.signoutActionSheetCoordinator stop];
@@ -256,7 +258,7 @@ using signin_metrics::PromoAction;
 }
 
 // Signs the user out of Chrome, only clears data for managed accounts.
-- (void)signOutWithCompletion:(signin_ui::CompletionCallback)completion {
+- (void)signOutWithCompletion:(signin_ui::SignoutCompletionCallback)completion {
   DCHECK(completion);
   [self.googleServicesSettingsViewController preventUserInteraction];
   __weak GoogleServicesSettingsCoordinator* weakSelf = self;

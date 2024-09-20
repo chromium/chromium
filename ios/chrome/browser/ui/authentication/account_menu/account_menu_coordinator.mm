@@ -227,7 +227,7 @@
                       withSource:signin_metrics::ProfileSignout::
                                      kUserClickedSignoutInAccountMenu];
   __weak __typeof(self) weakSelf = self;
-  _signoutActionSheetCoordinator.completion = ^(BOOL success) {
+  _signoutActionSheetCoordinator.signoutCompletion = ^(BOOL success) {
     [weakSelf stopSignoutActionSheetCoordinator];
     if (success) {
       [weakSelf.delegate acountMenuCoordinatorShouldStop:weakSelf];

@@ -43,7 +43,7 @@
 #import "ios/public/provider/chrome/browser/signin/signin_error_api.h"
 #import "ui/base/l10n/l10n_util.h"
 
-using signin_ui::CompletionCallback;
+using signin_ui::SigninCompletionCallback;
 
 namespace {
 
@@ -116,7 +116,7 @@ bool HasMachineLevelPolicies() {
 
 @implementation AuthenticationFlow {
   UIViewController* _presentingViewController;
-  CompletionCallback _signInCompletion;
+  SigninCompletionCallback _signInCompletion;
   AuthenticationFlowPerformer* _performer;
 
   // State machine tracking.
@@ -180,7 +180,7 @@ bool HasMachineLevelPolicies() {
   return self;
 }
 
-- (void)startSignInWithCompletion:(CompletionCallback)completion {
+- (void)startSignInWithCompletion:(SigninCompletionCallback)completion {
   DCHECK_EQ(BEGIN, _state);
   DCHECK(!_signInCompletion);
   DCHECK(completion);
@@ -453,7 +453,7 @@ bool HasMachineLevelPolicies() {
                                       : SigninAccountType::kRegular);
   }
   if (_signInCompletion) {
-    CompletionCallback signInCompletion = _signInCompletion;
+    SigninCompletionCallback signInCompletion = _signInCompletion;
     _signInCompletion = nil;
     signInCompletion(success);
   }

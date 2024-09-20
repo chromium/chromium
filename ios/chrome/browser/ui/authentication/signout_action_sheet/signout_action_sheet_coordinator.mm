@@ -112,7 +112,7 @@ typedef NS_ENUM(NSUInteger, SignedInUserState) {
 #pragma mark - ChromeCoordinator
 
 - (void)start {
-  DCHECK(self.completion);
+  DCHECK(self.signoutCompletion);
   DCHECK(self.authenticationService->HasPrimaryIdentity(
       signin::ConsentLevel::kSignin));
   switch (self.signedInUserState) {
@@ -611,13 +611,14 @@ typedef NS_ENUM(NSUInteger, SignedInUserState) {
   return message;
 }
 
-// Calls `self.completion` if available, and sets it to `null` before the call.
+// Calls `self.signoutCompletion` if available, and sets it to `null` before the
+// call.
 - (void)callCompletionBlock:(BOOL)signedOut {
-  if (!self.completion) {
+  if (!self.signoutCompletion) {
     return;
   }
-  signin_ui::CompletionCallback completion = self.completion;
-  self.completion = nil;
+  signin_ui::SignoutCompletionCallback completion = self.signoutCompletion;
+  self.signoutCompletion = nil;
   completion(signedOut);
 }
 

@@ -163,7 +163,7 @@ using signin_metrics::AccessPoint;
   _signoutActionSheetCoordinator.accountSwitch = YES;
 
   __weak __typeof(self) weakSelf = self;
-  _signoutActionSheetCoordinator.completion = ^(BOOL success) {
+  _signoutActionSheetCoordinator.signoutCompletion = ^(BOOL success) {
     [weakSelf signoutDoneCompletionWithSuccess:success];
   };
   [_signoutActionSheetCoordinator start];

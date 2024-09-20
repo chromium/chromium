@@ -15,7 +15,8 @@
 // `targetRect` rect in table view system coordinate to display the signout
 // popover dialog.
 - (void)showSignOutFromTargetRect:(CGRect)targetRect
-                       completion:(signin_ui::CompletionCallback)completion;
+                       completion:
+                           (signin_ui::SignoutCompletionCallback)completion;
 
 // Presents the parcel tracking feature settings page.
 - (void)showParcelTrackingSettingsPage;

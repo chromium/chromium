@@ -279,7 +279,7 @@ using signin_metrics::PromoAction;
                       withSource:signin_metrics::ProfileSignout::
                                      kUserClickedSignoutSettings];
   __weak __typeof(self) weakSelf = self;
-  _signoutCoordinator.completion = ^(BOOL success) {
+  _signoutCoordinator.signoutCompletion = ^(BOOL success) {
     [weakSelf handleSignOutCompleted:success];
   };
   _signoutCoordinator.delegate = self;

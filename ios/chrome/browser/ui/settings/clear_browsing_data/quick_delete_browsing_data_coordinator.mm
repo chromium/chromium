@@ -110,7 +110,7 @@
                       withSource:signout_source_metric];
   _signoutCoordinator.showUnavailableFeatureDialogHeader = YES;
   __weak __typeof(self) weakSelf = self;
-  _signoutCoordinator.completion = ^(BOOL success) {
+  _signoutCoordinator.signoutCompletion = ^(BOOL success) {
     [weakSelf handleAuthenticationOperationDidFinish];
   };
   _signoutCoordinator.delegate = self;

@@ -54,8 +54,6 @@
 #import "services/network/public/cpp/shared_url_loader_factory.h"
 #import "ui/base/l10n/l10n_util.h"
 
-using signin_ui::CompletionCallback;
-
 namespace {
 
 const int64_t kAuthenticationFlowTimeoutSeconds = 10;
