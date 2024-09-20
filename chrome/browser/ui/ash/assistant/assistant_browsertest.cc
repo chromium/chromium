@@ -56,17 +56,22 @@ inline constexpr char kDlcLoadStatusHistogram[] =
 class DISABLED_AssistantBrowserTest : public MixinBasedInProcessBrowserTest,
                                       public testing::WithParamInterface<bool> {
  public:
-  DISABLED_AssistantBrowserTest() {
+  DISABLED_AssistantBrowserTest()
+      : DISABLED_AssistantBrowserTest(/*disable_sandbox=*/true) {}
+
+  explicit DISABLED_AssistantBrowserTest(bool disable_sandbox) {
     // Do not log to file in test. Otherwise multiple tests may create/delete
     // the log file at the same time. See http://crbug.com/1307868.
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
         switches::kDisableLibAssistantLogfile);
 
-    // In browser tests, the fake_s3_server uses gRPC framework, which is not
-    // allowed in the sandbox by default. Instead of enabling and setting up the
-    // gRPC policy, we do not enable sandbox in the tests.
-    base::CommandLine::ForCurrentProcess()->AppendSwitch(
-        sandbox::policy::switches::kNoSandbox);
+    if (disable_sandbox) {
+      // In browser tests, the fake_s3_server uses gRPC framework, which is not
+      // allowed in the sandbox by default. Instead of enabling and setting up
+      // the gRPC policy, we do not enable sandbox in the tests.
+      base::CommandLine::ForCurrentProcess()->AppendSwitch(
+          sandbox::policy::switches::kNoSandbox);
+    }
   }
 
   DISABLED_AssistantBrowserTest(const DISABLED_AssistantBrowserTest&) = delete;
@@ -151,6 +156,18 @@ class DISABLED_AssistantBrowserTest : public MixinBasedInProcessBrowserTest,
   AssistantTestMixin tester_{&mixin_host_, this, embedded_test_server(), kMode,
                              kVersion};
 };
+
+class DISABLED_AssistantBrowserTestWithSandbox
+    : public DISABLED_AssistantBrowserTest {
+ public:
+  DISABLED_AssistantBrowserTestWithSandbox()
+      : DISABLED_AssistantBrowserTest(/*disable_sandbox=*/false) {}
+};
+
+// Tests that Assistant can start up with sandbox.
+IN_PROC_BROWSER_TEST_F(DISABLED_AssistantBrowserTestWithSandbox, Ready) {
+  tester()->StartAssistantAndWaitForReady();
+}
 
 IN_PROC_BROWSER_TEST_F(DISABLED_AssistantBrowserTest,
                        ShouldOpenAssistantUiWhenPressingAssistantKey) {
