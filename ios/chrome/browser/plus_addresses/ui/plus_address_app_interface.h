@@ -26,6 +26,12 @@
 // Adds a plus address profile in `FakePlusAddressService`.
 + (void)addPlusAddressProfile;
 
+// Setter to show reserve error states in `FakePlusAddressService` in tests.
++ (void)setShouldFailToReserve:(BOOL)shouldFailToReserve;
+
+// Returns the primary email from `FakePlusAddressService`.
++ (NSString*)primaryEmail;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_PLUS_ADDRESSES_UI_PLUS_ADDRESS_APP_INTERFACE_H_

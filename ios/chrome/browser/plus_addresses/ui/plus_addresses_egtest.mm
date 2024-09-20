@@ -102,7 +102,6 @@ void ExpectModalTimeSample(
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
-  config.relaunch_policy = ForceRelaunchByCleanShutdown;
 
   std::string fakeLocalUrl =
       base::EscapeQueryParamValue("chrome://version", /*use_plus=*/false);
@@ -236,13 +235,15 @@ id<GREYMatcher> GetMatcherForPlusAddressLabel(NSString* labelText) {
 
 // A basic test that simply opens the bottom sheet with an error and then
 // dismisses the bottom sheet.
-- (void)DISABLED_testShowPlusAddressBottomSheetWithError {
+- (void)testShowPlusAddressBottomSheetWithError {
+  [PlusAddressAppInterface setShouldFailToReserve:YES];
   [self openCreatePlusAddressBottomSheet];
 
   // The primary email address should be shown.
   [ChromeEarlGrey
       waitForUIElementToAppearWithMatcher:GetMatcherForEmailDescription(
-                                              _fakeIdentity.userEmail)];
+                                              [PlusAddressAppInterface
+                                                  primaryEmail])];
 
   // The request to reserve a plus address is hitting the test server, and
   // should fail immediately.
@@ -274,7 +275,8 @@ id<GREYMatcher> GetMatcherForPlusAddressLabel(NSString* labelText) {
       1);
 }
 
-- (void)DISABLED_testPlusAddressBottomSheetErrorReportLink {
+- (void)testPlusAddressBottomSheetErrorReportLink {
+  [PlusAddressAppInterface setShouldFailToReserve:YES];
   [self openCreatePlusAddressBottomSheet];
 
   id<GREYMatcher> link_text = GetMatcherForErrorReportLink();

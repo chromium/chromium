@@ -47,4 +47,13 @@ plus_addresses::FakePlusAddressService* GetFakePlusAddressService() {
       plus_addresses::test::CreatePlusProfile());
 }
 
++ (void)setShouldFailToReserve:(BOOL)shouldFailToReserve {
+  GetFakePlusAddressService()->set_should_fail_to_reserve(shouldFailToReserve);
+}
+
++ (NSString*)primaryEmail {
+  return base::SysUTF8ToNSString(
+      *(GetFakePlusAddressService()->GetPrimaryEmail()));
+}
+
 @end
