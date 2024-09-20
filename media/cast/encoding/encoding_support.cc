@@ -5,6 +5,7 @@
 #include "media/cast/encoding/encoding_support.h"
 
 #include <algorithm>
+#include <bitset>
 
 #include "base/command_line.h"
 #include "build/build_config.h"
