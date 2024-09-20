@@ -41,11 +41,13 @@ using std::string;
 
 namespace {
 
-// TODO(crbug.com/356148174): Consider making {syncing pref, non-syncing pref} a
-// custom struct instead.
+struct ThemePrefNames {
+  std::string_view syncing_pref_name;
+  std::string_view non_syncing_pref_name;
+};
+
 constexpr auto kThemePrefsInMigration =
-    base::MakeFixedFlatMap<ThemePrefInMigration,
-                           std::array<std::string_view, 2>>({
+    base::MakeFixedFlatMap<ThemePrefInMigration, ThemePrefNames>({
         {ThemePrefInMigration::kBrowserColorScheme,
          {prefs::kBrowserColorSchemeDoNotUse,
           prefs::kNonSyncingBrowserColorSchemeDoNotUse}},
@@ -166,8 +168,11 @@ const char ThemeSyncableService::kSyncEntityClientTag[] = "current_theme";
 const char ThemeSyncableService::kSyncEntityTitle[] = "Current Theme";
 
 std::string_view GetThemePrefNameInMigration(ThemePrefInMigration theme_pref) {
-  return kThemePrefsInMigration.at(theme_pref)[static_cast<int>(
-      base::FeatureList::IsEnabled(syncer::kMoveThemePrefsToSpecifics))];
+  const ThemePrefNames& theme_pref_names =
+      kThemePrefsInMigration.at(theme_pref);
+  return base::FeatureList::IsEnabled(syncer::kMoveThemePrefsToSpecifics)
+             ? theme_pref_names.non_syncing_pref_name
+             : theme_pref_names.syncing_pref_name;
 }
 
 void MigrateSyncingThemePrefsToNonSyncingIfNeeded(PrefService* prefs) {
@@ -181,8 +186,9 @@ void MigrateSyncingThemePrefsToNonSyncingIfNeeded(PrefService* prefs) {
     return;
   }
   for (const auto& [pref_in_migration, pref_names] : kThemePrefsInMigration) {
-    if (const base::Value* value = prefs->GetUserPrefValue(pref_names[0])) {
-      prefs->Set(pref_names[1], value->Clone());
+    if (const base::Value* value =
+            prefs->GetUserPrefValue(pref_names.syncing_pref_name)) {
+      prefs->Set(pref_names.non_syncing_pref_name, value->Clone());
     }
   }
 
@@ -209,13 +215,13 @@ class ThemeSyncableService::PrefServiceSyncableObserver
       for (const auto& [pref_in_migration, pref_names] :
            kThemePrefsInMigration) {
         if (const base::Value* value =
-                prefs_->GetUserPrefValue(pref_names[0])) {
+                prefs_->GetUserPrefValue(pref_names.syncing_pref_name)) {
           // User color pref needs another pref to be set to be detected.
           if (pref_in_migration == ThemePrefInMigration::kUserColor) {
             prefs_->SetString(prefs::kCurrentThemeID,
                               ThemeService::kUserColorThemeID);
           }
-          prefs_->Set(pref_names[1], value->Clone());
+          prefs_->Set(pref_names.non_syncing_pref_name, value->Clone());
         }
       }
       prefs_->SetBoolean(prefs::kShouldReadIncomingSyncingThemePrefs, false);
@@ -740,8 +746,9 @@ std::optional<syncer::ModelError> ThemeSyncableService::ProcessNewTheme(
   // the new values.
   if (PrefService* prefs = profile_->GetPrefs()) {
     for (const auto& [pref_in_migration, pref_names] : kThemePrefsInMigration) {
-      if (const base::Value* value = prefs->GetUserPrefValue(pref_names[1])) {
-        prefs->Set(pref_names[0], value->Clone());
+      if (const base::Value* value =
+              prefs->GetUserPrefValue(pref_names.non_syncing_pref_name)) {
+        prefs->Set(pref_names.syncing_pref_name, value->Clone());
       }
     }
   }
