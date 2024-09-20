@@ -282,7 +282,6 @@ source_set("browser_tests") {
   sources = [
     "app_shortcut_shelf_item_controller_browsertest.cc",
     "arc_app_shelf_browsertest.cc",
-    "browser_app_shelf_controller_browsertest.cc",
     "browser_shortcut_shelf_item_controller_browsertest.cc",
     "chrome_shelf_controller_browsertest.cc",
     "extension_shelf_context_menu_browsertest.cc",
@@ -308,9 +307,6 @@ source_set("browser_tests") {
     "//chrome/browser/ash/app_list/arc",
     "//chrome/browser/ash/arc",
     "//chrome/browser/ash/arc/session",
-    "//chrome/browser/ash/crosapi",
-    "//chrome/browser/ash/crosapi:browser_util",
-    "//chrome/browser/ash/crosapi:test_support",
     "//chrome/browser/ash/crostini",
     "//chrome/browser/ash/file_manager",
     "//chrome/browser/ash/file_manager:test_support",

@@ -660,8 +660,6 @@ static_library("test_support") {
   testonly = true
 
   sources = [
-    "ash_requires_lacros_browsertestbase.cc",
-    "ash_requires_lacros_browsertestbase.h",
     "ash_requires_lacros_extension_apitest.cc",
     "ash_requires_lacros_extension_apitest.h",
     "fake_browser_manager.cc",
@@ -863,10 +861,7 @@ source_set("browser_tests") {
     "print_preview_ash_browsertest.cc",
     "screen_manager_ash_browsertest.cc",
     "suggestion_service_ash_browsertest.cc",
-    "task_manager_ash_browsertest.cc",
     "video_conference_ash_browsertest.cc",
-    "vpn_extension_observer_ash_browsertest.cc",
-    "web_app_provider_bridge_browsertest.cc",
   ]
 
   if (!is_official_build) {
