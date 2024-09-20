@@ -1623,23 +1623,44 @@ void BackForwardCacheImpl::WillCommitNavigationToCachedEntry(
   }
 }
 
-bool BackForwardCacheImpl::IsBrowsingInstanceInBackForwardCacheForDebugging(
-    BrowsingInstanceId browsing_instance_id) {
+bool BackForwardCacheImpl::
+    IsRenderFrameHostWithSIGInBackForwardCacheForDebugging(
+        SiteInstanceGroupId site_instance_group_id) {
+  bool found = false;
   for (std::unique_ptr<Entry>& entry : entries_) {
-    if (entry->render_frame_host()
-            ->GetSiteInstance()
-            ->GetBrowsingInstanceId() == browsing_instance_id) {
-      return true;
+    entry->render_frame_host()->ForEachRenderFrameHostWithAction(
+        [&found, site_instance_group_id](RenderFrameHostImpl* rfh) {
+          if (rfh->GetSiteInstance()->group()->GetId() ==
+              site_instance_group_id) {
+            found = true;
+            return RenderFrameHost::FrameIterationAction::kStop;
+          }
+          return RenderFrameHost::FrameIterationAction::kContinue;
+        });
+  }
+  return found;
+}
+
+bool BackForwardCacheImpl::
+    IsRenderFrameProxyHostWithSIGInBackForwardCacheForDebugging(
+        SiteInstanceGroupId site_instance_group_id) {
+  for (std::unique_ptr<Entry>& entry : entries_) {
+    for (const auto& entry_rfph : entry->proxy_hosts()) {
+      if (entry_rfph.second->site_instance_group()->GetId() ==
+          site_instance_group_id) {
+        return true;
+      }
     }
   }
   return false;
 }
 
-bool BackForwardCacheImpl::IsProxyInBackForwardCacheForDebugging(
-    RenderFrameProxyHost* proxy) {
+bool BackForwardCacheImpl::
+    IsRenderViewHostWithMapIdInBackForwardCacheForDebugging(
+        const RenderViewHostImpl& rvh) {
   for (std::unique_ptr<Entry>& entry : entries_) {
-    for (auto& proxy_map_entry : entry->proxy_hosts()) {
-      if (proxy_map_entry.second.get() == proxy) {
+    for (const auto& entry_rvh : entry->render_view_hosts()) {
+      if (entry_rvh->rvh_map_id() == rvh.rvh_map_id()) {
         return true;
       }
     }
