@@ -57,6 +57,10 @@ bool CanSendProvisionalNotifications(
     PrefService* local_pref_service) {
   CHECK(local_pref_service);
 
+  if (!ProvisionalSafetyCheckNotificationsEnabled()) {
+    return false;
+  }
+
   // Only send provisional notifications for compromised passwords.
   if (password_check_state !=
       PasswordSafetyCheckState::kUnmutedCompromisedPasswords) {
