@@ -263,6 +263,7 @@
     [ProvisionalPushNotificationUtil
         enrollUserToProvisionalNotificationsForClientIds:
             {PushNotificationClientId::kSafetyCheck}
+                             clientEnabledForProvisional:NO
                                          withAuthService:self.authService
                                    deviceInfoSyncService:nil];
   }

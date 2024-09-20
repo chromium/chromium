@@ -24,6 +24,8 @@ class DeviceInfoSyncService;
 // user.
 + (void)enrollUserToProvisionalNotificationsForClientIds:
             (std::vector<PushNotificationClientId>)clientIds
+                             clientEnabledForProvisional:
+                                 (BOOL)clientEnabledForProvisional
                                          withAuthService:
                                              (AuthenticationService*)authService
                                    deviceInfoSyncService:

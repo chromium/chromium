@@ -17,6 +17,8 @@
 
 + (void)enrollUserToProvisionalNotificationsForClientIds:
             (std::vector<PushNotificationClientId>)clientIds
+                             clientEnabledForProvisional:
+                                 (BOOL)clientEnabledForProvisional
                                          withAuthService:
                                              (AuthenticationService*)authService
                                    deviceInfoSyncService:
@@ -38,7 +40,8 @@
               id<SystemIdentity> identity = authService->GetPrimaryIdentity(
                   signin::ConsentLevel::kSignin);
               for (PushNotificationClientId clientId : clientIds) {
-                service->SetPreference(identity.gaiaID, clientId, true);
+                service->SetPreference(identity.gaiaID, clientId,
+                                       clientEnabledForProvisional);
                 if (clientId == PushNotificationClientId::kSendTab &&
                     deviceInfoSyncService) {
                   deviceInfoSyncService->RefreshLocalDeviceInfo();

@@ -435,6 +435,7 @@ GaiaIdToPushNotificationPreferenceMapFromCache(
     [ProvisionalPushNotificationUtil
         enrollUserToProvisionalNotificationsForClientIds:
             {PushNotificationClientId::kSendTab}
+                             clientEnabledForProvisional:YES
                                          withAuthService:authService
                                    deviceInfoSyncService:deviceInfoSyncService];
   }
