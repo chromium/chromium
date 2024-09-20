@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "ash/public/cpp/shell_window_ids.h"
+#include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
 #include "ash/style/ash_color_id.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -14,12 +15,16 @@
 #include "ui/base/mojom/dialog_button.mojom.h"
 #include "ui/color/color_id.h"
 #include "ui/views/accessibility/view_accessibility.h"
+#include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/box_layout.h"
 
 namespace ash {
 
 namespace {
+
+constexpr int kIconSizeDip = 16;
+constexpr int kSpaceBetweenIconAndTextDip = 4;
 
 std::unique_ptr<views::Label> CreateLabelView(
     raw_ptr<views::Label>* destination_view,
@@ -31,6 +36,16 @@ std::unique_ptr<views::Label> CreateLabelView(
       .SetEnabledColorId(enabled_color_id)
       .SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT)
       .SetMultiLine(false)
+      .Build();
+}
+
+std::unique_ptr<views::ImageView> CreateImageView(
+    raw_ptr<views::ImageView>* destination_view,
+    const gfx::VectorIcon& icon) {
+  return views::Builder<views::ImageView>()
+      .CopyAddressTo(destination_view)
+      .SetImage(ui::ImageModel::FromVectorIcon(icon, kColorAshTextColorPrimary,
+                                               kIconSizeDip))
       .Build();
 }
 
@@ -48,15 +63,18 @@ FaceGazeBubbleView::FaceGazeBubbleView() {
 FaceGazeBubbleView::~FaceGazeBubbleView() = default;
 
 void FaceGazeBubbleView::Update(const std::u16string& text) {
-  label_->SetVisible(true);
+  label_->SetVisible(text != u"");
   label_->SetText(text);
   SizeToContents();
 }
 
 void FaceGazeBubbleView::Init() {
-  SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kVertical));
+  auto layout = std::make_unique<views::BoxLayout>(
+      views::BoxLayout::Orientation::kHorizontal);
+  layout->set_between_child_spacing(kSpaceBetweenIconAndTextDip);
+  SetLayoutManager(std::move(layout));
   UseCompactMargins();
+  AddChildView(CreateImageView(&image_, kFacegazeIcon));
   AddChildView(
       CreateLabelView(&label_, std::u16string(), kColorAshTextColorPrimary));
 }
