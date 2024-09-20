@@ -238,6 +238,15 @@ targets.bundle(
 )
 
 targets.bundle(
+    name = "chromium_linux_cast_receiver",
+    additional_compile_targets = [
+        "cast_shell",
+        "core_runtime_simple",
+        "core_runtime_starboard",
+    ],
+)
+
+targets.bundle(
     name = "chromium_linux_cast_receiver_gtests",
     targets = [
         "cast_receiver_gtests",
