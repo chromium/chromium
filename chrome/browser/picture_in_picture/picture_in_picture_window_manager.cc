@@ -460,7 +460,6 @@ void PictureInPictureWindowManager::DocumentWebContentsDestroyed() {
 
 std::unique_ptr<AutoPipSettingOverlayView>
 PictureInPictureWindowManager::GetOverlayView(
-    const gfx::Rect& browser_view_overridden_bounds,
     views::View* anchor_view,
     views::BubbleBorder::Arrow arrow) {
   // This should probably CHECK, but tests often can't set the controller.
@@ -499,7 +498,7 @@ PictureInPictureWindowManager::GetOverlayView(
   // close cb, if the pip window should be blocked.
   auto overlay_view = auto_pip_tab_helper->CreateOverlayPermissionViewIfNeeded(
       base::BindOnce(&PictureInPictureWindowManager::ExitPictureInPictureSoon),
-      browser_view_overridden_bounds, anchor_view, arrow);
+      anchor_view, arrow);
 
   if (!overlay_view) {
     // It's already allowed or blocked / embargoed.

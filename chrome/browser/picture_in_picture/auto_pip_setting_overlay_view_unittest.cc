@@ -55,17 +55,13 @@ class AutoPipSettingOverlayViewTest : public views::ViewsTestBase {
     auto* anchor_view =
         anchor_view_widget_->SetContentsView(std::make_unique<views::View>());
 
-    // Define the browser view overridden bounds.
-    const gfx::Rect browser_view_overridden_bounds(0, 0, 500, 500);
-
     animation_duration_ =
         std::make_unique<ui::ScopedAnimationDurationScaleMode>(
             ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
     setting_overlay_ =
         widget_->SetContentsView(std::make_unique<AutoPipSettingOverlayView>(
-            cb().Get(), origin_, browser_view_overridden_bounds, anchor_view,
-            views::BubbleBorder::TOP_CENTER));
+            cb().Get(), origin_, anchor_view, views::BubbleBorder::TOP_CENTER));
   }
 
   void TearDown() override {

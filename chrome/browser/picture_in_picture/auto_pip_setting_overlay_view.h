@@ -37,7 +37,6 @@ class AutoPipSettingOverlayView : public views::View,
   explicit AutoPipSettingOverlayView(
       ResultCb result_cb,
       const GURL& origin,
-      const gfx::Rect& browser_view_overridden_bounds,
       views::View* anchor_view,
       views::BubbleBorder::Arrow arrow);
   ~AutoPipSettingOverlayView() override;

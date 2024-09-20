@@ -62,7 +62,6 @@ class AutoPipSettingHelper {
   // optionally call `close_pip_cb_` if AutoPiP is blocked.
   std::unique_ptr<AutoPipSettingOverlayView> CreateOverlayViewIfNeeded(
       base::OnceClosure close_pip_cb,
-      const gfx::Rect& browser_view_overridden_bounds,
       views::View* anchor_view,
       views::BubbleBorder::Arrow arrow);
 

@@ -331,7 +331,6 @@ bool AutoPictureInPictureTabHelper::AreAutoPictureInPicturePreconditionsMet()
 std::unique_ptr<AutoPipSettingOverlayView>
 AutoPictureInPictureTabHelper::CreateOverlayPermissionViewIfNeeded(
     base::OnceClosure close_pip_cb,
-    const gfx::Rect& browser_view_overridden_bounds,
     views::View* anchor_view,
     views::BubbleBorder::Arrow arrow) {
   // Check both preconditions and "in pip", since we don't know if pip is
@@ -348,8 +347,7 @@ AutoPictureInPictureTabHelper::CreateOverlayPermissionViewIfNeeded(
   EnsureAutoPipSettingHelper();
 
   return auto_pip_setting_helper_->CreateOverlayViewIfNeeded(
-      std::move(close_pip_cb), browser_view_overridden_bounds, anchor_view,
-      arrow);
+      std::move(close_pip_cb), anchor_view, arrow);
 }
 
 void AutoPictureInPictureTabHelper::OnUserClosedWindow() {

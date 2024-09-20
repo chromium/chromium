@@ -585,7 +585,6 @@ PictureInPictureBrowserFrameView::PictureInPictureBrowserFrameView(
   // this is the auto-pip Allow / Block content setting UI.
   if (auto auto_pip_setting_overlay =
           PictureInPictureWindowManager::GetInstance()->GetOverlayView(
-              browser_view->browser()->override_bounds(),
               top_bar_container_view_, views::BubbleBorder::TOP_CENTER)) {
     auto_pip_setting_overlay_ =
         AddChildView(std::move(auto_pip_setting_overlay));

@@ -124,7 +124,6 @@ class AutoPictureInPictureTabHelper
   std::unique_ptr<AutoPipSettingOverlayView>
   CreateOverlayPermissionViewIfNeeded(
       base::OnceClosure close_pip_cb,
-      const gfx::Rect& browser_view_overridden_bounds,
       views::View* anchor_view,
       views::BubbleBorder::Arrow arrow);
 

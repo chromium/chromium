@@ -1368,7 +1368,6 @@ void VideoOverlayWindowViews::ShowInactive() {
       get_overlay_view_cb_
           ? get_overlay_view_cb_.Run()
           : PictureInPictureWindowManager::GetInstance()->GetOverlayView(
-                /*browser_view_overridden_bounds=*/gfx::Rect(),
                 window_background_view_, views::BubbleBorder::Arrow::FLOAT);
   // Re-add it if needed.
   if (overlay_view) {

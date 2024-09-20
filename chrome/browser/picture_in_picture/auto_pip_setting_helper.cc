@@ -88,7 +88,6 @@ AutoPipSettingHelper::ResultCb AutoPipSettingHelper::CreateResultCb(
 std::unique_ptr<AutoPipSettingOverlayView>
 AutoPipSettingHelper::CreateOverlayViewIfNeeded(
     base::OnceClosure close_pip_cb,
-    const gfx::Rect& browser_view_overridden_bounds,
     views::View* anchor_view,
     views::BubbleBorder::Arrow arrow) {
   switch (GetEffectiveContentSetting()) {
@@ -102,8 +101,7 @@ AutoPipSettingHelper::CreateOverlayViewIfNeeded(
       // Create and return the UI to ask the user.
       ui_was_shown_but_not_acknowledged_ = true;
       return std::make_unique<AutoPipSettingOverlayView>(
-          CreateResultCb(std::move(close_pip_cb)), origin_,
-          browser_view_overridden_bounds, anchor_view, arrow);
+          CreateResultCb(std::move(close_pip_cb)), origin_, anchor_view, arrow);
     case CONTENT_SETTING_ALLOW:
       // Nothing to do -- allow the auto pip to proceed.
       RecordResult(PromptResult::kNotShownAllowedOnEveryVisit);
