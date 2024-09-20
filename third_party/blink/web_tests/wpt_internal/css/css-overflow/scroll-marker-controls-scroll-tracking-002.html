@@ -4,6 +4,7 @@
 <link rel="help" href="https://drafts.csswg.org/css-overflow-5/#scroll-container-scroll">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="/css/css-transitions/support/helper.js"></script>
 <style>
     #scroller {
         overflow: scroll;
@@ -51,12 +52,14 @@
                       " background-color should be " + backgroundColor.toString() +
                       " but was " + pseudoBackgroundColor.toString());
     }
-    document.documentElement.scrollTop = 1000;
-    test(() => {
+    promise_test(async () => {
+        document.documentElement.scrollTop = 1000;
+        await waitForAnimationFrames(2);
         assertPseudoElementProperty(target, "::scroll-marker", "rgb(255, 0, 0)");
     }, "::scroll-marker is not checked when its originating element is not scrolled into the view");
-    scroller.scrollTop = 150;
-    test(() => {
+    promise_test(async () => {
+        scroller.scrollTop = 150;
+        await waitForAnimationFrames(2);
         assertPseudoElementProperty(target, "::scroll-marker", "rgb(0, 128, 0)");
     }, "::scroll-marker is checked when its originating element is scrolled into the view");
 </script>

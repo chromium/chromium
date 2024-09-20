@@ -528,9 +528,6 @@ void PaintLayerScrollableArea::UpdateScrollOffset(
                                            .GetOrResetContentCaptureManager()) {
     manager->OnScrollPositionChanged();
   }
-  if (GetLayoutBox()->IsScrollContainerWithScrollMarkerGroup()) {
-    GetLayoutBox()->UpdateScrollMarkerControlsAfterScroll();
-  }
   if (AXObjectCache* cache =
           GetLayoutBox()->GetDocument().ExistingAXObjectCache())
     cache->HandleScrollPositionChanged(GetLayoutBox());
