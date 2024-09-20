@@ -1478,6 +1478,7 @@ BackForwardCacheImpl::GetOrEvictEntry(int navigation_entry_id) {
 
 bool BackForwardCacheImpl::HasPotentiallyMatchingEntry(
     const RenderFrameHostImpl& commiting_rfh,
+    const std::optional<url::Origin>& initiator_origin,
     bool require_no_subframes) const {
   if (commiting_rfh.GetSiteInstance()->GetRelatedActiveContentsCount() > 1) {
     // If the committing RFH has relation to other pages/WebContents, it can't
@@ -1498,6 +1499,8 @@ bool BackForwardCacheImpl::HasPotentiallyMatchingEntry(
             bfcached_rfh->GetLastCommittedURL() &&
         commiting_rfh.GetLastCommittedOrigin() ==
             bfcached_rfh->GetLastCommittedOrigin() &&
+        bfcached_rfh->last_committed_frame_entry()->initiator_origin() ==
+            initiator_origin &&
         commiting_rfh.policy_container_host()->policies() ==
             bfcached_rfh->policy_container_host()->policies()) {
       return true;
