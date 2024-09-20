@@ -2039,7 +2039,7 @@ TEST_P(DesksTest, DragWindowAtZeroState) {
                   /*drop=*/false);
   WaitForMilliseconds(200);
   EXPECT_EQ(DeskIconButton::State::kExpanded, new_desk_button->state());
-  EXPECT_FALSE(desks_bar_view->new_desk_button_label()->GetVisible());
+  EXPECT_FALSE(IsLazyInitViewVisible(desks_bar_view->new_desk_button_label()));
   // Now fire the timer directly to skip the wait time. Verify that the new desk
   // button is scaled up and at the active state and the new desk label is shown
   // now.
@@ -2049,7 +2049,7 @@ TEST_P(DesksTest, DragWindowAtZeroState) {
       ->FireNow();
   RunScheduledLayoutForAllOverviewDeskBars();
   EXPECT_EQ(DeskIconButton::State::kActive, new_desk_button->state());
-  EXPECT_TRUE(desks_bar_view->new_desk_button_label()->GetVisible());
+  EXPECT_TRUE(IsLazyInitViewVisible(desks_bar_view->new_desk_button_label()));
 
   // Keep dragging `overview_item1` to the center of the new desk button to make
   // it a drop target.
@@ -2112,7 +2112,7 @@ TEST_P(DesksTest, DragWindowAtZeroStateWithoutDroppingItOnTheNewDesk) {
       /*by_touch_gestures=*/false, /*drop=*/false);
   EXPECT_FALSE(desks_bar_view->IsZeroState());
   EXPECT_EQ(DeskIconButton::State::kExpanded, new_desk_button->state());
-  EXPECT_FALSE(desks_bar_view->new_desk_button_label()->GetVisible());
+  EXPECT_FALSE(IsLazyInitViewVisible(desks_bar_view->new_desk_button_label()));
 
   // Keep dragging `overview_item1` to hover on the new desk button, immediately
   // fire the time to skip to wait time. Verify that new desk button is
@@ -2130,7 +2130,7 @@ TEST_P(DesksTest, DragWindowAtZeroStateWithoutDroppingItOnTheNewDesk) {
       ->FireNow();
   RunScheduledLayoutForAllOverviewDeskBars();
   EXPECT_EQ(DeskIconButton::State::kActive, new_desk_button->state());
-  EXPECT_TRUE(desks_bar_view->new_desk_button_label()->GetVisible());
+  EXPECT_TRUE(IsLazyInitViewVisible(desks_bar_view->new_desk_button_label()));
 
   // Now keep dragging `overview_item1` and make it not able to be dropped on
   // the new desk, then drop it. Check that `overview_item1` is dropped back to
@@ -2146,7 +2146,7 @@ TEST_P(DesksTest, DragWindowAtZeroStateWithoutDroppingItOnTheNewDesk) {
   // The desk bar never goes back to the zero state from the expanded state even
   // these's only one desk. Verify that the new desk label is invisible now.
   EXPECT_FALSE(desks_bar_view->IsZeroState());
-  EXPECT_FALSE(desks_bar_view->new_desk_button_label()->GetVisible());
+  EXPECT_FALSE(IsLazyInitViewVisible(desks_bar_view->new_desk_button_label()));
   EXPECT_EQ(1u, controller->desks().size());
   EXPECT_TRUE(
       base::Contains(controller->GetDeskAtIndex(0)->windows(), win1.get()));
@@ -6156,7 +6156,7 @@ TEST_P(DesksTest, ScrollButtonsVisibility) {
             DeskBarViewBase::Type::kOverview);
         break;
     }
-    return scroll_arrow && scroll_arrow->GetVisible();
+    return IsLazyInitViewVisible(scroll_arrow);
   };
 
   UpdateDisplay("600x400");
@@ -9546,7 +9546,8 @@ TEST_P(DeskBarTest, Basic) {
     // appearance.
     OpenDeskBar();
     auto* desk_bar_view = GetDeskBarView();
-    ASSERT_TRUE(desk_bar_view && desk_bar_view->GetVisible());
+    ASSERT_TRUE(desk_bar_view);
+    ASSERT_TRUE(desk_bar_view->GetVisible());
     auto* desk_bar_widget = desk_bar_view->GetWidget();
     ASSERT_TRUE(desk_bar_widget);
     if (bar_type_ == DeskBarViewBase::Type::kOverview) {
@@ -9570,8 +9571,7 @@ TEST_P(DeskBarTest, Basic) {
     EXPECT_THAT(new_desk_button->GetEnabled(),
                 desks_controller->CanCreateDesks());
     auto* library_button = desk_bar_view->library_button();
-    EXPECT_THAT(library_button && library_button->GetVisible(),
-                test.has_saved_desks);
+    EXPECT_THAT(IsLazyInitViewVisible(library_button), test.has_saved_desks);
     if (library_button) {
       EXPECT_THAT(library_button->state(), expected_button_state);
       EXPECT_TRUE(library_button->GetEnabled());
@@ -9598,7 +9598,8 @@ TEST_P(DeskBarTest, BasicSecondaryDisplay) {
   OpenDeskBar(root);
 
   auto* desk_bar_view = GetDeskBarView(root);
-  ASSERT_TRUE(desk_bar_view && desk_bar_view->GetVisible());
+  ASSERT_TRUE(desk_bar_view);
+  ASSERT_TRUE(desk_bar_view->GetVisible());
   auto* desk_bar_widget = desk_bar_view->GetWidget();
   ASSERT_TRUE(desk_bar_widget);
 

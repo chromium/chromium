@@ -184,6 +184,12 @@ class ASH_EXPORT DeskBarViewBase : public views::View,
   // the saved desk feature is enabled and the user has any saved desks.
   void UpdateLibraryButtonVisibility();
 
+  // Updates visibility of the label under the new desk button to
+  // `new_visibility`. If `layout_if_changed` is true and the label's visibility
+  // changes, the desk bar get asynchronously laid out after this call.
+  void UpdateNewDeskButtonLabelVisibility(bool new_visibility,
+                                          bool layout_if_changed);
+
   // Called to update state of `button` and apply the scale animation to the
   // button. For the new desk button, this is called when the make the new desk
   // button a drop target for the window being dragged or at the end of the
@@ -283,10 +289,11 @@ class ASH_EXPORT DeskBarViewBase : public views::View,
   // done with its animation or when `desk_activation_timer_` fires.
   void OnUiUpdateDone();
 
-  // The `library_button_` and its label get lazily constructed for performance
-  // reasons. Creates the button if it doesn't exist. Only use if the button
-  // should be visible.
+  // Accessors for UI elements that are lazily constructed for performance
+  // reasons. Creates them if they don't exist. Only use if they should be
+  // visible.
   DeskIconButton& GetOrCreateLibraryButton();
+  views::Label& GetOrCreateNewDeskButtonLabel();
 
   // Gets full available bounds for the desk bar widget.
   virtual gfx::Rect GetAvailableBounds() const = 0;

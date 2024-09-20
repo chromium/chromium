@@ -228,15 +228,16 @@ class DeskBarScrollViewLayout : public views::LayoutManager {
   void UpdateChildViewsVisibility() {
     auto* default_desk_button = bar_view_->default_desk_button();
     auto* new_desk_button = bar_view_->new_desk_button();
-    auto* new_desk_button_label = bar_view_->new_desk_button_label();
     auto* library_button = bar_view_->library_button();
     auto* library_button_label = bar_view_->library_button_label();
     const bool zero_state = bar_view_->IsZeroState();
     default_desk_button->SetVisible(zero_state);
     new_desk_button->SetVisible(true);
-    new_desk_button_label->SetVisible(!zero_state &&
-                                      new_desk_button->state() ==
-                                          DeskIconButton::State::kActive);
+    bar_view_->UpdateNewDeskButtonLabelVisibility(
+        !zero_state &&
+            new_desk_button->state() == DeskIconButton::State::kActive,
+        // Already in an active layout. No need to trigger another one.
+        /*layout_if_changed=*/false);
     if (library_button) {
       library_button->SetVisible(bar_view_->ShouldShowLibraryUi());
     }
@@ -343,9 +344,11 @@ class DeskBarScrollViewLayout : public views::LayoutManager {
           gfx::Point(is_rtl ? x - new_desk_button_size.width() : x, y),
           new_desk_button_size));
       new_desk_button->SetBoundsRect(new_desk_button_bounds);
-      LayoutDeskIconButtonLabel(bar_view_->new_desk_button_label(),
-                                new_desk_button_bounds, desk_name_view,
-                                IDS_ASH_DESKS_NEW_DESK_BUTTON_LABEL);
+      if (bar_view_->new_desk_button_label()) {
+        LayoutDeskIconButtonLabel(bar_view_->new_desk_button_label(),
+                                  new_desk_button_bounds, desk_name_view,
+                                  IDS_ASH_DESKS_NEW_DESK_BUTTON_LABEL);
+      }
       x +=
           (new_desk_button_size.width() + kDeskBarMiniViewsSpacing) * increment;
     };
@@ -784,10 +787,6 @@ DeskBarViewBase::DeskBarViewBase(
                               base::Unretained(this))));
   new_desk_button_->SetProperty(views::kElementIdentifierKey,
                                 kOverviewDeskBarNewDeskButtonElementId);
-  new_desk_button_label_ =
-      contents_view_->AddChildView(std::make_unique<views::Label>());
-  new_desk_button_label_->SetPaintToLayer();
-  new_desk_button_label_->layer()->SetFillsBoundsOpaquely(false);
 
   contents_view_->SetLayoutManager(
       std::make_unique<DeskBarScrollViewLayout>(this));
@@ -1121,9 +1120,12 @@ void DeskBarViewBase::UpdateButtonsForSavedDeskGrid() {
 void DeskBarViewBase::UpdateDeskButtonsVisibility() {
   const bool is_zero_state = IsZeroState();
   default_desk_button_->SetVisible(is_zero_state);
-  new_desk_button_label_->SetVisible(new_desk_button_->state() ==
-                                     DeskIconButton::State::kActive);
 
+  UpdateNewDeskButtonLabelVisibility(
+      new_desk_button_->state() == DeskIconButton::State::kActive,
+      // If not attached to a widget yet, a layout get automatically run when
+      // `Widget::SetContentsView()` is called.
+      /*layout_if_changed=*/GetWidget());
   UpdateLibraryButtonVisibility();
 }
 
@@ -1171,6 +1173,26 @@ void DeskBarViewBase::UpdateLibraryButtonVisibility() {
   pending_post_layout_operations_.push_back(
       std::make_unique<LibraryButtonVisibilityAnimation>(this));
   InvalidateLayout();
+}
+
+void DeskBarViewBase::UpdateNewDeskButtonLabelVisibility(
+    bool new_visibility,
+    bool layout_if_changed) {
+  const bool current_visibility =
+      new_desk_button_label_ && new_desk_button_label_->GetVisible();
+  if (chromeos::features::AreOverviewSessionInitOptimizationsEnabled()) {
+    if (new_visibility) {
+      GetOrCreateNewDeskButtonLabel().SetVisible(true);
+    } else if (new_desk_button_label_) {
+      new_desk_button_label_->SetVisible(false);
+    }
+  } else {
+    GetOrCreateNewDeskButtonLabel().SetVisible(new_visibility);
+  }
+
+  if (new_visibility != current_visibility && layout_if_changed) {
+    InvalidateLayout();
+  }
 }
 
 void DeskBarViewBase::UpdateDeskIconButtonState(
@@ -1687,6 +1709,17 @@ DeskIconButton& DeskBarViewBase::GetOrCreateLibraryButton() {
   library_button_label_->SetPaintToLayer();
   library_button_label_->layer()->SetFillsBoundsOpaquely(false);
   return *library_button_;
+}
+
+views::Label& DeskBarViewBase::GetOrCreateNewDeskButtonLabel() {
+  if (new_desk_button_label_) {
+    return *new_desk_button_label_;
+  }
+  new_desk_button_label_ =
+      contents_view_->AddChildView(std::make_unique<views::Label>());
+  new_desk_button_label_->SetPaintToLayer();
+  new_desk_button_label_->layer()->SetFillsBoundsOpaquely(false);
+  return *new_desk_button_label_;
 }
 
 void DeskBarViewBase::UpdateBarBounds() {}

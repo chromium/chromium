@@ -530,7 +530,7 @@ TEST_F(SavedDeskTest, LibraryButtonsVisibilityClamshell) {
                                               DeskIconButton::State::kZero);
           EXPECT_EQ(
               expanded_state_shown,
-              library_button && library_button->GetVisible() &&
+              IsLazyInitViewVisible(library_button) &&
                   library_button->state() == DeskIconButton::State::kExpanded);
           EXPECT_EQ(active_state_shown, library_button &&
                                             library_button->GetVisible() &&
@@ -1879,7 +1879,7 @@ TEST_F(SavedDeskTest, EnteringInTabletMode) {
   ToggleOverview();
   aura::Window* root = Shell::GetPrimaryRootWindow();
   auto* library_button = GetLibraryButtonForRoot(root);
-  EXPECT_FALSE(library_button && library_button->GetVisible());
+  EXPECT_FALSE(IsLazyInitViewVisible(library_button));
   EXPECT_FALSE(GetSaveDeskButtonContainerForRoot(root));
 }
 
@@ -2069,7 +2069,7 @@ TEST_F(SavedDeskTest, TabbingInvisibleTemplatesButton) {
   ToggleOverview();
 
   auto* button = GetLibraryButtonForRoot(Shell::GetPrimaryRootWindow());
-  ASSERT_FALSE(button && button->GetVisible());
+  ASSERT_FALSE(IsLazyInitViewVisible(button));
 
   // Test that we do not focus the templates button.
   PressAndReleaseKey(ui::VKEY_TAB, ui::EF_SHIFT_DOWN);

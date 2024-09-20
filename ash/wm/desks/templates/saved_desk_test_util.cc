@@ -6,6 +6,7 @@
 
 #include "ash/shell.h"
 #include "ash/style/icon_button.h"
+#include "ash/wm/desks/desks_test_util.h"
 #include "ash/wm/desks/overview_desk_bar_view.h"
 #include "ash/wm/desks/templates/saved_desk_controller.h"
 #include "ash/wm/desks/templates/saved_desk_dialog_controller.h"
@@ -270,7 +271,7 @@ void WaitForSavedDeskUI() {
 
 bool WaitForLibraryButtonVisible() {
   return base::test::RunUntil(
-      []() { return GetLibraryButton() && GetLibraryButton()->GetVisible(); });
+      []() { return IsLazyInitViewVisible(GetLibraryButton()); });
 }
 
 const app_restore::AppRestoreData* QueryRestoreData(

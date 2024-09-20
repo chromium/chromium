@@ -12,6 +12,10 @@ namespace ui::test {
 class EventGenerator;
 }  // namespace ui::test
 
+namespace views {
+class View;
+}  // namespace views
+
 namespace ash {
 
 class CloseButton;
@@ -96,6 +100,10 @@ void LongGestureTap(const gfx::Point& screen_location,
 //   expire callback directly.
 //   2) Wait for the windows to maybe be forcefully closed.
 void SimulateWaitForCloseAll();
+
+// Whether a `view` is visible. `view` is lazy initialized, so can be null
+// (which is equivalent to invisible).
+bool IsLazyInitViewVisible(const views::View* view);
 
 }  // namespace ash
 

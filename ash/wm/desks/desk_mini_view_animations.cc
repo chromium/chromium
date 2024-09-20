@@ -116,7 +116,7 @@ void AnimateView(views::View* view,
 void FadeInView(views::View* view,
                 base::TimeDelta duration,
                 base::TimeDelta delay) {
-  if (!view->GetVisible()) {
+  if (!view || !view->GetVisible()) {
     return;
   }
 
