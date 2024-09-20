@@ -6575,12 +6575,6 @@ const char kFastPairPwaCompanionName[] = "Enable Fast Pair Web Companion";
 const char kFastPairPwaCompanionDescription[] =
     "Enables Fast Pair Web Companion link after device pairing.";
 
-const char kFastPairSoftwareScanningSupportName[] =
-    "Enable Fast Pair Software Scanning Support";
-const char kFastPairSoftwareScanningSupportDescription[] =
-    "Enable support for software-based scanning on devices that don't support "
-    "hardware-based BLE advertisement filtering.";
-
 const char kFastPairDevicesBluetoothSettingsName[] =
     "Enable Fast Pair Devices in Bluetooth Settings";
 const char kFastPairDevicesBluetoothSettingsDescription[] =

@@ -4606,14 +4606,6 @@
     "expiry_milestone": 130
   },
   {
-    "name": "fast-pair-software-scanning-support",
-    "owners": [
-      "//ash/quick_pair/OWNERS",
-      "brandosocarras@google.com"
-    ],
-    "expiry_milestone": 130
-  },
-  {
     "name": "feature-notification-guide",
     "owners": [ "shaktisahu@chromium.org"],
     "expiry_milestone": 110

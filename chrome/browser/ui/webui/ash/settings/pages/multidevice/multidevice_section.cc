@@ -789,10 +789,6 @@ void MultiDeviceSection::AddLoadTimeData(
             IDS_SETTINGS_MULTIDEVICE_PHONE_HUB_APPS_SECTION_TITLE));
   }
 
-  html_source->AddBoolean(
-      "isFastPairSoftwareScanningSupportEnabled",
-      ash::features::IsFastPairSoftwareScanningSupportEnabled());
-
   html_source->AddBoolean("isQuickShareV2Enabled",
                           chromeos::features::IsQuickShareV2Enabled());
 }

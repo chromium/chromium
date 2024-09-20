@@ -1041,12 +1041,6 @@ const base::FeatureParam<std::string> kFastPairPwaCompanionDeviceIds{
     "08A97F,5A36A5,6EDAF7,9ADB11,A7D7A0,C8E228,D87A3E,F2020E,F58DE7,30346C,"
     "7862CE,C193F7,05D40E,02FC97,AB442D,FB19ED,C55C79,2EE57B"};
 
-// Enables support for software-based scanning on devices that don't support
-// hardware-based BLE advertisement filtering.
-BASE_FEATURE(kFastPairSoftwareScanningSupport,
-             "FastPairSoftwareScanningSupport",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 // Enables the "Saved Devices" Fast Pair page in scenario in Bluetooth Settings.
 BASE_FEATURE(kFastPairSavedDevices,
              "FastPairSavedDevices",
@@ -3831,10 +3825,6 @@ bool IsFastPairPwaCompanionEnabled() {
 bool IsFastPairPreventNotificationsForRecentlyLostDeviceEnabled() {
   return base::FeatureList::IsEnabled(
       kFastPairPreventNotificationsForRecentlyLostDevice);
-}
-
-bool IsFastPairSoftwareScanningSupportEnabled() {
-  return base::FeatureList::IsEnabled(kFastPairSoftwareScanningSupport);
 }
 
 bool IsFastPairSavedDevicesEnabled() {

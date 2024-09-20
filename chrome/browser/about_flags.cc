@@ -8010,11 +8010,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kFastPairPwaCompanionDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kFastPairPwaCompanion)},
 
-    {"fast-pair-software-scanning-support",
-     flag_descriptions::kFastPairSoftwareScanningSupportName,
-     flag_descriptions::kFastPairSoftwareScanningSupportDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kFastPairSoftwareScanningSupport)},
-
     {"nearby-ble-v2", flag_descriptions::kEnableNearbyBleV2Name,
      flag_descriptions::kEnableNearbyBleV2Description, kOsCrOS,
      FEATURE_VALUE_TYPE(features::kEnableNearbyBleV2)},

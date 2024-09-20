@@ -102,38 +102,6 @@ export class SettingsBluetoothDevicesSubpageElement extends
         },
         readOnly: true,
       },
-
-      isFastPairSoftwareScanningSupportEnabled_: {
-        type: Boolean,
-        readOnly: true,
-        value() {
-          return loadTimeData.getBoolean(
-              'isFastPairSoftwareScanningSupportEnabled');
-        },
-      },
-
-      // Consistent with enum `SoftwareScanningStatus` in
-      // scanning_enabled_provider.h.
-      menuOptions_: {
-        type: Array,
-        readOnly: true,
-        value() {
-          return [
-            {name: 'Never', value: 0},
-            {name: 'Only when charging', value: 2},
-          ];
-        },
-      },
-
-      isBatterySaverActive_: {
-        type: Boolean,
-        value: false,
-      },
-
-      isHardwareOffloadingSupported_: {
-        type: Boolean,
-        value: false,
-      },
     };
   }
 
@@ -143,13 +111,9 @@ export class SettingsBluetoothDevicesSubpageElement extends
   private isBluetoothToggleOn_: boolean;
   private isFastPairSupportedByDevice_: boolean;
   private lastSelectedDeviceId_: string|null;
-  private readonly menuOptions_: string[];
   private savedDevicesSublabel_: string;
   private unconnectedDevices_: PairedBluetoothDeviceProperties[];
   private isBluetoothDisconnectWarningEnabled_: boolean;
-  private readonly isFastPairSoftwareScanningSupportEnabled_: boolean;
-  private isBatterySaverActive_: boolean;
-  private isHardwareOffloadingSupported_: boolean;
 
   constructor() {
     super();
@@ -172,24 +136,6 @@ export class SettingsBluetoothDevicesSubpageElement extends
             this.isFastPairSupportedByDevice_ = isSupported;
           });
       this.browserProxy_.requestFastPairDeviceSupport();
-    }
-
-    if (loadTimeData.getBoolean('isFastPairSoftwareScanningSupportEnabled')) {
-      // Listen for changes in Battery Saver status.
-      this.addWebUiListener(
-          'fast-pair-software-scanning-battery-saver-status',
-          (isBatterySaverActive: boolean) => {
-            this.isBatterySaverActive_ = isBatterySaverActive;
-          });
-      this.browserProxy_.requestBatterySaverStatus();
-
-      // Listen for changes in Hardware Offloading Support status.
-      this.addWebUiListener(
-          'fast-pair-software-scanning-hardware-offloading-status',
-          (isHardwareOffloadingSupported: boolean) => {
-            this.isHardwareOffloadingSupported_ = isHardwareOffloadingSupported;
-          });
-      this.browserProxy_.requestHardwareOffloadingSupportStatus();
     }
   }
 

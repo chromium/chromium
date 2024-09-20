@@ -34,15 +34,6 @@ FastPairEnabledProvider::FastPairEnabledProvider(
   // If the flag isn't enabled or if the API keys aren't available,
   // Fast Pair will never be enabled so don't hook up any callbacks.
   if (features::IsFastPairEnabled() && AreAPIKeysAvailable()) {
-    if (features::IsFastPairSoftwareScanningSupportEnabled()) {
-      scanning_enabled_provider_ = std::move(scanning_enabled_provider);
-      if (scanning_enabled_provider_) {
-        scanning_enabled_provider_->SetCallback(base::BindRepeating(
-            &FastPairEnabledProvider::OnSubProviderEnabledChanged,
-            weak_factory_.GetWeakPtr()));
-      }
-    }
-
     if (bluetooth_enabled_provider_) {
       bluetooth_enabled_provider_->SetCallback(base::BindRepeating(
           &FastPairEnabledProvider::OnSubProviderEnabledChanged,
@@ -103,35 +94,18 @@ bool FastPairEnabledProvider::IsScanningEnabled() {
 }
 
 bool FastPairEnabledProvider::AreSubProvidersEnabled() {
-  if (features::IsFastPairSoftwareScanningSupportEnabled()) {
-    CD_LOG(INFO, Feature::FP)
-        << __func__
-        << ": Flag:" << base::FeatureList::IsEnabled(features::kFastPair)
-        << " Policy Pref:" << IsFastPairPrefEnabled()
-        << " Google API Key:" << AreAPIKeysAvailable()
-        << " Logged in User:" << IsUserLoggedIn()
-        << " Screen State:" << IsDisplayScreenOn()
-        << " Bluetooth:" << IsBluetoothEnabled()
-        << " Scanning Enabled: " << IsScanningEnabled();
+  CD_LOG(INFO, Feature::FP)
+      << __func__
+      << ": Flag:" << base::FeatureList::IsEnabled(features::kFastPair)
+      << " Policy Pref:" << IsFastPairPrefEnabled()
+      << " Google API Key:" << AreAPIKeysAvailable()
+      << " Logged in User:" << IsUserLoggedIn()
+      << " Screen State:" << IsDisplayScreenOn()
+      << " Bluetooth:" << IsBluetoothEnabled();
 
-    return base::FeatureList::IsEnabled(features::kFastPair) &&
-           IsFastPairPrefEnabled() && AreAPIKeysAvailable() &&
-           IsUserLoggedIn() && IsDisplayScreenOn() && IsBluetoothEnabled() &&
-           IsScanningEnabled();
-  } else {
-    CD_LOG(INFO, Feature::FP)
-        << __func__
-        << ": Flag:" << base::FeatureList::IsEnabled(features::kFastPair)
-        << " Policy Pref:" << IsFastPairPrefEnabled()
-        << " Google API Key:" << AreAPIKeysAvailable()
-        << " Logged in User:" << IsUserLoggedIn()
-        << " Screen State:" << IsDisplayScreenOn()
-        << " Bluetooth:" << IsBluetoothEnabled();
-
-    return base::FeatureList::IsEnabled(features::kFastPair) &&
-           IsFastPairPrefEnabled() && AreAPIKeysAvailable() &&
-           IsUserLoggedIn() && IsDisplayScreenOn() && IsBluetoothEnabled();
-  }
+  return base::FeatureList::IsEnabled(features::kFastPair) &&
+         IsFastPairPrefEnabled() && AreAPIKeysAvailable() && IsUserLoggedIn() &&
+         IsDisplayScreenOn() && IsBluetoothEnabled();
 }
 
 void FastPairEnabledProvider::OnSubProviderEnabledChanged(bool) {

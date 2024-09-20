@@ -347,12 +347,6 @@ void BluetoothSection::AddHandlers(content::WebUI* web_ui) {
       features::IsFastPairSavedDevicesEnabled()) {
     web_ui->AddMessageHandler(std::make_unique<FastPairSavedDevicesHandler>());
   }
-
-  if (features::IsFastPairSoftwareScanningSupportEnabled()) {
-    web_ui->AddMessageHandler(std::make_unique<FastPairSoftwareScanningHandler>(
-        std::make_unique<quick_pair::BatterySaverActiveProvider>(),
-        std::make_unique<quick_pair::HardwareOffloadingSupportedProvider>()));
-  }
 }
 
 int BluetoothSection::GetSectionNameMessageId() const {

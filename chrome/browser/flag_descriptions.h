@@ -3780,9 +3780,6 @@ extern const char kFastPairKeyboardsDescription[];
 extern const char kFastPairPwaCompanionName[];
 extern const char kFastPairPwaCompanionDescription[];
 
-extern const char kFastPairSoftwareScanningSupportName[];
-extern const char kFastPairSoftwareScanningSupportDescription[];
-
 extern const char kFastPairDevicesBluetoothSettingsName[];
 extern const char kFastPairDevicesBluetoothSettingsDescription[];
 
