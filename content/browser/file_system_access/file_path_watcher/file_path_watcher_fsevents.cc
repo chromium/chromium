@@ -202,15 +202,7 @@ void FilePathWatcherFSEvents::FSEventsCallback(
     const FSEventStreamEventId event_ids[]) {
   FilePathWatcherFSEvents* watcher =
       reinterpret_cast<FilePathWatcherFSEvents*>(event_watcher);
-  bool root_changed = watcher->ResolveTargetPath();
-  if (watcher->resolved_target_.empty()) {
-    RecordCallbackErrorUma(
-        WatchWithChangeInfoResult::kFSEventsResolvedTargetError);
-    watcher->task_runner()->PostTask(
-        FROM_HERE,
-        base::BindOnce(&FilePathWatcherFSEvents::ReportError,
-                       watcher->weak_factory_.GetWeakPtr(), watcher->target_));
-  }
+  bool is_root_changed_event = false;
 
   // The `root_changed_at` value represents the highest-numbered FSEvents event
   // id, given that FSEvents events have unique + increasing event id values
@@ -230,10 +222,11 @@ void FilePathWatcherFSEvents::FSEventsCallback(
       continue;
     }
 
-    const FSEventStreamEventId event_id = event_ids[i];
     if (event_flags & kFSEventStreamEventFlagRootChanged) {
-      root_changed = true;
+      is_root_changed_event = true;
     }
+
+    const FSEventStreamEventId event_id = event_ids[i];
     if (event_id) {
       root_change_at = std::min(root_change_at, event_id);
     }
@@ -262,57 +255,40 @@ void FilePathWatcherFSEvents::FSEventsCallback(
     }
     events[event_id] = ChangeEvent(event_flags, event_path, std::nullopt);
   }
-
-  // Reinitialize the event stream if we find changes to the root. This is
-  // necessary since FSEvents doesn't report any events for the subtree
-  // after the directory to be watched gets created.
-  if (root_changed) {
-    // Resetting the event stream from within the callback fails (FSEvents
-    // spews bad file descriptor errors), so do the reset asynchronously.
-    watcher->task_runner()->PostTask(
-        FROM_HERE, base::BindOnce(
-                       [](base::WeakPtr<FilePathWatcherFSEvents> weak_watcher,
-                          FSEventStreamEventId root_change_at) {
-                         if (!weak_watcher) {
-                           return;
-                         }
-                         FilePathWatcherFSEvents* watcher = weak_watcher.get();
-                         WatchWithChangeInfoResult update_stream_result =
-                             watcher->UpdateEventStream(root_change_at);
-
-                         if (update_stream_result ==
-                             WatchWithChangeInfoResult::
-                                 kFSEventsEventStreamStartError) {
-                           // Failed to re-initialize the FSEvents event stream.
-                           RecordCallbackErrorUma(update_stream_result);
-                           watcher->task_runner()->PostTask(
-                               FROM_HERE,
-                               base::BindOnce(
-                                   &FilePathWatcherFSEvents::ReportError,
-                                   watcher->weak_factory_.GetWeakPtr(),
-                                   watcher->target_));
-                         }
-
-                       },
-                       watcher->weak_factory_.GetWeakPtr(), root_change_at));
-  }
-  watcher->OnFilePathsChanged(std::move(events));
+  watcher->task_runner()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&FilePathWatcherFSEvents::OnFilePathsChanged,
+                     watcher->weak_factory_.GetWeakPtr(), is_root_changed_event,
+                     root_change_at, std::move(events)));
 }
 
 void FilePathWatcherFSEvents::OnFilePathsChanged(
+    bool is_root_changed_event,
+    FSEventStreamEventId root_change_at,
     std::map<FSEventStreamEventId, ChangeEvent> events) {
-  DCHECK(!resolved_target_.empty());
-  task_runner()->PostTask(
-      FROM_HERE, BindOnce(&FilePathWatcherFSEvents::DispatchEvents,
-                          weak_factory_.GetWeakPtr(), std::move(events),
-                          target_, resolved_target_));
+  // If we receive a root changed event, or the resolved target path has
+  // changed, update the FSEvents event stream.
+  if (is_root_changed_event || ResolveTargetPath()) {
+    WatchWithChangeInfoResult update_stream_result =
+        UpdateEventStream(root_change_at);
+
+    if (update_stream_result != WatchWithChangeInfoResult::kSuccess) {
+      // Failed to re-initialize the FSEvents event stream.
+      RecordCallbackErrorUma(update_stream_result);
+      ReportError(target_);
+    }
+  }
+
+  // Only call `DispatchEvents` when there are events to process.
+  if (!events.empty()) {
+    DispatchEvents(std::move(events));
+  }
 }
 
 void FilePathWatcherFSEvents::DispatchEvents(
-    std::map<FSEventStreamEventId, ChangeEvent> events,
-    const base::FilePath& target,
-    const base::FilePath& resolved_target) {
+    std::map<FSEventStreamEventId, ChangeEvent> events) {
   DCHECK(task_runner()->RunsTasksInCurrentSequence());
+  DCHECK(!target_.empty());
 
   // Don't issue callbacks after Cancel() has been called.
   if (is_cancelled() || callback_.is_null()) {
@@ -335,7 +311,7 @@ void FilePathWatcherFSEvents::DispatchEvents(
 
     const FilePathWatcher::FilePathType file_path_type =
         GetFilePathType(event_flags);
-    bool event_in_scope = IsPathInScope(target, event_path, recursive_watch_);
+    bool event_in_scope = IsPathInScope(target_, event_path, recursive_watch_);
 
     // Use the event flag values to determine which change event to report for a
     // given FSEvents event. Documentation of the different types of
@@ -347,7 +323,7 @@ void FilePathWatcherFSEvents::DispatchEvents(
     if (event_flags & kFSEventStreamEventFlagRootChanged) {
       // The event path should always be the same path as the target for a root
       // changed event. In the case that it's not, skip processing the event.
-      if (event_path != target) {
+      if (event_path != target_) {
         // TODO(b/362494756): Cleanup usage of this macro once the File System
         // Change Observers feature is rolled out.
         DUMP_WILL_BE_NOTREACHED();
@@ -357,13 +333,13 @@ void FilePathWatcherFSEvents::DispatchEvents(
       // If the target path does not exist, either the target or one of its
       // parent directories have been deleted or renamed.
       struct stat buffer;
-      if (stat(target.value().c_str(), &buffer) == -1) {
+      if (stat(target_.value().c_str(), &buffer) == -1) {
         // If the next event is a deletion of the target path itself, coalesce
         // the following, duplicate delete event.
         coalesce_next_target_deletion_ = true;
         FilePathWatcher::ChangeInfo change_info = {
-            file_path_type, FilePathWatcher::ChangeType::kDeleted, target};
-        callback_.Run(std::move(change_info), target,
+            file_path_type, FilePathWatcher::ChangeType::kDeleted, target_};
+        callback_.Run(std::move(change_info), target_,
                       /*error=*/false);
         continue;
       }
@@ -373,8 +349,8 @@ void FilePathWatcherFSEvents::DispatchEvents(
       // scenarios are reported as 'create' events.
       coalesce_next_target_creation_ = true;
       FilePathWatcher::ChangeInfo change_info = {
-          file_path_type, FilePathWatcher::ChangeType::kCreated, target};
-      callback_.Run(std::move(change_info), target,
+          file_path_type, FilePathWatcher::ChangeType::kCreated, target_};
+      callback_.Run(std::move(change_info), target_,
                     /*error=*/false);
       continue;
     }
@@ -398,7 +374,7 @@ void FilePathWatcherFSEvents::DispatchEvents(
             event_inode.has_value() && next_event_inode.has_value() &&
             event_inode == next_event_inode) {
           bool next_event_in_scope =
-              IsPathInScope(target, next_event_path, recursive_watch_);
+              IsPathInScope(target_, next_event_path, recursive_watch_);
 
           // Both the current event and the next event must be in-scope for a
           // move within-scope to be reported.
@@ -408,7 +384,7 @@ void FilePathWatcherFSEvents::DispatchEvents(
                 file_path_type, FilePathWatcher::ChangeType::kMoved,
                 next_event_path, event_path};
             callback_.Run(std::move(change_info),
-                          report_modified_path_ ? next_event_path : target,
+                          report_modified_path_ ? next_event_path : target_,
                           /*error=*/false);
             continue;
           }
@@ -425,7 +401,7 @@ void FilePathWatcherFSEvents::DispatchEvents(
                 file_path_type, FilePathWatcher::ChangeType::kDeleted,
                 event_path};
             callback_.Run(std::move(change_info),
-                          report_modified_path_ ? event_path : target,
+                          report_modified_path_ ? event_path : target_,
                           /*error=*/false);
             continue;
           }
@@ -435,7 +411,7 @@ void FilePathWatcherFSEvents::DispatchEvents(
                 file_path_type, FilePathWatcher::ChangeType::kCreated,
                 next_event_path};
             callback_.Run(std::move(change_info),
-                          report_modified_path_ ? next_event_path : target,
+                          report_modified_path_ ? next_event_path : target_,
                           /*error=*/false);
             continue;
           }
@@ -456,7 +432,7 @@ void FilePathWatcherFSEvents::DispatchEvents(
       // into-scope for the target path, skip reporting a duplicate create
       // event which has already been reported as a result of the previous root
       // changed event.
-      if (exists && event_path == target && coalesce_target_creation) {
+      if (exists && event_path == target_ && coalesce_target_creation) {
         coalesce_next_target_creation_ = false;
         continue;
       }
@@ -471,7 +447,7 @@ void FilePathWatcherFSEvents::DispatchEvents(
                  : FilePathWatcher::ChangeType::kDeleted,
           event_path};
       callback_.Run(std::move(change_info),
-                    report_modified_path_ ? event_path : target,
+                    report_modified_path_ ? event_path : target_,
                     /*error=*/false);
       continue;
     }
@@ -487,14 +463,14 @@ void FilePathWatcherFSEvents::DispatchEvents(
     if (event_flags & kFSEventStreamEventFlagItemRemoved) {
       // Skip over coalesced delete events, that have already been reported for
       // a delete event on the target path.
-      if (coalesce_target_deletion && event_path == target) {
+      if (coalesce_target_deletion && event_path == target_) {
         coalesce_next_target_deletion_ = false;
         continue;
       }
       FilePathWatcher::ChangeInfo change_info = {
           file_path_type, FilePathWatcher::ChangeType::kDeleted, event_path};
       callback_.Run(std::move(change_info),
-                    report_modified_path_ ? event_path : target,
+                    report_modified_path_ ? event_path : target_,
                     /*error=*/false);
       continue;
     }
@@ -512,7 +488,7 @@ void FilePathWatcherFSEvents::DispatchEvents(
       FilePathWatcher::ChangeInfo change_info = {
           file_path_type, FilePathWatcher::ChangeType::kModified, event_path};
       callback_.Run(std::move(change_info),
-                    report_modified_path_ ? event_path : target,
+                    report_modified_path_ ? event_path : target_,
                     /*error=*/false);
       continue;
     }
@@ -527,14 +503,14 @@ void FilePathWatcherFSEvents::DispatchEvents(
       // If the current event is for the target path, skip reporting a duplicate
       // create event, since we've already reported one earlier as a result of
       // the previous root changed event.
-      if (coalesce_target_creation && event_path == target) {
+      if (coalesce_target_creation && event_path == target_) {
         coalesce_next_target_creation_ = false;
         continue;
       }
       FilePathWatcher::ChangeInfo change_info = {
           file_path_type, FilePathWatcher::ChangeType::kCreated, event_path};
       callback_.Run(std::move(change_info),
-                    report_modified_path_ ? event_path : target,
+                    report_modified_path_ ? event_path : target_,
                     /*error=*/false);
       continue;
     }
@@ -545,7 +521,7 @@ void FilePathWatcherFSEvents::DispatchEvents(
       FilePathWatcher::ChangeInfo change_info = {
           file_path_type, FilePathWatcher::ChangeType::kModified, event_path};
       callback_.Run(std::move(change_info),
-                    report_modified_path_ ? event_path : target,
+                    report_modified_path_ ? event_path : target_,
                     /*error=*/false);
       continue;
     }

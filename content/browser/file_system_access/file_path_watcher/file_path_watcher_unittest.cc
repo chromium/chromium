@@ -149,7 +149,6 @@ std::string Explain(const MatcherType& matcher, const Value& value) {
   return listener.str();
 }
 
-#if !BUILDFLAG(IS_MAC)
 inline constexpr auto HasPath = [](const base::FilePath& path) {
   return testing::Field(&Event::path, path);
 };
@@ -162,14 +161,14 @@ inline constexpr auto HasModifiedPath = [](const base::FilePath& path) {
       testing::Field(&FilePathWatcher::ChangeInfo::modified_path, path));
 };
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID) || \
-    BUILDFLAG(IS_WIN)
+    BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 inline constexpr auto HasMovedFromPath = [](const base::FilePath& path) {
   return testing::Field(
       &Event::change_info,
       testing::Field(&FilePathWatcher::ChangeInfo::moved_from_path, path));
 };
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) ||
-        // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN)
+        // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 inline constexpr auto HasNoMovedFromPath = []() {
   return testing::Field(
       &Event::change_info,
@@ -208,7 +207,29 @@ inline constexpr auto IsUnknownPathType = []() {
                      FilePathWatcher::FilePathType::kUnknown));
 };
 #endif
-#endif  // !BUILDFLAG(IS_MAC)
+
+// When FSEvents reports an event as a result of the standalone
+// `kFSEventStreamEventFlagRootChanged` event, there are no other flags (besides
+// the root changed flag itself) to process. In this case, the file path type
+// will evaluate to `kUnknown`.
+#if BUILDFLAG(IS_MAC)
+inline constexpr auto IsFile = []() {
+  return testing::AnyOf(
+      testing::Field(
+          &Event::change_info,
+          testing::Field(&FilePathWatcher::ChangeInfo::file_path_type,
+                         FilePathWatcher::FilePathType::kFile)),
+      IsUnknownPathType());
+};
+inline constexpr auto IsDirectory = []() {
+  return testing::AnyOf(
+      testing::Field(
+          &Event::change_info,
+          testing::Field(&FilePathWatcher::ChangeInfo::file_path_type,
+                         FilePathWatcher::FilePathType::kDirectory)),
+      IsUnknownPathType());
+};
+#endif  // BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 inline constexpr auto IsDeletedFile = IsFile;
@@ -224,7 +245,7 @@ inline constexpr auto ModifiedMatcher = [](base::FilePath reported_path,
                      HasModifiedPath(modified_path), HasNoMovedFromPath()));
 };
 
-#elif BUILDFLAG(IS_WIN)
+#elif BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 // Windows figures out if a file path is a directory or file with `GetFileInfo`,
 // but since the file is deleted, it can't know.
 //
@@ -236,6 +257,16 @@ inline constexpr auto IsDeletedFile = []() {
 inline constexpr auto IsDeletedDirectory = []() {
   return testing::AnyOf(IsDirectory(), IsUnknownPathType());
 };
+
+#if BUILDFLAG(IS_MAC)
+inline constexpr auto ModifiedMatcher = [](base::FilePath reported_path,
+                                           base::FilePath modified_path) {
+  return testing::ElementsAre(
+      testing::AllOf(HasPath(reported_path), testing::Not(HasErrored()),
+                     IsFile(), IsType(FilePathWatcher::ChangeType::kModified),
+                     HasModifiedPath(modified_path), HasNoMovedFromPath()));
+};
+#else
 
 inline constexpr auto IsMovedFile = IsFile;
 
@@ -249,6 +280,7 @@ inline constexpr auto ModifiedMatcher = [](base::FilePath reported_path,
                      HasModifiedPath(modified_path), HasNoMovedFromPath());
   return testing::ElementsAreArray({modified_matcher, modified_matcher});
 };
+#endif
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) ||
         // BUILDFLAG(IS_ANDROID)
 
@@ -547,10 +579,6 @@ bool FilePathWatcherTest::SetupWatch(const base::FilePath& target,
                                      FilePathWatcher* watcher,
                                      TestDelegateBase* delegate,
                                      FilePathWatcher::Type watch_type) {
-#if BUILDFLAG(IS_MAC)
-  // Flush events before the watch begins.
-  SpinEventLoopForABit();
-#endif
   return watcher->Watch(target, watch_type,
                         base::BindRepeating(&TestDelegateBase::OnFileChanged,
                                             delegate->AsWeakPtr()));
@@ -1320,7 +1348,7 @@ TEST_F(FilePathWatcherTest, MoveOverwritingFile) {
                          FilePathWatcher::Type::kNonRecursive));
 
   // Move the directory into place, s.t. the watched file appears.
-  base::Move(from_path, to_path);
+  Move(from_path, to_path);
 
   // The move event.
   event_expecter.AddExpectedEventForPath(temp_dir_.GetPath());
@@ -2150,12 +2178,8 @@ TEST_F(FilePathWatcherTest, TrivialDirMove) {
 
 #endif  // BUILDFLAG(IS_APPLE)
 
-// TODO(b/359174510): Disabled on Mac due to flakiness. When change info is
-// reported, FSEvents sometimes does not report changes on time, before the test
-// timer times out. Re-enable this test class on Mac once the flakes are
-// resolved.
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID) || \
-    BUILDFLAG(IS_WIN)
+    BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 // TODO(crbug.com/40263777): Ideally most all of the tests above would be
 // parameterized in this way.
 class FilePathWatcherWithChangeInfoTest
@@ -2355,6 +2379,12 @@ TEST_P(FilePathWatcherWithChangeInfoTest, MultipleWatchersSingleFile) {
   delegate2.RunUntilEventsMatch(matcher);
 }
 
+// TODO(b/358401685): FSEvents can sometimes coalesce the event flags from the
+// two write operations in this test together, since the expected event flags
+// for each event is very similar. When this happens, we receive one less event
+// than expected, which results in a test flake / failure. Re-enable once this
+// individual test flake is resolved.
+#if !BUILDFLAG(IS_MAC)
 TEST_P(FilePathWatcherWithChangeInfoTest, NonExistentDirectory) {
   base::FilePath dir(temp_dir_.GetPath().AppendASCII("dir"));
   base::FilePath file(dir.AppendASCII("file"));
@@ -2387,6 +2417,7 @@ TEST_P(FilePathWatcherWithChangeInfoTest, NonExistentDirectory) {
   ASSERT_TRUE(DeleteFile(file));
   delegate.RunUntilEventsMatch(matcher);
 }
+#endif  // !BUILDFLAG(IS_MAC)
 
 TEST_P(FilePathWatcherWithChangeInfoTest, DirectoryChain) {
   base::FilePath path(temp_dir_.GetPath());
@@ -3313,7 +3344,6 @@ INSTANTIATE_TEST_SUITE_P(
 
 #else
 
-#if !BUILDFLAG(IS_MAC)
 TEST_F(FilePathWatcherTest, UseDummyChangeInfoIfNotSupported) {
   const auto matcher = testing::ElementsAre(testing::AllOf(
       HasPath(test_file()), testing::Not(HasErrored()), IsUnknownPathType(),
@@ -3329,9 +3359,8 @@ TEST_F(FilePathWatcherTest, UseDummyChangeInfoIfNotSupported) {
   ASSERT_TRUE(CreateDirectory(test_file()));
   delegate.RunUntilEventsMatch(matcher);
 }
-#endif  // !BUILDFLAG(IS_MAC)
 
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) ||
-        // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN)
+        // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 
 }  // namespace content

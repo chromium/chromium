@@ -57,15 +57,14 @@ class FilePathWatcherFSEvents : public FilePathWatcher::PlatformDelegate {
                                const FSEventStreamEventFlags flags[],
                                const FSEventStreamEventId event_ids[]);
 
-  // Called from FSEventsCallback whenever there is a change to the paths.
-  void OnFilePathsChanged(std::map<FSEventStreamEventId, ChangeEvent> events);
+  // Called on the watcher task runner from the FSEventsCallback whenever
+  // there is a change to the paths.
+  void OnFilePathsChanged(bool is_root_changed_event,
+                          FSEventStreamEventId root_change_at,
+                          std::map<FSEventStreamEventId, ChangeEvent> events);
 
-  // Called on the task_runner() thread to dispatch path events. Can't access
-  // target_ and resolved_target_ directly as those are modified on the
-  // libdispatch thread.
-  void DispatchEvents(std::map<FSEventStreamEventId, ChangeEvent> events,
-                      const base::FilePath& target,
-                      const base::FilePath& resolved_target);
+  // Called on the watcher task runner thread to dispatch path events.
+  void DispatchEvents(std::map<FSEventStreamEventId, ChangeEvent> events);
 
   // (Re-)Initialize the event stream to start reporting events from
   // |start_event|.
@@ -96,12 +95,7 @@ class FilePathWatcherFSEvents : public FilePathWatcher::PlatformDelegate {
   // The dispatch queue on which the event stream is scheduled.
   base::apple::ScopedDispatchObject<dispatch_queue_t> queue_;
 
-  // Target path to watch (passed to callback).
-  // (Only accessed from the libdispatch queue.)
   base::FilePath target_;
-
-  // Target path with all symbolic links resolved.
-  // (Only accessed from the libdispatch queue.)
   base::FilePath resolved_target_;
 
   // Signals whether to check for a target deletion or creation event, and
