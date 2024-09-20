@@ -383,15 +383,15 @@
     };
 
     window.test_driver_internal.set_device_posture = function(posture, context=null) {
-        return create_context_action("set_device_posture", {posture, context});
+        return create_context_action("set_device_posture", context, {posture});
     };
 
     window.test_driver_internal.clear_device_posture = function(context=null) {
-        return create_context_action("clear_device_posture", {context});
+        return create_context_action("clear_device_posture", context, {});
     };
 
     window.test_driver_internal.run_bounce_tracking_mitigations = function (context = null) {
-        return create_action("run_bounce_tracking_mitigations", {context});
+        return create_context_action("run_bounce_tracking_mitigations", context, {});
     };
 
     window.test_driver_internal.create_virtual_pressure_source = function(source_type, metadata={}, context=null) {
