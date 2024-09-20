@@ -3264,6 +3264,22 @@
             ]
         }
     ],
+    "BatteryBadgeIconEnabled": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "BatteryBadgeIcon"
+                    ]
+                }
+            ]
+        }
+    ],
     "BatterySaverModeAlignWakeUps": [
         {
             "platforms": [
