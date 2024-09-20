@@ -49,8 +49,8 @@ class PromiseAllHandler final : public GarbageCollected<PromiseAllHandler> {
       ScriptState* script_state,
       const HeapVector<ScriptPromiseUntyped>& promises) {
     if (promises.empty()) {
-      return ScriptPromiseUntyped::FromUntypedValueForBindings(
-          script_state, v8::Array::New(script_state->GetIsolate()));
+      return ToResolvedPromise<IDLSequence<IDLAny>>(script_state,
+                                                    HeapVector<ScriptValue>());
     }
     auto* resolver =
         MakeGarbageCollected<ScriptPromiseResolver<IDLSequence<IDLAny>>>(
@@ -198,19 +198,6 @@ ScriptPromise<IDLAny> ScriptPromiseUntyped::Then(ScriptFunction* on_fulfilled,
   }
   return ScriptPromise<IDLAny>::FromV8Promise(script_state->GetIsolate(),
                                               result_promise);
-}
-
-ScriptPromiseUntyped ScriptPromiseUntyped::FromUntypedValueForBindings(
-    ScriptState* script_state,
-    v8::Local<v8::Value> value) {
-  if (value.IsEmpty())
-    return ScriptPromiseUntyped();
-  if (value->IsPromise()) {
-    return ScriptPromiseUntyped(script_state->GetIsolate(),
-                                value.As<v8::Promise>());
-  }
-  return ScriptPromiseUntyped(script_state->GetIsolate(),
-                              ResolveRaw(script_state, value));
 }
 
 ScriptPromiseUntyped ScriptPromiseUntyped::Reject(ScriptState* script_state,

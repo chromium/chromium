@@ -908,8 +908,7 @@ struct CORE_EXPORT NativeValueTraits<IDLPromise>
   static ScriptPromiseUntyped NativeValue(v8::Isolate* isolate,
                                           v8::Local<v8::Value> value,
                                           ExceptionState& exception_state) {
-    return ScriptPromiseUntyped::FromUntypedValueForBindings(
-        ScriptState::ForCurrentRealm(isolate), value);
+    return ScriptPromise<IDLAny>::FromV8Value(isolate, value);
   }
 };
 
