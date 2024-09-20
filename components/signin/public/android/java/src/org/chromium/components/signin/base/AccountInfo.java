@@ -12,7 +12,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.jni_zero.CalledByNative;
 
-import org.chromium.components.signin.AccountEmailDomainDisplayability;
+import org.chromium.components.signin.AccountEmailDisplayHook;
 import org.chromium.components.signin.Tribool;
 
 import java.util.HashMap;
@@ -118,7 +118,7 @@ public class AccountInfo extends CoreAccountInfo {
                     return true;
                 }
         }
-        return AccountEmailDomainDisplayability.checkIfDisplayableEmailAddress(getEmail());
+        return AccountEmailDisplayHook.canHaveEmailAddressDisplayed(getEmail());
     }
 
     /** @return Full name of the account. */

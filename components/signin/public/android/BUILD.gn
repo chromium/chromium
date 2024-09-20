@@ -29,7 +29,7 @@ android_library("java") {
   sources = [
     "java/src/org/chromium/components/signin/AccessTokenData.java",
     "java/src/org/chromium/components/signin/AccountCapabilitiesFetcher.java",
-    "java/src/org/chromium/components/signin/AccountEmailDomainDisplayability.java",
+    "java/src/org/chromium/components/signin/AccountEmailDisplayHook.java",
     "java/src/org/chromium/components/signin/AccountEmailDomainDisplayabilityDelegate.java",
     "java/src/org/chromium/components/signin/AccountManagerDelegate.java",
     "java/src/org/chromium/components/signin/AccountManagerDelegateException.java",
@@ -60,10 +60,6 @@ android_library("java") {
     "java/src/org/chromium/components/signin/identitymanager/PrimaryAccountChangeEvent.java",
     "java/src/org/chromium/components/signin/identitymanager/ProfileOAuth2TokenServiceDelegate.java",
   ]
-
-  # Add the actual implementation where necessary so that downstream targets
-  # can provide their own implementations.
-  jar_excluded_patterns = [ "*/AccountEmailDomainDisplayability.class" ]
 }
 
 # Expose Signin feature flags to Java code
@@ -71,12 +67,6 @@ java_cpp_features("signin_java_features_srcjar") {
   visibility = [ ":*" ]
   sources = [ "//components/signin/public/base/signin_switches.cc" ]
   template = "java/src/org/chromium/components/signin/SigninFeatures.java.tmpl"
-}
-
-android_library("account_email_domain_displayability_java") {
-  deps = [ ":java" ]
-  sources = [ "java/src/org/chromium/components/signin/AccountEmailDomainDisplayability.java" ]
-  jar_excluded_patterns = [ "*/AccountEmailDomainDisplayability\$Impl.class" ]
 }
 
 generate_jni("jni_headers") {

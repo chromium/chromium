@@ -15,7 +15,7 @@ import androidx.annotation.StringRes;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.components.browser_ui.settings.ManagedPreferencesUtils;
 import org.chromium.components.browser_ui.widget.RadioButtonWithDescription;
-import org.chromium.components.signin.AccountEmailDomainDisplayability;
+import org.chromium.components.signin.AccountEmailDisplayHook;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
@@ -72,7 +72,7 @@ public class ConfirmImportSyncDataDialogCoordinator {
                 listener,
                 currentAccountName,
                 newAccountName,
-                AccountEmailDomainDisplayability::checkIfDisplayableEmailAddress,
+                AccountEmailDisplayHook::canHaveEmailAddressDisplayed,
                 isCurrentAccountManaged,
                 usesSplitStoresAndUPMForLocal);
     }

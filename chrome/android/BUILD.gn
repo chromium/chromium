@@ -310,7 +310,6 @@ if (current_toolchain == default_toolchain) {
       "//chrome/browser/ui/android/hats/internal:provider_public_impl_java",
       "//chrome/browser/webauthn/android:recommender_public_java",
       "//components/search_engines/android:delegate_public_impl_java",
-      "//components/signin/public/android:account_email_domain_displayability_java",
       "//content/public/android:identity_credentials_public_impl_java",
     ]
   }

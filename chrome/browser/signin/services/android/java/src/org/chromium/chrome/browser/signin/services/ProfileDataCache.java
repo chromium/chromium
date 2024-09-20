@@ -30,7 +30,7 @@ import org.chromium.base.ObserverList;
 import org.chromium.base.Promise;
 import org.chromium.base.ThreadUtils;
 import org.chromium.components.browser_ui.util.AvatarGenerator;
-import org.chromium.components.signin.AccountEmailDomainDisplayability;
+import org.chromium.components.signin.AccountEmailDisplayHook;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.base.CoreAccountInfo;
@@ -184,7 +184,7 @@ public class ProfileDataCache implements AccountInfoService.Observer {
                     mPlaceholderImage,
                     null,
                     null,
-                    AccountEmailDomainDisplayability.checkIfDisplayableEmailAddress(accountEmail));
+                    AccountEmailDisplayHook.canHaveEmailAddressDisplayed(accountEmail));
         }
         return profileData;
     }
