@@ -451,9 +451,6 @@ void SetFlags(IsolateHolder::ScriptMode mode,
 
   SetV8FlagsIfOverridden(features::kWebAssemblyDeopt, "--wasm-deopt",
                          "--no-wasm-deopt");
-  SetV8FlagsIfOverridden(features::kWebAssemblyInlining,
-                         "--experimental-wasm-inlining",
-                         "--no-experimental-wasm-inlining");
   SetV8FlagsIfOverridden(features::kWebAssemblyInliningCallIndirect,
                          "--wasm-inlining-call-indirect",
                          "--no-wasm-inlining-call-indirect");
