@@ -662,6 +662,7 @@ _CONFIG = [
             'scroll_customization::.+',
             'scroll_into_view_util::.+',
             'scroll_timeline_util::.+',
+            'shadow_element_utils::.+',
             'style_change_extra_data::.+',
             'style_change_reason::.+',
             'svg_path_parser::.+',

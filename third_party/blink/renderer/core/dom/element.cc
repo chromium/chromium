@@ -179,6 +179,7 @@
 #include "third_party/blink/renderer/core/html/parser/html_element_stack.h"
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
 #include "third_party/blink/renderer/core/html/shadow/shadow_element_names.h"
+#include "third_party/blink/renderer/core/html/shadow/shadow_element_utils.h"
 #include "third_party/blink/renderer/core/html_element_type_helpers.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/input/event_handler.h"
@@ -8226,21 +8227,6 @@ void Element::DetachPseudoElement(PseudoId pseudo_id,
   }
 }
 
-const AtomicString& StringForPseudoId(PseudoId pseudo_id) {
-  switch (pseudo_id) {
-    case kPseudoIdPlaceholder:
-      return shadow_element_names::kPseudoInputPlaceholder;
-    case kPseudoIdFileSelectorButton:
-      return shadow_element_names::kPseudoFileUploadButton;
-    case kPseudoIdDetailsContent:
-      return shadow_element_names::kIdDetailsContent;
-    case kPseudoIdPickerSelect:
-      return shadow_element_names::kPickerSelect;
-    default:
-      return g_null_atom;
-  }
-}
-
 PseudoElement* Element::GetPseudoElement(
     PseudoId pseudo_id,
     const AtomicString& view_transition_name) const {
@@ -8258,7 +8244,8 @@ Element* Element::GetStyledPseudoElement(
             GetPseudoElement(pseudo_id, view_transition_name)) {
       return result;
     }
-    const AtomicString& pseudo_string = StringForPseudoId(pseudo_id);
+    const AtomicString& pseudo_string =
+        shadow_element_utils::StringForUAShadowPseudoId(pseudo_id);
     if (pseudo_string != g_null_atom) {
       // This is a pseudo-element that refers to an element in the UA shadow
       // tree (such as a part-like pseudo-element).  Find it in the shadow

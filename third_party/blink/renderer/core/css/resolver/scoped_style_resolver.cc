@@ -285,10 +285,12 @@ void ScopedStyleResolver::ForAllStylesheets(ElementRuleCollector& collector,
 }
 
 void ScopedStyleResolver::CollectMatchingElementScopeRules(
-    ElementRuleCollector& collector) {
-  ForAllStylesheets(collector, [&collector](const MatchRequest& match_request) {
-    collector.CollectMatchingRules(match_request);
-  });
+    ElementRuleCollector& collector,
+    PartNames* part_names) {
+  ForAllStylesheets(
+      collector, [&collector, part_names](const MatchRequest& match_request) {
+        collector.CollectMatchingRules(match_request, part_names);
+      });
 }
 
 void ScopedStyleResolver::CollectMatchingShadowHostRules(

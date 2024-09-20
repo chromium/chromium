@@ -541,6 +541,7 @@ SelectorChecker::MatchStatus SelectorChecker::MatchForRelation(
       return kSelectorFailsAllSiblings;
 
     case CSSSelector::kUAShadow: {
+      CHECK(is_ua_rule_ || context.scope || context.vtt_originating_element);
       // If we're in the same tree-scope as the scoping element, then following
       // a kUAShadow combinator would escape that and thus the scope.
       if (context.scope && context.scope->OwnerShadowHost() &&
@@ -559,6 +560,18 @@ SelectorChecker::MatchStatus SelectorChecker::MatchForRelation(
         shadow_host = context.vtt_originating_element;
       }
       next_context.element = shadow_host;
+
+      // If this is the *last* time that we cross shadow scopes, then make
+      // sure that we've crossed *enough* shadow scopes.  This prevents
+      // ::pseudo1 from matching in a scope where it shouldn't match but where
+      // ::part(p)::pseudo1 or where ::pseudo2::pseudo1 should match.
+      if (context.scope &&
+          context.scope->GetTreeScope() !=
+              next_context.element->GetTreeScope() &&
+          !next_context.selector->CrossesTreeScopes()) {
+        return kSelectorFailsCompletely;
+      }
+
       return MatchSelector(next_context, result);
     }
 
@@ -579,7 +592,7 @@ SelectorChecker::MatchStatus SelectorChecker::MatchForRelation(
       // We ascend through ancestor shadow host elements until we reach the host
       // in the TreeScope associated with the style rule. We then match against
       // that host.
-      while (next_context.element) {
+      while (true) {
         next_context.element = next_context.element->OwnerShadowHost();
         if (!next_context.element) {
           return kSelectorFailsCompletely;
@@ -597,7 +610,6 @@ SelectorChecker::MatchStatus SelectorChecker::MatchForRelation(
           return MatchSelector(next_context, result);
         }
       }
-      return kSelectorFailsCompletely;
     case CSSSelector::kSubSelector:
     case CSSSelector::kScopeActivation:
       break;
@@ -2251,7 +2263,9 @@ bool SelectorChecker::CheckPseudoElement(const SelectorCheckingContext& context,
       return false;
     }
     case CSSSelector::kPseudoPart:
-      DCHECK(part_names_);
+      if (!part_names_) {
+        return false;
+      }
       for (const auto& part_name : selector.IdentList()) {
         if (!part_names_->Contains(part_name)) {
           return false;

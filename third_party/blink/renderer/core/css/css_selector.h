@@ -592,10 +592,16 @@ class CORE_EXPORT CSSSelector {
   bool IsTreeAbidingPseudoElement() const;
   bool IsAllowedAfterPart() const;
 
-  // Returns true if the immediately preceeding simple selector is ::part.
+  // Returns true if the immediately preceding simple selector is ::part.
+  // TODO(https://crbug.com/40280846): Remove this when removing the
+  // CSSCascadeCorrectScope flag.
   bool FollowsPart() const;
-  // Returns true if the immediately preceeding simple selector is ::slotted.
+  // Returns true if the immediately preceding simple selector is ::slotted.
   bool FollowsSlotted() const;
+
+  // Returns true if any preceding selectors have combinators that cross tree
+  // scopes.
+  bool CrossesTreeScopes() const;
 
   // True if the selector was added implicitly. This can happen for e.g.
   // nested rules that would otherwise lack the scoping selector (:scope).

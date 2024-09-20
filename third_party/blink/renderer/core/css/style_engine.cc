@@ -3110,12 +3110,12 @@ void StyleEngine::CollectMatchingUserRules(
   for (const ActiveStyleSheet& style_sheet : active_user_style_sheets_) {
     match_request.AddRuleset(style_sheet.second);
     if (match_request.IsFull()) {
-      collector.CollectMatchingRules(match_request);
+      collector.CollectMatchingRules(match_request, /*part_names*/ nullptr);
       match_request.ClearAfterMatching();
     }
   }
   if (!match_request.IsEmpty()) {
-    collector.CollectMatchingRules(match_request);
+    collector.CollectMatchingRules(match_request, /*part_names*/ nullptr);
   }
 }
 

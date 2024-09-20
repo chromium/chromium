@@ -30,7 +30,10 @@
 
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 
+#include <optional>
+
 #include "base/containers/adapters.h"
+#include "base/types/optional_util.h"
 #include "third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom-blink.h"
 #include "third_party/blink/public/web/web_print_page_description.h"
 #include "third_party/blink/public/web/web_print_params.h"
@@ -533,24 +536,24 @@ inline ScopedStyleResolver* ScopedResolverFor(const Element& element) {
   return nullptr;
 }
 
-inline ScopedStyleResolver* ParentScopedResolverFor(
+inline bool UseParentResolverForUAShadowPseudo(
     const Element& element,
-    bool* parent_scope_contains_style_attribute) {
+    bool* style_attribute_cascaded_in_parent_scope) {
   // Rules for ::cue and custom pseudo elements like
   // ::-webkit-meter-bar pierce through a single shadow dom boundary and apply
   // to elements in sub-scopes.
   TreeScope* tree_scope = element.GetTreeScope().ParentTreeScope();
   if (!tree_scope) {
-    return nullptr;
-  }
-  ScopedStyleResolver* parent_resolver = tree_scope->GetScopedStyleResolver();
-  if (!parent_resolver) {
-    return nullptr;
+    return false;
   }
   const AtomicString& shadow_pseudo_id = element.ShadowPseudoId();
   bool is_vtt = element.IsVTTElement();
   if (shadow_pseudo_id.empty() && !is_vtt) {
-    return nullptr;
+    return false;
+  }
+  ScopedStyleResolver* parent_resolver = tree_scope->GetScopedStyleResolver();
+  if (!parent_resolver) {
+    return true;
   }
   // Going forward, for shadow pseudo IDs that we standardize as
   // pseudo-elements, we expect styles specified by the author using the
@@ -566,8 +569,8 @@ inline ScopedStyleResolver* ParentScopedResolverFor(
          shadow_pseudo_id.StartsWith("-internal-"))
       << "shadow pseudo IDs should either begin with -webkit- or -internal- "
          "or not begin with a -";
-  *parent_scope_contains_style_attribute = shadow_pseudo_id.StartsWith("-");
-  return parent_resolver;
+  *style_attribute_cascaded_in_parent_scope = shadow_pseudo_id.StartsWith("-");
+  return true;
 }
 
 // Matches :host and :host-context rules if the element is a shadow host.
@@ -685,14 +688,41 @@ void MatchVTTRules(const Element& element,
       StyleEngine& style_engine = element.GetDocument().GetStyleEngine();
       RuleSet* rule_set = style_engine.RuleSetForSheet(*style);
       if (rule_set) {
-        collector.CollectMatchingRules(MatchRequest(
-            rule_set, nullptr /* scope */, style, style_sheet_index,
-            style_engine.EnsureVTTOriginatingElement()));
+        collector.CollectMatchingRules(
+            MatchRequest(rule_set, nullptr /* scope */, style,
+                         style_sheet_index,
+                         style_engine.EnsureVTTOriginatingElement()),
+            /*part_names*/ nullptr);
         style_sheet_index++;
       }
     }
     collector.SortAndTransferMatchedRules(
         CascadeOrigin::kAuthor, true /* is_vtt_embedded_style */, tracker);
+  }
+}
+
+void MatchHostPartRules(const Element& element,
+                        ElementRuleCollector& collector,
+                        StyleRuleUsageTracker* tracker) {
+  DOMTokenList* part = element.GetPart();
+  if (!part || !part->length() || !element.IsInShadowTree()) {
+    return;
+  }
+
+  PartNames current_names(part->TokenSet());
+
+  // Consider ::part rules in this element’s tree scope, which only match if
+  // preceded by a :host or :host() that matches one of its containing shadow
+  // hosts (see MatchForRelation).
+  TreeScope& tree_scope = element.GetTreeScope();
+  if (ScopedStyleResolver* resolver = tree_scope.GetScopedStyleResolver()) {
+    // PartRulesScope must be provided with the host where we want to start
+    // the search for container query containers.  For matching :host::part(),
+    // we want to start the search at `element`'s host.
+    const Element* host = element.OwnerShadowHost();
+    ElementRuleCollector::PartRulesScope scope(collector,
+                                               const_cast<Element&>(*host));
+    resolver->CollectMatchingPartPseudoRules(collector, &current_names, false);
   }
 }
 
@@ -723,40 +753,166 @@ void MatchElementScopeRules(const Element& element,
                             ElementRuleCollector& collector,
                             StyleRuleUsageTracker* tracker) {
   ScopedStyleResolver* element_scope_resolver = ScopedResolverFor(element);
-  bool parent_scope_contains_style_attribute = false;
-  ScopedStyleResolver* parent_scope_resolver =
-      ParentScopedResolverFor(element, &parent_scope_contains_style_attribute);
+  bool style_attribute_cascaded_in_parent_scope = false;
+  bool use_parent_resolver = UseParentResolverForUAShadowPseudo(
+      element, &style_attribute_cascaded_in_parent_scope);
   collector.BeginAddingAuthorRulesForTreeScope(element.GetTreeScope());
   if (element_scope_resolver) {
     collector.ClearMatchedRules();
     DCHECK_EQ(&element_scope_resolver->GetTreeScope(), &element.GetTreeScope());
-    element_scope_resolver->CollectMatchingElementScopeRules(collector);
+    element_scope_resolver->CollectMatchingElementScopeRules(
+        collector, /*part_shadow_host*/ nullptr);
+    if (RuntimeEnabledFeatures::CSSCascadeCorrectScopeEnabled()) {
+      MatchHostPartRules(element, collector, tracker);
+    }
     collector.SortAndTransferMatchedRules(
         CascadeOrigin::kAuthor, /*is_vtt_embedded_style=*/false, tracker);
   }
 
-  if (!parent_scope_contains_style_attribute) {
+  if (!style_attribute_cascaded_in_parent_scope) {
     MatchStyleAttribute(element, collector, tracker);
   }
 
-  if (parent_scope_resolver) {
-    // TODO(crbug.com/1479329): Pseudo elements matching elements inside
-    // UA shadow trees (::-internal-*, ::-webkit-*, ::placeholder, etc.,
-    // although not ::cue) should end up in the same cascade context as
-    // other rules from an outer tree (like ::part() rules), and
-    // collected separately from the element's tree scope. That should
-    // remove the need for the ParentScopedResolver() here.
-    collector.ClearMatchedRules();
-    collector.BeginAddingAuthorRulesForTreeScope(
-        parent_scope_resolver->GetTreeScope());
-    parent_scope_resolver->CollectMatchingElementScopeRules(collector);
-    collector.SortAndTransferMatchedRules(
-        CascadeOrigin::kAuthor, /*is_vtt_embedded_style=*/false, tracker);
-    if (parent_scope_contains_style_attribute) {
-      MatchStyleAttribute(element, collector, tracker);
+  if (use_parent_resolver &&
+      !RuntimeEnabledFeatures::CSSCascadeCorrectScopeEnabled()) {
+    ScopedStyleResolver* parent_scope_resolver =
+        element.GetTreeScope().ParentTreeScope()->GetScopedStyleResolver();
+    if (parent_scope_resolver) {
+      // TODO(crbug.com/40280846): Pseudo elements matching elements inside
+      // UA shadow trees (::-internal-*, ::-webkit-*, ::placeholder, etc.,
+      // although not ::cue) should end up in the same cascade context as
+      // other rules from an outer tree (like ::part() rules), and
+      // collected separately from the element's tree scope. That should
+      // remove the need for the ParentScopedResolver() here.
+      collector.ClearMatchedRules();
+      collector.BeginAddingAuthorRulesForTreeScope(
+          parent_scope_resolver->GetTreeScope());
+      parent_scope_resolver->CollectMatchingElementScopeRules(
+          collector, /*part_shadow_host*/ nullptr);
+      collector.SortAndTransferMatchedRules(
+          CascadeOrigin::kAuthor, /*is_vtt_embedded_style=*/false, tracker);
+      if (style_attribute_cascaded_in_parent_scope) {
+        MatchStyleAttribute(element, collector, tracker);
+      }
+    } else {
+      CHECK(!style_attribute_cascaded_in_parent_scope);
     }
-  } else {
-    CHECK(!parent_scope_contains_style_attribute);
+  }
+}
+
+void MatchOuterScopeRules(const Element& matching_element,
+                          ElementRuleCollector& collector,
+                          StyleRuleUsageTracker* tracker) {
+  CHECK(RuntimeEnabledFeatures::CSSCascadeCorrectScopeEnabled());
+
+  // Because ::part() is never allowed after ::part(), or after another
+  // pseudo-element, and because elements (generally those in UA shadow trees,
+  // but this is also used for VTT) that are exposed as pseudos ("shadow
+  // pseudos") are never exposed as parts, the rules from a particular scope
+  // can only be used for one of the states below.
+  //
+  // The one semi-exception to this is the deprecated <selectlist> element,
+  // which exposes a few things as -internal-* shadow pseudos to the UA sheet
+  // and as ::part() to authors.  Because of this, and since this code is only
+  // used for author rules, we prioritize part below when setting state.
+  enum class MatchingState {
+    kDone,
+    kShadowPseudo,
+    kPart,
+    kPartAboveShadowPseudo,
+  };
+
+  MatchingState state = MatchingState::kDone;
+
+  // Given an element that we're trying to match, and a scope containing
+  // style rules, there is only a single set of part names that can
+  // match the element in that scope.  (It doesn't depend on the
+  // selector.  It only depends on what parts are exported from each
+  // scope to the scope outside it, via either part= or exportparts=.)
+  //
+  // This does depend on the idea (see above) that the same element can't be
+  // exposed as both a UA shadow pseudo and as a part.
+  //
+  // Present when state is kMatchingPart or kMatchingPartAboveShadowPseudo.
+  std::optional<PartNames> current_part_names;
+
+  auto set_part_names = [&current_part_names](const Element* element) -> bool {
+    if (DOMTokenList* part = element->GetPart()) {
+      if (part->length() && element->IsInShadowTree()) {
+        current_part_names.emplace(part->TokenSet());
+        return true;
+      }
+    }
+    current_part_names.reset();
+    return false;
+  };
+
+  bool style_attribute_cascaded_in_parent_scope = false;
+  if (set_part_names(&matching_element)) {
+    state = MatchingState::kPart;
+  } else if (UseParentResolverForUAShadowPseudo(
+                 matching_element, &style_attribute_cascaded_in_parent_scope)) {
+    state = MatchingState::kShadowPseudo;
+  }
+
+  // Consider rules for ::part() and for UA shadow pseudo-elements from scopes
+  // outside this tree scope.  Note that :host::part() rules in the element's
+  // own scope are considered in MatchElementScopeRules.
+  for (const Element* element = matching_element.OwnerShadowHost();
+       element && state != MatchingState::kDone;
+       element = element->OwnerShadowHost()) {
+    // Consider the ::part rules and pseudo-element rules for the given scope.
+    TreeScope& tree_scope = element->GetTreeScope();
+    if (ScopedStyleResolver* resolver = tree_scope.GetScopedStyleResolver()) {
+      // PartRulesScope must be provided with the host where we want to start
+      // the search for container query containers.  Since we're not handling
+      // :host::part() here, `element` is the correct starting element/host.
+      ElementRuleCollector::PartRulesScope scope(
+          collector, const_cast<Element&>(*element));
+      collector.ClearMatchedRules();
+      collector.BeginAddingAuthorRulesForTreeScope(resolver->GetTreeScope());
+      if (state == MatchingState::kPart) {
+        resolver->CollectMatchingPartPseudoRules(collector,
+                                                 &*current_part_names, false);
+      } else {
+        resolver->CollectMatchingElementScopeRules(
+            collector, base::OptionalToPtr(current_part_names));
+      }
+
+      collector.SortAndTransferMatchedRules(
+          CascadeOrigin::kAuthor, /*is_vtt_embedded_style=*/false, tracker);
+
+      if (style_attribute_cascaded_in_parent_scope) {
+        MatchStyleAttribute(matching_element, collector, tracker);
+      }
+    }
+
+    if (state == MatchingState::kShadowPseudo) {
+      CHECK(!current_part_names);
+      // The style attribute only goes in the parent scope (in some legacy
+      // cases), never higher.
+      style_attribute_cascaded_in_parent_scope = false;
+
+      if (set_part_names(element)) {
+        state = MatchingState::kPartAboveShadowPseudo;
+      } else {
+        // For now we only handle shadow pseudos in the parent scope.
+        // TODO(https://crbug.com/356158098): When we support part-like
+        // pseudo-elements, they can be chained, and we'll need to go further.
+        state = MatchingState::kDone;
+      }
+    } else {
+      CHECK(current_part_names);
+      // Subsequent containing tree scopes require mapping part names through
+      // @exportparts before considering ::part rules. If no parts are
+      // forwarded, the element is now unreachable and we can stop handling
+      // ::part() rules.
+      if (element->HasPartNamesMap()) {
+        current_part_names->PushMap(*element->PartNamesMap());
+      } else {
+        state = MatchingState::kDone;
+      }
+    }
   }
 }
 
@@ -765,6 +921,8 @@ void MatchElementScopeRules(const Element& element,
 void StyleResolver::MatchPseudoPartRulesForUAHost(
     const Element& element,
     ElementRuleCollector& collector) {
+  CHECK(!RuntimeEnabledFeatures::CSSCascadeCorrectScopeEnabled());
+
   const AtomicString& pseudo_id = element.ShadowPseudoId();
   if (pseudo_id == g_null_atom) {
     return;
@@ -780,6 +938,8 @@ void StyleResolver::MatchPseudoPartRulesForUAHost(
 void StyleResolver::MatchPseudoPartRules(const Element& part_matching_element,
                                          ElementRuleCollector& collector,
                                          bool for_shadow_pseudo) {
+  CHECK(!RuntimeEnabledFeatures::CSSCascadeCorrectScopeEnabled());
+
   if (!for_shadow_pseudo) {
     MatchPseudoPartRulesForUAHost(part_matching_element, collector);
   }
@@ -843,7 +1003,11 @@ void StyleResolver::MatchAuthorRules(const Element& element,
   MatchHostRules(element, collector, tracker_);
   MatchSlottedRules(element, collector, tracker_);
   MatchElementScopeRules(element, collector, tracker_);
-  MatchPseudoPartRules(element, collector);
+  if (RuntimeEnabledFeatures::CSSCascadeCorrectScopeEnabled()) {
+    MatchOuterScopeRules(element, collector, tracker_);
+  } else {
+    MatchPseudoPartRules(element, collector);
+  }
   MatchVTTRules(element, collector, tracker_);
   MatchPositionTryRules(collector);
 }
@@ -940,7 +1104,7 @@ void StyleResolver::MatchUARules(const Element& element,
 
   if (!match_request.IsEmpty()) {
     collector.ClearMatchedRules();
-    collector.CollectMatchingRules(match_request);
+    collector.CollectMatchingRules(match_request, /*part_names*/ nullptr);
     collector.SortAndTransferMatchedRules(
         CascadeOrigin::kUserAgent, /*is_vtt_embedded_style=*/false, tracker_);
   }
@@ -955,7 +1119,8 @@ void StyleResolver::MatchUARules(const Element& element,
     // should override UA styles regardless of specificity.
     MatchRequest media_controls_request(rule_set);
     collector.ClearMatchedRules();
-    collector.CollectMatchingRules(media_controls_request);
+    collector.CollectMatchingRules(media_controls_request,
+                                   /*part_names*/ nullptr);
     collector.SortAndTransferMatchedRules(
         CascadeOrigin::kUserAgent, /*is_vtt_embedded_style=*/false, tracker_);
   }
@@ -2785,7 +2950,7 @@ StyleRuleList* StyleResolver::CollectMatchingRulesFromUnconnectedRuleSet(
   collector.SetMatchingRulesFromNoStyleSheet(true);
   collector.SetMode(SelectorChecker::kCollectingStyleRules);
   MatchRequest match_request(rule_set, scope);
-  collector.CollectMatchingRules(match_request);
+  collector.CollectMatchingRules(match_request, /*part_names*/ nullptr);
   collector.SortAndTransferMatchedRules(
       CascadeOrigin::kAuthor, /*is_vtt_embedded_style=*/false, tracker_);
   collector.SetMatchingRulesFromNoStyleSheet(false);

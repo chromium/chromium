@@ -2321,9 +2321,9 @@ void CSSSelectorParser::SplitCompoundAtImplicitShadowCrossingCombinator(
       std::rotate(selectors.begin(), selectors.begin() + i, selectors.end());
 
       base::span<CSSSelector> remaining = selectors.first(selectors.size() - i);
-      // We might need to split the compound twice, since ::placeholder is
-      // allowed after ::slotted and they both need an implicit combinator for
-      // matching.
+      // We might need to split the compound multiple times, since a number of
+      // the relevant pseudo-elements can be combined, and they all need an
+      // implicit combinator for matching.
       SplitCompoundAtImplicitShadowCrossingCombinator(remaining);
       remaining.back().SetRelation(relation);
       break;

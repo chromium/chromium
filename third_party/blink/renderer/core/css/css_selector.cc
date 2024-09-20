@@ -1813,8 +1813,6 @@ static bool ForAnyInComplexSelector(const Functor& functor,
 }
 
 bool CSSSelector::FollowsPart() const {
-  // TODO(dbaron): When we support part-like pseudo-elements, this will need
-  // to loop rather than just check one selector.
   const CSSSelector* previous = NextSimpleSelector();
   if (!previous) {
     return false;
@@ -1828,6 +1826,20 @@ bool CSSSelector::FollowsSlotted() const {
     return false;
   }
   return previous->GetPseudoType() == kPseudoSlotted;
+}
+
+bool CSSSelector::CrossesTreeScopes() const {
+  for (const CSSSelector* s = this; s; s = s->NextSimpleSelector()) {
+    switch (s->Relation()) {
+      case kShadowPart:
+      case kUAShadow:
+      case kShadowSlot:
+        return true;
+      default:
+        break;
+    }
+  }
+  return false;
 }
 
 String CSSSelector::FormatPseudoTypeForDebugging(PseudoType type) {

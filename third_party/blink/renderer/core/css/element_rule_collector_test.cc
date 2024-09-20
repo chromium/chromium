@@ -77,7 +77,7 @@ class ElementRuleCollectorTest : public PageTestBase {
 
     MatchRequest request(rule_set, scope);
 
-    collector.CollectMatchingRules(request);
+    collector.CollectMatchingRules(request, /*part_names*/ nullptr);
     collector.SortAndTransferMatchedRules(CascadeOrigin::kAuthor,
                                           /*is_vtt_embedded_style=*/false,
                                           /*tracker=*/nullptr);
@@ -107,7 +107,7 @@ class ElementRuleCollectorTest : public PageTestBase {
 
     MatchRequest request(rule_set, {});
 
-    collector.CollectMatchingRules(request);
+    collector.CollectMatchingRules(request, /*part_names*/ nullptr);
     return Vector<MatchedRule>{collector.MatchedRulesForTest()};
   }
 
@@ -123,7 +123,7 @@ class ElementRuleCollectorTest : public PageTestBase {
     MatchRequest request(rule_set, {}, sheet);
 
     collector.SetMode(SelectorChecker::kCollectingCSSRules);
-    collector.CollectMatchingRules(request);
+    collector.CollectMatchingRules(request, /*part_names*/ nullptr);
     collector.SortAndTransferMatchedRules(CascadeOrigin::kAuthor,
                                           /*is_vtt_embedded_style=*/false,
                                           /*tracker=*/nullptr);
@@ -354,7 +354,8 @@ TEST_F(ElementRuleCollectorTest, MatchesNonUniversalHighlights) {
     ElementRuleCollector collector(context, StyleRecalcContext(),
                                    SelectorFilter(), result,
                                    EInsideLink::kNotInsideLink);
-    collector.CollectMatchingRules(MatchRequest{&sheet->GetRuleSet(), nullptr});
+    collector.CollectMatchingRules(MatchRequest{&sheet->GetRuleSet(), nullptr},
+                                   /*part_names*/ nullptr);
 
     // Pretty-print the arguments for debugging.
     StringBuilder args{};

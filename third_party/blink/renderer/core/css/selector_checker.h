@@ -139,7 +139,10 @@ class CORE_EXPORT SelectorChecker {
     // https://crrev.com/c/3362008
     const CSSSelector* selector = nullptr;
 
-    // Used to match the :scope pseudo-class.
+    // TODO(dbaron): I'm suspicious of how accurate the comments describing
+    // the following three members are.  We should review them for accuracy.
+    // Used to match the :scope pseudo-class.  It also tells us which
+    // TreeScope the selectors are associated with.
     const ContainerNode* scope = nullptr;
     // If `style_scope` is specified, that is used to match the :scope
     // pseudo-class instead (and `scope` is ignored).

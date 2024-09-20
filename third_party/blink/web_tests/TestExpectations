@@ -5484,6 +5484,7 @@ crbug.com/1511354 virtual/select-parser-relaxation/external/wpt/html/semantics/f
 crbug.com/1511354 virtual/customizable-select-disabled/external/wpt/html/semantics/forms/the-select-element/customizable-select/border-rendering.tentative.html [ Failure ]
 
 crbug.com/360357720 wpt_internal/html/semantics/forms/the-select-element/customizable-select/select-icon-color.tentative.html [ Failure ]
+crbug.com/366415131 wpt_internal/html/semantics/forms/the-select-element/customizable-select/picker-and-slotted.tentative.html [ Failure ]
 crbug.com/1511354 virtual/select-parser-relaxation/external/wpt/html/semantics/forms/the-select-element/customizable-select/switch-picker-appearance.tentative.html [ Failure ]
 crbug.com/1511354 virtual/customizable-select-disabled/external/wpt/html/semantics/forms/the-select-element/customizable-select/switch-picker-appearance.tentative.html [ Failure ]
 
