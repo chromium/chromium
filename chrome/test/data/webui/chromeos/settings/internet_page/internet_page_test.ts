@@ -14,16 +14,15 @@ import {HotspotAllowStatus, HotspotInfo, HotspotState, WiFiBand, WiFiSecurityMod
 import {FakeHotspotConfig} from 'chrome://resources/ash/common/hotspot/fake_hotspot_config.js';
 import {MojoInterfaceProviderImpl} from 'chrome://resources/ash/common/network/mojo_interface_provider.js';
 import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
-
 import {getDeepActiveElement} from 'chrome://resources/ash/common/util.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {ApnProperties, DeviceStateProperties, GlobalPolicy, InhibitReason, MAX_NUM_CUSTOM_APNS, VpnType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {ConnectionStateType, DeviceStateType, NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {assertEquals, assertFalse, assertNotEquals, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {FakeESimManagerRemote} from 'chrome://webui-test/chromeos/cellular_setup/fake_esim_manager_remote.js';
 import {FakeNetworkConfig} from 'chrome://webui-test/chromeos/fake_network_config_mojom.js';
 import {FakePasspointService} from 'chrome://webui-test/chromeos/fake_passpoint_service_mojom.js';
-import {FakeESimManagerRemote} from 'chrome://webui-test/cr_components/chromeos/cellular_setup/fake_esim_manager_remote.js';
 import {flushTasks, waitAfterNextRender, waitBeforeNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 

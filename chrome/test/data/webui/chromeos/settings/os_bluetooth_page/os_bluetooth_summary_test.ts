@@ -13,8 +13,8 @@ import {mojoString16ToString} from 'chrome://resources/js/mojo_type_util.js';
 import {BluetoothSystemProperties, BluetoothSystemState, DeviceConnectionState, SystemPropertiesObserverInterface} from 'chrome://resources/mojo/chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertNotEquals, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {createDefaultBluetoothDevice, FakeBluetoothConfig} from 'chrome://webui-test/cr_components/chromeos/bluetooth/fake_bluetooth_config.js';
-import {FakeHidPreservingBluetoothStateController} from 'chrome://webui-test/cr_components/chromeos/bluetooth/fake_hid_preserving_bluetooth_state_controller.js';
+import {createDefaultBluetoothDevice, FakeBluetoothConfig} from 'chrome://webui-test/chromeos/bluetooth/fake_bluetooth_config.js';
+import {FakeHidPreservingBluetoothStateController} from 'chrome://webui-test/chromeos/bluetooth/fake_hid_preserving_bluetooth_state_controller.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
 

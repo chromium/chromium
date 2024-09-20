@@ -620,7 +620,6 @@ generate_grd("build_grd") {
       "chromeos/shimless_rma:build_grdp",
       "chromeos/shortcut_customization:build_grdp",
       "chromeos/vc_background_ui:build_grdp",
-      "cr_components/chromeos:build_grdp",
       "//ui/file_manager:build_tests_gen_grdp",
       "//ui/file_manager:build_tests_grdp",
     ]
@@ -658,7 +657,6 @@ generate_grd("build_grd") {
       "$target_gen_dir/chromeos/shortcut_customization/resources.grdp",
       "$target_gen_dir/chromeos/web_ui_test_mojo_lite_resources.grdp",
       "$target_gen_dir/chromeos/web_ui_test_mojo_resources.grdp",
-      "$target_gen_dir/cr_components/chromeos/resources.grdp",
       "$root_gen_dir/ui/file_manager/tests_resources.grdp",
       "$root_gen_dir/ui/file_manager/tests_gen_resources.grdp",
     ]

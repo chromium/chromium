@@ -8,7 +8,7 @@ import {SettingsBluetoothTrueWirelessImagesElement} from 'chrome://os-settings/l
 import {BatteryType} from 'chrome://resources/ash/common/bluetooth/bluetooth_types.js';
 import {DeviceConnectionState} from 'chrome://resources/mojo/chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom-webui.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
-import {createDefaultBluetoothDevice} from 'chrome://webui-test/cr_components/chromeos/bluetooth/fake_bluetooth_config.js';
+import {createDefaultBluetoothDevice} from 'chrome://webui-test/chromeos/bluetooth/fake_bluetooth_config.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
 

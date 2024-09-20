@@ -416,7 +416,6 @@ build_webui_tests("build") {
     "//chrome/browser/resources/ash/settings:build_ts",
     "//chrome/test/data/webui/chromeos:build_ts",
     "//chrome/test/data/webui/chromeos/nearby_share:build_ts",
-    "//chrome/test/data/webui/cr_components/chromeos:build_ts",
     "//third_party/polymer/v3_0:library",
     "//ui/webui/resources/cr_components/app_management:build_ts",
     "//ui/webui/resources/js:build_ts",
@@ -435,10 +434,6 @@ build_webui_tests("build") {
     "chrome://webui-test/chromeos/*|" +
         rebase_path("$root_gen_dir/chrome/test/data/webui/chromeos/tsc/*",
                     target_gen_dir),
-    "chrome://webui-test/cr_components/chromeos/*|" +
-        rebase_path(
-            "$root_gen_dir/chrome/test/data/webui/cr_components/chromeos/tsc/*",
-            target_gen_dir),
     "chrome://webui-test/chromeos/nearby_share/*|" +
         rebase_path(
             "$root_gen_dir/chrome/test/data/webui/chromeos/nearby_share/tsc/*",
