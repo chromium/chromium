@@ -14,7 +14,7 @@ def xcode_enum(version):
 # Keep this in-sync with the versions of bots in //ios/build/bots/.
 xcode = struct(
     # Default Xcode Version
-    xcode_default = xcode_enum("16a242"),
+    xcode_default = xcode_enum("16a242d"),
 
     # Default Xcode 13 for chromium iOS.
     x13main = xcode_enum("13c100"),

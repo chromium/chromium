@@ -2292,7 +2292,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "16a242",
+          "16a242d",
           "--xctest"
         ],
         "merge": {
@@ -2321,7 +2321,7 @@
               "path": "Runtime-ios-16.4"
             },
             {
-              "name": "xcode_ios_16a242",
+              "name": "xcode_ios_16a242d",
               "path": "Xcode.app"
             }
           ],
@@ -2360,7 +2360,7 @@
           "--out-dir",
           "${ISOLATED_OUTDIR}",
           "--xcode-build-version",
-          "16a242",
+          "16a242d",
           "--xctest"
         ],
         "merge": {
@@ -2387,7 +2387,7 @@
           "expiration": 21600,
           "named_caches": [
             {
-              "name": "xcode_ios_16a242",
+              "name": "xcode_ios_16a242d",
               "path": "Xcode.app"
             }
           ],
