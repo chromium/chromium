@@ -73,7 +73,15 @@ class NavigationTransitionData {
     kNavigateAwayFromCrashedPage = 13,
     kNavigateAwayFromCrashedPageNoEarlySwap = 14,
 
-    kMaxValue = kNavigateAwayFromCrashedPageNoEarlySwap
+    // Screenshot is not captured when the root window or compositor is
+    // detached.
+    kNoRootWindowOrCompositor = 15,
+
+    // The browser isn't embedding a valid `viz::LocalSurfaceID` when we try
+    // to capture the screenshot from the browser.
+    kBrowserNotEmbeddingValidSurfaceId = 16,
+
+    kMaxValue = kBrowserNotEmbeddingValidSurfaceId
   };
 
   NavigationTransitionData() = default;

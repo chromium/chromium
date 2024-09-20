@@ -49,9 +49,13 @@
 #include "services/viz/privileged/mojom/compositing/features.mojom-features.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/android/view_android.h"
 #include "ui/gfx/switches.h"
 #include "url/url_constants.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "ui/android/view_android.h"
+#include "ui/android/window_android.h"
+#endif
 
 namespace content {
 
@@ -1144,6 +1148,97 @@ IN_PROC_BROWSER_TEST_P(NavigationEntryScreenshotBrowserTest,
     ASSERT_EQ(PreviewScreenshotForEntry(controller.GetEntryAtIndex(1)),
               nullptr);
     ASSERT_EQ(manager->GetCurrentCacheSize(), page_size);
+  }
+}
+
+IN_PROC_BROWSER_TEST_P(NavigationEntryScreenshotBrowserTest,
+                       NavigateWhileNoCompositor_NotCaptured) {
+  const size_t page_size = GetUncompressedScreenshotSizeInBytes();
+  const size_t memory_budget = 10 * page_size;
+  auto* manager = GetManagerForTab(web_contents());
+  manager->SetMemoryBudgetForTesting(memory_budget);
+  auto& controller = web_contents()->GetController();
+
+  {
+    SCOPED_TRACE("[red*] -> [red, green*]");
+    web_contents()->GetTopLevelNativeWindow()->DetachCompositor();
+    const int num_request_before_nav =
+        NavigationTransitionUtils::GetNumCopyOutputRequestIssuedForTesting();
+    ASSERT_TRUE(NavigateToURL(web_contents(), GetNextUrl("/green.html")));
+    EXPECT_EQ(
+        num_request_before_nav,
+        NavigationTransitionUtils::GetNumCopyOutputRequestIssuedForTesting());
+    AssertOrderedScreenshotsAre(controller, {std::nullopt, std::nullopt});
+    EXPECT_EQ(controller.GetEntryAtIndex(0)
+                  ->navigation_transition_data()
+                  .cache_hit_or_miss_reason(),
+              NavigationTransitionData::CacheHitOrMissReason::
+                  kNoRootWindowOrCompositor);
+  }
+}
+
+// Regression test for https://crbug.com/368289857.
+IN_PROC_BROWSER_TEST_P(NavigationEntryScreenshotBrowserTest,
+                       NavigateWhileHidden_NotCaptured) {
+  const size_t page_size = GetUncompressedScreenshotSizeInBytes();
+  const size_t memory_budget = 10 * page_size;
+  auto* manager = GetManagerForTab(web_contents());
+  manager->SetMemoryBudgetForTesting(memory_budget);
+  auto& controller = web_contents()->GetController();
+
+  ASSERT_TRUE(NavigateToURL(web_contents(), GURL(url::kAboutBlankURL)));
+  WaitForCopyableViewInWebContents(web_contents());
+  controller.PruneAllButLastCommitted();
+  ASSERT_EQ(controller.GetEntryCount(), 1);
+  NavigationTransitionUtils::ResetNumCopyOutputRequestIssuedForTesting();
+
+  {
+    SCOPED_TRACE("[about:blank*] -> [about:blank&, green*]");
+    GURL green_url = GetNextUrl("/green.html");
+    TestNavigationManager nav_obs(web_contents(), green_url);
+
+    // `NavigateToURL()` will bring the tab back into focus. We don't want that.
+    ASSERT_TRUE(ExecJs(web_contents(),
+                       JsReplace("window.location.href = $1", green_url)));
+    ASSERT_TRUE(nav_obs.WaitForRequestStart());
+    web_contents()->WasHidden();
+    EXPECT_TRUE(web_contents()
+                    ->GetPrimaryMainFrame()
+                    ->GetView()
+                    ->IsSurfaceAvailableForCopy());
+    ASSERT_TRUE(nav_obs.WaitForNavigationFinished());
+    EXPECT_TRUE(web_contents()->IsHidden());
+
+    // `WebContentsImpl::DidNavigateMainFramePreCommit()` invalidates the
+    // LocalSurfaceID so the View is no longer copiable.
+    EXPECT_FALSE(web_contents()
+                     ->GetPrimaryMainFrame()
+                     ->GetView()
+                     ->IsSurfaceAvailableForCopy());
+  }
+  {
+    // Now navigate this hidden tab.
+    SCOPED_TRACE("[about:blank&, green*] -> [about:blank&, green, blue*]");
+    GURL blue_url = GetNextUrl("/blue.html");
+    TestNavigationManager obs(web_contents(), blue_url);
+    ASSERT_TRUE(ExecJs(web_contents(),
+                       JsReplace("window.location.href = $1", blue_url)));
+    ASSERT_TRUE(obs.WaitForRequestStart());
+    EXPECT_TRUE(web_contents()->IsHidden());
+    EXPECT_FALSE(web_contents()
+                     ->GetPrimaryMainFrame()
+                     ->GetView()
+                     ->IsSurfaceAvailableForCopy());
+    ASSERT_TRUE(obs.WaitForNavigationFinished());
+    EXPECT_TRUE(web_contents()->IsHidden());
+    ASSERT_EQ(controller.GetEntryCount(), 3);
+    EXPECT_EQ(PreviewScreenshotForEntry(controller.GetEntryAtIndex(1)),
+              nullptr);
+    EXPECT_EQ(controller.GetEntryAtIndex(1)
+                  ->navigation_transition_data()
+                  .cache_hit_or_miss_reason(),
+              NavigationTransitionData::CacheHitOrMissReason::
+                  kBrowserNotEmbeddingValidSurfaceId);
   }
 }
 

@@ -429,6 +429,8 @@ chromium-metrics-reviews@google.com.
   <int value="12" label="Cache Miss Screenshot Orientation"/>
   <int value="13" label="Navigate away from a crashed page"/>
   <int value="14" label="Navigate away from a crashed page (no early swap)"/>
+  <int value="15" label="Window or compositor is detached"/>
+  <int value="16" label="Browser not embedding a valid LocalSurfaceID"/>
 </enum>
 
 <enum name="NavigationWasServedFromCache">

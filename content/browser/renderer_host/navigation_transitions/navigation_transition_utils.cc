@@ -17,7 +17,6 @@
 #include "ui/gfx/animation/animation.h"
 
 #if BUILDFLAG(IS_ANDROID)
-#include "base/system/sys_info.h"
 #include "content/browser/renderer_host/compositor_impl_android.h"
 #include "ui/android/view_android.h"
 #include "ui/android/window_android.h"
@@ -76,10 +75,6 @@ bool SupportsETC1NonPowerOfTwo(const NavigationRequest& navigation_request) {
   auto* rfh = navigation_request.frame_tree_node()->current_frame_host();
   auto* rwhv = rfh->GetView();
   auto* window_android = rwhv->GetNativeView()->GetWindowAndroid();
-  if (!window_android) {
-    // Can happen on x86 Android bots.
-    return false;
-  }
   auto* compositor = window_android->GetCompositor();
   return static_cast<CompositorImpl*>(compositor)->SupportsETC1NonPowerOfTwo();
 #else
@@ -268,17 +263,6 @@ bool NavigationTransitionUtils::
     return false;
   }
 
-#if BUILDFLAG(IS_ANDROID)
-  if (base::SysInfo::GetAndroidHardwareEGL() == "emulation") {
-    // TODO(https://crbug.com/337886037): On Android emulators, the incomplete
-    // GL support is breaking the screenshotting flow.
-    // TODO(liuwilliam): Maybe we should disable the feature for emulators
-    // entirely?
-    InvokeTestCallbackForNoScreenshot(navigation_request);
-    return false;
-  }
-#endif
-
   CHECK(!navigation_request.IsSameDocument());
 
   if (!CanInitiateCaptureForNavigationStage(navigation_request,
@@ -392,6 +376,30 @@ bool NavigationTransitionUtils::
     return false;
   }
 
+#if BUILDFLAG(IS_ANDROID)
+  if (auto* window_android = rwhv->GetNativeView()->GetWindowAndroid();
+      !window_android || !window_android->GetCompositor()) {
+    InvokeTestCallbackForNoScreenshot(navigation_request);
+    entry->navigation_transition_data().set_cache_hit_or_miss_reason(
+        CacheHitOrMissReason::kNoRootWindowOrCompositor);
+    return false;
+  }
+#endif
+
+  if (!rwhv->IsSurfaceAvailableForCopy()) {
+    // See https://crbug.com/368289857: If we hide the WebContents after a
+    // same-RFH navigation starts, we invalidate the `viz::LocalSurfaceID`
+    // and the browser UI will not be embedding a new ID when the navigation
+    // finishes (`WebContentsImpl::DidNavigateMainFramePreCommit()` and
+    // `RenderWidgetHostViewAndroid::DidNavigate()`). We won't be able to
+    // screenshot the page if we navigate the WebContents again before the UI
+    // embeds
+    InvokeTestCallbackForNoScreenshot(navigation_request);
+    entry->navigation_transition_data().set_cache_hit_or_miss_reason(
+        CacheHitOrMissReason::kBrowserNotEmbeddingValidSurfaceId);
+    return false;
+  }
+
   int request_sequence = navigation_controller.GetLastCommittedEntry()
                              ->navigation_transition_data()
                              .copy_output_request_sequence();
@@ -419,9 +427,6 @@ bool NavigationTransitionUtils::
   // Without `SetOutputSizeForTest`, `g_output_size_for_test` is empty,
   // meaning we will capture at full-size, unless specified by tests.
   const gfx::Size output_size = g_output_size_for_test;
-
-  // Make sure the browser is actively embedding a surface.
-  CHECK(rwhv->IsSurfaceAvailableForCopy());
 
   static_cast<RenderWidgetHostViewBase*>(rwhv)->CopyFromExactSurface(
       /*src_rect=*/gfx::Rect(), output_size,
