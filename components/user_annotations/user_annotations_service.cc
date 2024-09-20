@@ -223,8 +223,8 @@ void UserAnnotationsService::OnImportFormConfirmation(
     const auto& result_response = result.value();
 
     UserAnnotationsEntries upserted_entries =
-        UserAnnotationsEntries(result_response.added_entries().begin(),
-                               result_response.added_entries().end());
+        UserAnnotationsEntries(result_response.upserted_entries().begin(),
+                               result_response.upserted_entries().end());
     std::set<EntryID> deleted_entry_ids(
         result_response.deleted_entry_ids().begin(),
         result_response.deleted_entry_ids().end());
@@ -239,7 +239,7 @@ void UserAnnotationsService::OnImportFormConfirmation(
     entries_.clear();
   }
 
-  for (const auto& entry : result->added_entries()) {
+  for (const auto& entry : result->upserted_entries()) {
     EntryID entry_id = ++entry_id_counter_;
     optimization_guide::proto::UserAnnotationsEntry entry_proto;
     entry_proto.set_entry_id(entry_id);
@@ -269,7 +269,7 @@ void UserAnnotationsService::SendFormSubmissionResult(
   // TODO: b/366278416 - No need to import the form entries when there is no
   // change.
   UserAnnotationsEntries upserted_entries = UserAnnotationsEntries(
-      result->added_entries().begin(), result->added_entries().end());
+      result->upserted_entries().begin(), result->upserted_entries().end());
   std::move(callback).Run(
       std::move(form), upserted_entries,
       base::BindOnce(&UserAnnotationsService::OnImportFormConfirmation,
