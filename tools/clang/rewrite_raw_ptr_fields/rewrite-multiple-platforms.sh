@@ -87,6 +87,7 @@ EOF
     fuchsia)
         cat <<EOF
 target_os = "fuchsia"
+enable_cast_receiver=true
 clang_use_chrome_plugins = false
 dcheck_always_on = true
 is_chrome_branded = true
