@@ -15,8 +15,10 @@
 // META: variant=?29-32
 // META: variant=?33-36
 // META: variant=?37-40
+// META: variant=?41-44
+// META: variant=?45-48
 
-// These tests focus on the serverResponse field in AuctinConfig, e.g.
+// These tests focus on the serverResponse field in AuctionConfig, e.g.
 // auctions involving bidding and auction services.
 
 subsetTest(promise_test, async test => {
@@ -654,14 +656,247 @@ subsetTest(promise_test, async test => {
   });
 }, 'Basic B&A auction - valid ad currency');
 
+// Runs whatever is set in `mutators` on a minimal correct hybrid B&A/local
+// auction, and expects either the B&A bid or local bid to win depending on
+// expectBaWin.
+async function testHybridAuctionWithMutatedServerResponse(
+    test, expectBaWin, mutators = {
+      responseMutator: undefined,
+      igMutator: undefined,
+      auctionConfigMutator: undefined,
+      expectUrlsMutator: undefined
+    }) {
+  const uuid = generateUuid(test);
+  const adA = createTrackerURL(window.location.origin, uuid, 'track_get', 'a');
+  const adB = createTrackerURL(window.location.origin, uuid, 'track_get', 'b');
+  const adsArray =
+      [{renderURL: adA, adRenderId: 'a'}, {renderURL: adB, adRenderId: 'b'}];
+  let interestGroup = {
+    ads: adsArray,
+    biddingLogicURL: createBiddingScriptURL({allowComponentAuction: true})
+  };
+  if (mutators.igMutator) {
+    mutators.igMutator(interestGroup, uuid);
+  }
+  await joinInterestGroup(test, uuid, interestGroup);
+
+  const result = await navigator.getInterestGroupAdAuctionData(
+      {seller: window.location.origin});
+  assert_true(result.requestId !== null);
+  assert_true(result.request.length > 0);
+
+  let decoded = await BA.decodeInterestGroupData(result.request);
+
+  // The server-side auction uses a bid of 10, for second ad, so it should
+  // win over the client-side component auctions bid of 9 (unless something
+  // mutators did made the server response unacceptable).
+  let serverResponseMsg = {
+    'biddingGroups': {},
+    'adRenderURL': adsArray[1].renderURL,
+    'interestGroupName': DEFAULT_INTEREST_GROUP_NAME,
+    'interestGroupOwner': window.location.origin,
+    'topLevelSeller': window.location.origin,
+    'bid': 10,
+  };
+  serverResponseMsg.biddingGroups[window.location.origin] = [0];
+  if (mutators.responseMutator) {
+    mutators.responseMutator(serverResponseMsg, uuid);
+  }
+
+  let serverResponse =
+      await BA.encodeServerResponse(serverResponseMsg, decoded);
+
+  let hashString = await BA.payloadHash(serverResponse);
+  await BA.authorizeServerResponseHashes([hashString]);
+
+  let auctionConfig = {
+    seller: window.location.origin,
+    decisionLogicURL: createDecisionScriptURL(uuid),
+    interestGroupBuyers: [],
+    resolveToConfig: true,
+    componentAuctions: [
+      {
+        seller: window.location.origin,
+        decisionLogicURL: createDecisionScriptURL(uuid),
+        interestGroupBuyers: [window.location.origin],
+      },
+      {
+        seller: window.location.origin,
+        requestId: result.requestId,
+        serverResponse: serverResponse,
+      }
+    ]
+  };
+  if (mutators.auctionConfigMutator) {
+    mutators.auctionConfigMutator(auctionConfig, uuid);
+  }
+
+  let auctionResult = await navigator.runAdAuction(auctionConfig);
+  expectSuccess(auctionResult);
+  createAndNavigateFencedFrame(test, auctionResult);
+  let expectUrls = expectBaWin ? [adB] : [adA];
+  if (mutators.expectUrlsMutator) {
+    mutators.expectUrlsMutator(expectUrls, uuid);
+  }
+  await waitForObservedRequests(uuid, expectUrls);
+}
+
+subsetTest(promise_test, async test => {
+  await testHybridAuctionWithMutatedServerResponse(
+      test, /*expectBaWin=*/ false, {
+        responseMutator: (response) => {
+          delete response.topLevelSeller;
+        }
+      });
+}, 'Hybrid B&A auction --- missing top-level seller');
+
+subsetTest(promise_test, async test => {
+  await testHybridAuctionWithMutatedServerResponse(
+      test, /*expectBaWin=*/ false, {
+        responseMutator: (response) => {
+          response.topLevelSeller = 'https://www.example.org/';
+        }
+      });
+}, 'Hybrid B&A auction --- wrong top-level seller');
+
+subsetTest(promise_test, async test => {
+  await testHybridAuctionWithMutatedServerResponse(
+      test, /*expectBaWin=*/ false, {
+        responseMutator: (response) => {
+          delete response.bid;
+        }
+      });
+}, 'Hybrid B&A auction --- no bid');
+
+subsetTest(promise_test, async test => {
+  await testHybridAuctionWithMutatedServerResponse(
+      test, /*expectBaWin=*/ true, {
+        responseMutator: (response) => {
+          response.bidCurrency = 'USD';
+        }
+      });
+}, 'Hybrid B&A auction --- currency check --- nothing configured');
+
+subsetTest(promise_test, async test => {
+  await testHybridAuctionWithMutatedServerResponse(
+      test, /*expectBaWin=*/ false, {
+        responseMutator: (response) => {
+          response.bidCurrency = 'USD';
+        },
+        auctionConfigMutator: (auctionConfig) => {
+          auctionConfig.componentAuctions[1].sellerCurrency = 'EUR';
+        }
+      });
+}, 'Hybrid B&A auction --- sellerCurrency mismatch');
+
+subsetTest(promise_test, async test => {
+  await testHybridAuctionWithMutatedServerResponse(
+      test, /*expectBaWin=*/ true, {
+        auctionConfigMutator: (auctionConfig) => {
+          auctionConfig.componentAuctions[1].sellerCurrency = 'EUR';
+        }
+      });
+}, 'Hybrid B&A auction --- sellerCurrency config, no bidCurrency');
+
+subsetTest(promise_test, async test => {
+  await testHybridAuctionWithMutatedServerResponse(
+      test, /*expectBaWin=*/ false, {
+        responseMutator: (response) => {
+          response.bidCurrency = 'USD';
+        },
+        auctionConfigMutator: (auctionConfig) => {
+          auctionConfig.perBuyerCurrencies = {};
+          auctionConfig.perBuyerCurrencies[window.location.origin] = 'EUR';
+        }
+      });
+}, 'Hybrid B&A auction --- top perBuyerCurrencies mismatch');
+
+subsetTest(promise_test, async test => {
+  await testHybridAuctionWithMutatedServerResponse(
+      test, /*expectBaWin=*/ true, {
+        auctionConfigMutator: (auctionConfig) => {
+          auctionConfig.perBuyerCurrencies = {};
+          auctionConfig.perBuyerCurrencies[window.location.origin] = 'EUR';
+        }
+      });
+}, 'Hybrid B&A auction --- perBuyerCurrencies config, no bidCurrency');
+
+subsetTest(promise_test, async test => {
+  await testHybridAuctionWithMutatedServerResponse(
+      test, /*expectBaWin=*/ true, {
+        responseMutator: (response) => {
+          response.bidCurrency = 'USD';
+          response.bid = 50;
+          response.adMetadata = '[1, "hello"]';
+        },
+        auctionConfigMutator: (auctionConfig, uuid) => {
+          let trackTopSeller = createSellerReportURL(uuid, 'top');
+          auctionConfig.decisionLogicURL = createDecisionScriptURL(uuid, {
+            // Note: this will throw on the local bid as well as an incorrect
+            // server bid.
+            scoreAd: `
+              let origin = '${window.location.origin}';
+              if (!(adMetadata instanceof Array) ||
+                  adMetadata.length !== 2 ||
+                  adMetadata[0] !== 1 ||
+                  adMetadata[1] !== 'hello') {
+                throw 'bad adMetadata ' + JSON.stringify(adMetadata);
+              }
+              if (bid !== 50)
+                throw 'bad bid ' + bid;
+              if (browserSignals.bidCurrency !== 'USD')
+                throw 'bad currency ' + browserSignals.bidCurrency;
+              if (browserSignals.interestGroupOwner != origin)
+                throw 'bad IG owner ' + browserSignals.interestGroupOwner;
+              if (browserSignals.componentSeller != origin) {
+                throw 'bad component seller ' +
+                    browserSignals.interestGroupOwner;
+              }`
+          });
+        }
+      });
+}, 'Hybrid B&A auction --- bid info passed to top-level scoreAd');
+
+subsetTest(promise_test, async test => {
+  await testHybridAuctionWithMutatedServerResponse(
+      test, /*expectBaWin=*/ true, {
+        responseMutator: (response) => {
+          response.bidCurrency = 'USD';
+          response.bid = 50;
+          response.buyerAndSellerReportingId = 'bsid2';
+        },
+        igMutator: (ig) => {
+          ig.ads[0].buyerAndSellerReportingId = 'bsid1';
+          ig.ads[1].buyerAndSellerReportingId = 'bsid2';
+        },
+        auctionConfigMutator: (auctionConfig, uuid) => {
+          let trackTopSeller = createSellerReportURL(uuid, 'top');
+          auctionConfig.decisionLogicURL = createDecisionScriptURL(uuid, {
+            reportResult: `sendReportTo("${trackTopSeller}&" +
+                browserSignals.bid + '&' +
+                browserSignals.buyerAndSellerReportingId)`
+          });
+        },
+        expectUrlsMutator: (expectUrls, uuid) => {
+          expectUrls.push(createSellerReportURL(uuid, 'top') + '&50&bsid2');
+        }
+      });
+}, 'Hybrid B&A auction --- bid info passed to top-level reporting');
+
 /* Some things that are not currently tested that probably should be; this is
    not exhaustive, merely to keep track of things that come to mind as tests are
    written:
-
-   - Need multi-seller to notice values of bid/bidCurrency.
 
    - Reporting event/beacon operation.
 
    - Actually loading component ad --- see stuff in components-ads.https...
      for examples.
+
+   - Check that topLevelSellerReportingURLs doesn't do anything in a component
+     auction? The code is actually a little suspect; need to check the spec
+     at any rate.
+
+   - forDebugOnly diff between server_filtered or not (and also componentWin)?
+     forDebugOnly in general may be too hard to test given sampling. I should
+     probably ask Qingxin for his opinion.
 */
